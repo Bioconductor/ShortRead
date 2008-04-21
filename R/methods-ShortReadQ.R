@@ -1,0 +1,70 @@
+## validity / accessors / constructors
+
+setMethod(".srValidity", "ShortReadQ", function(object) {
+    msg <- NULL
+    lenq <- length(quality(object))
+    lens <- length(sread(object))
+    if (lenq != lens) {
+        txt <- sprintf("sread and quality length mismatch: %d %d",
+                       lenq, lens)
+        msg <- c(msg, txt)
+    }
+    if (!all(width(quality(object)) == width(sread(object)))) {
+        txt <- sprintf("some sread and quality widths differ")
+        msg <- c(msg, txt)
+    }
+    if (is.null(msg)) TRUE else msg
+})
+
+.make_getter("quality")
+
+setMethod("readFastq", "character", function(dirPath, ...,
+                                             pattern=character()) {
+    src <- list.files(dirPath, pattern=pattern, full.names=TRUE)
+    if (length(src)==0)
+        .throw(SRError("Input/Output",
+                      "no files in directory '%s' matching '%s'",
+                      dirPath, pattern))
+    elts <- .Call(.read_solexa_fastq, src)
+    new("ShortReadQ", ..., sread=elts[["sread"]], id=elts[["id"]],
+        quality=elts[["quality"]])
+})
+
+## subset
+
+setMethod("[", c("ShortReadQ", "missing", "missing"),
+          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+
+setMethod("[", c("ShortReadQ", "missing", "ANY"),
+          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+
+setMethod("[", c("ShortReadQ", "ANY", "ANY"),
+          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+
+.ShortReadQ_subset <- function(x, i, j, ..., drop=TRUE) {
+    if (nargs() != 2) .ShortRead_subset_err()
+    initialize(x, sread=sread(x)[i], id=id(x)[i], quality=quality(x)[i])
+}
+
+setMethod("[", c("ShortReadQ", "ANY", "missing"), .ShortReadQ_subset)
+
+## manip
+
+.abc_ShortReadQ <- function(stringSet, alphabet, ...) {
+    if (!missing(alphabet))
+        .throw(SRWarn("UserArgumentMismatch", "'alphabet' ignored"))
+    res <- lapply(c(sread(stringSet), quality(stringSet)),
+                  alphabetByCycle, ...)
+    names(res) <- c("sread", "quality")
+    res
+}
+
+setMethod("alphabetByCycle", "ShortReadQ", .abc_ShortReadQ)
+
+## show
+
+setMethod("detail", "ShortReadQ", function(object, ...) {
+    callNextMethod()
+    cat("\nquality:\n")
+    show(quality(object))
+})

@@ -1,0 +1,120 @@
+
+R version 2.7.0 RC (2008-04-20 r45403)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library("ShortRead")
+Loading required package: Biobase
+Loading required package: tools
+
+Welcome to Bioconductor
+
+  Vignettes contain introductory material. To view, type
+  'openVignette()'. To cite Bioconductor, see
+  'citation("Biobase")' and for packages 'citation(pkgname)'.
+
+Loading required package: Biostrings
+> library("RUnit")
+
+ RUnit 0.4.17 loaded.
+> 
+> options(warn=1)
+> 
+> dirs <- 'unit'
+> 
+> testFilePat <- ".*_test\\.R$"
+> 
+> allSuite <- defineTestSuite(name="allSuite",
++                             dirs=dirs,
++                             testFileRegexp=testFilePat,
++                             rngKind="default",
++                             rngNormalKind="default")
+> 
+> testData <- runTestSuite(allSuite)
+
+
+Executing test function test_AllClasses_new  ...  done successfully.
+
+
+
+Executing test function test_alphabetByCycle  ...  done successfully.
+
+
+
+Executing test function test_countLines  ...  done successfully.
+
+
+
+Executing test function test_readFastq_errors  ... Timing stopped at: 0 0 0 
+Error in checkTrue(FALSE) : Test not TRUE.
+ 
+ done successfully.
+
+
+
+Executing test function test_ShortReadQ_constructors  ...  done successfully.
+
+
+
+Executing test function test_ShortReadQ_subset  ... Error : UserSubset
+  '[' must be called with only subscript 'i'
+Error : UserSubset
+  '[' must be called with only subscript 'i'
+Error : UserSubset
+  '[' must be called with only subscript 'i'
+Error : UserSubset
+  '[' must be called with only subscript 'i'
+ done successfully.
+
+
+
+Executing test function test_ShortRead_construction  ...  done successfully.
+
+
+
+Executing test function test_SRError_construction  ...  done successfully.
+
+
+
+Executing test function test_SRError_throw  ...  done successfully.
+
+
+
+Executing test function test_SRWarn_catch  ...  done successfully.
+
+
+
+Executing test function test_SRWarn_construction  ...  done successfully.
+
+
+
+Executing test function test_SRWarn_throw  ...  done successfully.
+
+
+
+Executing test function test_SRList_construction  ...  done successfully.
+
+
+
+Executing test function test_SRVector_construction  ...  done successfully.
+
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  3.088   0.108   3.265 

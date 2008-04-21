@@ -1,0 +1,16 @@
+useDynLib(ShortRead, .registration=TRUE)
+
+importClassesFrom(Biobase, AnnotatedDataFrame)
+
+importClassesFrom(Biostrings, BStringSet, DNAStringSet)
+
+importFrom(Biostrings, BStringSet, DNAStringSet, width)
+
+exportClasses(SRError, SRWarn, SRList, SRVector,
+              ShortRead, ShortReadQ,
+              SolexaPath, SolexaSet)
+##               SolexaTile, SolexaQAVector)
+
+exportMethods(show, width, "[", "[[")
+
+exportPattern("^[^\\.]")          # functions and generics (+ methods)
