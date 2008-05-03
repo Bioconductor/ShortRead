@@ -53,7 +53,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} and
-      \code{quality} componetns of \code{stringSet}, returning a named
+      \code{quality} component of \code{stringSet}, returning a named
       list of matricies.}
 
     \item{detail}{\code{signature(object = "ShortReadQ")}: display the

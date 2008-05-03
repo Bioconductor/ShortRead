@@ -1,5 +1,6 @@
-setGeneric(".srValidity",
-           function(object) standardGeneric(".srValidity"))
+.srValidity <- function(object) TRUE
+
+setGeneric(".srValidity")
 
 ## Virtual base classes
 
@@ -57,6 +58,25 @@ setClass("ShortReadQ", contains="ShortRead",
            quality="BStringSet"),
          prototype=prototype(
            quality=BStringSet(character(0))),
+         validity=.srValidity)
+
+## AlignedRead: AlignedDataFrame
+
+setClass("AlignedDataFrame", contains="AnnotatedDataFrame",
+         prototype=prototype(
+           new("AnnotatedDataFrame",
+               dimLabels=c("readName", "alignColumn"))),
+         validity=.srValidity)
+
+setClass("AlignedRead", contains="ShortReadQ",
+         representation=representation(
+           chromosome="factor",
+           position="integer",
+           strand="factor",
+           alignQuality="numeric",
+           alignData="AlignedDataFrame"),
+         prototype=prototype(
+           strand=factor(levels=c("+", "-"))),
          validity=.srValidity)
 
 ## .Solexa

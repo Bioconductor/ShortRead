@@ -7,6 +7,12 @@
 \alias{sread}
 \alias{id}
 \alias{quality}
+% AlignedRead
+\alias{chromosome}
+\alias{position}
+\alias{strand}
+\alias{alignQuality}
+\alias{alignData}
 % Solexa
 \alias{experimentPath}
 \alias{dataPath}
@@ -35,6 +41,12 @@ vclass(object, ...)
 sread(object, ...)
 id(object, ...)
 quality(object, ...)
+## AlignedRead
+chromosome(object, ...)
+position(object, ...)
+strand(object, ...)
+alignQuality(object, ...)
+alignData(object, ...)
 ## Solexa
 experimentPath(object, ...)
 dataPath(object, ...)

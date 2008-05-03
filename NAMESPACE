@@ -1,13 +1,16 @@
 useDynLib(ShortRead, .registration=TRUE)
 
-importClassesFrom(Biobase, AnnotatedDataFrame)
+importClassesFrom(Biobase, AnnotatedDataFrame, Versioned)
 
 importClassesFrom(Biostrings, BStringSet, DNAStringSet)
+
+importFrom(Biobase, selectSome)
 
 importFrom(Biostrings, BStringSet, DNAStringSet, width)
 
 exportClasses(SRError, SRWarn, SRList, SRVector,
               ShortRead, ShortReadQ,
+              AlignedDataFrame, AlignedRead,
               SolexaPath, SolexaSet)
 ##               SolexaTile, SolexaQAVector)
 

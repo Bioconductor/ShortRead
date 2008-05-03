@@ -120,3 +120,102 @@ read_solexa_fastq(SEXP files)
     UNPROTECT(5);
     return ans;
 }
+
+int
+_io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
+                       const char *sep, int header, CharBBuf *sets)
+{
+	FILE *file;
+	char linebuf[LINEBUF_SIZE];
+	int lineno, nchar_in_buf;
+    char *token;
+    
+	if ((file = fopen(fname, "r")) == NULL)
+		error("cannot open file %s", fname);
+
+    /* header: first line ignored, errors ignored */
+    if (header == TRUE)
+        fgets(linebuf, LINEBUF_SIZE, file);
+	lineno = 0;
+	while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+		nchar_in_buf = _rtrim(linebuf);
+		if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+			fclose(file);
+			error("line too long %s:%d", fname, lineno);
+		} else if (nchar_in_buf == 0) {
+            fclose(file);
+            error("unexpected empty line %s:%d", fname, lineno);
+        }
+        _solexa_to_IUPAC(linebuf);
+
+        int j = 0, cidx=0;
+        token = strtok(linebuf, sep);
+        for (j = 0; cidx < ncol && token != NULL; ++j) {
+            if (j == colidx[cidx]) {
+                append_string_to_CharBBuf(&sets[cidx], token);
+                cidx++;
+            }
+            token = strtok(NULL, sep);
+        } 
+        lineno++;
+    }
+    fclose(file);
+    return lineno;
+}
+
+SEXP
+read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
+                        SEXP sep, SEXP header)
+{
+    if (!IS_CHARACTER(files))
+        Rf_error("'files' must be 'character(1)'");
+    if (!IS_INTEGER(colIndex) || LENGTH(colIndex) == 0)
+        Rf_error("'colIndex' must be 'integer' with length > 0");
+    if (!IS_CHARACTER(colClasses) || LENGTH(colClasses) != LENGTH(colIndex))
+        Rf_error("'colClasses' must be 'character' with length(colClasses) == length(colIndex)");
+    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
+        Rf_error("'sep' must be character(1)");
+    if (!IS_LOGICAL(header) || LENGTH(header) != 1)
+        Rf_error("'header' must be logical(1)");
+
+    /* Count lines and pre-allocate space */
+    const char *csep = translateChar(STRING_ELT(sep, 0));
+    const int nfiles = LENGTH(files);
+    const int *nlines = INTEGER(count_lines(files));
+    int nrow = 0;
+    int i, j;
+    for (i = 0; i < nfiles; ++i)
+        nrow += nlines[i];
+    nrow -= nfiles * LOGICAL(header)[0];
+    int ncol = LENGTH(colIndex);
+    CharBBuf *sets = (CharBBuf*) R_alloc(sizeof(CharBBuf), ncol);
+    int *colidx = (int *) R_alloc(sizeof(int), ncol);
+    for (j = 0; j < ncol; ++j) {
+        sets[j] = new_CharBBuf(nrow, 0);
+        colidx[j] = INTEGER(colIndex)[j] - 1;
+    }
+
+    /* read columns */
+    int nreads = 0;
+    for (i = 0; i < nfiles; ++i) {
+        const char *fname = translateChar(STRING_ELT(files, i));
+        nreads += _io_XStringSet_columns(fname, colidx, ncol,
+                                         csep, LOGICAL(header)[0], sets);
+    }
+    if (nreads != nrow)
+        Rf_error("found %d reads, expected %d", nlines, nrow);
+
+    /* formulate return value */
+    SEXP ans, elt;
+    RoSeqs roSeqs;
+    PROTECT(ans = NEW_LIST(ncol));
+    for (j = 0; j < ncol; ++j) {
+        roSeqs = new_RoSeqs_from_BBuf(sets[j]);
+        const char *clsName = CHAR(STRING_ELT(colClasses, j));
+        PROTECT(elt = new_XStringSet_from_RoSeqs(clsName, roSeqs));
+        SET_VECTOR_ELT(ans, j, elt);
+        UNPROTECT(1);
+    }
+    UNPROTECT(1);
+    return ans;
+}

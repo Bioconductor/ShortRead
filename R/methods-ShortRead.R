@@ -21,6 +21,8 @@ setMethod("width", "ShortRead", function(x) {
     }
 })
     
+## subset
+
 .ShortRead_subset_err <- function() {
     .throw(SRError("UserSubset",
                   "'[' must be called with only subscript 'i'"))
@@ -43,10 +45,28 @@ setMethod("[", c("ShortRead", "ANY", "ANY"),
 setMethod("[", c(x="ShortRead", i="ANY", j="missing"),
           .ShortRead_subset)
 
+## manip
+
+.abc_ShortRead <- function(stringSet, alphabet, ...) {
+    if (!missing(alphabet))
+        .throw(SRWarn("UserArgumentMismatch", "'alphabet' ignored"))
+    alphabetByCycle(sread(stringSet), ...)
+}
+
+setMethod("alphabetByCycle", "ShortRead", .abc_ShortRead)
+
+setMethod("clean", "ShortRead", function(object, ...) {
+    i <- alphabetFrequency(sread(object), baseOnly=TRUE)[,'other']==0
+    object[i]
+})
+
+## show
+
 setMethod("show", "ShortRead", function(object) {
     callNextMethod()
-    cat("length:", length(object), "reads; width:", width(object),
-    "cycles\n")
+    wd <- width(object)
+    if (length(wd)>2) wd <- paste(range(wd), collapse="..")
+    cat("length:", length(object), "reads; width:", wd, "cycles\n")
 })
 
 setMethod("detail", "ShortRead", function(object, ...) {

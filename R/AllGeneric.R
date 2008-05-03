@@ -45,6 +45,8 @@ setGeneric("readFastq", function(dirPath, ..., pattern=character(0))
 
 setGeneric("length")
 
+setGeneric("clean", function(object, ...) standardGeneric("clean"))
+
 detail <- function(object, ...) show(object)
 
 setGeneric("detail")
@@ -54,5 +56,6 @@ setGeneric("detail")
 setGeneric("SolexaSet", function(path, ...)
            standardGeneric("SolexaSet"))
 
-setGeneric("laneNames",
-           function(object, ...) standardGeneric("laneNames"))
+setGeneric("laneNames", function(object, ...) {
+    standardGeneric("laneNames")
+})

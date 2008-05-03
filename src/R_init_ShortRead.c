@@ -5,6 +5,7 @@ static const R_CallMethodDef callMethods[] = {
     {".count_lines", (DL_FUNC) &count_lines, 1},
     /* io.c */
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 1},
+    {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 5},
     /* alphabet */
     {".alphabet_by_cycle", (DL_FUNC) &alphabet_by_cycle, 3},
     {NULL, NULL, 0}
