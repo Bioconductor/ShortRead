@@ -49,8 +49,9 @@ SolexaPath <- function(experimentPath,
 
 .make_getter(slotNames("SolexaPath"))
 
-.readFastq_SolexaPath <- function(dirPath, ...,
-                                  pattern="s_[1-8]_sequence.txt") {
+.readFastq_SolexaPath <- function(dirPath, 
+                                  pattern="s_[1-8]_sequence.txt",
+                                  ...) {
     dirPath <- analysisPath(dirPath)
     if (is.na(dirPath))
         .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",

@@ -27,7 +27,7 @@ AlignedRead <- function(sread, id, quality,
         alignQuality=alignQuality, alignData=alignData)
 }
 
-readMaqMapview <- function(dirPath, pattern=character(0), 
+.readMaqMapview <- function(dirPath, pattern=character(0), 
                            sep="\t", header=FALSE) {
     colClasses <- list(NULL, "factor", "integer", "factor", NULL,
                        NULL, "numeric", NULL, NULL, "integer",
@@ -52,7 +52,7 @@ readMaqMapview <- function(dirPath, pattern=character(0),
                                nOneMismatch24=nOneMismatch24))
     meta <- data.frame(labelDescription=c(
                          "Number of mismatches of the best hit",
-                         "Sum of qualities of mismatched bases of the best hit",
+                         "Sum of mismatched base qualities of the best hit",
                          "Number of 0-mismatch hits of the first 24 bases",
                          "Number of 1-mismatch hits of the first 24 bases"))
     alignData <- AlignedDataFrame(df, meta)
@@ -71,7 +71,24 @@ readMaqMapview <- function(dirPath, pattern=character(0),
                 alignData=alignData)
 }
 
-.make_getter(c("chromosome", "position", "strand", "alignQuality", "alignData"))
+.readAligned_character<- function(dirPath,
+                                  pattern=character(0),
+                                  type="MAQMapview", ...) {
+  if (!is.character(type) || length(type) != 1)
+    .throw(SRError("UserArgumentMismatch",
+                   "'%s' must be '%s'",
+                   "type", "character(1)"))
+  switch(type,
+         MAQMapview=.readMaqMapview(dirPath, pattern=pattern, ...),
+         .throw(SRError("UserArgumentMismatch",
+                        "'%s' unknown; value was '%s'",
+                        "type", type)))
+}
+
+setMethod("readAligned", "character", .readAligned_character)
+
+.make_getter(c("chromosome", "position", "strand", "alignQuality",
+               "alignData"))
 
 ## subset
 

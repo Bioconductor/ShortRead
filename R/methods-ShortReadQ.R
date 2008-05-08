@@ -18,8 +18,8 @@ setMethod(".srValidity", "ShortReadQ", function(object) {
 
 .make_getter("quality")
 
-setMethod("readFastq", "character", function(dirPath, ...,
-                                             pattern=character()) {
+setMethod("readFastq", "character", function(dirPath, pattern=character(),
+                                             ...) {
     src <- list.files(dirPath, pattern=pattern, full.names=TRUE)
     if (length(src)==0)
         .throw(SRError("Input/Output",

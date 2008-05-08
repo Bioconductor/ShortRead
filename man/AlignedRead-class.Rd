@@ -22,7 +22,7 @@
 
   Objects of this class can be created rom a call to the
   \code{\link{AlignedRead}} constructor, or more typically by parsing
-  appropriate files (e.g., \code{\link{readMaqMapview}}).
+  appropriate files (e.g., \code{\link{readAligned}}).
 
 }
 \section{Slots}{
@@ -78,11 +78,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
 \seealso{
-  \code{\link{readMaqMapview}}
+  \code{\link{readAligned}}
 }
 \examples{
 showMethods(class="AlignedRead")
 dirPath <- system.file('extdata', 'maq', package='ShortRead')
-readMaqMapview(dirPath, 'out.aln.1.txt')
+readAligned(dirPath, 'out.aln.1.txt', type="MAQMapview")
 }
 \keyword{classes}

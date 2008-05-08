@@ -12,8 +12,7 @@ exportClasses(SRError, SRWarn, SRList, SRVector,
               ShortRead, ShortReadQ,
               AlignedDataFrame, AlignedRead,
               SolexaPath, SolexaSet)
-##               SolexaTile, SolexaQAVector)
 
 exportMethods(show, width, "[", "[[")
 
-exportPattern("^[^\\.]")          # functions and generics (+ methods)
+exportPattern("^[^\\.]")

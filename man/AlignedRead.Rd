@@ -7,7 +7,7 @@
   This function constructs objects of
   \code{\linkS4class{AlignedRead}}. It will often be more convenient to
   create \code{AlignedRead} objects using parsers such as
-  \code{\link{readMaqMapview}}.
+  \code{\link{readAligned}}.
 
 }
 \usage{

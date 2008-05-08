@@ -16,7 +16,7 @@
 }
 \usage{
 
-readFastq(dirPath, ..., pattern=character(0))
+readFastq(dirPath, pattern=character(0), ...)
 
 }
 
@@ -26,11 +26,11 @@ readFastq(dirPath, ..., pattern=character(0))
     defined on this generic) giving the directory path (relative or
     absolute) of FASTQ files to be read.}
 
-  \item{...}{Additional arguments, perhaps used by methods.}
-
   \item{pattern}{The (\code{\link{grep}}-style) pattern describing file
     names to be read. The default (\code{character(0)}) results in line
-    counts for all files in the directory.}
+    (attempted) input of all files in the directory.}
+
+  \item{...}{Additional arguments, perhaps used by methods.}
 
 }
 
