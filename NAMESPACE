@@ -9,10 +9,12 @@ importFrom(Biobase, selectSome)
 importFrom(Biostrings, BStringSet, DNAStringSet, width)
 
 exportClasses(SRError, SRWarn, SRList, SRVector,
+              QualityScore, NumericQuality, MatrixQuality,
+              FastqQuality, SFastqQuality,
               ShortRead, ShortReadQ,
               AlignedDataFrame, AlignedRead,
               SolexaPath, SolexaSet)
 
-exportMethods(show, width, "[", "[[")
+exportMethods(show, length, width, "[", "[[")
 
 exportPattern("^[^\\.]")

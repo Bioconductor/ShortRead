@@ -1,3 +1,16 @@
+.subset_err <- function() {
+    .throw(SRError("UserSubset",
+                   "'[' must be called with only subscript 'i'"))
+}
+
+.show_some <- function(what, obj) {
+    if (length(obj) == 0)
+      cat(what, ": (0 total)\n", sep="")
+    else
+      cat(what, ": ", paste(selectSome(obj), collapse=" "),
+          " (", length(obj), " total)\n", sep="")
+}
+
 .nameAll <- function(x) {
     ## Add names to character vector x.  Elements of x without names get
     ## a name matching the element.
@@ -16,7 +29,7 @@
     ok <- !sapply(nms, exists, where)
     if (!all(ok))
         .throw(SRError("InternalError",
-                      "'getter' already exists: %s",
+                      "getter '%s' already exists",
                       paste(nms[!ok], collapse=", ")))
     for (i in seq_along(slots)) {
         func <- eval(substitute(function(object, ...) slot(object, SLOT),

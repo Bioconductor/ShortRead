@@ -42,6 +42,31 @@ setClass("SRVector", contains="SRList",
            vclass=NA_character_),
          validity=.srValidity)
 
+## QualityScore
+
+setClass("QualityScore", contains=".ShortReadBase",
+         representation=representation("VIRTUAL"))
+
+setClass("NumericQuality", contains="QualityScore",
+         representation=representation(
+           quality="numeric"))
+
+NumericQuality <- function(quality=numeric(0)) { # used below
+    new("NumericQuality", quality=quality)
+}
+
+setClass("MatrixQuality", contains="QualityScore",
+         representation=representation(
+           quality="matrix"))
+
+setClass("FastqQuality", contains="QualityScore",
+         representation=representation(
+           quality="BStringSet"),
+         prototype=prototype(
+           quality=BStringSet(character(0))))
+
+setClass("SFastqQuality", contains="FastqQuality") # Solexa variant
+
 ## ShortRead / ShortReadQ
 
 setClass("ShortRead", contains=".ShortReadBase",
@@ -55,9 +80,9 @@ setClass("ShortRead", contains=".ShortReadBase",
 
 setClass("ShortReadQ", contains="ShortRead",
          representation=representation(
-           quality="BStringSet"),
+           quality="QualityScore"),
          prototype=prototype(
-           quality=BStringSet(character(0))),
+           quality=NumericQuality()),
          validity=.srValidity)
 
 ## AlignedRead: AlignedDataFrame
@@ -73,10 +98,11 @@ setClass("AlignedRead", contains="ShortReadQ",
            chromosome="factor",
            position="integer",
            strand="factor",
-           alignQuality="numeric",
+           alignQuality="QualityScore",
            alignData="AlignedDataFrame"),
          prototype=prototype(
-           strand=factor(levels=c("+", "-"))),
+           strand=factor(levels=c("+", "-")),
+           alignQuality=NumericQuality()),
          validity=.srValidity)
 
 ## .Solexa

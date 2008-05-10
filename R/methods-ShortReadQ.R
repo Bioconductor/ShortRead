@@ -27,22 +27,22 @@ setMethod("readFastq", "character", function(dirPath, pattern=character(),
                       dirPath, pattern))
     elts <- .Call(.read_solexa_fastq, src)
     new("ShortReadQ", ..., sread=elts[["sread"]], id=elts[["id"]],
-        quality=elts[["quality"]])
+        quality=SFastqQuality(elts[["quality"]]))
 })
 
 ## subset
 
 setMethod("[", c("ShortReadQ", "missing", "missing"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 setMethod("[", c("ShortReadQ", "missing", "ANY"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 setMethod("[", c("ShortReadQ", "ANY", "ANY"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 .ShortReadQ_subset <- function(x, i, j, ..., drop=TRUE) {
-    if (nargs() != 2) .ShortRead_subset_err()
+    if (nargs() != 2) .subset_err()
     initialize(x, sread=sread(x)[i], id=id(x)[i], quality=quality(x)[i])
 }
 
@@ -65,6 +65,5 @@ setMethod("alphabetByCycle", "ShortReadQ", .abc_ShortReadQ)
 
 setMethod("detail", "ShortReadQ", function(object, ...) {
     callNextMethod()
-    cat("\nquality:\n")
-    show(quality(object))
+    detail(quality(object))
 })

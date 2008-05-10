@@ -64,10 +64,12 @@ AlignedRead <- function(sread, id, quality,
     sets <- readXStringColumns(dirPath, pattern,
                                colClasses, sep=sep, header=header)
 
-    AlignedRead(sread=sets[[2]], id=sets[[1]], quality=sets[[3]],
+    AlignedRead(sread=sets[[2]], id=sets[[1]],
+                quality=FastqQuality(sets[[3]]),
                 chromosome=lst[["chromosome"]],
                 position=lst[["position"]],
-                strand=lst[["strand"]], alignQuality=lst[["quality"]],
+                strand=lst[["strand"]],
+                alignQuality=NumericQuality(lst[["quality"]]),
                 alignData=alignData)
 }
 
@@ -93,16 +95,16 @@ setMethod("readAligned", "character", .readAligned_character)
 ## subset
 
 setMethod("[", c("AlignedRead", "missing", "missing"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 setMethod("[", c("AlignedRead", "missing", "ANY"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 setMethod("[", c("AlignedRead", "ANY", "ANY"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 .AlignedRead_subset <- function(x, i, j, ..., drop=TRUE) {
-    if (nargs() != 2) .ShortRead_subset_err()
+    if (nargs() != 2) .subset_err()
     initialize(x, sread=sread(x)[i], id=id(x)[i], quality=quality(x)[i],
                chromosome=chromosome(x)[i], position=position(x)[i],
                strand=strand(x)[i], alignQuality=alignQuality(x)[i],
@@ -118,7 +120,7 @@ setMethod("show", "AlignedRead", function(object) {
     cat("chromosome:", selectSome(levels(chromosome(object))), "\n")
     cat("position:", selectSome(position(object)), "\n")
     cat("strand:", selectSome(as.character(strand(object))), "\n")
-    cat("alignQuality:", selectSome(alignQuality(object)), "\n")
+    cat("alignQuality:", class(alignQuality(object)), "\n")
     cat("alignData varLabels:",
         selectSome(varLabels(alignData(object))), "\n")
 })
@@ -128,7 +130,8 @@ setMethod("detail", "AlignedRead", function(object, ...) {
     cat("\nchromosome:", selectSome(levels(chromosome(object))), "\n")
     cat("position:", selectSome(position(object)), "\n")
     cat("strand:", selectSome(as.character(strand(object))), "\n")
-    cat("alignQuality:", selectSome(alignQuality(object)), "\n")
+    cat("alignQuality:\n")
+    detail(alignQuality(object))
     cat("\nalignData:\n")
     show(alignData(object))
 })

@@ -23,22 +23,17 @@ setMethod("width", "ShortRead", function(x) {
     
 ## subset
 
-.ShortRead_subset_err <- function() {
-    .throw(SRError("UserSubset",
-                  "'[' must be called with only subscript 'i'"))
-}
-
 setMethod("[", c("ShortRead", "missing", "missing"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 setMethod("[", c("ShortRead", "missing", "ANY"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 setMethod("[", c("ShortRead", "ANY", "ANY"),
-          function(x, i, j, ..., drop=NA) .ShortRead_subset_err())
+          function(x, i, j, ..., drop=NA) .subset_err())
 
 .ShortRead_subset <- function(x, i, j, ..., drop=TRUE) {
-    if (nargs() != 2) .ShortRead_subset_err()
+    if (nargs() != 2) .subset_err()
     initialize(x, sread=sread(x)[i], id=id(x)[i])
 }
 
