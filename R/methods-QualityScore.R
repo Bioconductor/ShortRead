@@ -4,17 +4,26 @@
 
 ## QualityScore
 
-setMethod("[", "QualityScore", function(x, i, j, ..., drop=TRUE) {
+.QualityScore_subset <- function(x, i, j, ..., drop=TRUE) {
     if (nargs() != 2) .subset_err()
     initialize(x, quality=quality(x)[i])
-})
+}
 
-setMethod("[[", "QualityScore", function(x, i, j, ...) {
+setMethod("[", c("QualityScore", "ANY", "missing"),
+          .QualityScore_subset)
+
+.QualityScore_subset2 <- function(x, i, j, ...) {
     if (nargs() != 2) .subset_err()
     quality(x)[[i]]
-})
+}
+
+setMethod("[[", c("QualityScore", "ANY", "missing"),
+          .QualityScore_subset2)
 
 setMethod("length", "QualityScore", function(x) length(quality(x)))
+
+setMethod("width", "QualityScore", function(x)
+          .undefined_method_err(class(x), "width"))
 
 setMethod("detail", "QualityScore", function(object) {
     callNextMethod()
@@ -38,15 +47,21 @@ MatrixQuality <- function(quality=new("matrix")) {
     new("MatrixQuality", quality=quality)
 }
 
-setMethod("[", "MatrixQuality", function(x, i, j, ..., drop=FALSE) {
+.MatrixQuality_subset <- function(x, i, j, ..., drop=FALSE) {
     if (nargs() != 2) .subset_err()
     initialize(x, quality=quality(x)[i,, drop=FALSE])
-})
+}
 
-setMethod("[[", "MatrixQuality", function(x, i, j, ...) {
+setMethod("[", c("MatrixQuality", "ANY", "missing"),
+          .MatrixQuality_subset)
+
+.MatrixQuality_subset2 <- function(x, i, j, ...) {
     if (nargs() != 2) .subset_err()
     quality(x)[i,]
-})
+}
+
+setMethod("[[", c("MatrixQuality", "ANY", "missing"),
+          .MatrixQuality_subset2)
 
 setMethod("length", "MatrixQuality",
           function(x) nrow(x))
@@ -60,15 +75,9 @@ FastqQuality <- function(quality=BStringSet(character(0))) {
     new("FastqQuality", quality=quality)
 }
 
-setGeneric("FastqQuality")
-
 SFastqQuality <- function(quality=BStringSet(character(0))) {
     new("SFastqQuality", quality=quality)
 }
-
-setMethod("FastqQuality", "character", function(quality) {
-    callNextMethod(quality=BStringSet(quality))
-})
 
 setMethod("width", "FastqQuality",
           function(x) width(quality(x)))
@@ -78,7 +87,6 @@ setMethod("show", "FastqQuality", function(object) {
     cat("quality:\n")
     show(quality(object))
 })
-
 
 .abc_FastqQuality <- function(stringSet, alphabet, ...) {
    if (missing(alphabet))

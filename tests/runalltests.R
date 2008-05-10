@@ -16,3 +16,4 @@ allSuite <- defineTestSuite(name="allSuite",
 testData <- runTestSuite(allSuite)
 
 
+q(runLast=FALSE)

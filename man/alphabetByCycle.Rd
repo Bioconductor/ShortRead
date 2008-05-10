@@ -40,13 +40,13 @@ alphabetByCycle(stringSet, alphabet, ...)
   The default method requires that \code{stringSet} extends the
   \code{\linkS4class{XStringSet}} class of \pkg{Biostrings}.
 
-  In following method is defined, in addition to methods described in
-  class-specfic documentation:
+  The following method is defined, in addition to methods described in
+  class-specific documentation:
   \describe{
 
     \item{alphabetByCycle}{\code{signature(stringSet = "BStringSet")}:
       this method uses an alphabet spanning all ASCII characters, codes
-      \code{0:255}. }
+      \code{1:255}. }
 
   }
 }

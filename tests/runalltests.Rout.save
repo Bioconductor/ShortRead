@@ -1,5 +1,5 @@
 
-R version 2.7.0 RC (2008-04-20 r45403)
+R version 2.8.0 Under development (unstable) (2008-05-09 r45656)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -18,6 +18,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library("ShortRead")
+Loading required package: Biostrings
 Loading required package: Biobase
 Loading required package: tools
 
@@ -27,7 +28,6 @@ Welcome to Bioconductor
   'openVignette()'. To cite Bioconductor, see
   'citation("Biobase")' and for packages 'citation(pkgname)'.
 
-Loading required package: Biostrings
 > library("RUnit")
 
  RUnit 0.4.17 loaded.
@@ -70,15 +70,7 @@ Executing test function test_ShortReadQ_constructors  ...  done successfully.
 
 
 
-Executing test function test_ShortReadQ_subset  ... Error : UserSubset
-  '[' must be called with only subscript 'i'
-Error : UserSubset
-  '[' must be called with only subscript 'i'
-Error : UserSubset
-  '[' must be called with only subscript 'i'
-Error : UserSubset
-  '[' must be called with only subscript 'i'
- done successfully.
+Executing test function test_ShortReadQ_subset  ...  done successfully.
 
 
 
@@ -114,7 +106,4 @@ Executing test function test_SRVector_construction  ...  done successfully.
 
 > 
 > 
-> 
-> proc.time()
-   user  system elapsed 
-  3.088   0.108   3.265 
+> q(runLast=FALSE)

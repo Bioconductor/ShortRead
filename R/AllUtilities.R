@@ -1,3 +1,9 @@
+.undefined_method_err <- function(class, method) {
+  .throw(SRError("InternalError",
+                 "undefined method '%s' for class '%s'",
+                 method, class))
+}
+
 .subset_err <- function() {
     .throw(SRError("UserSubset",
                    "'[' must be called with only subscript 'i'"))
