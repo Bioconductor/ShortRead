@@ -5,9 +5,11 @@
 
 .SRError_types <- c("UnspecifiedError",
                     "InternalError",
+                    "RemoteError",
                     .SRErrorWarning_types)
 
 .SRWarn_types <- c("UnspecifiedWarning",
+                   "RemoteWarning",
                    .SRErrorWarning_types)
 
 ## Error
