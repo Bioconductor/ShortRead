@@ -56,6 +56,10 @@ setGeneric("detail")
 setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
            standardGeneric("readAligned"), signature="dirPath")
 
+## *Set
+
+setGeneric("qa", function(set, ...) standardGeneric("qa"))
+
 ## SolexaSet
 
 setGeneric("SolexaSet", function(path, ...)

@@ -45,6 +45,40 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     sampleNames(object)
 })
 
+## qa
+
+.qa_SolexaSet_readCount <- function(bcPath, pattern, ...) {
+    .qa_SolexaSet_readCount_tiles <- function(dirPath, pattern, ...) {
+        lane <- as.numeric(sub("s_([0-9]+)_.*", "\\1", pattern))
+        tile <- as.numeric(sub("s_[0-9]+_([0-9]+)_.*", "\\1", pattern))
+        dna <- readXStringColumns(dirPath, pattern,
+                                  colClasses=list(NULL, NULL, NULL, NULL,
+                                    "DNAString"))[[1]]
+        list(lane=lane, tile=tile,
+             slane=(lane-1)*3+trunc((tile-1)/100)+1,
+             stile=1+pmin((tile-1)%%200, (200-tile)%%200),
+             nReads=length(dna),
+             nClean=sum(alphabetFrequency(dna, baseOnly=TRUE)[,"other"]==0))
+    }
+    if (length(pattern)==0) pattern=".*_seq.txt"
+    res <- srapply(list.files(bcPath, pattern),
+                   .qa_SolexaSet_readCount_tiles, dirPath=bcPath)
+    sublst <- lapply(names(res[[1]]), function(nm) {
+        subListExtract(res, nm, simplify=TRUE)
+    })
+    names(sublst) <- names(res[[1]])
+    do.call("data.frame", sublst)
+}
+
+.qa_SolexaSet <- function(set, pattern=character(0), baseCallRun=1, ...) {
+    bcPath <- baseCallPath(solexaPath(set))[[baseCallRun]]
+    list(readCount=.qa_SolexaSet_readCount(bcPath, pattern=pattern, ...))
+}
+
+setMethod("qa", "SolexaSet", .qa_SolexaSet)
+
+## alignment
+
 .readAligned_SolexaSet <- function(dirPath,
                                    pattern="s_[1-8]_export.txt",
                                    run=1, ...) {
