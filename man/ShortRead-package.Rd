@@ -1,6 +1,7 @@
 \name{ShortReadBase-package}
 \alias{ShortReadBase-package}
 \alias{.ShortReadBase-class}
+\alias{show,.ShortReadBase-method}
 \alias{.Solexa-class}
 \docType{package}
 \title{

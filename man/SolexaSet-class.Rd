@@ -9,6 +9,8 @@
 \alias{laneNames,SolexaSet-method}
 \alias{laneNames,AnnotatedDataFrame-method}
 \alias{show,SolexaSet-method}
+% transforming methods
+\alias{readAligned,SolexaSet-method}
 
 \title{"SolexaSet" coordinating Solexa output locations with sample annotations}
 \description{
@@ -52,18 +54,36 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 \section{Methods}{
   \describe{
 
+    \item{solexaPath}{\code{signature(object = "SolexaSet")}: Return the
+      directory paths present when this object was created as a
+      \code{\linkS4class{SolexaPath}}.}
+
     \item{laneNames}{\code{signature(object = "SolexaSet")}: Return the
-	  names of each lane in the flow cell, currently names are simply
-	  \code{1:8}. }
+      names of each lane in the flow cell, currently names are simply
+      \code{1:8}. }
 
     \item{show}{\code{signature(object = "SolexaSet")}: Briefly
-	 summarize the experiment path and lane description of the Solexa
-	 set. }
+      summarize the experiment path and lane description of the Solexa
+      set. }
 
     \item{detail}{\code{signature(object = "SolexaSet")}: Provide
-	 additional detail on the Solexa set, including the content of
-	 \code{solexaPath} and the \code{pData} and \code{varMetadata} of
-	 \code{laneDescription}.}
+      additional detail on the Solexa set, including the content of
+      \code{solexaPath} and the \code{pData} and \code{varMetadata} of
+      \code{laneDescription}.}
+
+  }
+
+  Methods transforming \code{SolexaSet} objects include:
+  \describe{
+    \item{readAligned}{
+      \code{signature(dirPath = "SolexaSet", pattern = "s_[1-8]_export.txt", run=1, ...)}: 
+      
+      Use \code{analysisPath(solexaPath(dirPath))[[run]]} as the
+      directory path and \code{pattern="s_[1-8]_export.txt"} as the
+      pattern for discovering Eland-aligned reads in the Solexa 'export'
+      file format. Note that the default method reads \emph{all} aligned
+      read files into a single object; often one will want to specify a
+      pattern for each lane.}
 
   }
 }

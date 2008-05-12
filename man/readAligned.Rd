@@ -17,7 +17,7 @@
 }
 \usage{
 
-readAligned(dirPath, pattern=character(0), type=character(0), ...)
+readAligned(dirPath, pattern=character(0), ...)
 
 }
 
@@ -31,10 +31,6 @@ readAligned(dirPath, pattern=character(0), type=character(0), ...)
     names to be read. The default (\code{character(0)}) results in
     (attempted) input of all files in the directory.}
 
-  \item{type}{An optional length 1 character vector describing the type
-    of file to be read. Supported types depend on method; see details,
-    below, for more.}
-
   \item{...}{Additional arguments, perhaps used by methods.}
 
 }
@@ -45,12 +41,57 @@ readAligned(dirPath, pattern=character(0), type=character(0), ...)
   particular file types.
 
   The \code{readAligned,character-method} interprets file types based
-  on the \code{type} argument. Supported types are:
+  on an additional \code{type} argument. Supported types are:
   \itemize{
+    \item{\code{type="SolexaExport"}}{
+
+      This type parses \code{s_L_export.txt} files following the
+      documentation in the Solexa Genome Aligment software manual,
+      version 0.3.0. These files consist of the following columns;
+      consult Solexa documentation for precise descriptions. If parsed,
+      values can be retrieved from \code{\linkS4class{AlignedRead}} as
+      follows:
+
+      \describe{
+	\item{Machine}{Ignored}
+	\item{Run number}{stored in \code{alignData}}
+	\item{Lane}{stored in \code{alignData}}
+	\item{Tile}{stored in \code{alignData}}
+	\item{X}{stored in \code{alignData}}
+	\item{Y}{stored in \code{alignData}}
+	\item{Index string}{Ignored}
+	\item{Read number}{Ignored}
+	\item{Read}{\code{sread}}
+	\item{Quality}{\code{quality}}
+	\item{Match chromosome}{\code{chromosome}}
+	\item{Match contig}{Ignored}
+	\item{Match position}{\code{position}}
+	\item{Match strand}{\code{strand}}
+	\item{Match description}{Ignored}
+	\item{Single-read alignment score}{\code{alignQuality}}
+	\item{Paired-read alignment score}{Ignored}
+	\item{Partner chromosome}{Ignored}
+	\item{Partner contig}{Ignored}
+	\item{Partner offset}{Ignored}
+	\item{Partner strand}{Ignored}
+	\item{Filtering}{\code{alignData}}
+      }
+
+      Paired read columns are not interpretted.  The resulting
+      \code{\linkS4class{AlignedRead}} object does \emph{not} contain a
+      meaningful \code{id}; instead, use information from
+      \code{alignData} to identify reads.
+
+      Different interfaces to reading alignment files are described in
+      \code{\linkS4class{SolexaPath}} and \code{\linkS4class{SolexaSet}}.
+
+    }
+
     \item{\code{type="MAQMapview"}}{
 
-      Interpretation of columns is based on the description in the MAQ
-      manual, specifically
+      This type parses alignment files created by MAQ.  Interpretation
+      of columns is based on the description in the MAQ manual,
+      specifically
 
       \preformatted{
 
@@ -85,7 +126,7 @@ readAligned(dirPath, pattern=character(0), type=character(0), ...)
 \value{
 
   A single R object (e.g., \code{\linkS4class{AlignedRead}}) containing
-  alignmens, sequences and qualities of all files in \code{dirPath}
+  alignments, sequences and qualities of all files in \code{dirPath}
   matching \code{pattern}. There is no guarantee of order in which files
   are read.
 

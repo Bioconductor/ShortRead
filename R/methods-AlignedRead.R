@@ -27,25 +27,80 @@ AlignedRead <- function(sread, id, quality,
         alignQuality=alignQuality, alignData=alignData)
 }
 
-.readMaqMapview <- function(dirPath, pattern=character(0), 
-                           sep="\t", header=FALSE) {
-    colClasses <- list(NULL, "factor", "integer", "factor", NULL,
-                       NULL, "numeric", NULL, NULL, "integer",
-                       "numeric", "integer", "integer", NULL, NULL,
-                       NULL)
-    cNames <- c("chromosome", "position", "strand", "quality",
-                "nMismatchBestHit", "mismatchQuality", "nExactMatch24",
-                "nOneMismatch24")
-    names(colClasses)[!sapply(colClasses, is.null)] <- cNames
+.read_csv_portion <- function(dirPath, pattern, colClasses, sep, header) {
     ## visit several files, then collapse
     files <- list.files(dirPath, pattern, full.names=TRUE)
+    if (length(files)==0)
+        .throw(SRError("Input/Output",
+                       "no input files found\n  dirPath: %s\n  pattern: %s\n",
+                       dirPath, pattern))
     lsts <- lapply(files, read.csv,
                    sep=sep, header=header, colClasses=colClasses)
     cclasses <- colClasses[!sapply(colClasses, is.null)]
-    lst <- lapply(seq_along(cNames),
+    lst <- lapply(seq_along(names(cclasses)),
                   function(idx) unlist(lapply(lsts, "[[", idx)))
-    names(lst) <- cNames
-    ## alignedData
+    names(lst) <- names(cclasses)
+    lst
+}
+
+.readAligned_SolexaExport <- function(dirPath, pattern=character(0),
+                                      sep="\t", header=FALSE) {
+    ## NULL are currently ignored, usually from paired-end reads
+    csvClasses <- xstringClasses <-
+        list(machine=NULL, run="integer", lane="integer",
+             tile="integer", x="integer", y="integer",
+             indexString=NULL, pairedReadNumber=NULL,
+             sequence="DNAString", quality="BString",
+             chromosome="factor", contig=NULL, position="integer",
+             strand="factor", descriptor=NULL, alignQuality="integer",
+             pairedScore=NULL, partnerCzome=NULL, partnerContig=NULL,
+             partnerOffset=NULL, partnerStrand=NULL,
+             filtering="factor")
+
+    xstringNames <- c("sequence", "quality")
+    csvClasses[xstringNames] <- list(NULL, NULL)
+    xstringClasses[!names(xstringClasses) %in% xstringNames] <-
+        list(NULL)
+
+    ## CSV portion
+    lst <- .read_csv_portion(dirPath, pattern, csvClasses, sep, header)
+    df <- with(lst, data.frame(run=run, lane=lane, tile=tile, x=x,
+                               y=y, filtering=filtering))
+    meta <- data.frame(labelDescription=c(
+                         "Analysis pipeline run",
+                         "Flow cell lane",
+                         "Flow cell tile",
+                         "Cluster x-coordinate",
+                         "Cluster y-coordinate",
+                         "Read successfully passed filtering?"))
+    alignData <- AlignedDataFrame(df, meta)
+
+    ## XStringSet classes
+    sets <- readXStringColumns(dirPath, pattern, xstringClasses,
+                               sep=sep, header=header)
+
+    AlignedRead(sread=sets[["sequence"]],
+                id=BStringSet(character(length(sets[["sequence"]]))),
+                quality=SFastqQuality(sets[["quality"]]),
+                chromosome=lst[["chromosome"]],
+                position=lst[["position"]],
+                strand=lst[["strand"]],
+                alignQuality=NumericQuality(lst[["alignQuality"]]),
+                alignData=alignData)
+}
+
+.readAligned_MaqMapview <- function(dirPath, pattern=character(0), 
+                                    sep="\t", header=FALSE) {
+    colClasses <-
+        list(NULL, chromosome="factor", position="integer",
+             strand="factor", NULL, NULL, quality="numeric", NULL,
+             NULL, nMismatchBestHit="integer",
+             mismatchQuality="numeric", nExactMatch24="integer",
+             nOneMismatch24="integer", NULL, NULL, NULL)
+
+    ## CSV portion
+    lst <- .read_csv_portion(dirPath, pattern, colClasses, sep,
+                             header)
     df <- with(lst, data.frame(nMismatchBestHit=nMismatchBestHit,
                                mismatchQuality=mismatchQuality,
                                nExactMatch24=nExactMatch24,
@@ -73,15 +128,18 @@ AlignedRead <- function(sread, id, quality,
                 alignData=alignData)
 }
 
-.readAligned_character<- function(dirPath,
-                                  pattern=character(0),
-                                  type="MAQMapview", ...) {
+.readAligned_character<- function(dirPath, pattern=character(0),
+                                  type=c("SolexaExport",
+                                    "MAQMapview"), ...) {
   if (!is.character(type) || length(type) != 1)
     .throw(SRError("UserArgumentMismatch",
                    "'%s' must be '%s'",
                    "type", "character(1)"))
   switch(type,
-         MAQMapview=.readMaqMapview(dirPath, pattern=pattern, ...),
+         SolexaExport=.readAligned_SolexaExport(dirPath,
+           pattern=pattern, ...),
+         MAQMapview=.readAligned_MaqMapview(dirPath, pattern=pattern,
+           ...),
          .throw(SRError("UserArgumentMismatch",
                         "'%s' unknown; value was '%s'",
                         "type", type)))
@@ -117,9 +175,9 @@ setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
 setMethod("show", "AlignedRead", function(object) {
     callNextMethod()
-    cat("chromosome:", selectSome(levels(chromosome(object))), "\n")
+    cat("chromosome:", selectSome(chromosome(object)), "\n")
     cat("position:", selectSome(position(object)), "\n")
-    cat("strand:", selectSome(as.character(strand(object))), "\n")
+    cat("strand:", selectSome(strand(object)), "\n")
     cat("alignQuality:", class(alignQuality(object)), "\n")
     cat("alignData varLabels:",
         selectSome(varLabels(alignData(object))), "\n")
@@ -127,9 +185,9 @@ setMethod("show", "AlignedRead", function(object) {
 
 setMethod("detail", "AlignedRead", function(object, ...) {
     callNextMethod()
-    cat("\nchromosome:", selectSome(levels(chromosome(object))), "\n")
+    cat("\nchromosome:", selectSome(chromosome(object)), "\n")
     cat("position:", selectSome(position(object)), "\n")
-    cat("strand:", selectSome(as.character(strand(object))), "\n")
+    cat("strand:", selectSome(strand(object)), "\n")
     cat("alignQuality:\n")
     detail(alignQuality(object))
     cat("\nalignData:\n")

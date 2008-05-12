@@ -22,12 +22,15 @@ readXStringColumns <- function(dirPath, pattern=character(0),
               colIndex, colClasses, sep, header)
     }, error=function(err) {
         .throw(SRError("Input/Output",
-                       "while reading '%s':\n    %s",
-                       file, conditionMessage(err)))
+                       "while reading files '%s':\n    %s",
+                       paste(basename(files), collapse=", "),
+                       conditionMessage(err)))
     })
     if (header) {
         nms <- strsplit(readLines(files[[1]], 1), sep)[[1]]
         names(res) <- nms[colIndex]
+    } else {
+        names(res) <- names(colIndex)
     }
     res
 }

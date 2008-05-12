@@ -53,8 +53,7 @@ setGeneric("detail")
 
 ## AlignedRead
 
-setGeneric("readAligned", function(dirPath, pattern=character(0),
-                                   type=character(0), ...)
+setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
            standardGeneric("readAligned"), signature="dirPath")
 
 ## SolexaSet

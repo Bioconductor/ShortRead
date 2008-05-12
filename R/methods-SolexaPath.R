@@ -51,8 +51,9 @@ SolexaPath <- function(experimentPath,
 
 .readFastq_SolexaPath <- function(dirPath, 
                                   pattern="s_[1-8]_sequence.txt",
+                                  run = 1,
                                   ...) {
-    dirPath <- analysisPath(dirPath)
+    dirPath <- analysisPath(dirPath)[[run]]
     if (is.na(dirPath))
         .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                       "analysisPath", "dirPath"))
@@ -60,6 +61,15 @@ SolexaPath <- function(experimentPath,
 }
 
 setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
+
+.readAligned_SolexaPath <- function(dirPath,
+                                    pattern="s_[1-8]_export.txt",
+                                    run=1, ...) {
+    dirPath <- analysisPath(dirPath)[[run]]
+    .readAligned_SolexaExport(dirPath, pattern, ...)
+}
+
+setMethod("readAligned", "SolexaPath", .readAligned_SolexaPath)
 
 setMethod("show", "SolexaPath", function(object) {
     catPath <- function(nm) {

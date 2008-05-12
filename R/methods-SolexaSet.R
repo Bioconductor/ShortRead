@@ -45,6 +45,15 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     sampleNames(object)
 })
 
+.readAligned_SolexaSet <- function(dirPath,
+                                   pattern="s_[1-8]_export.txt",
+                                   run=1, ...) {
+    dirPath <- analysisPath(solexaPath(dirPath))[[run]]
+    .readAligned_SolexaExport(dirPath, pattern, ...)
+}
+
+setMethod("readAligned", "SolexaSet", .readAligned_SolexaSet)
+
 setMethod("show", "SolexaSet", function(object) {
     callNextMethod()
     cat("experimentPath(solexaPath(object)):\n  ",

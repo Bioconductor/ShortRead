@@ -4,10 +4,12 @@
 % constructors
 \alias{SolexaPath}
 % methods
-\alias{readFastq,SolexaPath-method}
 \alias{SolexaSet,SolexaPath-method}
 \alias{show,SolexaPath-method}
 \alias{detail,SolexaPath-method}
+% transforming methods
+\alias{readFastq,SolexaPath-method}
+\alias{readAligned,SolexaPath-method}
 
 \title{"SolexaPath" class representing a standard output file hierarchy}
 \description{
@@ -67,20 +69,37 @@ Class \code{"\linkS4class{.Solexa}"}, directly.
 Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 }
 \section{Methods}{
+  Transforming methods include:
   \describe{
 
-    \item{readFastq}{\code{signature(dirPath = "SolexaPath")}: Use
-      \code{analysisPath} as the \code{dirPath} and
+    \item{readFastq}{
+
+      \code{signature(dirPath = "SolexaPath", pattern = "s_[1-8]_sequence.txt", run = 1, ...)}:
+
+      Use \code{analysisPath(dirPath)[[run]]} as the directory path and
       \code{pattern="s_[1-8]_sequence.txt"} as the pattern for
       discovering fastq-formatted files, returning a
       \code{\linkS4class{ShortReadQ}} object. Note that the default
       method reads \emph{all} sequence files into a single object; often
-      one will want to specify a pattern for each lane. Memory
-      requirements mean that individual lanes might often be processed
-      separately.}
+      one will want to specify a pattern for each lane. }
+
+    \item{readAligned}{
+      \code{signature(dirPath = "SolexaPath", pattern = "s_[1-8]_export.txt", run=1, ...)}: 
+      
+      Use \code{analysisPath(dirPath)[[run]]} as the directory path and
+      \code{pattern="s_[1-8]_export.txt"} as the pattern for discovering
+      Eland-aligned reads in the Solexa 'export' file format. Note that
+      the default method reads \emph{all} aligned read files into a
+      single object; often one will want to specify a pattern for each
+      lane.}
 
     \item{SolexaSet}{\code{signature(path = "SolexaPath")}: create a
-    \code{\linkS4class{SolexaSet}} object based on \code{path}.}
+      \code{\linkS4class{SolexaSet}} object based on \code{path}.}
+
+  }
+
+  Additional methods include:
+  \describe{
 
     \item{show}{\code{signature(object = "SolexaPath")}: briefly
       summarize the file paths of \code{object}. The

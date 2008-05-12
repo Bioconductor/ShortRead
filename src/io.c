@@ -1,3 +1,4 @@
+#include <string.h>
 #include "ShortRead.h"
 
 static const int LINEBUF_SIZE = 20001;
@@ -125,13 +126,14 @@ int
 _io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
                        const char *sep, int header, CharBBuf *sets)
 {
-	FILE *file;
-	char linebuf[LINEBUF_SIZE];
-	int lineno, nchar_in_buf;
+    FILE *file;
+    char *linebuf;
+    int lineno, nchar_in_buf;
     char *token;
-    
-	if ((file = fopen(fname, "r")) == NULL)
-		error("cannot open file %s", fname);
+
+    if ((file = fopen(fname, "r")) == NULL)
+      error("cannot open file %s", fname);
+    linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
 
     /* header: first line ignored, errors ignored */
     if (header == TRUE)
@@ -149,13 +151,14 @@ _io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
         _solexa_to_IUPAC(linebuf);
 
         int j = 0, cidx=0;
-        token = strtok(linebuf, sep);
+	char *curbuf = linebuf;
+        token = strsep(&curbuf, sep);
         for (j = 0; cidx < ncol && token != NULL; ++j) {
             if (j == colidx[cidx]) {
                 append_string_to_CharBBuf(&sets[cidx], token);
                 cidx++;
             }
-            token = strtok(NULL, sep);
+            token = strsep(&curbuf, sep);
         } 
         lineno++;
     }
