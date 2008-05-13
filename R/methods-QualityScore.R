@@ -88,6 +88,12 @@ setMethod("show", "FastqQuality", function(object) {
     show(quality(object))
 })
 
+.af_FastqQuality <- function(x, baseOnly=FALSE, freq=FALSE, ...) {
+    callGeneric(quality(x, baseOnly=baseOnly, freq=freq, ...))
+}
+
+setMethod("alphabetFrequency", "FastqQuality", .af_FastqQuality)
+
 .abc_FastqQuality <- function(stringSet, alphabet, ...) {
    if (missing(alphabet))
      .abc_BStringSet(quality(stringSet), ...)

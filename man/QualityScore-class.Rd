@@ -22,6 +22,7 @@
 % FastqQuality
 \alias{width,FastqQuality-method}
 \alias{show,FastqQuality-method}
+\alias{alphabetFrequency,FastqQuality-method}
 \alias{alphabetByCycle,FastqQuality-method}
 
 \title{Quality scores for short reads and their alignments}
@@ -98,11 +99,16 @@
   The following methods are defined on specific classes:
 
   \describe{
+    \item{alphabetFrequency}{\code{signature(stringSet = "FastqQuality")}:
+
+      Apply \code{\link[Biostrings]{alphabetFrequency}} to quality
+      scores, returning a matrix as described in
+      \code{\link[Biostrings]{alphabetFrequency}}.}
+
     \item{alphabetByCycle}{\code{signature(stringSet = "FastqQuality")}:
 
       Apply \code{\link{alphabetByCycle}} to quality scores, returning a
       matrix as described in \code{\link{alphabetByCycle}}.}
-
   }
 }
 \seealso{
