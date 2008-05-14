@@ -14,7 +14,7 @@
 }
 \usage{
 
-countLines(dirPath, ..., pattern=character(0), useFullName=FALSE)
+countLines(dirPath, pattern=character(0), ..., useFullName=FALSE)
 
 }
 
@@ -24,12 +24,12 @@ countLines(dirPath, ..., pattern=character(0), useFullName=FALSE)
     defined on this generic) giving the directory path (relative or
     absolute) of files whose lines are to be counted.}
 
-  \item{...}{Additional arguments, passed internally to list.files. See
-    \code{\link{list.files}}.}
-
   \item{pattern}{The (\code{\link{grep}}-style) pattern describing files
     whose lines are to be counted. The default (\code{character(0)})
     results in line counts for all files in the directory.}
+
+  \item{...}{Additional arguments, passed internally to list.files. See
+    \code{\link{list.files}}.}
 
   \item{useFullName}{A \code{logical(1)} indicating whether elements of
     the returned vector should be named with the base (file) name

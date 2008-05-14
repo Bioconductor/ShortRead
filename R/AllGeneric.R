@@ -4,7 +4,7 @@ setGeneric(".throw",
            function(object, call=NULL, ...) standardGeneric(".throw"),
            signature=c("object"))
 
-countLines <- function(dirPath, ..., pattern=character(0), useFullName=FALSE)
+countLines <- function(dirPath, pattern=character(0), ..., useFullName=FALSE)
 {
     src <- list.files(dirPath, ..., pattern=pattern, full.name=TRUE)
     if (length(src)==0)
