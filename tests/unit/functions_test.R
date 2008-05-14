@@ -35,7 +35,7 @@ test_alphabetByCycle <- function() {
 
 test_countLines <- function() {
     sp <- SolexaPath(system.file('extdata', package="ShortRead"))
-    nlines <- countLines(analysisPath(sp), pattern="s_1_sequence.txt")
+    nlines <- countLines(analysisPath(sp), "s_1_sequence.txt")
     exp <- 1024; names(exp) <- "s_1_sequence.txt"
     checkEquals(exp, nlines)
     checkException(countLines(tempdir()), silent=TRUE)
