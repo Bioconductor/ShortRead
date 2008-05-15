@@ -89,7 +89,7 @@ setMethod("show", "FastqQuality", function(object) {
 })
 
 .af_FastqQuality <- function(x, baseOnly=FALSE, freq=FALSE, ...) {
-    callGeneric(quality(x, baseOnly=baseOnly, freq=freq, ...))
+    callGeneric(quality(x), baseOnly=baseOnly, freq=freq, ...)
 }
 
 setMethod("alphabetFrequency", "FastqQuality", .af_FastqQuality)
