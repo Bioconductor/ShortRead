@@ -1,25 +1,5 @@
 #include "ShortRead.h"
 
-typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
-
-unsigned char
-_bDecode(char c)
-{
-    return (unsigned char) c;
-}
-
-unsigned char
-_dnaDecode(char c)
-{
-    return (unsigned char) DNAdecode(c);
-}
-
-unsigned char
-_rnaDecode(char c)
-{
-    return (unsigned char) RNAdecode(c);
-}
-
 /*
  * visit all sequences in a set, tallying character frequency as a
  * function of nucleotide position in the read.
@@ -48,16 +28,7 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
 
     /* set up a decoder for the string */
     const char *base = get_XStringSet_baseClass(stringSet);
-    DECODE_FUNC decode;
-    if (strcmp(base, "DNAString")==0) {
-        decode = _dnaDecode;
-    } else if (strcmp(base, "RNAString")==0) {
-        decode = _rnaDecode;
-    } else if (strcmp(base, "BString")==0) {
-        decode = _bDecode;
-    } else {
-        Rf_error("unknown class '%s'", base);
-    }
+    DECODE_FUNC decode = decoder(base);
 
     /* map between decoded character and offset into 'ans' */
     int i, j;
@@ -84,6 +55,37 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
             if (idx >= 0)
                 ansp[j * nrow + idx] += 1;
         }
+    }
+
+    UNPROTECT(1);
+    return ans;
+}
+
+SEXP
+alphabet_score(SEXP stringSet, SEXP score)
+{
+    /* FIXME: stringSet is XStringSet */
+    const char *base = get_XStringSet_baseClass(stringSet);
+    if (strcmp(base, "BString") != 0)
+	Rf_error("'stringSet' must contain BString elements");
+    if (!IS_NUMERIC(score) || LENGTH(score) != 256)
+	Rf_error("'score' must be numeric(256)");
+
+    DECODE_FUNC decode = decoder(base);
+    const int len = get_XStringSet_length(stringSet);
+    int i, j;
+    const double *dscore = REAL(score);
+
+    SEXP ans;
+    PROTECT(ans = NEW_NUMERIC(len));
+    double *dans = REAL(ans);
+
+    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    for (i = 0; i < len; ++i) {
+        RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+	dans[i] = 0;
+        for (j = 0; j < seq.nelt; ++j)
+	    dans[i] +=  dscore[decode(seq.elts[j])];
     }
 
     UNPROTECT(1);

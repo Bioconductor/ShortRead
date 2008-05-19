@@ -51,6 +51,10 @@ detail <- function(object, ...) show(object)
 
 setGeneric("detail")
 
+setGeneric("alphabetScore", function(object, ...) {
+    standardGeneric("alphabetScore")
+})
+
 ## AlignedRead
 
 setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
@@ -58,7 +62,7 @@ setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
 
 ## *Set
 
-setGeneric("qa", function(set, ...) standardGeneric("qa"))
+setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))
 
 ## SolexaSet
 

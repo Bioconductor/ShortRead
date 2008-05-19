@@ -8,6 +8,7 @@ static const R_CallMethodDef callMethods[] = {
     {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 5},
     /* alphabet */
     {".alphabet_by_cycle", (DL_FUNC) &alphabet_by_cycle, 3},
+    {".alphabet_score", (DL_FUNC) &alphabet_score, 2},
     {NULL, NULL, 0}
 };
 

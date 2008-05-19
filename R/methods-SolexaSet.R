@@ -47,8 +47,18 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 
 ## qa
 
-.qa_SolexaSet_readCount <- function(bcPath, pattern, ...) {
-    .qa_SolexaSet_readCount_tiles <- function(dirPath, pattern, ...) {
+.qa_lst_as_data_frame <- function(lst) {
+    if (length(lst)==0) return(data.frame())
+    nms <- names(lst[[1]])
+    sublst <- sapply(nms, function(nm) {
+        subListExtract(lst, nm, simplify=TRUE)
+    })
+    names(sublst) <- nms
+    do.call("data.frame", sublst)
+}
+
+.qa_Solexa_tileStats <- function(dirPath, pattern, ...) {
+    .qa_Solexa_tileStats_tile <- function(dirPath, pattern, ...) {
         lane <- as.numeric(sub("s_([0-9]+)_.*", "\\1", pattern))
         tile <- as.numeric(sub("s_[0-9]+_([0-9]+)_.*", "\\1", pattern))
         dna <- readXStringColumns(dirPath, pattern,
@@ -61,21 +71,123 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
              nClean=sum(alphabetFrequency(dna, baseOnly=TRUE)[,"other"]==0))
     }
     if (length(pattern)==0) pattern=".*_seq.txt"
-    res <- srapply(list.files(bcPath, pattern),
-                   .qa_SolexaSet_readCount_tiles, dirPath=bcPath)
-    sublst <- lapply(names(res[[1]]), function(nm) {
-        subListExtract(res, nm, simplify=TRUE)
-    })
-    names(sublst) <- names(res[[1]])
-    do.call("data.frame", sublst)
+    lst <- srapply(list.files(dirPath, pattern),
+                   .qa_Solexa_tileStats_tile, dirPath=dirPath)
+    .qa_lst_as_data_frame(lst)
 }
 
-.qa_SolexaSet <- function(set, pattern=character(0), baseCallRun=1, ...) {
-    bcPath <- baseCallPath(solexaPath(set))[[baseCallRun]]
-    list(readCount=.qa_SolexaSet_readCount(bcPath, pattern=pattern, ...))
+.qa_solexa_export <- function(dirPath, pattern, type="SolexaExport", ...) {
+    .lane <- function(dirPath, pattern, ..., verbose=FALSE) {
+        rpt <- readAligned(dirPath, pattern, ...)
+        alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE)
+        cleanIdx <- alf[,'other']==0
+        df <- pData(alignData(rpt))
+        filterIdx <- df$filtering=="Y"
+        mapIdx <- !is.na(position(rpt))
+
+        rm(alf)
+
+        nReadByTile <- table(df$tile)
+        nFilterByTile <- table(df$tile[filterIdx])
+        nCleanByTile <- table(df$tile[cleanIdx])
+        nFilterCleanByTile <- table(df$tile[filterIdx & cleanIdx])
+        nMapByTile <- table(df$tile[mapIdx])
+
+        baseByCycle <- alphabetByCycle(sread(rpt))
+        qualityByCycle <- alphabetByCycle(quality(rpt))
+
+        qualityScore <- alphabetScore(quality(rpt)) / width(quality(rpt))
+        quality <- density(qualityScore)
+        qualityFilter <- density(qualityScore[filterIdx])
+        
+        aquality <- quality(alignQuality(rpt))
+        alignQuality <- table(aquality[filterIdx & !is.na(aquality)])
+
+        c1 <- as.character(sread(rpt))
+        tAll <- sort(table(c1), decreasing=TRUE)
+        ttAll <- table(tAll)
+        tAll <- head(tAll, 40)
+        tFiltered <- sort(table(c1[filterIdx]), decreasing=TRUE)
+        ttFiltered <- table(tFiltered)
+        tFiltered=head(tFiltered, 40)
+        tMapped <- sort(table(c1[mapIdx]), decreasing=TRUE)
+        ttMapped <- table(tMapped)
+        tMapped <- head(tMapped, 40)
+
+        list(lane=list(
+               nRead=sum(nReadByTile),
+               nFilter=sum(nFilterByTile),
+               nClean=sum(nCleanByTile),
+               nFilterClean=sum(nFilterCleanByTile),
+               nMap <- sum(nMapByTile),
+               ##
+               baseCall=rowSums(baseByCycle),
+               qualityScore=rowSums(qualityByCycle),
+               quality=quality,
+               qualityFilter=qualityFilter,
+               alignQuality=alignQuality,
+               readFreq=list(
+                 all=tAll,
+                 tAll=ttAll,
+                 filter=tFilter,
+                 tFilter=ttFilter,
+                 map=tMap,
+                 tMap=ttMap),
+               perCycle=list(
+                 baseCall=baseByCycle,
+                 qualityScore=qualityByCycle)),
+             perTile=list(
+               nRead=nReadByTile,
+               nFilter=nFilterByTile,
+               nClean=nCleanByTile,
+               nFilterClean=nFilterCleanByTile,
+               nMap <- nMapByTile,
+
+               qualityRead=tapply(qualityScore, df$tile, median),
+               qualityFilter=tapply(qualityScore[filterIdx],
+                 df$tile[filterIdx], median),
+               qualityClean=tapply(qualityScore[cleanIdx], df$tile[cleanIdx], median),
+               qualityFilterClean=tapply(qualityScore[filterIdx & cleanIdx],
+                 df$tile[filterIdx & cleanIdx], median)))
+    }
+    fls <- list.files(dirPath, pattern, full.names=TRUE)
+    lst <- srapply(basename(fls), .lane, dirPath=dirPath, type=type)
+    names(lst) <- basename(fls)
+    lanes <- lapply(lst, "[[", "lane")
+
+    .densityPlot <- function(lanes, part) {
+        x <- lapply(lanes, function(elt) elt[[part]]$x)
+        y <- lapply(lanes, function(elt) elt[[part]]$y)
+        qualityDf <- data.frame(quality=unlist(x, use.names=FALSE),
+                                density=unlist(y, use.names=FALSE),
+                                name=rep(names(lanes), sapply(x, length, USE.NAMES=FALSE)))
+        xyplot(density~quality|name, qualityDf, type="l")
+    }
+
+    list(counts=sapply(c("nRead", "nFilter", "nClean",
+           "nFilterClean", "nMap"),
+           function(elt) sapply(lanes, "[[", elt)),
+         baseCall=t(sapply(lanes, "[[", "baseCall")),
+         qualityRead=.densityPlot(lanes, "quality"),
+         qualityFilter=.densityPlot(lanes, "qualityFilter"),
+         readFreq=lapply(lanes, "[[", "readFreq"))
 }
 
-setMethod("qa", "SolexaSet", .qa_SolexaSet)
+.qa_character <- function(dirPath, pattern=character(0),
+                          type=c("SolexaExport"), ...) {
+    tryCatch(type <- match.arg(type),
+             error=function(err) {
+                 .throw(SRError("UserArgumentMismatch",
+                                conditionMessage(err)))
+             })
+    switch(type,
+           SolexaExport=.qa_solexa_export(dirPath, pattern,
+             type="SolexaExport", ...))
+}
+
+setMethod("qa", "character", .qa_character)
+
+setMethod("qa", "SolexaSet", .qa_solexa_export)
 
 ## alignment
 

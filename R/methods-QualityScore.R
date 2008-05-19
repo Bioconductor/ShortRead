@@ -89,7 +89,7 @@ setMethod("show", "FastqQuality", function(object) {
 })
 
 .af_FastqQuality <- function(x, baseOnly=FALSE, freq=FALSE, ...) {
-    callGeneric(quality(x), baseOnly=baseOnly, freq=freq, ...)
+    callGeneric(quality(x), freq=freq, ...)
 }
 
 setMethod("alphabetFrequency", "FastqQuality", .af_FastqQuality)
@@ -102,3 +102,9 @@ setMethod("alphabetFrequency", "FastqQuality", .af_FastqQuality)
 }
 
 setMethod("alphabetByCycle", "FastqQuality", .abc_FastqQuality)
+
+.ascore_SFastqQuality <- function(object, score=0:255-64, ...) {
+    .Call(.alphabet_score, quality(object), score)
+}
+
+setMethod("alphabetScore", "SFastqQuality", .ascore_SFastqQuality)

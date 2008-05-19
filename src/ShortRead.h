@@ -3,6 +3,9 @@
 
 /* util.c */
 
+typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
+
+DECODE_FUNC decoder(const char*);
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
 SEXP count_lines(SEXP files);
@@ -17,3 +20,4 @@ SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
 /* alphabet.c */
 
 SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet);
+SEXP alphabet_score(SEXP stringSet, SEXP vec);

@@ -2,6 +2,46 @@
 #include <ctype.h>              /* isspace */
 #include "ShortRead.h"
 
+unsigned char _bDecode(char);
+unsigned char _dnaDecode(char);
+unsigned char _rnaDecode(char);
+
+/*
+ * Decode XStringSet wrappers
+ */
+unsigned char _bDecode(char c)
+{
+    return (unsigned char) c;
+}
+
+unsigned char
+_dnaDecode(char c)
+{
+    return (unsigned char) DNAdecode(c);
+}
+
+unsigned char
+_rnaDecode(char c)
+{
+    return (unsigned char) RNAdecode(c);
+}
+
+DECODE_FUNC
+decoder(const char* base)
+{
+    DECODE_FUNC decode;
+    if (strcmp(base, "DNAString")==0) {
+        decode = _dnaDecode;
+    } else if (strcmp(base, "RNAString")==0) {
+        decode = _rnaDecode;
+    } else if (strcmp(base, "BString")==0) {
+        decode = _bDecode;
+    } else {
+        Rf_error("unknown class '%s'", base);
+    }
+    return decode;
+}
+
 
 /*
  * Return the number of chars that remain in the buffer after we've removed
