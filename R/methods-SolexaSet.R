@@ -107,12 +107,12 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
         tAll <- sort(table(c1), decreasing=TRUE)
         ttAll <- table(tAll)
         tAll <- head(tAll, 40)
-        tFiltered <- sort(table(c1[filterIdx]), decreasing=TRUE)
-        ttFiltered <- table(tFiltered)
-        tFiltered=head(tFiltered, 40)
-        tMapped <- sort(table(c1[mapIdx]), decreasing=TRUE)
-        ttMapped <- table(tMapped)
-        tMapped <- head(tMapped, 40)
+        tFilter <- sort(table(c1[filterIdx]), decreasing=TRUE)
+        ttFilter <- table(tFilter)
+        tFilter=head(tFilter, 40)
+        tMap <- sort(table(c1[mapIdx]), decreasing=TRUE)
+        ttMap <- table(tMap)
+        tMap <- head(tMap, 40)
 
         list(lane=list(
                nRead=sum(nReadByTile),
@@ -141,14 +141,16 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
                nFilter=nFilterByTile,
                nClean=nCleanByTile,
                nFilterClean=nFilterCleanByTile,
-               nMap <- nMapByTile,
+               nMap=nMapByTile,
 
                qualityRead=tapply(qualityScore, df$tile, median),
                qualityFilter=tapply(qualityScore[filterIdx],
                  df$tile[filterIdx], median),
                qualityClean=tapply(qualityScore[cleanIdx], df$tile[cleanIdx], median),
                qualityFilterClean=tapply(qualityScore[filterIdx & cleanIdx],
-                 df$tile[filterIdx & cleanIdx], median)))
+                 df$tile[filterIdx & cleanIdx], median),
+               qualityMap=tapply(qualityScore[mapIdx], df$tile[mapIdx],
+                 median)))
     }
     fls <- list.files(dirPath, pattern, full.names=TRUE)
     lst <- srapply(basename(fls), .lane, dirPath=dirPath, type=type)
@@ -170,7 +172,9 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
          baseCall=t(sapply(lanes, "[[", "baseCall")),
          qualityRead=.densityPlot(lanes, "quality"),
          qualityFilter=.densityPlot(lanes, "qualityFilter"),
-         readFreq=lapply(lanes, "[[", "readFreq"))
+         readFreq=lapply(lanes, "[[", "readFreq"),
+         perCycle=lapply(lanes, "[[", "perCycle"),
+         perTile=lapply(lst, "[[", "perTile"))
 }
 
 .qa_character <- function(dirPath, pattern=character(0),
