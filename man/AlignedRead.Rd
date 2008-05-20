@@ -28,8 +28,9 @@ AlignedRead(sread, id, quality, chromosome, position, strand,
     ASCII-encoded quality scores of the short reads. This object is the
     same length as \code{sread}.}
 
-  \item{chromosome}{A \code{factor} describing the chromosome to which
-    each short read aligns.}
+  \item{chromosome}{A \code{factor} describing the particular sequence
+    within a set of target sequences (e.g. chromosomes in a genome
+    assembly) to which each short read aligns.}
 
   \item{position}{A \code{integer} vector describing the (base pair)
     position at which each short read begins its alignment.}
