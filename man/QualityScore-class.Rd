@@ -24,6 +24,9 @@
 \alias{show,FastqQuality-method}
 \alias{alphabetFrequency,FastqQuality-method}
 \alias{alphabetByCycle,FastqQuality-method}
+\alias{srsort,FastqQuality-method}
+\alias{srorder,FastqQuality-method}
+\alias{srduplicated,FastqQuality-method}
 
 \title{Quality scores for short reads and their alignments}
 \description{
@@ -109,6 +112,15 @@
 
       Apply \code{\link{alphabetByCycle}} to quality scores, returning a
       matrix as described in \code{\link{alphabetByCycle}}.}
+
+    \item{srsort}{\code{signature(x = "FastqQuality")}:}
+    \item{srorder}{\code{signature(x = "FastqQuality")}:}
+    \item{srduplicated}{\code{signature(x = "FastqQuality")}:
+    
+      Apply \code{\link{srsort}}, \code{srorder}, \code{srduplicated} to
+      quality scores, returning objects as described on the appropriate
+      help page.}
+
   }
 }
 \seealso{

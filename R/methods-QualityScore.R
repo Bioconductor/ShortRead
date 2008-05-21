@@ -88,23 +88,37 @@ setMethod("show", "FastqQuality", function(object) {
     show(quality(object))
 })
 
-.af_FastqQuality <- function(x, baseOnly=FALSE, freq=FALSE, ...) {
+.FastqQuality_af<- function(x, baseOnly=FALSE, freq=FALSE, ...) {
     callGeneric(quality(x), freq=freq, ...)
 }
 
-setMethod("alphabetFrequency", "FastqQuality", .af_FastqQuality)
+setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
 
-.abc_FastqQuality <- function(stringSet, alphabet, ...) {
+.FastqQuality_abc<- function(stringSet, alphabet, ...) {
    if (missing(alphabet))
      .abc_BStringSet(quality(stringSet), ...)
    else
      .abc_BStringSet(quality(stringSet), alphabet=alphabet, ...)
 }
 
-setMethod("alphabetByCycle", "FastqQuality", .abc_FastqQuality)
+setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
 
-.ascore_SFastqQuality <- function(object, score=0:255-64, ...) {
+.SFastqQuality_ascore<- function(object, score=0:255-64, ...) {
     .Call(.alphabet_score, quality(object), score)
 }
 
-setMethod("alphabetScore", "SFastqQuality", .ascore_SFastqQuality)
+setMethod("alphabetScore", "SFastqQuality", .SFastqQuality_ascore)
+
+setMethod("srorder", "FastqQuality", function(x, ...) {
+    callGeneric(x=quality(x), ...)
+})
+
+setMethod("srsort", "FastqQuality", function(x, ...) {
+    callGeneric(x=quality(x), ...)
+})
+
+.FastqQuality_srduplicated<- function(x, incomparables=FALSE, ...) {
+    callGeneric(x=quality(x), ...)
+}
+
+setMethod("srduplicated", "FastqQuality", .FastqQuality_srduplicated)

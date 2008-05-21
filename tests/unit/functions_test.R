@@ -40,3 +40,24 @@ test_countLines <- function() {
     checkEquals(exp, nlines)
     checkException(countLines(tempdir()), silent=TRUE)
 }
+
+## sort / order
+
+test_alphabetOrder <- function() {
+    ## setup
+    oldc <- Sys.getlocale("LC_COLLATE")
+    on.exit(Sys.setlocale("LC_COLLATE", oldc))
+    Sys.setlocale("LC_COLLATE", "C")
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
+
+    checkEquals(srorder(sread(rfq)),
+                order(as.character(sread(rfq))))
+    checkEquals(srorder(quality(rfq)),
+                order(as.character(quality(quality(rfq)))))
+
+    checkEquals(srduplicated(sread(rfq)),
+                duplicated(as.character(sread(rfq))))
+    checkEquals(srduplicated(quality(rfq)),
+                duplicated(as.character(quality(quality(rfq)))))
+}

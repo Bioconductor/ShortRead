@@ -9,6 +9,8 @@ static const R_CallMethodDef callMethods[] = {
     /* alphabet */
     {".alphabet_by_cycle", (DL_FUNC) &alphabet_by_cycle, 3},
     {".alphabet_score", (DL_FUNC) &alphabet_score, 2},
+    {".alphabet_order", (DL_FUNC) &alphabet_order, 1},
+    {".alphabet_duplicated", (DL_FUNC) &alphabet_duplicated, 1},
     {NULL, NULL, 0}
 };
 

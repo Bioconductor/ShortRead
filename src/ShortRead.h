@@ -21,3 +21,5 @@ SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
 
 SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet);
 SEXP alphabet_score(SEXP stringSet, SEXP vec);
+SEXP alphabet_order(SEXP stringSet);
+SEXP alphabet_duplicated(SEXP stringSet);

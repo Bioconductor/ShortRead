@@ -28,6 +28,7 @@ Welcome to Bioconductor
   'openVignette()'. To cite Bioconductor, see
   'citation("Biobase")' and for packages 'citation(pkgname)'.
 
+Loading required package: lattice
 > library("RUnit")
 
  RUnit 0.4.17 loaded.
@@ -60,6 +61,10 @@ Executing test function test_AllClasses_new  ...  done successfully.
 
 
 Executing test function test_alphabetByCycle  ...  done successfully.
+
+
+
+Executing test function test_alphabetOrder  ...  done successfully.
 
 
 

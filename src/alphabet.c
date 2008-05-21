@@ -1,4 +1,5 @@
 #include "ShortRead.h"
+#include <stdlib.h>
 
 /*
  * visit all sequences in a set, tallying character frequency as a
@@ -87,6 +88,77 @@ alphabet_score(SEXP stringSet, SEXP score)
         for (j = 0; j < seq.nelt; ++j)
 	    dans[i] +=  dscore[decode(seq.elts[j])];
     }
+
+    UNPROTECT(1);
+    return ans;
+}
+
+/* order / duplicated */
+
+typedef struct {
+    int offset;
+    RoSeq ref;
+} XSort;
+
+int
+compare_RoSeq(const void *a, const void *b)
+{
+    const RoSeq ra = ((const XSort*) a)->ref;
+    const RoSeq rb = ((const XSort*) b)->ref;
+
+    const int diff = ra.nelt - rb.nelt;
+    size_t len = diff < 0 ? ra.nelt : rb.nelt;
+    int res = memcmp(ra.elts, rb.elts, len);
+    return res == 0 ? diff : res;
+}
+
+void
+_alphabet_order(CachedXStringSet cache, XSort *xptr, const int len)
+{
+    int i;
+
+    for (i = 0; i < len; ++i) {
+	xptr[i].offset=i;
+	xptr[i].ref = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+    }
+    qsort(xptr, len, sizeof(XSort), compare_RoSeq);
+}
+
+SEXP
+alphabet_order(SEXP stringSet)
+{
+    /* FIXME: stringSet is XStringSet; non-zero len? */
+    const int len = get_XStringSet_length(stringSet);
+    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
+    _alphabet_order(cache, xptr, len);
+
+    SEXP ans;
+    PROTECT(ans = NEW_INTEGER(len));
+    int *ians = INTEGER(ans);
+    int i;
+    for (i = 0; i < len; ++i)
+	ians[i] = xptr[i].offset + 1;
+    UNPROTECT(1);
+    return ans;
+}
+
+SEXP
+alphabet_duplicated(SEXP stringSet)
+{
+    /* FIXME: stringSet is XStringSet; non-zero len? */
+    const int len = get_XStringSet_length(stringSet);
+    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
+    _alphabet_order(cache, xptr, len);
+
+    SEXP ans;
+    PROTECT(ans = NEW_LOGICAL(len));
+    int *ians = INTEGER(ans);
+    ians[xptr[0].offset]=0;
+    int i;
+    for (i = 1; i < len; ++i)
+	ians[xptr[i].offset] = compare_RoSeq(xptr+i-1, xptr+i) == 0;
 
     UNPROTECT(1);
     return ans;

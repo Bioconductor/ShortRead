@@ -38,6 +38,14 @@ alphabetByCycle <-
     
 setGeneric("alphabetByCycle", signature="stringSet")
 
+setGeneric("srorder", function(x, ...) standardGeneric("srorder"))
+
+setGeneric("srduplicated", function(x, ...) {
+    standardGeneric("srduplicated")
+})
+
+setGeneric("srsort", function(x, ...) standardGeneric("srsort"))
+
 ## ShortRead / ShortReadQ
 
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)
