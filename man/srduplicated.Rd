@@ -9,12 +9,11 @@
 \title{Order, sort, and find duplicates in XStringSet objects}
 \description{
 
-  These generics operate on XStringSet and derived objects, and in
-  particular on the short reads and their fastq-encoded quality
-  scores. \code{srsort} and \code{srorder} differ from the default
-  functions \code{sort} and \code{order} in that sorting is based on
-  internally-defined sort order rather than, e.g., the sort order
-  implied by \code{LC_COLLATE}.
+  These generics sort, order, and find duplicates in short read objects,
+  including fastq-encoded qualities. \code{srsort} and \code{srorder}
+  differ from the default functions \code{sort} and \code{order} in that
+  sorting is based on an internally-defined order rather than, e.g., the
+  order implied by \code{LC_COLLATE}.
 
 }
 \usage{
@@ -22,11 +21,11 @@ srorder(x, ...)
 srsort(x, ...)
 srduplicated(x, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
 
-  \item{x}{The object to be sorted, ordered, or duplicates identified;
-    see the examples below for objects for which methods are defined.}
+  \item{x}{The object to be sorted, ordered, or to have duplicates
+    identified; see the examples below for objects for which methods are
+    defined.}
 
   \item{\dots}{Additional arguments available for use by methods;
     usually ignored.}
@@ -34,8 +33,8 @@ srduplicated(x, ...)
 \details{
 
   Unlike \code{sort} and friends, the implementation does not preserve
-  order of duplicated elements. Like \code{duplicated}, one element in a
-  set of duplicates is marked as \code{FALSE}.
+  order of duplicated elements. Like \code{duplicated}, one element in
+  each set of duplicates is marked as \code{FALSE}.
 
   The following methods are defined, in addition to methods described in
   class-specific documentation:
@@ -55,19 +54,16 @@ srduplicated(x, ...)
 \value{
   The functions return the following values:
 
-  \item{srorder}{An integer vector of \code{length(x)},
-    identifying the indicies that wlll bring \code{x} into sorted
-    order.}
+  \item{srorder}{An integer vector the same length as \code{x},
+    containing the indicies that wlll bring \code{x} into sorted order.}
 
-  \item{srsort}{An instance of \code{x} sorted in increasing order; as
-    noted.}
+  \item{srsort}{An instance of \code{x} in sorted order.}
 
-  \item{srduplicated}{A logical vector of \code{length(x)} indicating
-    whether the indexed element is already present. Note that, like
-    \code{duplicated}, subsetting \code{x} using the result returned by
-    \code{!srduplicated(x)} results in one copy of all elements,
-    including one copy of elements that are represented in \code{x}
-    multiple times.}
+  \item{srduplicated}{A logical vector the same length as \code{x}
+    indicating whether the indexed element is already present. Note
+    that, like \code{duplicated}, subsetting \code{x} using the result
+    returned by \code{!srduplicated(x)} includes one representative from
+    each set of duplicates.}
 
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
