@@ -13,7 +13,6 @@
 \usage{
 clean(object, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
 
   \item{object}{An object for which \code{clean} methods exist; see

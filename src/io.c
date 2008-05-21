@@ -22,27 +22,27 @@ static const int LINES_PER_FASTA_REC = 2;
  */
 static void
 _read_solexa_fastq_file(const char *fname,
-                           CharBBuf *seq, CharBBuf *name, CharBBuf *qualities)
+                        CharBBuf *seq, CharBBuf *name, CharBBuf *qualities)
 {
-	FILE *file;
-	char linebuf[LINEBUF_SIZE];
-	int lineno, reclineno, nchar_in_buf;
+    FILE *file;
+    char linebuf[LINEBUF_SIZE];
+    int lineno, reclineno, nchar_in_buf;
 
-	if ((file = fopen(fname, "r")) == NULL)
-		error("cannot open file %s", fname);
+    if ((file = fopen(fname, "r")) == NULL)
+        error("cannot open file %s", fname);
 
-	lineno = 0;
-	while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+    lineno = 0;
+    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
         if ((reclineno = lineno % LINES_PER_FASTQ_REC) == 2) {
             lineno++;
             continue;
         }
 
-		nchar_in_buf = _rtrim(linebuf);
-		if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
-			fclose(file);
-			error("line too long %s:%d", fname, lineno);
-		} else if (nchar_in_buf == 0) {
+        nchar_in_buf = _rtrim(linebuf);
+        if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+            fclose(file);
+            error("line too long %s:%d", fname, lineno);
+        } else if (nchar_in_buf == 0) {
             fclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
         }
@@ -132,26 +132,26 @@ _io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
     char *token;
 
     if ((file = fopen(fname, "r")) == NULL)
-      error("cannot open file %s", fname);
+        error("cannot open file %s", fname);
     linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
 
     /* header: first line ignored, errors ignored */
     if (header == TRUE)
         fgets(linebuf, LINEBUF_SIZE, file);
-	lineno = 0;
-	while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
-		nchar_in_buf = _rtrim(linebuf);
-		if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
-			fclose(file);
-			error("line too long %s:%d", fname, lineno);
-		} else if (nchar_in_buf == 0) {
+    lineno = 0;
+    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+        nchar_in_buf = _rtrim(linebuf);
+        if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+            fclose(file);
+            error("line too long %s:%d", fname, lineno);
+        } else if (nchar_in_buf == 0) {
             fclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
         }
         _solexa_to_IUPAC(linebuf);
 
         int j = 0, cidx=0;
-	char *curbuf = linebuf;
+        char *curbuf = linebuf;
         token = strsep(&curbuf, sep);
         for (j = 0; cidx < ncol && token != NULL; ++j) {
             if (j == colidx[cidx]) {
