@@ -18,7 +18,7 @@ clean(object, ...)
   \item{object}{An object for which \code{clean} methods exist; see
     below to discover these methods.} 
 
-  \item{\dots}{Additional arugments, perhaps used by methods.}
+  \item{\dots}{Additional arguments, perhaps used by methods.}
 }
 
 \value{

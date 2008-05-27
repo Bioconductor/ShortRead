@@ -27,12 +27,12 @@
 }
 \section{Slots}{
 
-  Slots \code{sread} and \code{id} are inheritted from
+  Slots \code{sread} and \code{id} are inherited from
   \code{\linkS4class{ShortRead}}. An additional slot defined in this
   class is:
   \describe{
     \item{\code{quality}:}{Object of class \code{"BStringSet"}
-      representing a qaulity score (see \code{\link{readFastq}} for some
+      representing a quality score (see \code{\link{readFastq}} for some
       discussion of quality score).}
   }
 }
@@ -54,7 +54,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} and
       \code{quality} component of \code{stringSet}, returning a named
-      list of matricies.}
+      list of matrices.}
 
     \item{detail}{\code{signature(object = "ShortReadQ")}: display the
 	  first and last entries of each of \code{sread}, \code{id}, and

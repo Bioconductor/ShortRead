@@ -66,7 +66,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       summary of the object, including its class, length and width.}
 
     \item{detail}{\code{signature(object = "ShortRead")}: provides a
-      more extensive summary of this object, dispalying the first and
+      more extensive summary of this object, displaying the first and
       last entries of \code{sread} and \code{id}.}
   }
 }

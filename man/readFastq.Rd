@@ -46,12 +46,12 @@ readFastq(dirPath, pattern=character(0), ...)
     ]]]]]]]]]]]]Y]Y]]]]]]]]]]]]VCHVMPLAS
   }
 
-  The first and third lines are identifiers preceeded by a specific
+  The first and third lines are identifiers preceded by a specific
   character (the identifiers are identical, in the case of Solexa). The
   second line is an upper-case sequence of nucleotides. The parser
-  recongizes IUPAC-standard alphabet (hence ambiguous nucleotides),
+  recognizes IUPAC-standard alphabet (hence ambiguous nucleotides),
   coercing \code{.} to \code{-} to represent missing values. The final
-  line is an ASCII-encoded represntation of quality scores, with one
+  line is an ASCII-encoded representation of quality scores, with one
   ASCII character per nucleotide.
 
   The encoding implicit in Solexa-derived fastq files is that each

@@ -27,10 +27,10 @@
       the data. See \code{\linkS4class{AnnotatedDataFrame}} for details.}
 
     \item{\code{varMetadata}:}{Object of class \code{"data.frame"}
-      descrbing columns of \code{data}.  See
+      describing columns of \code{data}.  See
       \code{\linkS4class{AnnotatedDataFrame}} for details.}
 
-    \item{\code{dimLabels}:}{Object of class \code{character} desribing
+    \item{\code{dimLabels}:}{Object of class \code{character} describing
       the dimensions of the AnnotatedDataFrame. Used internally; see
       \code{\linkS4class{AnnotatedDataFrame}} for details.}
 

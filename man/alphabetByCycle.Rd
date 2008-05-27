@@ -7,8 +7,8 @@
 
 \description{
 
-  \code{alphabetByCycle} summarizes short read nuecleotides or qualities
-  by cycle, e.g., returning the number of occurences of each nucleotide
+  \code{alphabetByCycle} summarizes short read nucleotides or qualities
+  by cycle, e.g., returning the number of occurrences of each nucleotide
   \code{A, T, G, C} across all reads from 36 cycles of a Solexa lane.
 
 }
@@ -21,7 +21,7 @@ alphabetByCycle(stringSet, alphabet, ...)
 \arguments{
 
   \item{stringSet}{A R object representing the collection of reads or
-    qaulity scores to be summarized. All entries in the string set must
+    quality scores to be summarized. All entries in the string set must
     have the same width (i.e., number of characters in each read or
     quality score).}
 

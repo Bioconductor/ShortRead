@@ -46,7 +46,7 @@ readAligned(dirPath, pattern=character(0), ...)
     \item{\code{type="SolexaExport"}}{
 
       This type parses \code{s_L_export.txt} files following the
-      documentation in the Solexa Genome Aligment software manual,
+      documentation in the Solexa Genome Alignment software manual,
       version 0.3.0. These files consist of the following columns;
       consult Solexa documentation for precise descriptions. If parsed,
       values can be retrieved from \code{\linkS4class{AlignedRead}} as
@@ -77,7 +77,7 @@ readAligned(dirPath, pattern=character(0), ...)
 	\item{Filtering}{\code{alignData}}
       }
 
-      Paired read columns are not interpretted.  The resulting
+      Paired read columns are not interpreted.  The resulting
       \code{\linkS4class{AlignedRead}} object does \emph{not} contain a
       meaningful \code{id}; instead, use information from
       \code{alignData} to identify reads.
@@ -96,7 +96,7 @@ readAligned(dirPath, pattern=character(0), ...)
       \preformatted{
 
         ...each line consists of read name, chromosome, position,
-        strand, insert size from the outer coorniates of a pair,
+        strand, insert size from the outer coordinates of a pair,
         paired flag, mapping quality, single-end mapping quality,
         alternative mapping quality, number of mismatches of the
         best hit, sum of qualities of mismatched bases of the best

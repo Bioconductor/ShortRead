@@ -44,7 +44,7 @@
     \item{imageAnalysisPath}{(optional) Firecrest image analysis path.}
     \item{baseCallPath}{(optional) Bustard base call path.}
     \item{analysisPath}{(optional) Gerald analysis pipeline path.}
-    \item{...}{Additional arugments, unused by currently implemented
+    \item{...}{Additional arguments, unused by currently implemented
       methods.}
     \item{verbose=FALSE}{(optional) logical vector which, when
       \code{TRUE} results in warnings if paths do not exist.}

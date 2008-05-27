@@ -44,12 +44,12 @@
     utility classes are derived.
 
     \item \code{SRError-class} created when errors occur in
-    \pkg{ShortRead} pacakge code.
+    \pkg{ShortRead} package code.
 
     \item \code{SRWarn-class} created when warnings occur in
     \pkg{ShortRead} package code
 
-    \item \code{SRList-class} representing a list (heterogenous
+    \item \code{SRList-class} representing a list (heterogeneous
     collection) of objects.
 
     \item \code{SRVector-class} representing a vector (homogeneous
@@ -78,7 +78,7 @@
 
     \item{...}{elements of any type or length to be placed into the
       \code{SRList}. If the length of \code{...} is 1 and the 
-      arugment is a list, then the list itself is placed into
+      argument is a list, then the list itself is placed into
       \code{SRList}.}
 
   }
@@ -163,15 +163,15 @@
       selection paradigms.}
 
     \item{lapply}{\code{signature(X = "SRList")}: apply a function to
-      all elements of \code{X}, with additional arguments interpretted
+      all elements of \code{X}, with additional arguments interpreted
       as with \code{\link{lapply}}.}
 
     \item{sapply}{\code{signature(X = "SRList")}: apply a function to
       all elements of \code{X}, simplifying the result if
-      possible. Additional arguments interpretted as with
+      possible. Additional arguments interpreted as with
       \code{\link{sapply}}.}
 
-    \item{show}{\code{signature(object = "SRList")}: dispaly an
+    \item{show}{\code{signature(object = "SRList")}: display an
       informative summary of the object content, including the length of
       the list represented by \code{object}.}
 

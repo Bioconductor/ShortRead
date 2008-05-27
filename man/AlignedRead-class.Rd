@@ -13,14 +13,14 @@
 \description{
 
   This class represents and manipulates reads and their genomic
-  alignments. Alignment information includes genomic postion, strand,
+  alignments. Alignment information includes genomic position, strand,
   quality, and other data.
 
 }
 
 \section{Objects from the Class}{
 
-  Objects of this class can be created rom a call to the
+  Objects of this class can be created from a call to the
   \code{\link{AlignedRead}} constructor, or more typically by parsing
   appropriate files (e.g., \code{\link{readAligned}}).
 

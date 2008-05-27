@@ -20,7 +20,7 @@ AlignedDataFrame(data, metadata, nrow = nrow(data))
   \item{metadata}{A data frame describing the columns of \code{data},
     and with number of rows of \code{metadata} corresponding to number
     of columns of \code{data}. . The data frame must contain a column
-    \code{labelDescription} providing a verbose describtion of each
+    \code{labelDescription} providing a verbose description of each
     column of \code{data}.}
 
   \item{nrow}{An optional argument, to be used when \code{data} is not

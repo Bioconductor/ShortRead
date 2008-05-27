@@ -55,7 +55,7 @@ srduplicated(x, ...)
   The functions return the following values:
 
   \item{srorder}{An integer vector the same length as \code{x},
-    containing the indicies that wlll bring \code{x} into sorted order.}
+    containing the indices that will bring \code{x} into sorted order.}
 
   \item{srsort}{An instance of \code{x} in sorted order.}
 

@@ -37,7 +37,7 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(), verbose = FALSE)
     elements of a list. See details below for additional hints.}
 
   \item{verbose}{Report whether evaluation is local or mpi-based; also
-    forwared to \code{FUN}, allowing detailed reports from remote
+    forwarded to \code{FUN}, allowing detailed reports from remote
     instances.}
 
 }
@@ -62,7 +62,7 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(), verbose = FALSE)
 }
 \value{
 
-  The returend value depends on the value of \code{reduce}, but by
+  The returned value depends on the value of \code{reduce}, but by
   default is a list with elements containing the results of \code{FUN}
   applied to each of \code{X}. Evaluations resulting in an error have
   been removed, and a warning generated.

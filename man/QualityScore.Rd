@@ -19,7 +19,7 @@ SFastqQuality(quality=BStringSet(character(0)))
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{quality}{An object used to initialize the data
-    structure. Appropriate objects are indiciated in the constructors
+    structure. Appropriate objects are indicated in the constructors
     above.}
 }
 \value{
