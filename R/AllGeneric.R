@@ -40,11 +40,12 @@ setGeneric("alphabetByCycle", signature="stringSet")
 
 setGeneric("srorder", function(x, ...) standardGeneric("srorder"))
 
-setGeneric("srduplicated", function(x, ...) {
-    standardGeneric("srduplicated")
-})
+setGeneric("srduplicated",
+           function(x, ...) standardGeneric("srduplicated"))
 
 setGeneric("srsort", function(x, ...) standardGeneric("srsort"))
+
+setGeneric("srrank", function(x, ...) standardGeneric("srrank"))
 
 ## ShortRead / ShortReadQ
 

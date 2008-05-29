@@ -23,3 +23,4 @@ SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet);
 SEXP alphabet_score(SEXP stringSet, SEXP vec);
 SEXP alphabet_order(SEXP stringSet);
 SEXP alphabet_duplicated(SEXP stringSet);
+SEXP alphabet_rank(SEXP stringSet);

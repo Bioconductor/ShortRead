@@ -11,6 +11,7 @@ static const R_CallMethodDef callMethods[] = {
     {".alphabet_score", (DL_FUNC) &alphabet_score, 2},
     {".alphabet_order", (DL_FUNC) &alphabet_order, 1},
     {".alphabet_duplicated", (DL_FUNC) &alphabet_duplicated, 1},
+    {".alphabet_rank", (DL_FUNC) &alphabet_rank, 1},
     {NULL, NULL, 0}
 };
 

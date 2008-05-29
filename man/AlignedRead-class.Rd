@@ -28,8 +28,10 @@
 \section{Slots}{
   \describe{
 
-    \item{\code{chromosome}:}{Object of class \code{"factor"} containing
-      the genome to which the read is aligned.}
+    \item{\code{chromosome}:}{Object of class \code{"factor"} the
+      particular sequence within a set of target sequences
+      (e.g. chromosomes in a genome assembly) to which each short read
+      aligns.}
 
     \item{\code{position}:}{Object of class \code{"integer"} the
     (base-pair) position in the genome to which the read is aligned.}

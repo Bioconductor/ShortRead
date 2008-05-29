@@ -14,13 +14,20 @@ setMethod("srorder", "XStringSet", function(x, ...) {
     .Call(.alphabet_order, x)
 })
 
+setMethod("srrank", "XStringSet", function(x, ...) {
+    if (length(list(...))!=0)
+        .throw(SRError("UserArgumentMismatch",
+                       "argument '%s' not supported",
+                       names(list(...))))
+    .Call(.alphabet_rank, x)
+})
+
 setMethod("srsort", "XStringSet", function(x, ...) x[srorder(x, ...)])
 
-.alf_srduplicated <- function(x, incomparables=FALSE, ...) {
-    if (!missing(incomparables))
+setMethod("srduplicated", "XStringSet", function(x, ...) {
+    if (length(list(...))!=0)
         .throw(SRError("UserArgumentMismatch",
-                       "argument '%s' not supported", "incomparables"))
+                       "argument '%s' not supported",
+                       names(list(...))))
     .Call(.alphabet_duplicated, x)
-}
-
-setMethod("srduplicated", "XStringSet", .alf_srduplicated)
+})

@@ -55,6 +55,16 @@ setMethod("clean", "ShortRead", function(object, ...) {
     object[i]
 })
 
+.sr_forward <- function(x, ...) callGeneric(sread(x), ...)
+
+setMethod("srorder", "ShortRead", .sr_forward)
+
+setMethod("srrank", "ShortRead", .sr_forward)
+
+setMethod("srsort", "ShortRead", .sr_forward)
+
+setMethod("srduplicated", "ShortRead", .sr_forward)
+
 ## show
 
 setMethod("show", "ShortRead", function(object) {

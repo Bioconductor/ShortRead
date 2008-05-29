@@ -118,8 +118,8 @@ _alphabet_order(CachedXStringSet cache, XSort *xptr, const int len)
     int i;
 
     for (i = 0; i < len; ++i) {
-	xptr[i].offset=i;
-	xptr[i].ref = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        xptr[i].offset=i;
+        xptr[i].ref = get_CachedXStringSet_elt_asRoSeq(&cache, i);
     }
     qsort(xptr, len, sizeof(XSort), compare_RoSeq);
 }
@@ -138,7 +138,7 @@ alphabet_order(SEXP stringSet)
     int *ians = INTEGER(ans);
     int i;
     for (i = 0; i < len; ++i)
-	ians[i] = xptr[i].offset + 1;
+        ians[i] = xptr[i].offset + 1;
     UNPROTECT(1);
     return ans;
 }
@@ -158,8 +158,32 @@ alphabet_duplicated(SEXP stringSet)
     ians[xptr[0].offset]=0;
     int i;
     for (i = 1; i < len; ++i)
-	ians[xptr[i].offset] = compare_RoSeq(xptr+i-1, xptr+i) == 0;
+        ians[xptr[i].offset] = compare_RoSeq(xptr+i-1, xptr+i) == 0;
 
     UNPROTECT(1);
     return ans;
+}
+
+SEXP
+alphabet_rank(SEXP stringSet)
+{
+    /* integer vector of unique indicies into sorted set */
+    const int len = get_XStringSet_length(stringSet);
+    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
+    _alphabet_order(cache, xptr, len);
+
+    SEXP rank = PROTECT(NEW_INTEGER(len));
+    int *irank = INTEGER(rank), i;
+    irank[xptr[0].offset] = 1;
+    for (i = 1; i < len; ++i) {
+        if (compare_RoSeq(&xptr[i-1], &xptr[i]) == 0) {
+            irank[xptr[i].offset] = irank[xptr[i-1].offset];
+        } else {
+            irank[xptr[i].offset] = i + 1;
+        }
+    }
+
+    UNPROTECT(1);
+    return rank;
 }

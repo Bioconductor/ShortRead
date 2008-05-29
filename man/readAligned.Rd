@@ -53,28 +53,28 @@ readAligned(dirPath, pattern=character(0), ...)
       follows:
 
       \describe{
-	\item{Machine}{Ignored}
-	\item{Run number}{stored in \code{alignData}}
-	\item{Lane}{stored in \code{alignData}}
-	\item{Tile}{stored in \code{alignData}}
-	\item{X}{stored in \code{alignData}}
-	\item{Y}{stored in \code{alignData}}
-	\item{Index string}{Ignored}
-	\item{Read number}{Ignored}
-	\item{Read}{\code{sread}}
-	\item{Quality}{\code{quality}}
-	\item{Match chromosome}{\code{chromosome}}
-	\item{Match contig}{Ignored}
-	\item{Match position}{\code{position}}
-	\item{Match strand}{\code{strand}}
-	\item{Match description}{Ignored}
-	\item{Single-read alignment score}{\code{alignQuality}}
-	\item{Paired-read alignment score}{Ignored}
-	\item{Partner chromosome}{Ignored}
-	\item{Partner contig}{Ignored}
-	\item{Partner offset}{Ignored}
-	\item{Partner strand}{Ignored}
-	\item{Filtering}{\code{alignData}}
+	    \item{Machine}{Ignored}
+	    \item{Run number}{stored in \code{alignData}}
+	    \item{Lane}{stored in \code{alignData}}
+	    \item{Tile}{stored in \code{alignData}}
+	    \item{X}{stored in \code{alignData}}
+	    \item{Y}{stored in \code{alignData}}
+	    \item{Index string}{Ignored}
+	    \item{Read number}{Ignored}
+	    \item{Read}{\code{sread}}
+	    \item{Quality}{\code{quality}}
+	    \item{Match chromosome}{\code{chromosome}}
+	    \item{Match contig}{Ignored}
+	    \item{Match position}{\code{position}}
+	    \item{Match strand}{\code{strand}}
+	    \item{Match description}{Ignored}
+	    \item{Single-read alignment score}{\code{alignQuality}}
+	    \item{Paired-read alignment score}{Ignored}
+	    \item{Partner chromosome}{Ignored}
+	    \item{Partner contig}{Ignored}
+	    \item{Partner offset}{Ignored}
+	    \item{Partner strand}{Ignored}
+	    \item{Filtering}{\code{alignData}}
       }
 
       Paired read columns are not interpreted.  The resulting

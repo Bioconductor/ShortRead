@@ -1,31 +1,35 @@
 \name{srduplicated}
 \alias{srorder}
+\alias{srrank}
 \alias{srsort}
 \alias{srduplicated}
 % XStringSet-methods
 \alias{srorder,XStringSet-method}
+\alias{srrank,XStringSet-method}
 \alias{srsort,XStringSet-method}
 \alias{srduplicated,XStringSet-method}
 \title{Order, sort, and find duplicates in XStringSet objects}
 \description{
 
-  These generics sort, order, and find duplicates in short read objects,
-  including fastq-encoded qualities. \code{srsort} and \code{srorder}
-  differ from the default functions \code{sort} and \code{order} in that
-  sorting is based on an internally-defined order rather than, e.g., the
-  order implied by \code{LC_COLLATE}.
+  These generics order, rank, sort, and find duplicates in short read
+  objects, including fastq-encoded qualities. \code{srorder},
+  \code{srrank} and \code{srsort} differ from the default functions
+  \code{rank}, \code{order} and \code{sort} in that sorting is based on
+  an internally-defined order rather than, e.g., the order implied by
+  \code{LC_COLLATE}.
 
 }
 \usage{
 srorder(x, ...)
+srrank(x, ...)
 srsort(x, ...)
 srduplicated(x, ...)
 }
 \arguments{
 
-  \item{x}{The object to be sorted, ordered, or to have duplicates
-    identified; see the examples below for objects for which methods are
-    defined.}
+  \item{x}{The object to be sorted, ranked, ordered, or to have
+    duplicates identified; see the examples below for objects for which
+    methods are defined.}
 
   \item{\dots}{Additional arguments available for use by methods;
     usually ignored.}
@@ -36,6 +40,10 @@ srduplicated(x, ...)
   order of duplicated elements. Like \code{duplicated}, one element in
   each set of duplicates is marked as \code{FALSE}.
 
+  \code{srrank} settles ties using the \dQuote{min} criterion described
+  in \code{\link{rank}}, i.e., identical elements are ranked equal to the
+  rank of the first occurence of the sorted element.
+
   The following methods are defined, in addition to methods described in
   class-specific documentation:
   \describe{
@@ -44,9 +52,19 @@ srduplicated(x, ...)
     \item{srorder}{\code{signature(x = "XStringSet")}:}
     \item{srduplicated}{\code{signature(x = "XStringSet")}:
 
-      Apply \code{srsort}, \code{srorder}, \code{srduplicated} to
-      \code{\linkS4class{XStringSet}} objects such as those returned by
-      \code{\link{sread}}.}
+      Apply \code{srorder}, \code{srrank}, \code{srsort},
+      \code{srduplicated} to \code{\linkS4class{XStringSet}} objects
+      such as those returned by \code{\link{sread}}.}
+
+
+    \item{srsort}{\code{signature(x = "ShortRead")}:}
+    \item{srorder}{\code{signature(x = "ShortRead")}:}
+    \item{srduplicated}{\code{signature(x = "ShortRead")}:
+
+      Apply \code{srorder}, \code{srrank}, \code{srsort},
+      \code{srduplicated} to \code{\linkS4class{XStringSet}} objects to
+      the \code{sread} component of \code{\linkS4class{ShortRead}} and
+      derived objects.}
 
   }
 }
@@ -56,6 +74,9 @@ srduplicated(x, ...)
 
   \item{srorder}{An integer vector the same length as \code{x},
     containing the indices that will bring \code{x} into sorted order.}
+
+  \item{srrank}{An integer vector the same length as \code{x},
+    containing the rank of each seqeunce when sorted.}
 
   \item{srsort}{An instance of \code{x} in sorted order.}
 

@@ -1,6 +1,10 @@
 \name{ShortRead-class}
 \docType{class}
 \alias{ShortRead-class}
+\alias{srrank,ShortRead-method}
+\alias{srorder,ShortRead-method}
+\alias{srsort,ShortRead-method}
+\alias{srduplicated,ShortRead-method}
 \alias{alphabetByCycle,ShortRead-method}
 \alias{clean,ShortRead-method}
 \alias{[,ShortRead,missing,missing-method}
@@ -53,6 +57,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{width}{\code{signature(x = "ShortRead")}: returns a
       \code{integer(1)} vector describing the number of characters in
       each read in this object.}
+
+    \item{srorder}{\code{\signature{x = "ShortRead"}}:}
+    \item{srrank}{\code{\signature{x = "ShortRead"}}:}
+    \item{srsort}{\code{\signature{x = "ShortRead"}}:}
+    \item{srduplicated}{\code{\signature{x = "ShortRead"}}:
+      Order, rank, sort, and find duplicates in \code{ShortRead}
+      objects, analogous to the corresponding functions \code{order},
+      \code{rank}, \code{sort}, and \code{duplicated}, ordering
+      nucleotides in the order \code{ACGT}.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortRead")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component
