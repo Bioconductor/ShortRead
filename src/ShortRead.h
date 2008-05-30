@@ -24,3 +24,7 @@ SEXP alphabet_score(SEXP stringSet, SEXP vec);
 SEXP alphabet_order(SEXP stringSet);
 SEXP alphabet_duplicated(SEXP stringSet);
 SEXP alphabet_rank(SEXP stringSet);
+
+/* read_maq_map.c */
+
+SEXP read_maq_map( SEXP filename, SEXP maxreads );
