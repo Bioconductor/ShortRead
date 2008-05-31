@@ -87,8 +87,10 @@ readAligned(dirPath, pattern=character(0), ...)
 
     }
 
-    \item{\code{type="MAQMap"}}{Parse binary \code{map} files produced
-      by MAQ. See details in the next section.}
+    \item{\code{type="MAQMap", records=-1L}}{Parse binary \code{map}
+      files produced by MAQ. See details in the next section. The
+      \code{records} option determines how many lines are read;
+      \code{-1L} (the default) means that all records are input.}
 
     \item{\code{type="MAQMapview"}}{
 
@@ -144,7 +146,9 @@ readAligned(dirPath, pattern=character(0), ...)
 
 }
 
-\author{Martin Morgan}
+\author{
+  Martin Morgan <mtmorgan@fhcrc.org>,
+  Simon Anders <anders@ebi.ac.uk> (MAQ map)}
 
 \examples{
 dirPath <- system.file('extdata', 'maq', package='ShortRead')
