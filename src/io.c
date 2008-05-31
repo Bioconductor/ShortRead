@@ -123,8 +123,9 @@ read_solexa_fastq(SEXP files)
 }
 
 int
-_io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
-                       const char *sep, int header, CharBBuf *sets)
+_io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
+                       const char *sep, int header, CharBBuf *sets,
+                       const int *toIUPAC)
 {
     FILE *file;
     char *linebuf;
@@ -139,6 +140,7 @@ _io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
     if (header == TRUE)
         fgets(linebuf, LINEBUF_SIZE, file);
     lineno = 0;
+
     while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
         nchar_in_buf = _rtrim(linebuf);
         if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
@@ -148,13 +150,14 @@ _io_XStringSet_columns(const char *fname, const int *colidx, const int ncol,
             fclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
         }
-        _solexa_to_IUPAC(linebuf);
 
         int j = 0, cidx=0;
         char *curbuf = linebuf;
         token = strsep(&curbuf, sep);
         for (j = 0; cidx < ncol && token != NULL; ++j) {
             if (j == colidx[cidx]) {
+                if (toIUPAC[cidx])
+                    _solexa_to_IUPAC(token);
                 append_string_to_CharBBuf(&sets[cidx], token);
                 cidx++;
             }
@@ -193,9 +196,11 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     int ncol = LENGTH(colIndex);
     CharBBuf *sets = (CharBBuf*) R_alloc(sizeof(CharBBuf), ncol);
     int *colidx = (int *) R_alloc(sizeof(int), ncol);
+    int *toIUPAC = (int *) R_alloc(sizeof(int), ncol);
     for (j = 0; j < ncol; ++j) {
         sets[j] = new_CharBBuf(nrow, 0);
         colidx[j] = INTEGER(colIndex)[j] - 1;
+        toIUPAC[j] = !strcmp(CHAR(STRING_ELT(colClasses, j)), "DNAString");
     }
 
     /* read columns */
@@ -203,18 +208,19 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     for (i = 0; i < nfiles; ++i) {
         const char *fname = translateChar(STRING_ELT(files, i));
         nreads += _io_XStringSet_columns(fname, colidx, ncol,
-                                         csep, LOGICAL(header)[0], sets);
+                                         csep, LOGICAL(header)[0],
+                                         sets, toIUPAC);
     }
     if (nreads != nrow)
-        Rf_error("found %d reads, expected %d", nlines, nrow);
+        Rf_error("found %d reads, expected %d", nreads, nrow);
 
     /* formulate return value */
     SEXP ans, elt;
     RoSeqs roSeqs;
     PROTECT(ans = NEW_LIST(ncol));
     for (j = 0; j < ncol; ++j) {
-        roSeqs = new_RoSeqs_from_BBuf(sets[j]);
         const char *clsName = CHAR(STRING_ELT(colClasses, j));
+        roSeqs = new_RoSeqs_from_BBuf(sets[j]);
         PROTECT(elt = new_XStringSet_from_RoSeqs(clsName, roSeqs));
         SET_VECTOR_ELT(ans, j, elt);
         UNPROTECT(1);

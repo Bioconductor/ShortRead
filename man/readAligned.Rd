@@ -87,11 +87,14 @@ readAligned(dirPath, pattern=character(0), ...)
 
     }
 
+    \item{\code{type="MAQMap"}}{Parse binary \code{map} files produced
+      by MAQ. See details in the next section.}
+
     \item{\code{type="MAQMapview"}}{
 
-      This type parses alignment files created by MAQ.  Interpretation
-      of columns is based on the description in the MAQ manual,
-      specifically
+      Parse alignment files created by MAQ's \sQuote{mapiew} command.
+      Interpretation of columns is based on the description in the MAQ
+      manual, specifically
 
       \preformatted{
 

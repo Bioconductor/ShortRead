@@ -6,11 +6,7 @@ setGeneric(".throw",
 
 countLines <- function(dirPath, pattern=character(0), ..., useFullName=FALSE)
 {
-    src <- list.files(dirPath, ..., pattern=pattern, full.name=TRUE)
-    if (length(src)==0)
-        .throw(SRError("Input/Output",
-                      "no files in directory '%s' matching '%s'",
-                      dirPath, ifelse(length(pattern)==0, "", pattern)))
+    src <- .file_names(dirPath, pattern)
     nLines <- .Call(.count_lines, src)
     names(nLines) <- 
         if (useFullName) src

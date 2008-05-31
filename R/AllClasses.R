@@ -55,6 +55,10 @@ NumericQuality <- function(quality=numeric(0)) { # used below
     new("NumericQuality", quality=quality)
 }
 
+setClass("IntegerQuality", contains="NumericQuality",
+         representation=representation(
+           quality="integer"))
+
 setClass("MatrixQuality", contains="QualityScore",
          representation=representation(
            quality="matrix"))

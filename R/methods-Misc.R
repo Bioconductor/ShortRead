@@ -4,6 +4,10 @@
     callNextMethod(stringSet, alphabet=alphabet)
 }
 
+setMethod("clean", "DNAStringSet", function(object, ...) {
+    object[alphabetFrequency(object, baseOnly=TRUE)[,'other']==0]
+})
+
 setMethod("alphabetByCycle", "BStringSet", .abc_BStringSet)
 
 setMethod("srorder", "XStringSet", function(x, ...) {

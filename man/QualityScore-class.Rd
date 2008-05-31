@@ -2,6 +2,7 @@
 \docType{class}
 \alias{QualityScore-class}
 \alias{NumericQuality-class}
+\alias{IntegerQuality-class}
 \alias{MatrixQuality-class}
 \alias{FastqQuality-class}
 \alias{SFastqQuality-class}

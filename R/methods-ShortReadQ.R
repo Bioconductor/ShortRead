@@ -20,11 +20,7 @@ setMethod(".srValidity", "ShortReadQ", function(object) {
 
 setMethod("readFastq", "character", function(dirPath, pattern=character(),
                                              ...) {
-    src <- list.files(dirPath, pattern=pattern, full.names=TRUE)
-    if (length(src)==0)
-        .throw(SRError("Input/Output",
-                      "no files in directory '%s' matching '%s'",
-                      dirPath, pattern))
+    src <- .file_names(dirPath, pattern)
     elts <- .Call(.read_solexa_fastq, src)
     new("ShortReadQ", ..., sread=elts[["sread"]], id=elts[["id"]],
         quality=SFastqQuality(elts[["quality"]]))

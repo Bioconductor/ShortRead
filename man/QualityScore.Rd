@@ -1,5 +1,6 @@
 \name{QualityScore}
 \alias{NumericQuality}
+\alias{IntegerQuality}
 \alias{MatrixQuality}
 \alias{FastqQuality}
 \alias{SFastqQuality}
@@ -12,11 +13,12 @@
 }
 \usage{
 NumericQuality(quality = numeric(0))
+IntegerQuality(quality = integer(0))
 MatrixQuality(quality = new("matrix"))
 FastqQuality(quality=BStringSet(character(0)))
 SFastqQuality(quality=BStringSet(character(0)))
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{quality}{An object used to initialize the data
     structure. Appropriate objects are indicated in the constructors

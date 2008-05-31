@@ -41,6 +41,12 @@ setMethod("show", "NumericQuality", function(object) {
     .show_some("quality", quality(object))
 })
 
+## IntegerQuality
+
+IntegerQuality <- function(quality=integer(0)) {
+    new("IntegerQuality", quality=quality)
+}
+
 ## MatrixQuality
 
 MatrixQuality <- function(quality=new("matrix")) {

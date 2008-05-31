@@ -1,5 +1,5 @@
 
-R version 2.8.0 Under development (unstable) (2008-05-11 r45672)
+R version 2.8.0 Under development (unstable) (2008-05-30 r45820)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -19,6 +19,16 @@ Type 'q()' to quit R.
 
 > library("ShortRead")
 Loading required package: Biostrings
+
+Attaching package: 'Biostrings'
+
+
+	The following object(s) are masked from package:base :
+
+	 chartr,
+	 substr,
+	 substring 
+
 Loading required package: Biobase
 Loading required package: tools
 
@@ -72,10 +82,14 @@ Executing test function test_countLines  ...  done successfully.
 
 
 
-Executing test function test_readFastq_errors  ... Timing stopped at: 0 0 0.001 
+Executing test function test_readFastq_errors  ... Timing stopped at: 0 0 0 
 Error in checkTrue(FALSE) : Test not TRUE.
  
  done successfully.
+
+
+
+Executing test function test_readXStringColumns_toIUPAC  ...  done successfully.
 
 
 

@@ -1,5 +1,6 @@
 \name{clean}
 \alias{clean}
+\alias{clean,DNAStringSet-method}
 
 \title{Remove sequences with ambiguous nucleotides from short read classes}
 
@@ -20,7 +21,17 @@ clean(object, ...)
 
   \item{\dots}{Additional arguments, perhaps used by methods.}
 }
+\details{
+  The following method is defined, in addition to methods described in
+  class-specific documentation:
+  \describe{
 
+    \item{clean}{\code{signature(x = "DNAStringSet")}:
+      Remove all sequences containin non-base (A, C, G, T) IUPAC
+      symbols.}
+
+  }
+}
 \value{
 
   An instance of \code{class(object)}, containing only sequences with

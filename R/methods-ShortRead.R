@@ -50,20 +50,21 @@ setMethod("[", c(x="ShortRead", i="ANY", j="missing"),
 
 setMethod("alphabetByCycle", "ShortRead", .abc_ShortRead)
 
-setMethod("clean", "ShortRead", function(object, ...) {
-    i <- alphabetFrequency(sread(object), baseOnly=TRUE)[,'other']==0
-    object[i]
-})
 
-.sr_forward <- function(x, ...) callGeneric(sread(x), ...)
+.sr_forward_obj <- function(object, ...)
+    callGeneric(sread(object), ...)
 
-setMethod("srorder", "ShortRead", .sr_forward)
+setMethod("clean", "ShortRead", .sr_forward_obj)
 
-setMethod("srrank", "ShortRead", .sr_forward)
+.sr_forward_x<- function(x, ...) callGeneric(sread(x), ...)
 
-setMethod("srsort", "ShortRead", .sr_forward)
+setMethod("srorder", "ShortRead", .sr_forward_x)
 
-setMethod("srduplicated", "ShortRead", .sr_forward)
+setMethod("srrank", "ShortRead", .sr_forward_x)
+
+setMethod("srsort", "ShortRead", .sr_forward_x)
+
+setMethod("srduplicated", "ShortRead", .sr_forward_x)
 
 ## show
 

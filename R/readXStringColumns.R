@@ -2,9 +2,7 @@ readXStringColumns <- function(dirPath, pattern=character(0),
                                colClasses=list(NULL), sep="\t",
                                header=FALSE) {
     if (!is.list(colClasses))
-        .throw(SRError("UserArgumentMismatch",
-                       "'colClasses' should be 'list', but is '%s'",
-                       paste(class(colClasses), collapse=", ")))
+        .arg_mismatch_type_err("colClasses", "list()")
     colIndex <- which(!sapply(colClasses, is.null))
     colClasses <- sub("Set$", "", colClasses[colIndex])
     okClasses <- names(slot(getClass("XString"), "subclasses"))
@@ -16,7 +14,7 @@ readXStringColumns <- function(dirPath, pattern=character(0),
                        paste(bad, collapse="' '"),
                        paste(okClasses, collapse="', '")))
     }
-    files <- list.files(dirPath, pattern, full.names=TRUE)
+    files <- .file_names(dirPath, pattern)
     res <- tryCatch({
         .Call(.read_XStringSet_columns, files,
               colIndex, colClasses, sep, header)
