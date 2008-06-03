@@ -35,3 +35,24 @@ setMethod("srduplicated", "XStringSet", function(x, ...) {
                        names(list(...))))
     .Call(.alphabet_duplicated, x)
 })
+
+.stringset_tables <- function(x, n=50, ...) {
+    ## FIXME: two sorts
+    srt <- srsort(x)
+    r <- srrank(x)
+    t <- tabulate(r)
+    o <- order(t, decreasing=TRUE)
+    ## n most common sequences
+    top <- head(t[o], n)
+    names(top) <- as.character(head(srt[o], n))
+    ## overall frequency -- equivalent of table(table(sread))
+    tt <- tabulate(t)
+    nReads <- seq_along(tt)[tt!=0]
+    nUniqueSequences <- tt[tt!=0]
+    ## results
+    list(top=top,
+         distribution=list(
+           nReads=nReads, nUniqueSequences=nUniqueSequences))
+}
+
+setMethod("tables", "XStringSet", .stringset_tables)

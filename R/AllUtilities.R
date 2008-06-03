@@ -47,7 +47,17 @@
           " (", length(obj), " total)\n", sep="")
 }
 
-## Class-related
+## Class- and method-related
+
+.forward_objq <- function(object, ...)
+    callGeneric(quality(object), ...)
+
+.forward_xq <- function(x, ...) callGeneric(quality(x), ...)
+
+.forward_obj <- function(object, ...)
+    callGeneric(sread(object), ...)
+
+.forward_x <- function(x, ...) callGeneric(sread(x), ...)
 
 .nameAll <- function(x) {
     ## Add names to character vector x.  Elements of x without names get

@@ -85,6 +85,20 @@ SFastqQuality <- function(quality=BStringSet(character(0))) {
     new("SFastqQuality", quality=quality)
 }
 
+setAs("FastqQuality", "matrix", function(from) {
+    if (!length(unique(width(from)))==1)
+        .throw(SRError("UserArgumentMismatch",
+                       "matrix requires identical quality score widths"))
+    .Call(.alphabet_as_int, quality(from), 0:255-32L)
+})
+
+setAs("SFastqQuality", "matrix", function(from) {
+    if (!length(unique(width(from)))==1)
+        .throw(SRError("UserArgumentMismatch",
+                       "matrix requires identical quality score widths"))
+    .Call(.alphabet_as_int, quality(from), 0:255-64L)
+})
+
 setMethod("width", "FastqQuality",
           function(x) width(quality(x)))
 
@@ -115,13 +129,13 @@ setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
 
 setMethod("alphabetScore", "SFastqQuality", .SFastqQuality_ascore)
 
-setMethod("srorder", "FastqQuality", function(x, ...) {
-    callGeneric(x=quality(x), ...)
-})
+setMethod("srrank", "FastqQuality", .forward_xq)
 
-setMethod("srsort", "FastqQuality", function(x, ...) {
-    callGeneric(x=quality(x), ...)
-})
+setMethod("srorder", "FastqQuality", .forward_xq)
+
+setMethod("srsort", "FastqQuality", .forward_xq)
+
+setMethod("srduplicated", "FastqQuality", .forward_xq)
 
 .FastqQuality_srduplicated<- function(x, incomparables=FALSE, ...) {
     callGeneric(x=quality(x), ...)

@@ -68,9 +68,9 @@ alphabet_score(SEXP stringSet, SEXP score)
     /* FIXME: stringSet is XStringSet */
     const char *base = get_XStringSet_baseClass(stringSet);
     if (strcmp(base, "BString") != 0)
-	Rf_error("'stringSet' must contain BString elements");
+        Rf_error("'stringSet' must contain BString elements");
     if (!IS_NUMERIC(score) || LENGTH(score) != 256)
-	Rf_error("'score' must be numeric(256)");
+        Rf_error("'%s' must be '%s'", "score", "integer(256)");
 
     DECODE_FUNC decode = decoder(base);
     const int len = get_XStringSet_length(stringSet);
@@ -84,16 +84,65 @@ alphabet_score(SEXP stringSet, SEXP score)
     CachedXStringSet cache = new_CachedXStringSet(stringSet);
     for (i = 0; i < len; ++i) {
         RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
-	dans[i] = 0;
+        dans[i] = 0;
         for (j = 0; j < seq.nelt; ++j)
-	    dans[i] +=  dscore[decode(seq.elts[j])];
+            dans[i] +=  dscore[decode(seq.elts[j])];
     }
 
     UNPROTECT(1);
     return ans;
 }
 
-/* order / duplicated */
+SEXP
+alphabet_as_int(SEXP stringSet, SEXP score)
+{
+    /* FIXME: stringSet is XStrinSet(1) or longer? */
+    const char *base = get_XStringSet_baseClass(stringSet);
+    if (strcmp(base, "BString") != 0)
+        Rf_error("'stringSet' must contain BString elements");
+    if (!IS_INTEGER(score) || LENGTH(score) != 256)
+        Rf_error("'%s' must be '%s'", "score", "integer(256)");
+    DECODE_FUNC decode = decoder(base);
+    const int len = get_XStringSet_length(stringSet);
+    
+    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    int i;
+    
+    RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, 0);
+    int width = seq.nelt;
+    int *ians;
+    SEXP ans;
+    for (i = 1; i < len && width > 0; ++i) {
+        seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        if (seq.nelt != width) width = -1;
+    }
+    if (width >= 0) {           /* matrix */
+        ans = PROTECT(allocMatrix(INTSXP, len, width));
+        ians = INTEGER(ans);
+    } else {                    /* list of int */
+        ans = PROTECT(NEW_LIST(len));
+    }
+
+    const int *iscore = INTEGER(score);
+    int j;
+    for (i = 0; i < len; ++i) {
+        seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        if (width >= 0) { /* int matrix */
+            for (j = 0; j < seq.nelt; ++j)
+                ians[len*j + i] =  iscore[decode(seq.elts[j])];
+        } else {                /* list of ints */
+            SET_VECTOR_ELT(ans, i, NEW_INTEGER(seq.nelt));
+            ians = INTEGER(VECTOR_ELT(ans, i));
+            for (j = 0; j < seq.nelt; ++j)
+                ians[j] =  iscore[decode(seq.elts[j])];
+        }
+    }
+
+    UNPROTECT(1);
+    return ans;
+}
+
+/* rank / order / sort / duplicated */
 
 typedef struct {
     int offset;

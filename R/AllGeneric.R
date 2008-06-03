@@ -43,6 +43,8 @@ setGeneric("srsort", function(x, ...) standardGeneric("srsort"))
 
 setGeneric("srrank", function(x, ...) standardGeneric("srrank"))
 
+setGeneric("tables", function(x, ...) standardGeneric("tables"))
+
 ## ShortRead / ShortReadQ
 
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)

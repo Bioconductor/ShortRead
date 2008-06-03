@@ -50,21 +50,17 @@ setMethod("[", c(x="ShortRead", i="ANY", j="missing"),
 
 setMethod("alphabetByCycle", "ShortRead", .abc_ShortRead)
 
+setMethod("clean", "ShortRead", .forward_obj)
 
-.sr_forward_obj <- function(object, ...)
-    callGeneric(sread(object), ...)
+setMethod("srorder", "ShortRead", .forward_x)
 
-setMethod("clean", "ShortRead", .sr_forward_obj)
+setMethod("srrank", "ShortRead", .forward_x)
 
-.sr_forward_x<- function(x, ...) callGeneric(sread(x), ...)
+setMethod("srsort", "ShortRead", .forward_x)
 
-setMethod("srorder", "ShortRead", .sr_forward_x)
+setMethod("srduplicated", "ShortRead", .forward_x)
 
-setMethod("srrank", "ShortRead", .sr_forward_x)
-
-setMethod("srsort", "ShortRead", .sr_forward_x)
-
-setMethod("srduplicated", "ShortRead", .sr_forward_x)
+setMethod("tables", "ShortRead", .forward_x)
 
 ## show
 

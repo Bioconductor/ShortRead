@@ -57,11 +57,7 @@ setMethod("[", c("ShortReadQ", "ANY", "missing"), .ShortReadQ_subset)
 
 setMethod("alphabetByCycle", "ShortReadQ", .abc_ShortReadQ)
 
-.ascore_ShortReadQ <- function(object, ...) {
-    callGeneric(quality(object), ...)
-}
-
-setMethod("alphabetScore", "ShortReadQ", .ascore_ShortReadQ)
+setMethod("alphabetScore", "ShortReadQ", .forward_objq)
 
 ## show
 

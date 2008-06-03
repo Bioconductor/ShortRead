@@ -71,6 +71,15 @@ setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 
 setMethod("readAligned", "SolexaPath", .readAligned_SolexaPath)
 
+.SolexaPath_qa <- function(dirPath, pattern=character(0), ...) {
+    dirPath <- analysisPath(dirPath)
+    if (missing(pattern))
+        pattern <- "s_[1-8]_export.txt"
+    callGeneric(dirPath, pattern, type="SolexaExport", ...)
+}
+
+setMethod("qa", "SolexaPath", .SolexaPath_qa)
+
 setMethod("show", "SolexaPath", function(object) {
     catPath <- function(nm) {
         vals <- do.call(nm, list(object))
