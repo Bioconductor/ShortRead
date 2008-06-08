@@ -152,16 +152,16 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
         }
 
         int j = 0, cidx=0;
-        char *curbuf = linebuf;
-        token = strsep(&curbuf, sep);
-        for (j = 0; cidx < ncol && token != NULL; ++j) {
+        char *curr = linebuf, *next;
+        for (j = 0; cidx < ncol && curr != NULL; ++j) {
+            next = _mark_field(curr, sep);
             if (j == colidx[cidx]) {
                 if (toIUPAC[cidx])
-                    _solexa_to_IUPAC(token);
-                append_string_to_CharBBuf(&sets[cidx], token);
+                    _solexa_to_IUPAC(curr);
+                append_string_to_CharBBuf(&sets[cidx], curr);
                 cidx++;
             }
-            token = strsep(&curbuf, sep);
+            curr = next;
         } 
         lineno++;
     }

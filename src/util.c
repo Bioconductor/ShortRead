@@ -9,7 +9,8 @@ unsigned char _rnaDecode(char);
 /*
  * Decode XStringSet wrappers
  */
-unsigned char _bDecode(char c)
+unsigned char
+_bDecode(char c)
 {
     return (unsigned char) c;
 }
@@ -42,6 +43,77 @@ decoder(const char* base)
     return decode;
 }
 
+/*
+ * parse lines into fields.
+ *
+ * string is parsed until a character in delim is found, or end of
+ * string reached.
+ *
+ * return value is pointer to the start of the next field, or NULL if
+ * no more fields.
+ */
+
+char *
+_mark_field(char *curr, const char *delim)
+{
+    const char *d = '\0';
+    while (*curr != '\0' && *curr != '\n') {
+        d = delim;
+        while (*d != '\0' && *d != *curr)
+            ++d;
+        if (*d != '\0')
+            *curr = '\0';
+        else
+            ++curr;
+    }
+    if (*curr == '\n') {
+        *curr = '\0';
+        return '\0';
+    }
+    return *d == '\0' ? '\0' : curr + 1;
+}
+
+SEXP
+_mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
+{
+    if (!IS_CHARACTER(filename)  || LENGTH(filename) !=1)
+        error("'%s' must be '%s'", "filename", "character(1)");
+    if (!IS_CHARACTER(delimiters) || LENGTH(delimiters) != 1)
+        error("'%s' must be '%s'", "delimiters", "character(1)");
+    if  (!IS_INTEGER(dim) || LENGTH(dim) != 2)
+        error("'%s' must be '%s'", "dim", "integer(2)");
+
+    SEXP ans = PROTECT(NEW_LIST(INTEGER(dim)[0]));
+    int i, j;
+    for (i = 0; i < INTEGER(dim)[0]; ++i)
+        SET_VECTOR_ELT(ans, i, NEW_CHARACTER(INTEGER(dim)[1]));
+    
+#define LINEBUF_SIZE 1024
+    FILE *file;
+    char linebuf[LINEBUF_SIZE];
+    if ((file = fopen(CHAR(STRING_ELT(filename, 0)), "r")) == NULL)
+        error("cannot open file '%s'", CHAR(STRING_ELT(filename, 0)));
+    const char *delim = CHAR(STRING_ELT(delimiters, 0));
+
+    for (i = 0; i < INTEGER(dim)[0]; ++i) {
+        if (fgets(linebuf, LINEBUF_SIZE, file) == NULL)
+            error("unexpected end-of-file");
+        j = 0;
+        char *curr = linebuf, *next;
+        while (curr != NULL) {
+            if (j >= INTEGER(dim)[1])
+                error("too many fields");
+            next = _mark_field(curr, delim);
+            SET_STRING_ELT(VECTOR_ELT(ans, i), j, mkChar(curr));
+            j++;
+            curr = next;
+        }
+    }
+#undef LINEBUF_SIZE
+
+    UNPROTECT(1);
+    return ans;
+}
 
 /*
  * Return the number of chars that remain in the buffer after we've removed

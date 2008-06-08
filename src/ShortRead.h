@@ -6,6 +6,7 @@
 typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
 
 DECODE_FUNC decoder(const char*);
+char *_mark_field(char *curr, const char* delim);
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
 SEXP count_lines(SEXP files);

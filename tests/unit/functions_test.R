@@ -61,3 +61,36 @@ test_alphabetOrder <- function() {
     checkEquals(srduplicated(quality(rfq)),
                 duplicated(as.character(quality(quality(rfq)))))
 }
+
+## _mark_field (C code)
+
+test_mark_field <- function() {
+    fl <- tempfile()
+    do <- function(s, fl) {
+        doexp(s, strsplit(unlist(strsplit(s, "\n")), "\t"), fl)
+    }
+    doexp <- function(s, exp, fl) {
+        writeLines(s, fl)
+        res <- .Call("_mark_field_test", fl, "\t", c(2L, 3L),
+                     PACKAGE="ShortRead")
+        checkIdentical(exp, res)
+    }
+
+    do("a\tb\tc\nd\te\tf\n", fl)
+    do("a\t\tc\nd\te\tf\n", fl)
+    do("\tb\tc\nd\te\tf\n", fl)
+    do("\t\tc\nd\te\tf\n", fl)
+
+    ## trailing \t are problematic for strsplit
+    doexp("a\tb\t\nd\te\tf\n",
+          list(c("a","b",""), c("d","e","f")),
+          fl)
+    doexp("a\t\t\nd\te\tf\n",
+          list(c("a","",""), c("d","e","f")),
+          fl)
+
+    writeLines("", fl)
+    res <- .Call("_mark_field_test", fl, "\t", c(1L,1L),
+                 PACKAGE="ShortRead")
+    checkIdentical(list(""), res)
+}
