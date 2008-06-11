@@ -60,7 +60,9 @@ setMethod("srsort", "ShortRead", .forward_x)
 
 setMethod("srduplicated", "ShortRead", .forward_x)
 
-setMethod("tables", "ShortRead", .forward_x)
+setMethod("tables", "ShortRead", function(x, n=50, ...) {
+    callGeneric(sread(x), n=n, ...)
+})
 
 ## show
 

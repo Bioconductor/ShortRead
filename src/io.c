@@ -130,7 +130,6 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
     FILE *file;
     char *linebuf;
     int lineno, nchar_in_buf;
-    char *token;
 
     if ((file = fopen(fname, "r")) == NULL)
         error("cannot open file %s", fname);

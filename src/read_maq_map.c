@@ -22,11 +22,9 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
    (i.e., a VECSXP) with the elements listed below in eltnames, which correspond to the 
    columns of maq mapview. */
 {
-    static const int lbuf = 500;
-    char buf[lbuf];
     gzFile mapfile;   
     maqmap_t * mapheader;
-    SEXP seqnames, seq, start, dir, length, aq, mm, mm24, errsum, nhits0, 
+    SEXP seqnames, seq, start, dir, aq, mm, mm24, errsum, nhits0, 
         nhits1, eltnm, df, klass, levels;
     char readseqbuf[ MAX_READLEN ], fastqbuf[ MAX_READLEN ];
     CharBBuf readid, readseq, fastq;

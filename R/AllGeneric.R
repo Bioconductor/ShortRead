@@ -43,7 +43,9 @@ setGeneric("srsort", function(x, ...) standardGeneric("srsort"))
 
 setGeneric("srrank", function(x, ...) standardGeneric("srrank"))
 
-setGeneric("tables", function(x, ...) standardGeneric("tables"))
+setGeneric("tables", function(x, n=50, ...)
+           standardGeneric("tables"),
+           signature=c("x"))
 
 ## ShortRead / ShortReadQ
 

@@ -6,6 +6,7 @@
 \alias{srsort,ShortRead-method}
 \alias{srduplicated,ShortRead-method}
 \alias{alphabetByCycle,ShortRead-method}
+\alias{tables,ShortRead-method}
 \alias{clean,ShortRead-method}
 \alias{[,ShortRead,missing,missing-method}
 \alias{[,ShortRead,missing,ANY-method}
@@ -71,6 +72,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component
       of \code{stringSet}, returning a matrix as described in
       \code{\link{alphabetByCycle}}.}
+
+    \item{tables}{\code{signature(x= "ShortRead", n = 50)}:
+      Apply \code{\link{tables}} to the \code{sread} component of
+      \code{x}, returning a list summarizing frequency of reads in
+      \code{x}.}
 
     \item{clean}{\code{signature(object="ShortRead")}: Remove all reads
       containing non-nucleotide (\code{"N", "-"}) symbols.}

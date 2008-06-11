@@ -47,12 +47,13 @@ setMethod("srduplicated", "XStringSet", function(x, ...) {
     names(top) <- as.character(head(srt[o], n))
     ## overall frequency -- equivalent of table(table(sread))
     tt <- tabulate(t)
-    nReads <- seq_along(tt)[tt!=0]
-    nUniqueSequences <- tt[tt!=0]
+    nOccurrences <- seq_along(tt)[tt!=0]
+    nReads <- tt[tt!=0]
     ## results
     list(top=top,
-         distribution=list(
-           nReads=nReads, nUniqueSequences=nUniqueSequences))
+         distribution=data.frame(
+           nOccurrences=nOccurrences,
+           nReads=nReads))
 }
 
 setMethod("tables", "XStringSet", .stringset_tables)
