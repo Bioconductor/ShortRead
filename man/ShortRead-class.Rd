@@ -63,10 +63,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{srrank}{\code{\signature{x = "ShortRead"}}:}
     \item{srsort}{\code{\signature{x = "ShortRead"}}:}
     \item{srduplicated}{\code{\signature{x = "ShortRead"}}:
-      Order, rank, sort, and find duplicates in \code{ShortRead}
-      objects, analogous to the corresponding functions \code{order},
-      \code{rank}, \code{sort}, and \code{duplicated}, ordering
-      nucleotides in the order \code{ACGT}.}
+      Order, rank, sort, and find duplicates in \code{ShortRead} objects
+      based on \code{sread(x)}, analogous to the corresponding functions
+      \code{order}, \code{rank}, \code{sort}, and \code{duplicated},
+      ordering nucleotides in the order \code{ACGT}.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortRead")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component

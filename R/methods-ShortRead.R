@@ -50,13 +50,18 @@ setMethod("[", c(x="ShortRead", i="ANY", j="missing"),
 
 setMethod("alphabetByCycle", "ShortRead", .abc_ShortRead)
 
-setMethod("clean", "ShortRead", .forward_obj)
+setMethod("clean", "ShortRead", function(object, ...) {
+    alf <- alphabetFrequency(sread(object), baseOnly=TRUE)
+    object[alf[,'other'] == 0]
+})
 
 setMethod("srorder", "ShortRead", .forward_x)
 
 setMethod("srrank", "ShortRead", .forward_x)
 
-setMethod("srsort", "ShortRead", .forward_x)
+setMethod("srsort", "ShortRead", function(x, ...) {
+    x[srorder(x)]
+})
 
 setMethod("srduplicated", "ShortRead", .forward_x)
 

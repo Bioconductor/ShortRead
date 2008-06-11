@@ -31,3 +31,23 @@ test_ShortReadQ_subset <- function() {
     checkException(obj[1,], silent=TRUE)
     checkException(obj[1,], silent=TRUE)
 }
+
+test_ShortReadQ_clean <- function() {
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    obj <- readFastq(sp)
+
+    cln <- clean(obj)
+    checkIdentical(class(obj), class(cln))
+    ## FIXME: need a stronger test
+    checkEquals(length(obj), length(clean(obj)))
+}
+
+test_ShortReadQ_srsort <- function() {
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    obj <- readFastq(sp)
+    srt <- srsort(obj)
+    checkIdentical(class(obj), class(srt))
+    checkIdentical(length(obj), length(srt))
+    checkIdentical(srsort(sread(obj)), sread(srt))
+    checkIdentical(quality(obj)[srorder(obj)], quality(srt))
+}
