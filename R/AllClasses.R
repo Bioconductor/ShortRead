@@ -89,6 +89,30 @@ setClass("ShortReadQ", contains="ShortRead",
            quality=NumericQuality()),
          validity=.srValidity)
 
+## ExperimentPath (base class for experimental data paths)
+
+setClass("ExperimentPath", contains = c(".ShortReadBase"),
+         representation = representation(
+           basePath="character"),
+         prototype = prototype(
+           basePath=NA_character_),
+         validity = .srValidity)
+
+## SRSet (base class for datasets)
+
+setClass("SRSet", contains = ".ShortReadBase",
+         representation = representation(
+           sourcePath="ExperimentPath", # for lazy loading
+           seqData="ShortRead", # the actual reads (+ qualities, alignments)
+           phenoData="AnnotatedDataFrame", # experimental design
+           featureData="AnnotatedDataFrame"), # arbitrary read annotations
+         prototype = prototype(
+           sourcePath=new("ExperimentPath"),
+           seqData=new("ShortRead"),
+           phenoData=new("AnnotatedDataFrame"),
+           featureData=new("AnnotatedDataFrame")),
+         validity = .srValidity)
+
 ## AlignedRead: AlignedDataFrame
 
 setClass("AlignedDataFrame", contains="AnnotatedDataFrame",
@@ -153,3 +177,27 @@ setClass("SolexaSet", contains=".Solexa",
 ##          prototype=prototype(
 ##            .class="SolexaTile"),
 ##          validity=.srValidity)
+
+
+### .Roche
+
+setClass(".Roche", contains=".ShortReadBase",
+         representation=representation("VIRTUAL"))
+
+setClass("RochePath", contains=c("ExperimentPath", ".Roche"),
+         representation=representation(
+           dataPath="character",
+           qualPath="character"),
+         prototype=prototype(
+           dataPath=NA_character_,
+           qualPath=NA_character_),
+         validity=.srValidity)
+
+setClass("RocheSet", contains=c("SRSet", ".Roche"),
+         representation=representation(
+           sourcePath="RochePath"),
+         prototype=prototype(
+           sourcePath=new("RochePath")),
+         validity=.srValidity)
+
+
