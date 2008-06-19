@@ -76,7 +76,8 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     .qa_lst_as_data_frame(lst)
 }
 
-.qa_solexa_export <- function(dirPath, pattern, type="SolexaExport", ...) {
+.qa_solexa_export <- function(dirPath, pattern, type="SolexaExport", ...,
+                              verbose=FALSE) {
     .lane <- function(dirPath, pattern, ..., verbose=FALSE) {
         .cleanIdx <- function(rpt) {
             alphabetFrequency(sread(rpt), baseOnly=TRUE)[,'other']==0
@@ -144,7 +145,8 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
                  median)))
     }
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .lane, dirPath=dirPath, type=type)
+    lst <- srapply(basename(fls), .lane, dirPath=dirPath, type=type,
+                   verbose=verbose)
     names(lst) <- basename(fls)
 
     .qualityDf <- function(lanes, part) {
@@ -168,7 +170,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
                    Lane=lane, row.names=NULL)
     }
     .dupTable <- function(elt, lane) {
-        data.frame(NUniqueSequences=elt$distribution$nUniqueSequences,
+        data.frame(NUniqueSequences=elt$distribution$nOccurrences,
                    Count=elt$distribution$nReads,
                    Lane=lane)
     }
