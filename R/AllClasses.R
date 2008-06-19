@@ -108,9 +108,9 @@ setClass("SRSet", contains = ".ShortReadBase",
            featureData="AnnotatedDataFrame"), # arbitrary read annotations
          prototype = prototype(
            sourcePath=new("ExperimentPath"),
-           seqData=new("ShortRead"),
+           sequenceData=new("ShortRead"),
            phenoData=new("AnnotatedDataFrame"),
-           featureData=new("AnnotatedDataFrame")),
+           readData=new("AnnotatedDataFrame")),
          validity = .srValidity)
 
 ## AlignedRead: AlignedDataFrame
