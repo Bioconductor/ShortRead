@@ -17,7 +17,7 @@
 
   This class coordinates the file hierarchy produced by the Solexa
   `pipeline' with annotation data contained in an
-  \code{\linkS4class{AnnotatedDataFrame}} (defined in the \pkg{Biobase}
+  \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} (defined in the \pkg{Biobase}
   package).
 
 }
@@ -34,7 +34,7 @@
       \code{\linkS4class{SolexaPath}} for this method).}
 
     \item{...}{Additional arguments, especially \code{laneDescription},
-	  an \code{\linkS4class{AnnotatedDataFrame}} describing the 
+	  an \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} describing the 
 	  content of each of the 8 lanes in the Solexa flow cell.}
   }
 }

@@ -26,10 +26,14 @@
       lvls[idx][-num], lvls[-idx])
 }
 
-.file_names <- function(dirPath, pattern) {
+.file_names <- function(dirPath, pattern, ..., full.names=TRUE) {
     if (!is(pattern, "character") || length(pattern)>1)
         .arg_mismatch_type_err("pattern", "character(0) or character(1)")
-    files <- list.files(dirPath, pattern, full.names=TRUE)
+    if (!isTRUE(full.names))
+        .arg_mismatch_type_err("full.names", "TRUE")
+    files <- list.files(path.expand(dirPath), pattern,
+                        ..., full.names=full.names)
+    files <- files[!file.info(files)$isdir]
     if (length(files)==0) {
         if (length(pattern)==0) pattern <- "character(0)"
         .throw(SRError("Input/Output",

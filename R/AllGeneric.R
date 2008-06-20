@@ -6,7 +6,7 @@ setGeneric(".throw",
 
 countLines <- function(dirPath, pattern=character(0), ..., useFullName=FALSE)
 {
-    src <- .file_names(dirPath, pattern)
+    src <- .file_names(path.expand(dirPath), pattern, ...)
     nLines <- .Call(.count_lines, src)
     names(nLines) <- 
         if (useFullName) src

@@ -7,10 +7,12 @@
 }
 \description{
 
-  This class extends \code{\linkS4class{AnnotatedDataFrame}}. It is a data
-  frame and associated metadata (describing the columns of the data
-  frame). The main purpose of this class is to contain alignment data in
-  addition to the central information of \code{\linkS4class{AlignedRead}}.
+  This class extends
+  \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}. It
+  is a data frame and associated metadata (describing the columns of the
+  data frame). The main purpose of this class is to contain alignment
+  data in addition to the central information of
+  \code{\linkS4class{AlignedRead}}.
 
 }
 
@@ -24,25 +26,25 @@
   \describe{
 
     \item{\code{data}:}{Object of class \code{"data.frame"} containing
-      the data. See \code{\linkS4class{AnnotatedDataFrame}} for details.}
+      the data. See \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
 
     \item{\code{varMetadata}:}{Object of class \code{"data.frame"}
       describing columns of \code{data}.  See
-      \code{\linkS4class{AnnotatedDataFrame}} for details.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
 
     \item{\code{dimLabels}:}{Object of class \code{character} describing
       the dimensions of the AnnotatedDataFrame. Used internally; see
-      \code{\linkS4class{AnnotatedDataFrame}} for details.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
 
     \item{\code{.__classVersion__}:}{Object of class \code{"Versions"}
       describing the version of this object. Used internally; see
-      \code{\linkS4class{AnnotatedDataFrame}} for details.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
 
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{AnnotatedDataFrame}"}, directly.
-Class \code{"\linkS4class{Versioned}"}, by class "AnnotatedDataFrame", distance 2.
+Class \code{"\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}"}, directly.
+Class \code{"\link[Biobase:class.Versioned]{Versioned}"}, by class "AnnotatedDataFrame", distance 2.
 }
 \section{Methods}{
 
@@ -55,7 +57,7 @@ Class \code{"\linkS4class{Versioned}"}, by class "AnnotatedDataFrame", distance 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
 \seealso{
-  \code{\linkS4class{AnnotatedDataFrame}}
+  \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
 }
 
 \keyword{classes}
