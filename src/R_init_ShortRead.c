@@ -14,6 +14,8 @@ static const R_CallMethodDef callMethods[] = {
     {".alphabet_duplicated", (DL_FUNC) &alphabet_duplicated, 1},
     {".alphabet_rank", (DL_FUNC) &alphabet_rank, 1},
     {".read_maq_map", (DL_FUNC) &read_maq_map, 2},
+    {".pileup", (DL_FUNC) &pileup, 6},
+    {".readBfaToc", (DL_FUNC) &readBfaToc, 1},
     {NULL, NULL, 0}
 };
 

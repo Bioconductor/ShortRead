@@ -30,3 +30,12 @@ SEXP alphabet_rank(SEXP stringSet);
 /* read_maq_map.c */
 
 SEXP read_maq_map( SEXP filename, SEXP maxreads );
+
+/* pileup.c */
+
+SEXP pileup( SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir, SEXP readlength,
+   SEXP offset );
+
+/* readBfaToc.c */
+
+SEXP readBfaToc( SEXP bfa_filename );
