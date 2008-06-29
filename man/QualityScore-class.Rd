@@ -94,10 +94,16 @@
     \item{show}{\code{signature(object = "QualityScore")}:}
     \item{show}{\code{signature(object = "NumericQuality")}:}
     \item{show}{\code{signature(object = "FastqQuality")}:
-      provide a brief summary of the object content.}
 
-    \item{detail}{\code{signature(object = "QualityScore")}: provide a
-      more detailed view of object content.}
+      provide a brief summary of the object content.
+
+    }
+
+    \item{detail}{\code{signature(object = "QualityScore")}:
+
+      provide a more detailed view of object content.
+
+    }
   }
 
   The following methods are defined on specific classes:

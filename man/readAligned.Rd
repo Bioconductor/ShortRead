@@ -43,6 +43,7 @@ readAligned(dirPath, pattern=character(0), ...)
   The \code{readAligned,character-method} interprets file types based
   on an additional \code{type} argument. Supported types are:
   \itemize{
+
     \item{\code{type="SolexaExport"}}{
 
       This type parses \code{s_L_export.txt} files following the
@@ -85,6 +86,37 @@ readAligned(dirPath, pattern=character(0), ...)
       Different interfaces to reading alignment files are described in
       \code{\linkS4class{SolexaPath}} and \code{\linkS4class{SolexaSet}}.
 
+    }
+
+    \item{\code{type="SolexaPrealign"}}{See SolexaRealign}
+    \item{\code{type="SolexaAlign"}}{See SolexaRealign}
+    \item{\code{type="SolexaRealign"}}{
+
+      These types parse \code{s_L_TTTT_prealign.txt},
+      \code{s_L_TTTT_align.txt} or \code{s_L_TTTT_realign.txt} files
+      produced by default and eland analyses. From the Solexa
+      documentation, \code{align} corresponds to unfiltered first-pass
+      alignements, \code{prealign} adjusts alignments for error rates
+      (when available), \code{realign} filters alignments to exclude
+      clusters failing to pass quality criteria.
+
+      Because base quality scores are not stored with alignments, the
+      object returned by \code{readAligned} scores all base qualities as
+      \code{-32}.
+
+      If parsed, values can be retrieved from
+      \code{\linkS4class{AlignedRead}} as follows:
+
+      \describe{
+        \item{Sequence}{stored in \code{sread}}
+        \item{Best score}{stored in \code{alignQuality}}
+        \item{Number of hits}{stored in \code{alignData}}
+        \item{Target position}{stored in \code{position}}
+        \item{Strand}{stored in \code{strand}}
+        \item{Target sequence}{Ignored; parse using
+          \code{\link{readXStringColumns}}}
+        \item{Next best score}{stored in \code{alignData}}
+      }
     }
 
     \item{\code{type="MAQMap", records=-1L}}{Parse binary \code{map}
@@ -151,6 +183,14 @@ readAligned(dirPath, pattern=character(0), ...)
   Simon Anders <anders@ebi.ac.uk> (MAQ map)}
 
 \examples{
+sp <- SolexaPath(system.file("extdata", package="ShortRead"))
+ap <- analysisPath(sp)
+## ELAND_EXTENDED
+readAligned(ap, "s_2_export.txt", "SolexaExport")
+## PhageAlign
+readAligned(ap, "s_5_.*_realign.txt", "SolexaRealign")
+
+## MAQ
 dirPath <- system.file('extdata', 'maq', package='ShortRead')
 list.files(dirPath)
 ## First line

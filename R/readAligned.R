@@ -1,8 +1,8 @@
-.read_csv_portion <- function(dirPath, pattern, colClasses, sep, header) {
+.read_csv_portion <- function(dirPath, pattern, colClasses, ...) {
     ## visit several files, then collapse
     files <- .file_names(dirPath, pattern)
     lsts <- lapply(files, read.csv,
-                   sep=sep, header=header, colClasses=colClasses)
+                   ..., colClasses=colClasses)
     cclasses <- colClasses[!sapply(colClasses, is.null)]
     lst <- lapply(seq_along(names(cclasses)),
                   function(idx) unlist(lapply(lsts, "[[", idx)))
@@ -10,8 +10,49 @@
     lst
 }
 
+.readAligned_SolexaAlign <-
+    function(dirPath, pattern=character(0), ...,
+             sep=" ", comment.char="#", header=FALSE)
+{
+    csvClasses <- xstringClasses <-
+        list(sequence="DNAString", alignQuality="integer",
+             nMatch="integer", position="integer", strand="factor",
+             refSequence=NULL, nextBestAlignQuality="integer")
+    xstringNames <- "sequence"
+    csvClasses[xstringNames] <- list(NULL)
+    xstringClasses[!names(xstringClasses) %in% xstringNames] <-
+        list(NULL)
+
+    ## CSV portion
+    lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
+                             sep=sep, comment.char=comment.char,
+                             header=header)
+    df <- data.frame(nMatch=lst$nMatch,
+                     nextBestAlignQuality=lst$nextBestAlignQuality)
+    meta <- data.frame(labelDescription=c(
+                         "Number of matches",
+                         "Next-best alignment quality score"))
+    alignData <- AlignedDataFrame(df, meta)
+
+    ## XStringSet classes
+    sets <- readXStringColumns(dirPath, pattern, xstringClasses,
+                               ..., sep=sep)
+    len <- length(sets[["sequence"]])
+    wd <- width(sets[["sequence"]])
+    q <- paste(rep(" ", max(wd)), collapse="")
+    quality <- BStringSet(views(BString(q), rep(1, len), wd))
+    AlignedRead(sread=sets[["sequence"]],
+                id=BStringSet(character(len)),
+                quality=SFastqQuality(quality),
+                chromosome=factor(rep(NA, len)),
+                position=lst[["position"]],
+                strand=lst[["strand"]],
+                alignQuality=NumericQuality(lst[["alignQuality"]]),
+                alignData=alignData)
+}
+
 .readAligned_SolexaExport <- function(dirPath, pattern=character(0),
-                                      sep="\t", header=FALSE) {
+                                      ..., sep="\t", header=FALSE) {
     ## NULL are currently ignored, usually from paired-end reads
     csvClasses <- xstringClasses <-
         list(machine=NULL, run="integer", lane="integer",
@@ -25,12 +66,13 @@
              filtering="factor")
 
     xstringNames <- c("sequence", "quality")
-    csvClasses[xstringNames] <- list(NULL, NULL)
+    csvClasses[xstringNames] <- list(NULL)
     xstringClasses[!names(xstringClasses) %in% xstringNames] <-
         list(NULL)
 
     ## CSV portion
-    lst <- .read_csv_portion(dirPath, pattern, csvClasses, sep, header)
+    lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
+                             sep=sep, header=header)
     df <- with(lst, data.frame(run=run, lane=lane, tile=tile, x=x,
                                y=y, filtering=filtering))
     meta <- data.frame(labelDescription=c(
@@ -93,8 +135,8 @@
              mismatchQuality="integer", nExactMatch24="integer",
              nOneMismatch24="integer", NULL, NULL, NULL)
     ## CSV portion
-    csv <- .read_csv_portion(dirPath, pattern, colClasses, sep,
-                             header)
+    csv <- .read_csv_portion(dirPath, pattern, colClasses, sep=sep,
+                             header=header)
     ## XStringSet components
     colClasses <- list("BString", NULL, NULL, NULL, NULL,
                        NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -112,13 +154,22 @@
                 alignData=.readAligned_Maq_ADF(csv))
 }
 
-.readAligned_character<- function(dirPath, pattern=character(0),
-                                  type=c("SolexaExport", "MAQMap",
-                                    "MAQMapview"), ...) {
+.readAligned_character <-
+    function(dirPath, pattern=character(0),
+             type=c(
+               "SolexaExport", "SolexaAlign",
+               "SolexaPrealign", "SolexaRealign",
+               "MAQMap", "MAQMapview"),
+             ...)
+{
     if (!is.character(type) || length(type) != 1)
         .arg_mismatch_type_err("type", "character(1)")
     switch(type,
            SolexaExport=.readAligned_SolexaExport(dirPath,
+             pattern=pattern, ...),
+           SolexaPrealign=,
+           SolexaAlign=,
+           SolexaRealign=.readAligned_SolexaAlign(dirPath,
              pattern=pattern, ...),
            MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
            MAQMapview=.readAligned_MaqMapview(dirPath, pattern=pattern,

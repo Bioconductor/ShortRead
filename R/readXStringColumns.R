@@ -1,6 +1,6 @@
 readXStringColumns <- function(dirPath, pattern=character(0),
                                colClasses=list(NULL), sep="\t",
-                               header=FALSE) {
+                               header=FALSE, comment.char="#") {
     if (!is.list(colClasses))
         .arg_mismatch_type_err("colClasses", "list()")
     colIndex <- which(!sapply(colClasses, is.null))
@@ -17,7 +17,7 @@ readXStringColumns <- function(dirPath, pattern=character(0),
     files <- .file_names(dirPath, pattern)
     res <- tryCatch({
         .Call(.read_XStringSet_columns, files,
-              colIndex, colClasses, sep, header)
+              colIndex, colClasses, sep, header, comment.char)
     }, error=function(err) {
         .throw(SRError("Input/Output",
                        "while reading files '%s':\n    %s",

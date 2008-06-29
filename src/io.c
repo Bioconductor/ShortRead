@@ -124,7 +124,8 @@ read_solexa_fastq(SEXP files)
 
 int
 _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
-                       const char *sep, int header, CharBBuf *sets,
+                       const char *sep, int header,
+                       const char *commentChar, CharBBuf *sets,
                        const int *toIUPAC)
 {
     FILE *file;
@@ -139,7 +140,6 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
     if (header == TRUE)
         fgets(linebuf, LINEBUF_SIZE, file);
     lineno = 0;
-
     while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
         nchar_in_buf = _rtrim(linebuf);
         if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
@@ -148,6 +148,9 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
         } else if (nchar_in_buf == 0) {
             fclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
+        } else if (*linebuf == *commentChar) {
+            lineno++;
+            continue;
         }
 
         int j = 0, cidx=0;
@@ -170,7 +173,7 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
 
 SEXP
 read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
-                        SEXP sep, SEXP header)
+                        SEXP sep, SEXP header, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character(1)'");
@@ -182,6 +185,11 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
         Rf_error("'sep' must be character(1)");
     if (!IS_LOGICAL(header) || LENGTH(header) != 1)
         Rf_error("'header' must be logical(1)");
+    if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
+        Rf_error("'commentChar' must be character(1)");
+    if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
+        Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
+                 LENGTH(STRING_ELT(commentChar, 0)));
 
     /* Count lines and pre-allocate space */
     const char *csep = translateChar(STRING_ELT(sep, 0));
@@ -208,6 +216,7 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
         const char *fname = translateChar(STRING_ELT(files, i));
         nreads += _io_XStringSet_columns(fname, colidx, ncol,
                                          csep, LOGICAL(header)[0],
+                                         CHAR(STRING_ELT(commentChar, 0)),
                                          sets, toIUPAC);
     }
     if (nreads != nrow)

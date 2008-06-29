@@ -16,7 +16,7 @@
 \usage{
 readXStringColumns(dirPath, pattern=character(0),
                    colClasses=list(NULL), sep = "\t",
-                   header = FALSE)
+                   header = FALSE, comment.char="#")
 }
 \arguments{
 
@@ -42,6 +42,11 @@ readXStringColumns(dirPath, pattern=character(0),
   \item{header}{A length 1 logical vector indicating whether files
     include a header line identifying columns. If present, the header of
     the first file is used to name the returned values.}
+
+  \item{comment.char}{A length 1 character vector, with a single
+    character that, when appearing at the start of a line, indicates
+    that the entire line should be ignored. Currently there is no way to
+    use comment characters in other than the first position of a line.}
 }
 
 \value{

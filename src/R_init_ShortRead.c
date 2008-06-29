@@ -5,7 +5,7 @@ static const R_CallMethodDef callMethods[] = {
     {".count_lines", (DL_FUNC) &count_lines, 1},
     /* io.c */
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 1},
-    {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 5},
+    {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 6},
     /* alphabet */
     {".alphabet_by_cycle", (DL_FUNC) &alphabet_by_cycle, 3},
     {".alphabet_score", (DL_FUNC) &alphabet_score, 2},
@@ -14,7 +14,9 @@ static const R_CallMethodDef callMethods[] = {
     {".alphabet_duplicated", (DL_FUNC) &alphabet_duplicated, 1},
     {".alphabet_rank", (DL_FUNC) &alphabet_rank, 1},
     {".read_maq_map", (DL_FUNC) &read_maq_map, 2},
+    /* pileup */
     {".pileup", (DL_FUNC) &pileup, 6},
+    /* readBfaToc */
     {".readBfaToc", (DL_FUNC) &readBfaToc, 1},
     {NULL, NULL, 0}
 };
