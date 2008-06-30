@@ -43,6 +43,7 @@ setMethod("srduplicated", "XStringSet", function(x, ...) {
     t <- tabulate(r)
     o <- order(t, decreasing=TRUE)
     ## n most common sequences
+    n <- min(n, sum(t!=0))              # remove duplicates
     top <- head(t[o], n)
     names(top) <- as.character(head(srt[o], n))
     ## overall frequency -- equivalent of table(table(sread))
