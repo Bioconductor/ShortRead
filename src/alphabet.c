@@ -63,6 +63,77 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
 }
 
 SEXP
+alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphabet1, SEXP alphabet2)
+{
+    const int MAX_MAP = 256;
+    /* FIXME: check types of incoming arguments */
+    if (get_XStringSet_length(stringSet1) != get_XStringSet_length(stringSet2))
+    	Rf_error("'stringSet1' and 'stringSet2' must have the same length");
+    if (!IS_INTEGER(width) || LENGTH(width) != 1)
+        Rf_error("'width' must be integer(1)");
+    if (!IS_CHARACTER(alphabet1) || !IS_CHARACTER(alphabet2))
+        Rf_error("'alphabet' must be list of character vectors");
+
+    /* allocate and initialize the answer matrix */
+    const int dim1 = LENGTH(alphabet1), dim2 = LENGTH(alphabet2), dim3 = INTEGER(width)[0];
+    const int dim1xdim2 = dim1 * dim2;
+    SEXP ans, nms;
+    PROTECT(ans = alloc3DArray(INTSXP, dim1, dim2, dim3));
+    PROTECT(nms = NEW_LIST(3));
+    SET_VECTOR_ELT(nms, 0, alphabet1);
+    SET_VECTOR_ELT(nms, 1, alphabet2);
+    setAttrib(ans, R_DimNamesSymbol, nms);
+    UNPROTECT(1);
+
+    int *ansp = INTEGER(ans);   /* convenient pointer to data */
+    memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */
+
+    /* set up a decoder for string1 and string2 */
+    const char *base1 = get_XStringSet_baseClass(stringSet1);
+    const char *base2 = get_XStringSet_baseClass(stringSet2);
+    DECODE_FUNC decode1 = decoder(base1);
+    DECODE_FUNC decode2 = decoder(base2);
+
+    /* map between decoded character and offset into 'ans' */
+    int i, j;
+    int map1[MAX_MAP], map2[MAX_MAP];
+    memset(map1, -1, MAX_MAP*sizeof(int)); /* default; ignore */
+    memset(map2, -1, MAX_MAP*sizeof(int)); /* default; ignore */
+    for (i = 0; i < LENGTH(alphabet1); ++i) {
+        unsigned char c = (unsigned char) *CHAR(STRING_ELT(alphabet1, i));
+        map1[c] = i;
+    }
+    for (i = 0; i < LENGTH(alphabet2); ++i) {
+        unsigned char c = (unsigned char) *CHAR(STRING_ELT(alphabet2, i));
+        map2[c] = i;
+    }
+
+    /* The main loop. Cache the string set for fast access, then
+     * iterate over all strings, and over all characters in the
+     * string. For each character, decode and map into the answer
+     * matrix.
+     *
+     * FIXME: 
+     */
+    CachedXStringSet cache1 = new_CachedXStringSet(stringSet1);
+    CachedXStringSet cache2 = new_CachedXStringSet(stringSet2);
+    const int len = get_XStringSet_length(stringSet1);
+    for (i = 0; i < len; ++i) {
+        RoSeq seq1 = get_CachedXStringSet_elt_asRoSeq(&cache1, i);
+        RoSeq seq2 = get_CachedXStringSet_elt_asRoSeq(&cache2, i);
+        for (j = 0; j < seq1.nelt; ++j) {
+            int idx1 = map1[decode1(seq1.elts[j])];
+            int idx2 = map2[decode2(seq2.elts[j])];
+            if (idx1 >= 0 && idx2 >= 0)
+                ansp[j * dim1xdim2 + idx2 * dim1 + idx1] += 1;
+        }
+    }
+
+    UNPROTECT(1);
+    return ans;
+}
+
+SEXP
 alphabet_score(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStringSet */

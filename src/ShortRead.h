@@ -21,6 +21,8 @@ SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
 /* alphabet.c */
 
 SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet);
+SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
+                            SEXP alphabet1, SEXP alphabet2);
 SEXP alphabet_score(SEXP stringSet, SEXP score);
 SEXP alphabet_as_int(SEXP stringSet, SEXP score);
 SEXP alphabet_order(SEXP stringSet);
@@ -29,13 +31,13 @@ SEXP alphabet_rank(SEXP stringSet);
 
 /* read_maq_map.c */
 
-SEXP read_maq_map( SEXP filename, SEXP maxreads );
+SEXP read_maq_map(SEXP filename, SEXP maxreads);
 
 /* pileup.c */
 
-SEXP pileup( SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir, SEXP readlength,
-   SEXP offset );
+SEXP pileup(SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir,
+            SEXP readlength, SEXP offset);
 
 /* readBfaToc.c */
 
-SEXP readBfaToc( SEXP bfa_filename );
+SEXP readBfaToc(SEXP bfa_filename);

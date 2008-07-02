@@ -116,7 +116,8 @@ setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
 
 .FastqQuality_abc<- function(stringSet, alphabet, ...) {
    if (missing(alphabet))
-     .abc_BStringSet(quality(stringSet), ...)
+     .abc_BStringSet(quality(stringSet),
+                     alphabet=sapply(as.raw(33:132), rawToChar), ...)
    else
      .abc_BStringSet(quality(stringSet), alphabet=alphabet, ...)
 }
