@@ -52,9 +52,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       are present to limit inappropriate use.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
-      Apply \code{\link{alphabetByCycle}} to the \code{sread} and
-      \code{quality} component of \code{stringSet}, returning a named
-      list of matrices.}
+      Apply \code{\link{alphabetByCycle}} to the \code{sread} component,
+      the \code{quality} component, and the combination of these two
+      components of \code{stringSet}, returning a list of matrices with
+      three elements:  \code{"sread"}, \code{"quality"}, and \code{"both"}.}
 
     \item{detail}{\code{signature(object = "ShortReadQ")}: display the
 	  first and last entries of each of \code{sread}, \code{id}, and
