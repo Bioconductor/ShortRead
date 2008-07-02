@@ -21,7 +21,7 @@ test_alphabetByCycle <- function() {
 
     obj <- alphabetByCycle(sq)
     validObject(obj)
-    checkEquals(2, length(obj))
+    checkEquals(3, length(obj))
     checkEquals(alphabetByCycle(sread(sq)), obj[["sread"]])
     checkEquals(alphabetByCycle(quality(sq)), obj[["quality"]])
 
