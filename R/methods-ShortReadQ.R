@@ -56,7 +56,7 @@ setMethod("[", c("ShortReadQ", "ANY", "missing"), .ShortReadQ_subset)
     if (missing(alphabet1))
         alphabet1 <- Biostrings::alphabet(stringSet1[[1]])
     if (missing(alphabet2))
-        alphabet2 <- sapply(as.raw(33:132), rawToChar)
+        alphabet2 <- sapply(as.raw(32:126), rawToChar)
     width <- unique(c(unique(Biostrings::width(stringSet1)), unique(Biostrings::width(stringSet2))))
     if (length(width)!=1)
         .throw(SRError("UserArgumentMismatch",

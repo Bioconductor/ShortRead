@@ -115,11 +115,9 @@ setMethod("show", "FastqQuality", function(object) {
 setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
 
 .FastqQuality_abc<- function(stringSet, alphabet, ...) {
-   if (missing(alphabet))
-     .abc_BStringSet(quality(stringSet),
-                     alphabet=sapply(as.raw(33:132), rawToChar), ...)
-   else
-     .abc_BStringSet(quality(stringSet), alphabet=alphabet, ...)
+    if (missing(alphabet))
+        alphabet <- sapply(as.raw(32:126), rawToChar)
+   .abc_BStringSet(quality(stringSet), alphabet=alphabet, ...)
 }
 
 setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
