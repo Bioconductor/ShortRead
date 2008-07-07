@@ -77,13 +77,33 @@ setMethod("width", "MatrixQuality",
 
 ## FastqQuality, SFastqQuality
 
-FastqQuality <- function(quality=BStringSet(character(0))) {
-    new("FastqQuality", quality=quality)
+.FastqQuality_missing <- function(quality, ...) {
+    callGeneric(BStringSet(character(0)))
 }
 
-SFastqQuality <- function(quality=BStringSet(character(0))) {
-    new("SFastqQuality", quality=quality)
+.FastqQuality_character <- function(quality, ...) {
+    callGeneric(BStringSet(quality), ...)
 }
+
+setMethod("FastqQuality", "missing", .FastqQuality_missing)
+
+setMethod("FastqQuality", "character", .FastqQuality_character)
+
+setMethod("FastqQuality", "BStringSet", function(quality, ...) {
+    new("FastqQuality", quality=quality)
+})
+
+setMethod("SFastqQuality", "missing", .FastqQuality_missing)
+
+setMethod("SFastqQuality", "character", .FastqQuality_character)
+
+setMethod("SFastqQuality", "BStringSet", function(quality, ...) {
+    new("SFastqQuality", quality=quality)
+})
+
+setAs("FastqQuality", "numeric", function(from) {
+    as.vector(as(from, "matrix"))
+})
 
 setAs("FastqQuality", "matrix", function(from) {
     if (!length(unique(width(from)))==1)
@@ -102,6 +122,9 @@ setAs("SFastqQuality", "matrix", function(from) {
 setMethod("width", "FastqQuality",
           function(x) width(quality(x)))
 
+setMethod("alphabet", "FastqQuality",
+          function(x) sapply(as.raw(32:125), rawToChar))
+
 setMethod("show", "FastqQuality", function(object) {
     callNextMethod()
     cat("quality:\n")
@@ -114,9 +137,9 @@ setMethod("show", "FastqQuality", function(object) {
 
 setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
 
-.FastqQuality_abc<- function(stringSet, alphabet, ...) {
+.FastqQuality_abc <- function(stringSet, alphabet, ...) {
     if (missing(alphabet))
-        alphabet <- sapply(as.raw(32:126), rawToChar)
+        alphabet <- Biostrings::alphabet(stringSet)
    .abc_BStringSet(quality(stringSet), alphabet=alphabet, ...)
 }
 

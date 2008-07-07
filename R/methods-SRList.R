@@ -10,6 +10,12 @@ SRList <- function(...) {
 
 setMethod("names", "SRList", function(x) names(.srlist(x)))
 
+setReplaceMethod("names", c("SRList", "character"), function(x, value) {
+    lst <- .srlist(x)
+    names(lst) <- value
+    initialize(x, .srlist=lst)
+})
+
 setMethod("length", "SRList", function(x) length(.srlist(x)))
 
 setMethod("[", c(x="SRList", i="ANY", j="missing"),

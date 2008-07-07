@@ -76,137 +76,175 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     .qa_lst_as_data_frame(lst)
 }
 
+.qa_solexa_export_lane <-
+    function(dirPath, pattern, ..., type="SolexaExport", verbose=FALSE)
+{
+    readLbls <- c("read", "aligned", "filtered")
+    rpt <- readAligned(dirPath, pattern,..., type=type)
+    df <- pData(alignData(rpt))
+    filterIdx <- df$filtering=="Y"
+    mapIdx <- !is.na(position(rpt))
+
+    nbins <- max(df$tile)
+    tiles <- seq_len(nbins)
+    nReadByTile <- tabulate(df$tile, nbins)
+    nFilterByTile <- tabulate(df$tile[filterIdx], nbins)
+    nMapByTile <- tabulate(df$tile[mapIdx], nbins)
+
+    qualityScore <- alphabetScore(quality(rpt)) / width(quality(rpt))
+    qualityDf <- function(qscore) {
+        d <- density(qscore)
+        data.frame(quality=d$x,
+                   density=d$y,
+                   lane=pattern)
+    }
+    qualityScoreRead <- qualityDf(qualityScore)
+    qualityScoreFiltered <- qualityDf(qualityScore[filterIdx])
+    qualityScoreAligned <- qualityDf(qualityScore[mapIdx])
+
+    abc <- alphabetByCycle(rpt)
+    baseQuality <- apply(abc, 2, sum)
+
+    alignQuality <- table(quality(alignQuality(rpt))[mapIdx])
+
+    tablesRead <- tables(sread(rpt))
+    tablesFiltered <- tables(sread(rpt)[filterIdx])
+    tablesAligned <- tables(sread(rpt)[mapIdx])
+    frequentSequences <-
+        data.frame(sequence=c(
+                     names(tablesRead$top),
+                     names(tablesFiltered$top),
+                     names(tablesAligned$top)),
+                   count=c(
+                     as.integer(tablesRead$top),
+                     as.integer(tablesFiltered$top),
+                     as.integer(tablesAligned$top)),
+                   type=rep(
+                     readLbls,
+                     c(length(tablesRead$top),
+                       length(tablesFiltered$top),
+                       length(tablesAligned$top))),
+                   lane=pattern)
+    sequenceDistribution <-
+        cbind(rbind(tablesRead$distribution,
+                    tablesFiltered$distribution,
+                    tablesAligned$distribution),
+              type=rep(
+                readLbls,
+                c(nrow(tablesRead$distribution),
+                  nrow(tablesFiltered$distribution),
+                  nrow(tablesAligned$distribution))),
+              lane=pattern)
+
+    perCycleBaseCall <- local({
+        abc <- apply(abc, c(1, 3), sum)
+        df <- data.frame(Cycle=col(abc, as.factor=TRUE),
+                         Base=row(abc, as.factor=TRUE),
+                         Count=as.vector(abc),
+                         lane=pattern)
+        df[df$Count != 0,]
+    })
+    perCycleQuality <- local({
+        abc <- apply(abc, 2:3, sum)
+        q <- row(abc, as.factor=TRUE)
+        q0 <- 1 + 32 * is(quality(rpt), "SFastqQuality")
+        df <- data.frame(Cycle=col(abc, as.factor=TRUE),
+                         Quality=q,
+                         Score=as.numeric(q)-q0,
+                         Count=as.vector(abc),
+                         lane=pattern)
+        df[df$Count != 0, ]
+    })
+
+    list(readCounts=data.frame(
+           read=sum(nReadByTile),
+           filtered=sum(nFilterByTile),
+           aligned=sum(nMapByTile),
+           row.names=pattern),
+         baseCalls=local({
+             n <- apply(abc, 1, sum)
+             data.frame(A=n["A"], C=n["C"], G=n["G"], T=n["T"],
+                        N=n["N"], row.names=pattern)
+         }),
+         readQualityScore=cbind(
+           rbind(qualityScoreRead,
+                 qualityScoreFiltered,
+                 qualityScoreAligned),
+           type=rep(
+             readLbls,
+             c(nrow(qualityScoreRead),
+               nrow(qualityScoreFiltered),
+               nrow(qualityScoreAligned)))),
+         baseQuality=data.frame(
+           score=as.vector(names(baseQuality)),
+           count=as.vector(baseQuality),
+           lane=pattern, row.names=NULL),
+         alignQuality=data.frame(
+           score=as.numeric(names(alignQuality)),
+           count=as.vector(alignQuality),
+           lane=pattern, row.names=NULL),
+         frequentSequences=frequentSequences,
+         sequenceDistribution=sequenceDistribution,
+
+         perCycle=list(
+           baseCall=perCycleBaseCall,
+           quality=perCycleQuality),
+
+         perTile=list(
+           readCounts=data.frame(
+             count=c(nReadByTile, nFilterByTile, nMapByTile),
+             type=rep(
+               readLbls,
+               c(length(nReadByTile), length(nFilterByTile),
+                 length(nMapByTile))),
+             tile=rep(tiles, 3),
+             lane=pattern, row.names=NULL),
+           medianReadQualityScore=local({
+               tidx <- as.character(tiles)
+               data.frame(score=c(
+                            tapply(qualityScore,
+                                   df$tile, median)[tidx],
+                            tapply(qualityScore[filterIdx],
+                                   df$tile[filterIdx], median)[tidx],
+                            tapply(qualityScore[mapIdx],
+                                   df$tile[mapIdx], median)[tidx]),
+                          type=rep(readLbls, each=length(tidx)),
+                          tile=as.integer(tidx),
+                          lane=pattern, row.names=NULL)
+           }))
+         )
+}
+
 .qa_solexa_export <- function(dirPath, pattern, type="SolexaExport", ...,
                               verbose=FALSE) {
-    .lane <- function(dirPath, pattern, ..., verbose=FALSE) {
-        .cleanIdx <- function(rpt) {
-            alphabetFrequency(sread(rpt), baseOnly=TRUE)[,'other']==0
-        }
-        rpt <- readAligned(dirPath, pattern,...)
-        df <- pData(alignData(rpt))
-        cleanIdx <- .cleanIdx(rpt)
-        filterIdx <- df$filtering=="Y"
-        mapIdx <- !is.na(position(rpt))
-
-        nbins <- max(df$tile)
-        nReadByTile <- tabulate(df$tile, nbins)
-        nFilterByTile <- tabulate(df$tile[filterIdx], nbins)
-        nCleanByTile <- tabulate(df$tile[cleanIdx], nbins)
-        nFilterCleanByTile <- tabulate(df$tile[filterIdx & cleanIdx], nbins)
-        nMapByTile <- tabulate(df$tile[mapIdx], nbins)
-
-        baseByCycle <- alphabetByCycle(sread(rpt))
-        qualityByCycle <- alphabetByCycle(quality(rpt))
-
-        qualityScore <- alphabetScore(quality(rpt)) / width(quality(rpt))
-        quality <- density(qualityScore)
-        qualityFilter <- density(qualityScore[filterIdx])
-        
-        aquality <- quality(alignQuality(rpt))
-        alignQuality <- table(aquality[filterIdx & !is.na(aquality)])
-
-        dupTables <- tables(sread(rpt))
-        mapDupTables <- tables(sread(rpt)[mapIdx])
-
-        list(nRead=sum(nReadByTile),
-             nFilter=sum(nFilterByTile),
-             nClean=sum(nCleanByTile),
-             nFilterClean=sum(nFilterCleanByTile),
-             nMap=sum(nMapByTile),
-             ##
-             baseCall=rowSums(baseByCycle),
-             qualityScore=rowSums(qualityByCycle),
-             quality=quality,
-             qualityFilter=qualityFilter,
-             alignQuality=alignQuality,
-             duplicates=list(
-               tables=dupTables,
-               mapTables=mapDupTables),
-             perCycle=list(
-               baseCall=baseByCycle,
-               qualityScore=qualityByCycle),
-             perTile=list(
-               counts=data.frame(
-                 Reads=nReadByTile,
-                 Filtered=nFilterByTile,
-                 Clean=nCleanByTile,
-                 FilteredClean=nFilterCleanByTile,
-                 Mapped=nMapByTile,
-                 Tile=seq_along(nReadByTile),
-                 Lane=pattern, row.names=NULL),
-               qualityRead=tapply(qualityScore, df$tile, median),
-               qualityFilter=tapply(qualityScore[filterIdx],
-                 df$tile[filterIdx], median),
-               qualityClean=tapply(
-                 qualityScore[cleanIdx], df$tile[cleanIdx], median),
-               qualityFilterClean=tapply(qualityScore[filterIdx & cleanIdx],
-                 df$tile[filterIdx & cleanIdx], median),
-               qualityMap=tapply(qualityScore[mapIdx], df$tile[mapIdx],
-                 median)))
-    }
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .lane, dirPath=dirPath, type=type,
+    lst <- srapply(basename(fls), .qa_solexa_export_lane,
+                   dirPath=dirPath, type=type,
                    verbose=verbose)
     names(lst) <- basename(fls)
 
-    .qualityDf <- function(lanes, part) {
-        x <- lapply(lanes, function(elt) elt[[part]]$x)
-        y <- lapply(lanes, function(elt) elt[[part]]$y)
-        data.frame(Quality=unlist(x, use.names=FALSE),
-                   Density=unlist(y, use.names=FALSE),
-                   Lane=rep(names(lanes),
-                     sapply(x, length, USE.NAMES=FALSE)))
-    }
-
-    alignQuality <- mapply(function(elt, lane) {
-        data.frame(Quality=as.integer(names(elt[["alignQuality"]])),
-                   Count=as.vector(elt[["alignQuality"]]),
-                   Lane=lane)
-    }, lst, names(lst), SIMPLIFY=FALSE, USE.NAMES=FALSE)
-
-    .dupTop <- function(elt, lane) {
-        data.frame(Sequence=names(elt$top),
-                   Count=as.vector(elt$top),
-                   Lane=lane, row.names=NULL)
-    }
-    .dupTable <- function(elt, lane) {
-        data.frame(NUniqueSequences=elt$distribution$nOccurrences,
-                   Count=elt$distribution$nReads,
-                   Lane=lane)
-    }
-    dups <- lapply(lst, "[[", "duplicates")
-    top <- mapply(.dupTop, lapply(dups, "[[", "tables"),
-                  names(dups), SIMPLIFY=FALSE, USE.NAMES=FALSE)
-    mapTop <- mapply(.dupTop, lapply(dups, "[[", "mapTables"),
-                     names(dups), SIMPLIFY=FALSE, USE.NAMES=FALSE)
-    tables <- mapply(.dupTable,
-                     lapply(dups, "[[", "tables"),
-                     names(dups), SIMPLIFY=FALSE, USE.NAMES=FALSE)
-    mapTables <- mapply(.dupTable,
-                        lapply(dups, "[[", "mapTables"),
-                        names(dups), SIMPLIFY=FALSE, USE.NAMES=FALSE)
-    duplicates <- list(top=do.call("rbind", top),
-                       mapTop=do.call("rbind", mapTop),
-                       tables=do.call("rbind", tables),
-                       mapTables=do.call("rbind", mapTables))
-
-    tileCounts <- lapply(lst, function(elt) elt$perTile[["counts"]])
-    names(tileCounts) <- NULL
-
-    list(counts=sapply(c("nRead", "nFilter", "nClean",
-           "nFilterClean", "nMap"),
-           function(elt) sapply(lst, "[[", elt)),
-         baseCall=t(sapply(lst, "[[", "baseCall")),
-         qualityRead=.qualityDf(lst, "quality"),
-         qualityFilter=.qualityDf(lst, "qualityFilter"),
-         alignQuality=do.call("rbind", alignQuality),
-         duplicates=duplicates,
-         perCycle=lapply(lst, "[[", "perCycle"),
-         perTile=list(
-           counts=do.call("rbind", tileCounts),
-           quality=lapply(lst, function(elt) {
-               as.vector(elt$perTile[names(elt$perTile) != "counts"])
-           })))
+    ## collapse into data frames
+    bind <- function(lst, elt)
+        do.call("rbind",
+                subListExtract(lst, elt, keep.names=FALSE))
+    list(readCounts=bind(lst, "readCounts"),
+         baseCalls=bind(lst, "baseCalls"),
+         readQualityScore=bind(lst, "readQualityScore"),
+         baseQuality=bind(lst, "baseQuality"),
+         alignQuality=bind(lst, "alignQuality"),
+         frequentSequences=bind(lst, "frequentSequences"),
+         sequenceDistribution=bind(lst, "sequenceDistribution"),
+         perCycle=local({
+             lst <- subListExtract(lst, "perCycle")
+             list(baseCall=bind(lst, "baseCall"),
+                  quality=bind(lst, "quality"))
+         }),
+         perTile=local({
+             lst <- subListExtract(lst, "perTile")
+             list(readCounts=bind(lst, "readCounts"),
+                  medianReadQualityScore=bind(
+                    lst, "medianReadQualityScore"))
+         }))
 }
 
 setMethod("qa", "SolexaSet", .qa_solexa_export)

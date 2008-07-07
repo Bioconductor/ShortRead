@@ -80,6 +80,18 @@ setMethod("readAligned", "SolexaPath", .readAligned_SolexaPath)
 
 setMethod("qa", "SolexaPath", .SolexaPath_qa)
 
+.report_SolexaPath <- function(x, run=1, ..., qaFile=tempfile(),
+                               dest=tempfile(), type="pdf" )
+{
+    qa <- qa(SolexaPath(x), run=run)
+    save(qa, file=qaFile)
+    src <- system.file("template", "qa_solexa.Rnw", package="ShortRead")
+    symbolValues <- list(QA_SAVE_FILE=as.character(qaFile))
+    .report(type, src, dest, symbolValues)
+}
+
+setMethod("report", "SolexaPath", .report_SolexaPath)
+
 setMethod("show", "SolexaPath", function(object) {
     catPath <- function(nm) {
         vals <- do.call(nm, list(object))

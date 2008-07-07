@@ -47,6 +47,14 @@ setGeneric("tables", function(x, n=50, ...)
            standardGeneric("tables"),
            signature=c("x"))
 
+## QualityScore
+
+setGeneric("FastqQuality", function(quality, ...)
+           standardGeneric("FastqQuality"))
+
+setGeneric("SFastqQuality", function(quality, ...)
+           standardGeneric("SFastqQuality"))
+
 ## ShortRead / ShortReadQ
 
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)
@@ -73,6 +81,10 @@ setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
 
 setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))
 
+setGeneric("report", function(x, ..., dest=tempfile(), type="pdf") {
+    standardGeneric("report")
+}, signature="x")
+
 ## SolexaSet
 
 setGeneric("SolexaSet", function(path, ...)
@@ -81,3 +93,4 @@ setGeneric("SolexaSet", function(path, ...)
 setGeneric("laneNames", function(object, ...) {
     standardGeneric("laneNames")
 })
+

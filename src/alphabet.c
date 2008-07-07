@@ -17,12 +17,17 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
 
     /* allocate and initialize the answer matrix */
     const int nrow = LENGTH(alphabet), ncol = INTEGER(width)[0];
-    SEXP ans, nms;
+    SEXP ans, dimnms, nms;
     PROTECT(ans = allocMatrix(INTSXP, nrow, ncol));
-    PROTECT(nms = NEW_LIST(2));
-    SET_VECTOR_ELT(nms, 0, alphabet);
-    setAttrib(ans, R_DimNamesSymbol, nms);
-    UNPROTECT(1);
+    PROTECT(dimnms = NEW_LIST(2));
+    SET_VECTOR_ELT(dimnms, 0, alphabet);
+    /* FIXME: Cycle dimnames? */
+    PROTECT(nms = NEW_STRING(2));
+    SET_STRING_ELT(nms, 0, mkChar("alphabet"));
+    SET_STRING_ELT(nms, 1, mkChar("cycle"));
+    SET_NAMES(dimnms, nms);
+    SET_DIMNAMES(ans, dimnms);
+    UNPROTECT(2);
 
     int *ansp = INTEGER(ans);   /* convenient pointer to data */
     memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */
@@ -77,13 +82,19 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     /* allocate and initialize the answer matrix */
     const int dim1 = LENGTH(alphabet1), dim2 = LENGTH(alphabet2), dim3 = INTEGER(width)[0];
     const int dim1xdim2 = dim1 * dim2;
-    SEXP ans, nms;
+    SEXP ans, dimnms, nms;
     PROTECT(ans = alloc3DArray(INTSXP, dim1, dim2, dim3));
-    PROTECT(nms = NEW_LIST(3));
-    SET_VECTOR_ELT(nms, 0, alphabet1);
-    SET_VECTOR_ELT(nms, 1, alphabet2);
-    setAttrib(ans, R_DimNamesSymbol, nms);
-    UNPROTECT(1);
+    PROTECT(dimnms = NEW_LIST(3));
+    SET_VECTOR_ELT(dimnms, 0, alphabet1);
+    SET_VECTOR_ELT(dimnms, 1, alphabet2);
+    /* FIXME: Cycle dimnames? */
+    PROTECT(nms = NEW_STRING(3));
+    SET_STRING_ELT(nms, 0, mkChar("base"));
+    SET_STRING_ELT(nms, 1, mkChar("quality"));
+    SET_STRING_ELT(nms, 3, mkChar("cycle"));
+    SET_NAMES(dimnms, nms);
+    SET_DIMNAMES(ans, dimnms);
+    UNPROTECT(2);
 
     int *ansp = INTEGER(ans);   /* convenient pointer to data */
     memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */

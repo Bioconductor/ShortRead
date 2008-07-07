@@ -15,14 +15,16 @@
 NumericQuality(quality = numeric(0))
 IntegerQuality(quality = integer(0))
 MatrixQuality(quality = new("matrix"))
-FastqQuality(quality=BStringSet(character(0)))
-SFastqQuality(quality=BStringSet(character(0)))
+FastqQuality(quality, ...)
+SFastqQuality(quality, ...)
 }
 
 \arguments{
   \item{quality}{An object used to initialize the data
     structure. Appropriate objects are indicated in the constructors
     above.}
+
+  \item{...}{Additional arguments, currently unused.}
 }
 \value{
   Constructors return objects of the corresponding class derived from

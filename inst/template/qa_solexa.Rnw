@@ -1,0 +1,147 @@
+\documentclass{article}
+
+\usepackage{Sweave}
+
+\begin{document}
+
+\title{Solexa QA report}
+\date{\today{}}
+\maketitle{}
+
+\section{Setup}
+
+<<setup>>=
+options(digits=3)
+library(ShortRead)
+library(lattice)
+@
+
+<<utilities, echo=FALSE>>=
+ppnCount <- function(m) {
+    ## scale subsequent columns of a matrix to be proportions of
+    ## first column; useful for pretty-printing only
+    m[,-1] <- m[,-1] / m[,1]
+    m
+}
+plotReadQuality <- function(df) {
+    xyplot(density~quality|lane, df,
+           type="l",
+           xlab="Average base quality",
+           ylab="Proportion of reads",
+           layout=c(4,2))
+}
+plotReadOccurrences <- function(df) {
+    xyplot(log10(nReads)~log10(nOccurrences)|lane, df,
+           xlab= expression(paste(
+               "Number of occurrences of each read (",
+               log[10], ")", sep="")),
+           ylab=expression(paste(
+               "Number of reads (", log[10], ")", sep="")),
+           layout=c(4,2))
+}
+plotAlignQuality <- function(df) {
+    xyplot(count~score|lane, qa$alignQuality,
+           type="l",
+           prepanel=function(x, y, ...) {
+               list(ylim=c(0, 1))
+           },
+           panel=function(x, y, ...) {
+               panel.xyplot(x, y/max(y), ...)
+           },
+           xlab="Alignment quality score",
+           ylab="Number of alignments, relative to lane maximum",
+           layout=c(4,2))
+}
+
+.plotTileLocalCoords <- function(tile, nrow) {
+    row <- 1 + (tile - 1) %% nrow
+    col <- 1 + floor((tile -1) / nrow)
+    row[col%%2==0] <- nrow + 1 - row[col%%2==0]
+    list(row=as.integer(row), col=as.factor(col))
+}
+
+plotTileCounts <- function(df, nrow=100) {
+    xy <- .plotTileLocalCoords(df$tile, nrow)
+    df[,names(xy)] <- xy
+    levelplot(count~col*row|lane, df,
+              xlab="Tile local x-coordinate",
+              ylab="Tile local y-coordinate",
+              layout=c(4,2))
+}
+plotTileQualityScore <- function(df, nrow=100) {
+    xy <- .plotTileLocalCoords(df$tile, nrow)
+    df[,names(xy)] <- xy
+    levelplot(score~col*row|lane, df,
+              xlab="Tile local x-coordinate",
+              ylab="Tile local y-coordinate",
+              layout=c(4,2))
+}
+@ 
+
+<<qa-run>>=
+load("@QA_SAVE_FILE@")
+@
+
+\section{Reads}
+
+Read counts
+<<read-counts>>=
+ppnCount(qa$readCounts)
+@
+
+Base calls
+<<base-calls>>=
+ppnCount(qa$baseCalls)
+@
+
+Overall read quality
+<<read-quality-raw, fig=TRUE>>=
+df <- qa$readQualityScore
+print(plotReadQuality(df[df$type=="read",]))
+@ 
+
+Read distribution: occurrences
+<<read-distribution-occurrence, fig=TRUE>>=
+df <- qa$sequenceDistribution
+print(plotReadOccurrences(df[df$type=="read",]))
+@ 
+
+Common duplicate reads
+<<common-duplicate-reads>>=
+df <- qa$frequentSequences
+df1 <- df[df$type=="read",]
+lapply(split(df1[,c("sequence", "count")], df1$lane), head)
+@
+
+Common duplicate reads after filtering
+<<common-duplicate-mapped-reads>>=
+df1 <- df[df$type=="filtered",]
+lapply(split(df1[,c("sequence", "count")], df1$lane), head)
+@
+
+Counts per tile
+<<read-counts-per-tile, fig=TRUE>>=
+df <- qa$perTile$readCounts
+print(plotTileCounts(df[df$type=="read",]))
+@ 
+
+Median read quality score per tile
+<<read-score-per-tile, fig=TRUE>>=
+df <- qa$perTile$medianReadQualityScore
+print(plotTileQualityScore(df[df$type=="read",]))
+@
+
+Mapped alignment score
+<<mapped-alignment-score, fig=TRUE>>=
+print(plotAlignQuality(qa$alignQuality))
+@ 
+
+\appendix
+
+\section{Functions employed}
+
+<<appendix>>=
+<<utilities>>
+@
+
+\end{document}

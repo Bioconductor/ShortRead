@@ -21,9 +21,12 @@ test_alphabetByCycle <- function() {
 
     obj <- alphabetByCycle(sq)
     validObject(obj)
-    checkEquals(3, length(obj))
-    checkEquals(alphabetByCycle(sread(sq)), obj[["sread"]])
-    checkEquals(alphabetByCycle(quality(sq)), obj[["quality"]])
+    checkEquals(c(17, 94, 36), dim(obj))
+
+    checkEqualsNumeric(alphabetByCycle(sread(sq)),
+                       apply(obj, c(1, 3), sum))
+    checkEqualsNumeric(alphabetByCycle(quality(sq)),
+                       apply(obj, 2:3, sum))
 
     checkException(alphabetByCycle(id(sq)), silent=TRUE) # unequal widths
     checkException(alphabetByCycle(sread(new("ShortReadQ"))),
