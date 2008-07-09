@@ -6,7 +6,6 @@
 % ShortRead / ShortReadQ
 \alias{sread}
 \alias{id}
-\alias{quality}
 % AlignedRead
 \alias{chromosome}
 \alias{position}
@@ -40,7 +39,6 @@ vclass(object, ...)
 ## ShortRead / ShortReadQ
 sread(object, ...)
 id(object, ...)
-quality(object, ...)
 ## AlignedRead
 chromosome(object, ...)
 position(object, ...)

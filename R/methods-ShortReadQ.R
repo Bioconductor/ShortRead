@@ -16,8 +16,6 @@ setMethod(".srValidity", "ShortReadQ", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-.make_getter("quality")
-
 setMethod("readFastq", "character", function(dirPath, pattern=character(),
                                              ...) {
     src <- .file_names(dirPath, pattern)
