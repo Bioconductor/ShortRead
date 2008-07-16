@@ -164,19 +164,34 @@
 {
     if (!is.character(type) || length(type) != 1)
         .arg_mismatch_type_err("type", "character(1)")
-    switch(type,
-           SolexaExport=.readAligned_SolexaExport(dirPath,
-             pattern=pattern, ...),
-           SolexaPrealign=,
-           SolexaAlign=,
-           SolexaRealign=.readAligned_SolexaAlign(dirPath,
-             pattern=pattern, ...),
-           MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
-           MAQMapview=.readAligned_MaqMapview(dirPath, pattern=pattern,
-             ...),
-           .throw(SRError("UserArgumentMismatch",
-                          "'%s' unknown; value was '%s'",
-                          "type", type)))
+    tryCatch({
+        switch(type,
+               SolexaExport=.readAligned_SolexaExport(dirPath,
+                 pattern=pattern, ...),
+               SolexaPrealign=,
+               SolexaAlign=,
+               SolexaRealign=.readAligned_SolexaAlign(dirPath,
+                 pattern=pattern, ...),
+               MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
+               MAQMapview=.readAligned_MaqMapview(
+                 dirPath, pattern=pattern, ...),
+               .throw(SRError("UserArgumentMismatch",
+                              "'%s' unknown; value was '%s'",
+                              "type", type)))
+        }, error=function(err) {
+            if (is(err, "SRError")) stop(err)
+            else {
+                pat <- paste(pattern, collapse=" ")
+                txt <- paste("'%s' failed to parse files",
+                             "dirPath: '%s'",
+                             "pattern: '%s'",
+                             "type: '%s'",
+                             "error: %s", sep="\n  ")
+                msg <- sprintf(txt, "readAligned", dirPath, pat,
+                               type, conditionMessage(err))
+                .throw(SRError("Input/Output", msg))
+            }
+        })
 }
 
 setMethod("readAligned", "character", .readAligned_character)
