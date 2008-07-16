@@ -57,8 +57,10 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     do.call("data.frame", sublst)
 }
 
-.qa_Solexa_tileStats <- function(dirPath, pattern, ...) {
-    .qa_Solexa_tileStats_tile <- function(dirPath, pattern, ...) {
+.qa_Solexa_tileStats <- function(dirPath, pattern, ...)
+{
+    .qa_Solexa_tileStats_tile <- function(dirPath, pattern, ...)
+    {
         lane <- as.numeric(sub("s_([0-9]+)_.*", "\\1", pattern))
         tile <- as.numeric(sub("s_[0-9]+_([0-9]+)_.*", "\\1", pattern))
         dna <- readXStringColumns(dirPath, pattern,
@@ -76,7 +78,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     .qa_lst_as_data_frame(lst)
 }
 
-.qa_solexa_export_lane <-
+.qa_SolexaExport_lane <-
     function(dirPath, pattern, ..., type="SolexaExport", verbose=FALSE)
 {
     readLbls <- c("read", "aligned", "filtered")
@@ -92,7 +94,8 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     nMapByTile <- tabulate(df$tile[mapIdx], nbins)
 
     qualityScore <- alphabetScore(quality(rpt)) / width(quality(rpt))
-    qualityDf <- function(qscore) {
+    qualityDf <- function(qscore)
+    {
         d <- density(qscore)
         data.frame(quality=d$x,
                    density=d$y,
@@ -215,10 +218,10 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
          )
 }
 
-.qa_solexa_export <- function(dirPath, pattern, type="SolexaExport", ...,
+.qa_SolexaExport <- function(dirPath, pattern, type="SolexaExport", ...,
                               verbose=FALSE) {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_solexa_export_lane,
+    lst <- srapply(basename(fls), .qa_SolexaExport_lane,
                    dirPath=dirPath, type=type,
                    verbose=verbose)
     names(lst) <- basename(fls)
@@ -227,27 +230,46 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
     bind <- function(lst, elt)
         do.call("rbind",
                 subListExtract(lst, elt, keep.names=FALSE))
-    list(readCounts=bind(lst, "readCounts"),
-         baseCalls=bind(lst, "baseCalls"),
-         readQualityScore=bind(lst, "readQualityScore"),
-         baseQuality=bind(lst, "baseQuality"),
-         alignQuality=bind(lst, "alignQuality"),
-         frequentSequences=bind(lst, "frequentSequences"),
-         sequenceDistribution=bind(lst, "sequenceDistribution"),
-         perCycle=local({
-             lst <- subListExtract(lst, "perCycle")
-             list(baseCall=bind(lst, "baseCall"),
-                  quality=bind(lst, "quality"))
-         }),
-         perTile=local({
-             lst <- subListExtract(lst, "perTile")
-             list(readCounts=bind(lst, "readCounts"),
-                  medianReadQualityScore=bind(
-                    lst, "medianReadQualityScore"))
-         }))
+    lst <-
+        list(readCounts=bind(lst, "readCounts"),
+             baseCalls=bind(lst, "baseCalls"),
+             readQualityScore=bind(lst, "readQualityScore"),
+             baseQuality=bind(lst, "baseQuality"),
+             alignQuality=bind(lst, "alignQuality"),
+             frequentSequences=bind(lst, "frequentSequences"),
+             sequenceDistribution=bind(lst, "sequenceDistribution"),
+             perCycle=local({
+                 lst <- subListExtract(lst, "perCycle")
+                 list(baseCall=bind(lst, "baseCall"),
+                      quality=bind(lst, "quality"))
+             }),
+             perTile=local({
+                 lst <- subListExtract(lst, "perTile")
+                 list(readCounts=bind(lst, "readCounts"),
+                      medianReadQualityScore=bind(
+                        lst, "medianReadQualityScore"))
+             }))
+    .SolexaExportQA(lst)
 }
 
-setMethod("qa", "SolexaSet", .qa_solexa_export)
+## .qa_SolexaSet <- function(dirPath, pattern=character(0), ...)
+## {
+##     dirPath <- analysisPath(dirPath)
+##     if (missing(pattern))
+##         pattern <- "s_[1-8]_export.txt"
+##     callGeneric(dirPath, pattern, type="SolexaExport", ...)
+## }
+
+## setMethod("qa", "SolexaSet", .qa_solexa_export)
+
+## .report_SolexaSet <- function(x, run=1, ..., qaFile=tempfile(),
+##                               dest=tempfile(), type="pdf" )
+## {
+##     report(qa(x, run=run))
+## }
+
+## setMethod("report", "SolexaSet", .report_SolexaSet)
+
 
 ## alignment
 

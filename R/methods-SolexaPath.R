@@ -71,23 +71,19 @@ setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 
 setMethod("readAligned", "SolexaPath", .readAligned_SolexaPath)
 
-.SolexaPath_qa <- function(dirPath, pattern=character(0), ...) {
-    dirPath <- analysisPath(dirPath)
+.qa_SolexaPath <- function(dirPath, pattern=character(0), run=1, ...)
+{
+    dirPath <- analysisPath(dirPath)[[run]]
     if (missing(pattern))
         pattern <- "s_[1-8]_export.txt"
     callGeneric(dirPath, pattern, type="SolexaExport", ...)
 }
 
-setMethod("qa", "SolexaPath", .SolexaPath_qa)
+setMethod("qa", "SolexaPath", .qa_SolexaPath)
 
-.report_SolexaPath <- function(x, run=1, ..., qaFile=tempfile(),
-                               dest=tempfile(), type="pdf" )
+.report_SolexaPath <- function(x, ..., dest=tempfile(), type="pdf" )
 {
-    qa <- qa(SolexaPath(x), run=run)
-    save(qa, file=qaFile)
-    src <- system.file("template", "qa_solexa.Rnw", package="ShortRead")
-    symbolValues <- list(QA_SAVE_FILE=as.character(qaFile))
-    .report(type, src, dest, symbolValues)
+    report(qa(x, ...), dest=dest, type=type)
 }
 
 setMethod("report", "SolexaPath", .report_SolexaPath)

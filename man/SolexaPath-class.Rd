@@ -5,6 +5,7 @@
 \alias{SolexaPath}
 % methods
 \alias{SolexaSet,SolexaPath-method}
+\alias{qa,SolexaPath-method}
 \alias{show,SolexaPath-method}
 \alias{detail,SolexaPath-method}
 % transforming methods
@@ -93,6 +94,17 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       single object; often one will want to specify a pattern for each
       lane.}
 
+    \item{qa}{
+      \code{signature(dirPath="SolexaPath", pattern="character(0)", run=1, ...)}:
+
+      Use \code{analysisPath(dirPath)[[run]]} as the directorpy path and
+      \code{pattern="s_[1_8]_export.txt"} as the pattern for discovering solexa
+      \code{export}-formatted fileds, returning a
+      \code{\linkS4class{SolexaExportQA}} object summarizing quality
+      assessment. If \code{Rmpi} has been initiated, quality assessment
+      calculations are distributed across available nodes (one node per
+      export file.)}
+
     \item{SolexaSet}{\code{signature(path = "SolexaPath")}: create a
       \code{\linkS4class{SolexaSet}} object based on \code{path}.}
 
@@ -120,5 +132,11 @@ sf <- system.file("extdata", package="ShortRead")
 sp <- SolexaPath(sf)
 sp
 readFastq(sp, pattern="s_1_sequence.txt")
+\dontrun{
+nfiles <- length(list.files(analysisPath(sp), "s_[1-8]_export.txt"))
+library(Rmpi)
+mpi.spawn.Rslaves(nslaves=nfiles)
+report(qa(sp))
+}
 }
 \keyword{classes}

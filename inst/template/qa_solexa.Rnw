@@ -40,7 +40,7 @@ plotReadOccurrences <- function(df) {
            layout=c(4,2))
 }
 plotAlignQuality <- function(df) {
-    xyplot(count~score|lane, qa$alignQuality,
+    xyplot(count~score|lane, qa[["alignQuality"]],
            type="l",
            prepanel=function(x, y, ...) {
                list(ylim=c(0, 1))
@@ -76,6 +76,34 @@ plotTileQualityScore <- function(df, nrow=100) {
               ylab="Tile local y-coordinate",
               layout=c(4,2))
 }
+plotCycleBaseCall <- function(df) {
+    col <- rep(c("red", "blue"), 2)
+    lty <- rep(1:2, each=2)
+    df <- df[df$Base != "N",]
+    xyplot(log10(Count)~as.integer(Cycle)|lane, 
+           group=factor(Base), df, 
+           type="l", col=col, lty=lty,
+           key=list(space="top", 
+             lines=list(col=col, lty=lty),
+             text=list(lab=as.character(unique(df$Base))),
+             columns=length(unique(df$Base))),
+           xlab="Cycle", layout=c(4,2))
+}
+plotCycleQuality <- function(df) 
+{
+    qnum <- as(SFastqQuality(as.character(df$Quality)), "numeric")
+    df$qtot <- qnum * df$Count
+
+    aveScore <- with(df,
+                     tapply(qtot, list(lane, Cycle), sum) /
+                     tapply(Count, list(lane, Cycle), sum))
+    score <- data.frame(AverageScore=as.vector(aveScore),
+                        Cycle=as.vector(col(aveScore)),
+                        Lane=rownames(aveScore))
+    xyplot(AverageScore~Cycle | Lane, score,
+           layout=c(4,2), 
+           ylab="Average score")
+}
 @ 
 
 <<qa-run>>=
@@ -86,29 +114,29 @@ load("@QA_SAVE_FILE@")
 
 Read counts
 <<read-counts>>=
-ppnCount(qa$readCounts)
+ppnCount(qa[["readCounts"]])
 @
 
 Base calls
 <<base-calls>>=
-ppnCount(qa$baseCalls)
+ppnCount(qa[["baseCalls"]])
 @
 
 Overall read quality
 <<read-quality-raw, fig=TRUE>>=
-df <- qa$readQualityScore
+df <- qa[["readQualityScore"]]
 print(plotReadQuality(df[df$type=="read",]))
 @ 
 
 Read distribution: occurrences
 <<read-distribution-occurrence, fig=TRUE>>=
-df <- qa$sequenceDistribution
+df <- qa[["sequenceDistribution"]]
 print(plotReadOccurrences(df[df$type=="read",]))
 @ 
 
 Common duplicate reads
 <<common-duplicate-reads>>=
-df <- qa$frequentSequences
+df <- qa[["frequentSequences"]]
 df1 <- df[df$type=="read",]
 lapply(split(df1[,c("sequence", "count")], df1$lane), head)
 @
@@ -119,21 +147,33 @@ df1 <- df[df$type=="filtered",]
 lapply(split(df1[,c("sequence", "count")], df1$lane), head)
 @
 
+Per-cycle base call
+<<per-cycle-base-call, fig=TRUE>>=
+perCycle <- qa[["perCycle"]]
+print(plotCycleBaseCall(perCycle$baseCall))
+@ 
+
+Per-cycle quality score
+<<per-cycle-quality, fig=TRUE>>=
+print(plotCycleQuality(perCycle$quality))
+@ 
+
 Counts per tile
 <<read-counts-per-tile, fig=TRUE>>=
-df <- qa$perTile$readCounts
+perTile <- qa[["perTile"]]
+df <- perTile[["readCounts"]]
 print(plotTileCounts(df[df$type=="read",]))
 @ 
 
 Median read quality score per tile
 <<read-score-per-tile, fig=TRUE>>=
-df <- qa$perTile$medianReadQualityScore
+df <- perTile[["medianReadQualityScore"]]
 print(plotTileQualityScore(df[df$type=="read",]))
 @
 
 Mapped alignment score
 <<mapped-alignment-score, fig=TRUE>>=
-print(plotAlignQuality(qa$alignQuality))
+print(plotAlignQuality(qa[["alignQuality"]]))
 @ 
 
 \appendix

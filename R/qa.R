@@ -6,7 +6,7 @@
                                 conditionMessage(err)))
              })
     switch(type,
-           SolexaExport=.qa_solexa_export(dirPath, pattern,
+           SolexaExport=.qa_SolexaExport(dirPath, pattern,
              type="SolexaExport", ...))
 }
 

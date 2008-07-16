@@ -200,4 +200,9 @@ setClass("RocheSet", contains=c("SRSet", ".Roche"),
            sourcePath=new("RochePath")),
          validity=.srValidity)
 
+## QA
 
+setClass(".QA", contains=".ShortReadBase",
+         representation=representation("VIRTUAL"))
+
+setClass("SolexaExportQA", contains=c("SRList", ".QA"))
