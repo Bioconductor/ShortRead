@@ -8,9 +8,10 @@ pileup <- function (
    stopifnot( length(levels(dir)) == 2 && all( levels(dir) == c("-", "+") ) )
    stopifnot( is.numeric(start) && is.numeric(fraglength) && is.numeric(chrlength) 
       && is.numeric(readlength) )
-   stopifnot( length(fraglength) == length(start) | length(fraglength) == 1 )
+   stopifnot( length(fraglength) == length(start) || length(fraglength) == 1 )
    stopifnot( length(chrlength) == 1 )
-   stopifnot( length(readlength) == length(start) | length(readlength) == 1 )
+   stopifnot( length(readlength) == length(start) || length(readlength) == 1 )
+   stopifnot( length(dir) == length(start) || length(dir) == 1 )
    stopifnot( length(offset) == 1 )
    	    
    .Call(.pileup, as.integer(start), as.integer(fraglength), as.integer(chrlength),
