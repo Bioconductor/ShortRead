@@ -18,6 +18,51 @@ static const int LINES_PER_FASTA_REC = 2;
  */
 
 /*
+ * Read a solexa .*_prb.txt file into STRING_VEC
+ */
+
+SEXP
+read_prb_as_character(SEXP fname, SEXP cycles)
+{
+    const int MIN_SCORE = -40;
+    const int NUC_PER_CYCLE = 4;
+    const int SOLEXA_QBASE = 64;
+
+    if (!IS_CHARACTER(fname) || LENGTH(fname)!=1)
+        error("'fname' must be 'character(1)'");
+    if (!IS_INTEGER(cycles) || LENGTH(cycles) != 1)
+        error("'cycles' must be 'integer(1)'");
+    const int n_reads = INTEGER(count_lines(fname))[0];
+    const int n_cycles = INTEGER(cycles)[0];
+    SEXP ans = PROTECT(NEW_CHARACTER(n_reads));
+
+    FILE *file = fopen(CHAR(STRING_ELT(fname, 0)), "r");
+    if (file == NULL)
+        error("cannot open file %s", CHAR(STRING_ELT(fname, 0)));
+
+    int read=0, cycle=0, nuc=0, curr_max=MIN_SCORE, val;
+    char *score = R_alloc(sizeof(char), n_cycles + 1);
+    score[n_cycles] = '\0';
+    while (fscanf(file, "%d", &val)==1) {
+        if (val > curr_max) curr_max = val;
+        if (++nuc == NUC_PER_CYCLE) {
+            score[cycle] = (char) curr_max + SOLEXA_QBASE;
+            nuc = 0;
+            curr_max=MIN_SCORE;
+            if (++cycle == n_cycles) {
+                if (read >= n_reads)
+                    error("unexpected number of reads: %d instead of %d",
+                          read, n_reads);
+                SET_STRING_ELT(ans, read++, mkChar(score));
+                cycle = 0;
+            }
+        }
+    }
+    UNPROTECT(1);
+    return ans;
+}
+
+/*
  * Read a solexa 's_<lane>_sequence.txt' file into CharBBuf objects.
  */
 static void

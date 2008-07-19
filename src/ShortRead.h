@@ -13,6 +13,7 @@ SEXP count_lines(SEXP files);
 
 /* io.c */
 
+SEXP read_prb_as_character(SEXP file, SEXP cycles);
 SEXP read_solexa_fastq(SEXP files);
 SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
                              SEXP colClasses, SEXP delim,

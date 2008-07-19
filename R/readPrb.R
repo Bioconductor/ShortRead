@@ -2,18 +2,16 @@
 {
     if (verbose)
         cat(".prbScore", file, "\n")
-    tbl <- read.table(file, colClasses="integer")
-    cycles <- ncol(tbl) / 4
-    if (!all.equal(cycles, as.integer(cycles)))
+    ln <- readLines(file, 1)
+    cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L
+    tryCatch({
+        .Call(.read_prb_as_character, file, cycles)
+    }, error=function(err) {
         .throw(SRError("Input/Output",
-                       sprintf("%s\n  file: %s\n  columns: %d",
-                               "'prb' column number not divisible by 4",
-                               file, ncol(tbl))))
-    score <- sapply(seq_len(cycles)-1, function(cyc, tbl) {
-        do.call(pmax, tbl[, cyc*4+1:4])
-    }, tbl)
-    apply(matrix(as.raw(score+64), ncol=cycles),
-          1, rawToChar)
+                       sprintf("parsing 'prb'\n  file: %s\n  error: %s",
+                               file,
+                               conditionMessage(err))))
+    })
 }
 
 .readPrb_character <- function(dirPath, pattern, ...)
