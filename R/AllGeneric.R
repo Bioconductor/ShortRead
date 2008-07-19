@@ -55,6 +55,9 @@ setGeneric("FastqQuality", function(quality, ...)
 setGeneric("SFastqQuality", function(quality, ...)
            standardGeneric("SFastqQuality"))
 
+setGeneric("readPrb", function(dirPath, pattern=character(0), ...)
+           standardGeneric("readPrb"), signature="dirPath")
+
 ## ShortRead / ShortReadQ
 
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)

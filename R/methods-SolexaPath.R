@@ -49,6 +49,13 @@ SolexaPath <- function(experimentPath,
 
 .make_getter(slotNames("SolexaPath"))
 
+.readPrb_SolexaPath <- function(dirPath, pattern, run = 1, ...)
+{
+    callGeneric(baseCallPath(dirPath)[[run]], pattern, ...)
+}
+
+setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
+
 .readFastq_SolexaPath <- function(dirPath, 
                                   pattern="s_[1-8]_sequence.txt",
                                   run = 1,

@@ -9,6 +9,7 @@
 \alias{show,SolexaPath-method}
 \alias{detail,SolexaPath-method}
 % transforming methods
+\alias{readPrb,SolexaPath-method}
 \alias{readFastq,SolexaPath-method}
 \alias{readAligned,SolexaPath-method}
 
@@ -72,6 +73,16 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 \section{Methods}{
   Transforming methods include:
   \describe{
+
+    \item{readPrb}{
+
+      \code{signature(dirPath = "SolexaPath", pattern=character(0), run=1, ...)}:
+
+      Use \code{baseCallPath(dirPath)[[run]]} as the directory path and
+      \code{pattern=character(0)} as the pattern for discovering Solexa
+      \sQuote{prb} files, retuning a \code{\linkS4class{SFastqQuality}}
+      object containing the maximum qualities found for each base of
+      each cycle.}
 
     \item{readFastq}{
 

@@ -14,6 +14,7 @@
         ## 'get()' are to quieten R CMD check, and for no other reason
         commSize <- get("mpi.comm.size", mode="function")
         remoteExec <- get("mpi.remote.exec", mode="function")
+        bcastRobj <- get("mpi.bcast.Robj", mode="function")
         parLapply <- get("mpi.parLapply", mode="function")
         function(X, FUN, ..., verbose=FALSE) {
             CFUN <- catchErrs(FUN)
@@ -32,6 +33,8 @@
                                          collapse=", ")))
                 wd <- getwd()
                 remoteExec(setwd, wd, ret=FALSE)
+                if (identical(globalenv(), environment(FUN)))
+                    bcastRobj(FUN)
                 res <- parLapply(X, CFUN, ..., verbose=verbose)
                 res
             }
