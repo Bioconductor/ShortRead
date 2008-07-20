@@ -5,6 +5,7 @@
 \alias{srorder,ShortRead-method}
 \alias{srsort,ShortRead-method}
 \alias{srduplicated,ShortRead-method}
+\alias{srdistance,ShortRead,ANY-method}
 \alias{alphabetByCycle,ShortRead-method}
 \alias{tables,ShortRead-method}
 \alias{clean,ShortRead-method}
@@ -67,6 +68,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       based on \code{sread(x)}, analogous to the corresponding functions
       \code{order}, \code{rank}, \code{sort}, and \code{duplicated},
       ordering nucleotides in the order \code{ACGT}.}
+
+    \item{srdistance}{\code{\signature{pattern="ShortRead", subject="ANY"}}:
+      Find the edit distance between each read in \code{pattern} and the
+      (short) sequences in \code{subject}. See \code{\link{srdistance}}
+      for allowable values for \code{subject}, and for additional
+      details.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortRead")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component

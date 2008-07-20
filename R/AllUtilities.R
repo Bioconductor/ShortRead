@@ -1,3 +1,21 @@
+## public
+
+polyn <- function(nucleotides, n)
+{
+    if (!is.character(nucleotides) || length(nucleotides)==0)
+        .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
+                       "nucleotides", "character(1) or longer"))
+    if (!all(sapply(nucleotides, nchar) == 1))
+        .throw(SRError("UserArgumentMismatch",
+                       "'%s' must all have %d charactecters",
+                       "nucleotides", 1))
+    if (!is.numeric(n) || length(n) != 1)
+        .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
+                       "n", "numeric(1)"))
+    sapply(nucleotides,
+           function(elt) paste(rep(elt, n), collapse=""))
+}
+
 ## Errors
 
 .undefined_method_err <- function(class, method) {

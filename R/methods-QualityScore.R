@@ -123,7 +123,7 @@ setMethod("width", "FastqQuality",
           function(x) width(quality(x)))
 
 setMethod("alphabet", "FastqQuality",
-          function(x) sapply(as.raw(32:125), rawToChar))
+          function(x) rawToChar(as.raw(32:125), TRUE))
 
 setMethod("show", "FastqQuality", function(object) {
     callNextMethod()
@@ -131,8 +131,16 @@ setMethod("show", "FastqQuality", function(object) {
     show(quality(object))
 })
 
-.FastqQuality_af<- function(x, baseOnly=FALSE, freq=FALSE, ...) {
-    callGeneric(quality(x), freq=freq, ...)
+.FastqQuality_af <- function(x, baseOnly=FALSE, freq=FALSE, ...) {
+    res <- callGeneric(quality(x), freq=freq, ...)
+    if (is(res, "matrix")) {
+        res <- res[,1+32:125, drop=FALSE]
+        colnames(res) <- alphabet(x)
+    } else {
+        res <- res[1+32:125]
+        names(res) <- alphabet(x)
+    }
+    res
 }
 
 setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
@@ -145,7 +153,7 @@ setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
 
 setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
 
-.SFastqQuality_ascore<- function(object, score=0:255-64, ...) {
+.SFastqQuality_ascore<- function(object, score=0:255-64L, ...) {
     .Call(.alphabet_score, quality(object), score)
 }
 

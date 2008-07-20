@@ -69,6 +69,14 @@ setMethod("tables", "ShortRead", function(x, n=50, ...) {
     callGeneric(sread(x), n=n, ...)
 })
 
+.srdistance_ShortRead_ANY <- function(pattern, subject, ...)
+{
+    callGeneric(sread(pattern), subject, ...)
+}
+
+setMethod("srdistance", c("ShortRead", "ANY"),
+          .srdistance_ShortRead_ANY)
+
 ## show
 
 setMethod("show", "ShortRead", function(object) {
