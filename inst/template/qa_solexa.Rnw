@@ -18,17 +18,17 @@ library(lattice)
 
 <<utilities, echo=FALSE>>=
 ppnCount <- function(m) {
-    ## scale subsequent columns of a matrix to be proportions of
-    ## first column; useful for pretty-printing only
+    ## scale subsequent columns to be proportions of 
+    ## first column
     m[,-1] <- m[,-1] / m[,1]
     m
 }
 plotReadQuality <- function(df) {
     xyplot(density~quality|lane, df,
            type="l",
-           xlab="Average base quality",
+           xlab="Average (calibrated) base quality",
            ylab="Proportion of reads",
-           layout=c(4,2))
+           aspect=2)
 }
 plotReadOccurrences <- function(df) {
     xyplot(log10(nReads)~log10(nOccurrences)|lane, df,
@@ -37,7 +37,7 @@ plotReadOccurrences <- function(df) {
                log[10], ")", sep="")),
            ylab=expression(paste(
                "Number of reads (", log[10], ")", sep="")),
-           layout=c(4,2))
+           aspect=2)
 }
 plotAlignQuality <- function(df) {
     xyplot(count~score|lane, qa[["alignQuality"]],
@@ -50,7 +50,7 @@ plotAlignQuality <- function(df) {
            },
            xlab="Alignment quality score",
            ylab="Number of alignments, relative to lane maximum",
-           layout=c(4,2))
+           aspect=2)
 }
 
 .plotTileLocalCoords <- function(tile, nrow) {
@@ -59,22 +59,36 @@ plotAlignQuality <- function(df) {
     row[col%%2==0] <- nrow + 1 - row[col%%2==0]
     list(row=as.integer(row), col=as.factor(col))
 }
-
+.colorkeyNames <- function(at, fmt) {
+    paste(names(at), " (", sprintf(fmt, at), ")", sep="")
+}
 plotTileCounts <- function(df, nrow=100) {
+    df <- df[!is.na(df$count),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
-    levelplot(count~col*row|lane, df,
+    at <- quantile(df$count, seq(0, 1, .1))
+    levelplot(cut(count, at)~col*row|lane, df,
+              main="Read count (percentile rank)",
               xlab="Tile local x-coordinate",
               ylab="Tile local y-coordinate",
-              layout=c(4,2))
+              cuts=length(at)-2,
+              colorkey=list(
+                labels=.colorkeyNames(at, "%d")),
+              aspect=2)
 }
 plotTileQualityScore <- function(df, nrow=100) {
+    df <- df[!is.na(df$score),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
-    levelplot(score~col*row|lane, df,
+    at <- quantile(df$score, seq(0, 1, .1))
+    levelplot(cut(score, at)~col*row|lane, df,
+              main="Read quality (percentile rank)",
               xlab="Tile local x-coordinate",
               ylab="Tile local y-coordinate",
-              layout=c(4,2))
+              cuts=length(at)-2,
+              colorkey=list(
+                labels=.colorkeyNames(at, "%.2f")),
+              aspect=2)
 }
 plotCycleBaseCall <- function(df) {
     col <- rep(c("red", "blue"), 2)
@@ -87,7 +101,8 @@ plotCycleBaseCall <- function(df) {
              lines=list(col=col, lty=lty),
              text=list(lab=as.character(unique(df$Base))),
              columns=length(unique(df$Base))),
-           xlab="Cycle", layout=c(4,2))
+           xlab="Cycle", 
+           aspect=2)
 }
 plotCycleQuality <- function(df) 
 {
@@ -101,8 +116,8 @@ plotCycleQuality <- function(df)
                         Cycle=as.vector(col(aveScore)),
                         Lane=rownames(aveScore))
     xyplot(AverageScore~Cycle | Lane, score,
-           layout=c(4,2), 
-           ylab="Average score")
+           ylab="Average score",
+           aspect=2)
 }
 @ 
 
@@ -137,8 +152,7 @@ print(plotReadOccurrences(df[df$type=="read",]))
 Common duplicate reads
 <<common-duplicate-reads>>=
 df <- qa[["frequentSequences"]]
-df1 <- df[df$type=="read",]
-lapply(split(df1[,c("sequence", "count")], df1$lane), head)
+lapply(split(df[,c("sequence", "count")], df$lane), head)
 @
 
 Common duplicate reads after filtering
@@ -158,7 +172,7 @@ Per-cycle quality score
 print(plotCycleQuality(perCycle$quality))
 @ 
 
-Counts per tile
+Counts per tile (log 10)
 <<read-counts-per-tile, fig=TRUE>>=
 perTile <- qa[["perTile"]]
 df <- perTile[["readCounts"]]
@@ -178,9 +192,9 @@ print(plotAlignQuality(qa[["alignQuality"]]))
 
 \appendix
 
-\section{Functions employed}
+\section{Report-specific functions}
 
-<<appendix>>=
+<<appendix,keep.source=TRUE>>=
 <<utilities>>
 @
 
