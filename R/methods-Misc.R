@@ -44,9 +44,9 @@ setMethod("srduplicated", "XStringSet", function(x, ...) {
     if (verbose)
         cat(".srdistance", as.character(subject), "\n")
     substitutionMatrix <- distanceFunc(pattern, subject)
-    pairwiseAlignment(pattern, subject,
-                      substitutionMatrix=substitutionMatrix,
-                      gapOpening=0, gapExtension=-1, scoreOnly=TRUE)
+    -pairwiseAlignment(pattern, subject,
+                       substitutionMatrix=substitutionMatrix,
+                       gapOpening=0, gapExtension=-1, scoreOnly=TRUE)
 }
 
 .srdistanceDNA <- function(pattern, subject)
