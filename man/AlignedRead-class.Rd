@@ -40,13 +40,13 @@
       the alignment.}
 
     \item{\code{alignQuality}:}{Object of class \code{"numeric"}
-      represented an alignment quality score.}
+      representing an alignment quality score.}
 
     \item{\code{alignData}:}{Object of class \code{"AlignedDataFrame"}
       additional alignment information.}
 
-    \item{\code{quality}:}{Object of class \code{"BStringSet"} base-call
-      read quality scores.}
+    \item{\code{quality}:}{Object of class \code{"BStringSet"}
+      representing base-call read quality scores.}
 
     \item{\code{sread}:}{Object of class \code{"DNAStringSet"} DNA
       sequence of the read.}
@@ -62,6 +62,12 @@ Class \code{"\linkS4class{ShortRead}"}, by class "ShortReadQ", distance 2.
 Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 }
 \section{Methods}{
+
+  See \code{\link{accessors}} for additional functions to access slot
+  content, and \code{\linkS4class{ShortReadQ}},
+  \code{\linkS4class{ShortRead}} for inherited methods. Additional
+  methods include:
+
   \describe{
 
     \item{[}{\code{signature(x = "ShortReadQ", i = "ANY", j = "missing")}: 

@@ -41,8 +41,10 @@ Class \code{"\linkS4class{ShortRead}"}, directly.
 Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 }
 \section{Methods}{
-  This class inherits methods from \code{\linkS4class{ShortRead}}, and
-  has the following additional methods defined:
+  See \code{\link{accessors}} for additional functions to access slot
+  content, and \code{\linkS4class{ShortRead}} for inherited
+  methods. Additional methods include:
+
   \describe{
 
     \item{[}{\code{signature(x = "ShortReadQ", i = "ANY", j = "missing")}: 

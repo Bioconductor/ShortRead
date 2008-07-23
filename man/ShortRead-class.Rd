@@ -45,6 +45,9 @@
 Class \code{"\linkS4class{.ShortReadBase}"}, directly.
 }
 \section{Methods}{
+
+  See \code{\link{accessors}} for slot accessor functions.
+
   \describe{
     \item{[}{\code{signature(x = "ShortRead", i = "ANY", j = "missing")}: 
       This method creates a new \code{ShortRead} object containing only
