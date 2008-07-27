@@ -153,8 +153,8 @@ setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
 
 setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
 
-.SFastqQuality_ascore<- function(object, score=0:255-64L, ...) {
-    .Call(.alphabet_score, quality(object), score)
+.SFastqQuality_ascore <- function(object, score=0:255-64L, ...) {
+    .Call(.alphabet_score, quality(object), as.numeric(score))
 }
 
 setMethod("alphabetScore", "SFastqQuality", .SFastqQuality_ascore)
