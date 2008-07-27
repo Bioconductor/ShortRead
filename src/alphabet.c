@@ -151,7 +151,7 @@ alphabet_score(SEXP stringSet, SEXP score)
     const char *base = get_XStringSet_baseClass(stringSet);
     if (strcmp(base, "BString") != 0)
         Rf_error("'stringSet' must contain BString elements");
-    if (!IS_NUMERIC(score) || LENGTH(score) != 256)
+    if (!IS_INTEGER(score) || LENGTH(score) != 256)
         Rf_error("'%s' must be '%s'", "score", "integer(256)");
 
     DECODE_FUNC decode = decoder(base);
