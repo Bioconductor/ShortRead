@@ -6,7 +6,8 @@
                                    dest=paste(tempfile(), "pdf", sep="."),
                                    type="pdf") {
     to <- tempfile()
-    save(x, file=to)
+    qa <- x
+    save(qa, file=to)
     res <- callGeneric(to, ..., dest=dest, type=type)
     unlink(to)
     res

@@ -1,0 +1,610 @@
+%\VignetteIndexEntry{An introduction to ShortRead}
+%\VignetteDepends{}
+%\VignetteKeywords{Short read, I/0, quality assessment}
+%\VignettePackage{ShortRead}
+\documentclass[]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+
+\newcommand{\R}{\textsf{R}}
+\newcommand{\ShortRead}{\Rpackage{ShortRead}}
+
+\title{An Introduction to \Rpackage{ShortRead}}
+\author{Martin Morgan}
+\date{25 July, 2008}
+
+\begin{document}
+
+\maketitle
+
+<<options,echo=FALSE>>=
+options(width=60)
+@ 
+
+<<preliminaries>>=
+library(ShortRead)
+@ 
+
+The \Rpackage{ShortRead} package aims to provide key functionality for
+input, quality assurance, and basic manipulation of `short read' DNA
+sequences such as those produced by Solexa, 454, Helicos, SOLiD, and
+related technologies. This vignette introduces key functionality.
+
+The package is still very much in development. Support is most fully
+developed for Solexa; contributions from the community are welcome.
+
+\section{A first workflow}
+
+This section walks through a simple work flow. It outlines the
+hierarchy of files produced by Solexa. It then illustrates a common
+way for reading short read data into \R{}.
+
+\subsection{\Rclass{SolexaPath}: navigating Solexa output}
+
+\Rclass{SolexaPath} provides functionality to navigate files produced
+by Solexa Genome Analyzer pipeline software. A typical way to start a
+\ShortRead{} session is to point to the root of the output file
+hierarchy. The \ShortRead{} package includes a very small subset of
+files emulating this hierarchy. The root is found at
+<<SolexaPath-root>>=
+exptPath <- system.file("extdata", package="ShortRead")
+@ 
+%% 
+Usually \Rcode{exptPath} would be a location on the users' file system. Key
+components of the hierarchy are parsed into \R{] with
+<<SolexaPat>>=
+sp <- SolexaPath(exptPath)
+sp
+@ 
+%% 
+\Rfunction{SolexaPath} scans the directory hierarchy to identifying
+useful directories. For instance, image intensity files are in the
+`Firecrest' directory, while summary and alignment files are in the
+analysis directory
+<<firecrest>>=
+imageAnalysisPath(sp)
+analysisPath(sp)
+@ 
+%% 
+Most functionality in \ShortRead{} uses \Rcode{baseCallPath} or
+\Rcode{analysisPath}. Solexa documentation provides details of file
+content. \Rfunction{SolexaPath} accepts additional arguments that
+allow individual file paths to be specified.
+ 
+Many functions for Solexa data input `know' where appropriate files
+are located,. Specifying \Rcode{sp} is often sufficient for identifying
+the desired directory path. Examples of this are illustrated below,
+with for instance \Rfunction{readAligned} and \Rfunction{readFastq}.
+
+Displaying an object, e.g., \Robject{sp}, provides hints at how to
+access information in the object, e.g., \Rfunction{analysisPath}. This
+is a convention in \ShortRead{}.
+
+\subsection{\Rfunction{readAligned}: reading aligned data into \R{}}
+
+Solexa \texttt{s\_N\_export.txt} files (\texttt{\_N\_} is a placeholder
+for the lane identifier) represent one place to start working the
+short read data in \R{}. These files result from running ANALYSIS
+eland\_extended in the Solexa Genome Analyzer. The files contain
+information on all reads, including alignment information for those
+reads successfully aligned to the genome.
+
+\ShortRead{} parses additional alignment files, including MAQ binary
+and text (\texttt{mapview}) files. \ShortRead{} flexibly parses many
+other Solexa files; aligned reads represent just one entry point.
+
+To read a single \texttt{s\_N\_export.txt} file into \R{}, for instance
+from lane 2, use the command
+<<readAligned-simple>>=
+aln <- readAligned(sp, "s_2_export.txt")
+aln
+@ 
+
+\Rfunction{readAligned} illustrates the convention used for
+identifying files for input into \R{} and used by \ShortRead{]. The
+function takes a directory path and a pattern (as a regular
+expression, similar to the \R{} function \Rfunction{list.files}) of
+file names to match in the directory. Usually, all files matching the
+pattern are read into a \emph{single} \R{} object; this behavior is
+desirable for several of the input functions in \ShortRead{}. In the
+present case the usual expectation is that a single
+\texttt{s\_N\_export.txt} file will be read into a single \R{} object,
+so the \Rfunarg{pattern} argument will identify a single file.
+
+Currently supported alignment files include:
+\begin{description}
+\item[SolexaExport] the Solexa `export' file format described in the
+  Solexa pipeline version 0.3 documentation.
+\item[MAQMapview] the MAQ `mapview' format described at
+  \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, as viewed 3
+  May, 2008.
+\item[MAQMap] the MAQ binary `map' format described at
+  \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, as viewed 3
+  May, 2008.
+\end{description}
+Other parser contributions are welcome. Paired end read support is
+not yet available.
+
+\subsection{Exploring \ShortRead{} objects}
+
+\Robject{aln} is an object of \Sexpr{class(aln)} class. It contains
+short reads and their (calibrated) qualities:
+<<aln-sread-quality>>=
+sread(aln)
+quality(aln)
+@ 
+
+The short reads are stored as a \Rclass{DNAStringSet} class.  This
+class is defined in \Rpackage{Biostrings}. It represents DNA sequence
+data relatively efficiently.  There are a a number of very useful
+methods defined for \Rclass{DNAStringSet}. Some of these methods are
+illustrated in this vignette. Other methods are described in the help
+pages and vignettes of the \Rpackage{Biostrings} package.
+
+Qualities are represented as \Sexpr{class(quality(aln))}-class
+objects. The qualities in the \Robject{aln} object returned by
+\Rfunction{readAligned} are of class \Rclass{BStringSet}. The
+\Rclass{BStringSet} class is also defined in \Rpackage{Biostrings},
+and shares many methods with those of \Rclass{DNAStringSet}.
+
+The \Robject{aln} object contains additional information about
+alignments. Some of this additional information is expected from any
+alignment, whether generated by Solexa or other software.  For
+example, \Robject{aln} contains the particular sequence within a
+target (e.g., chromosomes in a genome assembly), the position (e.g.,
+base pair coordinate), and strand to which the alignment was made, and
+the quality of the alignment. The display of \Robject{aln} suggests
+how to access this information. For instance, the strand to which
+alignments are made can be extracted (as a factor with three levels;
+the level \Rcode{""} corresponds to unaligned reads) and tabulated
+using familiar \R{} functions.
+<<chromosomes>>=
+whichStrand <- strand(aln)
+class(whichStrand)
+levels(whichStrand)
+table(whichStrand)
+@ 
+%% 
+This shows that about \Sexpr{format(100*sum(whichStrand=="")/ length(whichStrand))}
+percent of reads were not aligned (level \Rcode{""}).
+
+The \Robject{aln} object contains information in addition to that
+expected of all alignments. This information is accessible using
+\Rfunction{alignData}:
+<<alignData>>=
+alignData(aln)
+@ 
+%% 
+Users familiar with the \Rclass{ExpressionSet} class in
+\Rpackage{Biobase} will recognize this as an
+\Rclass{AnnotatedDataFrame}-like object, containing a data frame with
+rows for each short read. The \Rclass{AlignedDataFrame} contains
+additional meta data about the meaning of each column. For instance,
+data extracted from the Solexa export file includes:
+<<varMetadata>>=
+varMetadata(alignData(aln))
+@ 
+%% 
+Guides to the precise meaning of this data are on the help page for
+the \Rclass{AlignedRead} class, and in the manufacturer manuals. 
+
+Simple information about the alignments can be found by querying this
+object. For instance, unaligned reads have \Rcode{NA} as their
+position, and reads passing Solexa `filtering' (their base purity and
+chastity criteria) have a component of their auxiliary
+\Robject{alignData} set to \Rcode{"Y"}. Thus the fraction of unaligned
+reads and reads passing filtering are
+<<aln-okreads>>=
+mapped <- !is.na(position(aln))
+filtered <- alignData(aln)[["filtering"]] =="Y"
+sum(!mapped) / length(aln)
+sum(filtered) / length(aln)
+@ 
+
+Extracting the reads that passed filtering but were unmapped is
+accomplished with
+<<aln-failed>>=
+failedAlign <- aln[filtered & !mapped]
+failedAlign
+@ 
+%% 
+Alternatively, we can extract just the short reads, and select the
+subset of those that failed filtering.
+<<sread-filter-fail-subset>>=
+failedReads <- sread(aln)[filtered & !mapped]
+@ 
+
+\subsection{Quality assessment}
+
+The \Rfunction{qa} function provides a convenient way to summarize
+read and alignment quality. One way of obtaining quality assessment
+results is
+<<qa>>=
+qaSummary <- qa(sp)
+@ 
+%% 
+The \Robject{qa} object is a list-like structure. As invoked above and
+currently implemented, \Rfunction{qa} visits all
+\texttt{s\_N\_export.txt} files in the appropriate directory. It
+extracts useful information from the files, and summarizes the results
+into a nested list-like structure. 
+
+Evaluating \Rfunction{qa} for a single lane can take several
+minutes. For this reason a common use case is to evaluate
+\Rfunction{qa} and save the result to disk for later use, e.g.,
+<<eval=FALSE>>=
+save(qaSummary, file="/path/to/file.rda")
+@ 
+%% 
+A feature of \ShortRead{} is the use of \Rpackage{Rmpi} and
+coarse-grained parallel processing when available. Thus commands such
+as
+<<eval=FALSE>>=
+library(Rmpi)
+mpi.spawn.Rslaves(nsl=8)
+qaSummary <- qa(sp)
+mpi.close.Rslaves()
+@ 
+%% 
+will distribute the task of processing each lane to each of the
+\Rpackage{Rmpi} workers. With \Rpackage{Rmpi}, all 8 lanes of a Solexa
+experiment are processed in the time take to process a single lane.
+
+The elements of the quality assessment list are suggested by the
+output:
+<<qa-elements>>=
+qaSummary
+@ 
+%% 
+For instance, the count of reads in each lane is summarized in the
+\Robject{readCounts} element, and can be displayed as
+<<qa-readCounts>>=
+qaSummary[["readCounts"]]
+qaSummary[["baseCalls"]]
+@ 
+%% 
+The \Robject{readCounts} element contains a data frame with 1 row and
+3 columns (these dimensions are indicated in the parenthetical
+annotation of \Robject{readCounts} in the output of
+\Rcode{qaSummary}). The rows represent different lanes. The columns
+indicated the number of reads, the number of reads surviving the
+Solexa filtering criteria, and the number of reads aligned to the
+reference genome for the lane. The \Robject{baseCalls} element
+summarizes base calls in the unfiltered reads.
+
+Other elements of \Robject{qaSummary} are more complicated, and their
+interpretation is not directly obvious. Instead, a common use is to
+forward the results of \Rfunction{qa} to a report generator. 
+<<report, eval=FALSE>>=
+report(qa, dest="/path/to/qa_report.pdf")
+@ 
+%% 
+The report includes \R{} code that can be used to understand how
+\Sexpr{class(qaSummary)}-class objects can be processed.
+
+
+\section{Using \Rpackage{ShortRead} for data exploration}
+
+\subsection{Data I/O}
+
+\ShortRead{} provides a variety of methods to read data into \R{}, in
+addition to \Rfunction{readAligned}. 
+
+\subsubsection{\Rfunction{readXStringColumns}}
+
+\Rfunction{readXStringColumns} reads a column of DNA or other
+sequence-like data. For instance, the Solexa files
+\texttt{s\_N\_export.txt} contain lines with the following
+information:
+<<export>>=
+pattern <- "s_2_export.txt"
+fl <- file.path(analysisPath(sp), pattern)
+strsplit(readLines(fl, n=1), "\t")
+length(readLines(fl))
+@ 
+% 
+Column 9 is the read, and column 10 the ASCII-encoded Solexa Fastq
+quality score; there are 1000 lines (i.e., 1000 reads) in this sample
+file. 
+
+Suppose the task is to read column 9 as a \Rclass{DNAStringSet} and
+column 10 as a \Rclass{BStringSet}. \Rclass{DNAStringSet} is a class
+that contains IUPAC-encoded DNA strings (IUPAC code allows for
+nucleotide ambiguity); \Rclass{BStringSet} is a class that contains
+any character with ASCII code 0 through 255. Both of these classes are
+defined in the \Rpackage{Biostrings}
+package. \Rfunction{readXStringColumns} allows us to read in columns
+of text as these classes.
+
+Important arguments for \Rfunction{readXStringColumns} are the
+\Rfunarg{dirPath} in which to look for files, the \Rfunarg{pattern} of
+files to parse, and the \Rfunarg{colClasses} of the columns to be
+parsed. The \Rfunarg{dirPath} and \Rfunarg{pattern} arguments are like
+\Rfunarg{list.files}. \Rfunarg{colClasses} is like the corresponding
+argument to \Rfunction{read.table}: it is a \Rclass{list} specifying
+the class of each column to be read, or \Robject{NULL} if the column
+is to be ignored. In our case there are 21 columns, and we would like
+to read in columns 9 and 10. Hence
+<<colClasses>>=
+colClasses <- rep(list(NULL), 21)
+colClasses[9:10] <- c("DNAString", "BString")
+names(colClasses)[9:10] <- c("read", "quality")
+@ 
+% 
+We use the class of the underlying object, \Rclass{DNAString} or
+\Rclass{BString}, rather than the class of the object we will create,
+e.g., \Rclass{DNAStringSet}. Applying names to \Robject{colClasses} is
+not required but makes subsequent manipulation easy. We are now ready
+to read our file
+<<readXStringColumns>>=
+cols <- readXStringColumns(analysisPath(sp), pattern, colClasses)
+cols
+@ 
+% 
+The file is parsed and appropriate data objects created.
+
+A feature of \Rfunction{readXStringColumns}, and other input functions
+in the \Rpackage{ShortRead} package is that all files matching
+\Rfunarg{pattern} in the specified \Rfunarg{dirPath} will be read into
+a single object. This provides a convenient way to, for instance,
+parse all tiles in a Solexa lane into a single \Rclass{DNAStringSet}
+object.
+
+There are several advantages to reading columns as \Rclass{XStringSet}
+objects. These are more compact than the corresponding character
+representation:
+<<size>>=
+object.size(cols$read)
+object.size(as.character(cols$read))
+@ 
+% 
+They are read in much more quickly. And the \Rclass{DNAStringSet} and
+related classes are used extensively in \Rpackage{ShortRead},
+\Rpackage{Biostrings}, \Rpackage{BSgenome} and other packages relevant
+to short read technology.
+
+\subsubsection{\Rfunction{readFastq}}
+
+\Rfunction{readXStringColumns} should be considered a `low-level'
+function providing easy access to columns of data. Another flexible
+input function is \Rfunction{readFastq}. Fastq files combine reads and
+their base qualities in four-line records such as the following:
+<<fastq-format>>=
+fqpattern <- "s_1_sequence.txt"
+fl <- file.path(analysisPath(sp), fqpattern)
+readLines(fl, 4)
+@ 
+% 
+The first and third lines are an identifier (encoding the machine, run,
+lane, tile, x and y coordinates of the cluster that gave rise to the
+read, in this case). The second line is the read, and the fourth line
+the per-base quality. Files of this sort can be read in as
+<<readFastq>>=
+fq <- readFastq(sp, fqpattern)
+fq
+@ 
+% 
+This resulting object (of class \Sexpr{class(fq)}) contains the short
+reads, their qualities, and the identifiers:
+<<ShortReadQ>>=
+reads <- sread(fq)
+qualities <- quality(fq)
+class(qualities)
+id(fq)
+@ 
+% 
+Notice that the class of the qualities is \Rclass{SFastqQuality}, to
+indicate that these are quality scores derived using the Solexa
+convention, rather than ordinary \Rclass{BStringSet} objects.
+
+The object has essential operations for convenient manipulation, for
+instance simultaneously forming the subset of all three components:
+<<ShortReadQ-subset>>=
+fq[1:5]
+@ 
+
+\subsubsection{Additional input functions}
+
+\ShortRead{} includes additional functions to facilitate input. For
+instance, \Rfunction{readPrb} reads Solexa \texttt{\_prb.txt}
+files. These files contain base-specific quality information, and
+\Rfunction{readPrb} returns an \Rclass{SFastqQuality}-class object
+representing the fastq-encoded base-specific quality scores of all
+reads.
+
+Additional files can be parsed using standard \R{} input methods. For
+instance, the \texttt{s\_N\_LLLL\_int.txt} files in the
+\Rfunction{imageAnalysisPath} directory contain lines, one line per
+read, of nucleotide intensities. Each line contain lane, tile, X and Y
+coordinate information, followed by quadruplets of intensity values.
+There are as many quadruplets as there are cycles. Each quadruplet
+represents the intensity of the \texttt{A}, \texttt{C}, \texttt{G},
+and \texttt{T} nucleotide at the corresponding cycle. Thus
+<<intensity-files>>=
+intFile <- list.files(imageAnalysisPath(sp), "s_1_0001_int.txt", full=TRUE)
+strsplit(readLines(intFile, 1), "\t")[[1]][1:6]
+intDf <- read.table(intFile)
+dim(intDf)
+@ 
+%% 
+An interesting exercise is to display the intensities at cycle 2
+(below) and to compare these to cycle, e.g., 30.
+<<intensities-cycle-2, fig=TRUE>>=
+c2 <- intDf[,2*4 + 1:4]
+colnames(c2) <- c("A", "C", "G", "T")
+print(splom(c2, pch=".", cex=3))
+@ 
+ 
+
+\subsection{Sorting}
+
+Short reads can be sorted, or the permutation required to bring the
+short read into lexicographic order, using \Rfunction{srsort} and
+\Rfunction{srorder}. These functions are different from
+\Rfunction{sort} and \Rfunction{order} because the result is
+independent of the locale, and operate quickly on
+\Rclass{DNAStringSet} and \Rclass{BStringSet} objects.
+
+Duplicate reads can be identified with \Rfunction{srduplicated}, which
+returns a logical vector much like \Rfunction{duplicated}.
+
+\subsection{Summarizing read occurrence}
+
+The \Rfunction{tables} function summarizes read occurrences, for instance,
+<<tables>>=
+tbls <- tables(aln)
+names(tbls)
+tbls$top[1:5]
+head(tbls$distribution)
+@ 
+%% 
+The \Robject{top} component returned by \Robject{tables} is a list
+tallying the most commonly occurring sequences in the short
+reads. Knowledgeable readers will recognize the top-occurring read as a
+close match to one of the manufacturer adapters.
+
+The \Robject{distribution} component returned by \Robject{tables} is a
+data frame that summarizes how many reads (e.g., \Sexpr{tbls[["distribution"]][1,"nReads"]}) 
+are represented exactly \Sexpr{tbls[["distribution"]][1,"nOccurrences"]} times.
+
+\subsection{Finding near matches to short sequences}
+
+Facilities exist for finding reads that are near matches to specific
+sequences, e.g., manufacturer adapter or primer
+sequences. \Rfunction{srdistance} reports the edit distance between
+each read and a (short!) reference sequence. To find reads close to
+the most common read in the example above, one might
+<<srdistance>>=
+dist <- srdistance(sread(aln), names(tbls$top)[1])[[1]]
+table(dist)[1:10]
+@ 
+%% 
+`Near' matches can be filtered from the alignment, e.g.,
+<<aln-not-near>>=
+alnSubset <- aln[dist>4]
+@
+
+A different strategy can be used to tally or eliminate reads that are
+predominantly of a single nucleotide. \Rfunction{alphabetFrequency}
+calculates the frequency of each nucleotide (in DNA strings) or letter
+(for other string sets) in each read. Thus one could identify and
+eliminate reads with more than 30 A nucleotides with
+<<polya>>=
+countA <- alphabetFrequency(sread(aln))[,"A"] 
+alnNoPolyA <- aln[countA < 30]
+@ 
+%% 
+\Rfunction{alphabetFrequency}, which simply counts nucleotides, is
+much faster than \Rfunction{srdistance}, which performs full pairwise
+alignemnt of each read to the subject.
+
+Users wanting to use \R{} for whole-genome alignments or more flexible
+pairwise aligment are encouraged to investigate the
+\Rpackage{Biostrings} package, especially the \Rclass{PDict} class and
+\Rfunction{matchPDict} and \Rfunction{pairwiseAlignment} functions.
+
+\subsection{\Rfunction{pileup}}
+
+\Rfunction{pileup} provides a convenient way to summarize where reads
+align on reference sequences. \Rfunction{pileup} uses alignments
+obtained from other sources, e.g., \Rfunction{readAligned} or the
+\Robject{PDict} family of functions in \Rpackage{Biostrings}.
+
+\section{Advance features}
+
+\subsection{The \Rfunarg{pattern} argument to input functions}
+
+Most \ShortRead{} input functions are designed to accept a directory
+path argument, and a \Rfunarg{pattern} argument. The latter is a
+grep-like pattern (as used by, e.g., \Rfunction{list.files}). Many
+input functions are implemented so that all files matching the pattern
+are read into a single large input object. Thus the
+\texttt{s\_N\_LLLL\_seq.txt} files consist of four numeric columns and a
+fifth column corresponding to the short read. The following code
+illustrates the file structure and inputs the final column as a
+\Rclass{DNAStringSet}:
+<<readSeq>>=
+seqFls <- list.files(baseCallPath(sp), "_seq.txt", full=TRUE)
+strsplit(readLines(seqFls[[1]], 1), "\t")
+colClasses <- c(rep(list(NULL), 4), "DNAString")
+reads <- readXStringColumns(baseCallPath(sp), "s_1_0001_seq.txt",
+                            colClasses=colClasses)
+@ 
+%% 
+The more general pattern
+<<readSeq-all>>=
+reads <- readXStringColumns(baseCallPath(sp), "s_1_.*_seq.txt",
+                            colClasses=colClasses)
+@ 
+%% 
+inputs all lane 1 tile files into a single \Rclass{DNAStringSet} object.
+
+\subsection{\Rfunction{srapply}}
+
+Solexa and other short read technologies often include many files,
+e.g., 1 \texttt{s\_L\_NNNN\_int.txt} file per tile, 300 tiles per
+lane, 8 lanes per flow cell for 2400 \texttt{s\_L\_NNNN\_int.txt} files
+per flow cell. A natural way to extract information from these is to
+write short functions, e.g., to find the average intensity per base at
+cycle 12.
+<<calcInt-demo>>=
+calcInt <- function(filename, cycle, verbose=FALSE)
+{
+    if (verbose)
+        cat("calcInt", filename, cycle, "\n")
+    c12 <- read.table(filename)[,cycle*4 + 1:4]
+    colnames(c12) <- c("A", "C", "G", "T")
+    colMeans(c12)
+}
+@ 
+%% 
+One way to apply this function to all intensity files in a Solexa run
+is
+<<calcInt-sapply>>=
+intFls <- list.files(imageAnalysisPath(sp), ".*_int.txt", full=TRUE)
+lres <- lapply(intFls, calcInt, cycle=12)
+@ 
+%% 
+The files are generally large and numerous, so even simple
+calculations consume significant computational resources. The
+\Rfunction{srapply} function is meant to provide a transparent way to
+perform calculations like this distributed over multiple nodes of an
+MPI cluster. Thus
+<<srapply-simple>>=
+srres <- srapply(intFls, calcInt, cycle=12)
+identical(lres, srres)
+@ 
+%% 
+evaluates the function as \Rfunction{lapply}, whereas
+<<srapply-mpi, eval=FALSE>>=
+library(Rmpi)
+mpi.spawn.Rslaves(nsl=16)
+srres <- srapply(intFls, calcInt, cycle=12)
+mpi.close.Rslaves()
+@ 
+%% 
+distributes the calculation over available workers, resulting in a
+speedup approximately inversely proportional to the number of
+available compute nodes.
+
+\section{Conclusions and directions for development}
+
+\ShortRead{} provides tools for reading, manipulation, and quality
+assessment of short read data. Current facilities in \ShortRead{}
+emphasize processing of single-end Solexa data. 
+
+Development priorities in the near term include expanded facilities
+for importing key file types from additional manufactures, more
+extensive quality assessment methodologies, and development of
+infrastructure for paired-end reads.
+
+\end{document}

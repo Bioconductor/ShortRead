@@ -59,14 +59,24 @@ plotAlignQuality <- function(df) {
     row[col%%2==0] <- nrow + 1 - row[col%%2==0]
     list(row=as.integer(row), col=as.factor(col))
 }
+
+.atQuantile <- function(x, breaks)
+{
+    at <- unique(quantile(x, breaks))
+    if (length(at)==1)
+        at <- at * c(.9, 1.1)
+    at
+}
+
 .colorkeyNames <- function(at, fmt) {
     paste(names(at), " (", sprintf(fmt, at), ")", sep="")
 }
+
 plotTileCounts <- function(df, nrow=100) {
     df <- df[!is.na(df$count),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
-    at <- quantile(df$count, seq(0, 1, .1))
+    at <- .atQuantile(df$count, seq(0, 1, .1))
     levelplot(cut(count, at)~col*row|lane, df,
               main="Read count (percentile rank)",
               xlab="Tile local x-coordinate",
@@ -80,7 +90,7 @@ plotTileQualityScore <- function(df, nrow=100) {
     df <- df[!is.na(df$score),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
-    at <- quantile(df$score, seq(0, 1, .1))
+    at <- .atQuantile(df$score, seq(0, 1, .1))
     levelplot(cut(score, at)~col*row|lane, df,
               main="Read quality (percentile rank)",
               xlab="Tile local x-coordinate",
@@ -121,7 +131,7 @@ plotCycleQuality <- function(df)
 }
 @ 
 
-<<qa-run>>=
+<<qa-run, echo=FALSE>>=
 load("@QA_SAVE_FILE@")
 @
 
