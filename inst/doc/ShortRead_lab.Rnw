@@ -1,0 +1,338 @@
+\documentclass[letter]{article}
+
+\usepackage{color}
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+
+\newcommand{\R}{{\textsf{R}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\term}[1]{{\emph{#1}}}
+\newcommand{\Rpackage}[1]{\textsf{#1}}
+\newcommand{\Rfunction}[1]{\texttt{#1}}
+\newcommand{\Robject}[1]{\texttt{#1}}
+\newcommand{\Rclass}[1]{{\emph{#1}}}
+\newcommand{\Rmethod}[1]{{\emph{#1}}}
+\newcommand{\Rfunarg}[1]{{\emph{#1}}}
+
+%% Excercises and Questions
+\usepackage{theorem}
+\theoremstyle{break} \newtheorem{Ex}{Exercise}
+\theoremstyle{break} \newtheorem{Q}{Question}
+%% And solution or answer
+\newenvironment{solution}{\color{blue}}{\bigskip}
+% \begin{minipage}{0.75\textwidth}
+% \color{blue}
+% }{
+% \end{minipage}
+% \bigskip%
+% }
+
+\newcommand{\myincfig}[3]{%
+  \begin{figure}[htbp]
+    \begin{center}
+      \includegraphics[width=#2]{#1}
+      \caption{\label{#1}#3}
+    \end{center}
+  \end{figure}
+}
+
+\newcommand{\Bioconductor}{\textsf{Bioconductor}}
+\newcommand{\ShortRead}{\Rpackage{ShortRead}}
+
+\begin{document}
+
+% \SweaveOpts{keep.source=TRUE}
+
+<<set-options, echo=FALSE>>=
+options(width=55)
+@ 
+% 
+
+\title{Lab: ShortRead}
+\author{Martin Morgan}
+\date{29 July, 2008}
+\maketitle
+
+\section{Input and quality assessment}
+
+This part of the lab explores navigation, input, and quality
+assessment of Solexa reads.
+
+\begin{Ex}
+  This exercise suggests ways of effectively exploring files produces
+  by the Solexa pipeline.
+
+  Load the \Rpackage{ShortRead} library, and use
+  \Rfunction{SolexaPath} to point to the mini-experiment included in
+  the lab. You'll want the first argument to end at the directory
+  called \texttt{Solexa} in the \texttt{extdata} folder. Display the
+  object and summarize the type of files found in each directory.  Use
+  \Rfunction{readLines} and \Rfunction{strsplit} to look at the first
+  line of common file types. The following function might be useful to
+  look at file content:
+<<peek>>=
+peek <- function(dirPath, file, lines=1, sep="\t")
+{
+    filepath <- list.files(dirPath, file, full=TRUE)
+    unlist(strsplit(readLines(filepath, lines), sep))
+}
+@ 
+\end{Ex}
+
+\begin{solution}
+The specific path, below, depends on where you copied files.
+<<SolexaPath-soln>>=
+library(ShortRead)
+sp <- SolexaPath("../extdata/Solexa")
+sp
+
+head(peek(imageAnalysisPath(sp), "s_1_0001_int.txt"))
+peek(baseCallPath(sp), "s_1_0001_seq.txt")
+head(peek(baseCallPath(sp), "s_1_0001_prb.txt"))
+peek(analysisPath(sp), "s_1_sequence.txt", 8)
+peek(analysisPath(sp), "s_1_export.txt")
+@ 
+% 
+Consult Solexa documentation for file content details. We focus mostly
+on \texttt{export, sequence, seq, prb} in the lab.
+\end{solution}
+
+\begin{Ex}
+  This exercise shows how to access and manipulate the data structures
+  returned by \Rfunction{readAligned}.
+
+  Use \Rfunction{readAligned} to read the \texttt{s\_1\_export.txt}
+  file in to R. Use \Rfunction{strand} and \Rfunction{table} to
+  summarize the number of reads aligned to each strand, and not
+  aligned at all. 
+  
+  Use \Rfunction{alignData} to create the subset of reads passing
+  Solexa filtering. How many reads pass filtering? How many of these
+  map to each strand?
+  
+  Use \Rfunction{sread} and \Rfunction{quality} to extract the short
+  reads and their qualities from the reads passing
+  filtering. Interpret, perhaps with your neighbor, the meaning of the
+  quality scores. Which bases are `good', which bad?
+  
+  Use \Rfunction{as}  to convert the fastq quality scores to a matrix.
+\end{Ex}
+
+\begin{solution}
+<<readAligned>>=
+aln <- readAligned(sp, "s_1_export.txt")
+
+table(strand(aln))
+
+filtered <- aln[alignData(aln)[["filtering"]] == "Y"]
+filtered
+
+table(strand(filtered))
+
+sread(filtered)
+quality(filtered)
+
+m <- as(quality(filtered), "matrix")
+dim(m)
+m[1:3,1:15]
+@ 
+\end{solution}
+
+\begin{Ex}
+  This exercise introduces functions for calculating quality assurance
+  measures, and for generating a pdf report from the measures.
+
+  Use \Rfunction{qa} to perform quality assessment on the Solexa
+  path. Access the \Robject{readCounts} element of the result to see
+  how many reads are in the \texttt{s\_1\_export.txt} file.
+  
+  Either run the \Rfunction{report} function on the result of
+  \Rfunction{qa} or, better, open the file
+  \texttt{qa\_080623\_080728.pdf} using a pdf viewer. Discuss with your
+  neighbors various aspects of the report. Are the numbers (e.g., of
+  reads, of uncalled nucleotides) typical? What's the interpretation
+  of figure in the section titled `Read distribution: occurrences'?
+  Any ideas on what the \Robject{frequentSequences} represent?
+  
+  What additional information would make the qa reports more
+  informative?
+\end{Ex}
+
+\begin{solution}
+<<qa>>=
+assess <- qa(sp)
+assess
+assess[["readCounts"]]
+@ 
+% 
+The remainder of the questions are really for discussion. The numbers
+are fairly typical of recent runs that I have seen. 
+
+The `occurrences' figure shows that many reads are represented just
+once; these are likely to be sequencing or other errors in
+Solexa. Some reads are represented a great many times. These are
+likely to be artifacts of sample preparation or sequencing. The
+`interesting' reads are typically those with intermediate
+representation.
+
+Many of the \Robject{frequentSequences} are (near to) the Solexa
+adapter or primer sequences, or poly-A or other reads that likely
+represent. These present significant opportunities for data shaping
+before further analysis, and upstream quality control.
+\end{solution}
+
+\section{Manipulation}
+
+This part of the lab introduces essential tools for housekeeping and
+other exploratory investigation of short reads in \R{}.
+
+\begin{Ex}
+  This exercise illustrates how to obtain a high-level summary of the
+  sequences present in objects defined by \ShortRead{}.
+
+  Use \Rfunction{tables} and \Rfunction{sread} on the result of
+  \Rfunction{readAligned} (from earlier in the lab) to create a list
+  of common reads, and a table of occurrences of all reads. 
+  
+  Display the name and count of the most common reads (i.e., the
+  \Robject{top} element of the result of \Rfunction{tables}). From the
+  \Robject{distribution} element, plot the number of reads as a
+  function of number of occurrences, using \Rfunction{plot} with option
+  \code{log="xy"}.
+\end{Ex}
+
+\begin{solution}
+<<tables>>=
+tbls <- tables(sread(aln))
+head(tbls[["top"]])
+@ 
+<<tables-plot, fig=TRUE>>=
+with(tbls$distribution, plot(nReads~nOccurrences, log="xy"))
+@ 
+\end{solution}
+
+\begin{Ex}
+  This exercise shows how columns of DNA strings can be read into \R{}
+  objects useful for further analysis.
+
+  Use \Rfunction{readLines} to read the first two lines of
+  \texttt{s\_5\_0001\_seq.txt} in the \Rfunction{baseCallPath} of the
+  \Rclass{SolexaPath} object.
+
+  Use \Rfunction{readXStringColumns} with argument
+  \Rfunarg{colClasses} equal to
+  \code{c(rep(list(NULL), 4), "DNAString")} 
+  to read the reads into \R{}. \Rfunction{readXStringColumns} returns
+  a list, and you will want the first element of the list.
+\end{Ex}
+\begin{solution}
+<<ln5>>=
+filepath <- file.path(baseCallPath(sp), "s_5_0001_seq.txt")
+strsplit(readLines(filepath, 2), "\t")
+
+colClasses <- c(rep(list(NULL), 4), "DNAString")
+ln5 <- readXStringColumns(baseCallPath(sp), "s_5_0001_seq.txt",
+                          colClasses=colClasses)[[1]]
+@ 
+\end{solution}
+
+\begin{Ex}  
+  This exercise illustrates important tools for identifying and
+  removing reads with particular sequences or other characteristics.
+
+  Use \Rfunction{tables} and \Rfunction{srdistance} to identify reads
+  that are an edit distance of less than or equal to 4 to the most
+  common sequence. How many of these reads are there?
+
+  Use \Rfunction{alphabetFrequency} with it's \code{baseOnly=TRUE}
+  argument to identify reads with more than 30 A nucleotides. How many
+  reads are there satisfying this criterion? What about other
+  nucleotides?
+
+  Remove all of these reads (adapater-like, poly-A, C, G, T) and reads
+  with one or more uncalled bases. Run \Rfunction{tables} again and
+  look at the most common reads.
+  
+  Some analyses may warrant removal of duplicated reads, e.g., because
+  many of these might represent artifacts of the short read
+  methodology rather than biological signal. Use
+  \Rfunction{srduplicated} to select a single copy of all reads.
+\end{Ex}
+
+\begin{solution}
+<<dist>>=
+tbls <- tables(ln5)
+topSeq <- names(tbls$top)[[1]]
+dist <- srdistance(ln5, topSeq)[[1]]
+sum(dist <= 4)
+ln5.1 <- ln5[dist > 4]
+
+alf <- alphabetFrequency(ln5.1, baseOnly=TRUE)
+poly <- alf[,1:4] > 30
+colSums(poly)
+
+noN <- alf[,"other"] == 0
+sum(noN)
+
+ln5.2 <- ln5.1[rowSums(poly) == 0 & noN]
+
+head(tables(ln5.2)[["top"]])
+
+ln5.3 <- ln5.2[!srduplicated(ln5.2)]
+length(ln5)
+length(ln5.1)
+length(ln5.2)
+length(ln5.3)
+@ 
+\end{solution}
+
+\begin{Ex}
+  This exercise shows how cycle-specific effects can be investigated;
+  approaches like those outlined below can also be used to summarize
+  cycle-specific quality scores.
+
+  Use \Rfunction{alphabetByCycle} to determine the frequency of each
+  nucleotide, at each cycle. \Rfunction{alphabetByCycle} returns a
+  matrix with rows representing (IUPAC) nucleotides and columns
+  representing cycles.
+
+  Uncalled bases are recorded in this file as \code{-}. Plot the
+  frequency of uncalled bases as a function of cycle number.
+
+  Use standard matrix manipulation to Create a compact version of the
+  \Rfunction{alphabetByCycle} matrix containing only the nucleotides
+  A, C, G, and T. Let's call this matrix \Robject{abc1}
+
+  Many exploratory Solexa analyses can be plotted effectively using
+  the \Rpackage{lattice}. \Rpackage{lattice} works best when presented
+  with a data frame with data frame columns indicating the level of
+  the corresponding data frame row. Make a data frame from the result
+  of \Rfunction{alphabetFrequency}. The columns of the data frame
+  might be:
+  \begin{enumerate}
+  \item The count of each nucleotide, \code{as.vector(abc1)}.
+  \item The corresponding nucleotide, \code{c("A", "C", "G", "T")}.
+  \item The cycle, \code{as.vector(col(abc1))}
+  \end{enumerate}
+  Use the data frame to plot nucleotide frequency as a function of
+  cycle. The incantation might involve the formula
+  \code{count~cycle} and the argument \code{group=nucleotide}.
+\end{Ex}
+
+\begin{solution}
+<<abc>>=
+abc <- alphabetByCycle(ln5)
+@ 
+<<abc-n-fig, fig=TRUE>>=
+plot(abc["-",])
+@ 
+<<abc-acgt, fig=TRUE>>=
+abc1 <- abc[1:4,]
+abcDf <- data.frame(Count=as.vector(abc1),
+                    Nucleotide=c("A", "C", "G", "T"),
+                    Cycle=as.vector(col(abc1)))
+print(xyplot(Count~Cycle, group=Nucleotide, abcDf, auto.key=TRUE))
+@ 
+\end{solution}
+
+\end{document}
