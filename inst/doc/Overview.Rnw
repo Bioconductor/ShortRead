@@ -60,7 +60,7 @@ exptPath <- system.file("extdata", package="ShortRead")
 @ 
 %% 
 Usually \Rcode{exptPath} would be a location on the users' file system. Key
-components of the hierarchy are parsed into \R{] with
+components of the hierarchy are parsed into \R{} with
 <<SolexaPat>>=
 sp <- SolexaPath(exptPath)
 sp
@@ -110,7 +110,7 @@ aln
 @ 
 
 \Rfunction{readAligned} illustrates the convention used for
-identifying files for input into \R{} and used by \ShortRead{]. The
+identifying files for input into \R{} and used by \ShortRead{}. The
 function takes a directory path and a pattern (as a regular
 expression, similar to the \R{} function \Rfunction{list.files}) of
 file names to match in the directory. Usually, all files matching the
