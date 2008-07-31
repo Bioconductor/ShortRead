@@ -29,7 +29,7 @@ readXStringColumns(dirPath, pattern=character(0),
     of columns.}
 
   \item{colClasses}{A list of length equal to the number of columns in
-    a file. Columns with corresponding \code{coClasses} equal to
+    a file. Columns with corresponding \code{colClasses} equal to
     \code{NULL} are ignored. Other entries in \code{colClasses} are
     expected to be character strings describing the base class for the
     \code{XStringSet}. For instance a column of DNA sequences would be
