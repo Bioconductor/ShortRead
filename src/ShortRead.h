@@ -4,9 +4,12 @@
 /* util.c */
 
 typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
-
 DECODE_FUNC decoder(const char*);
-char *_mark_field(char *curr, const char* delim);
+
+typedef char * (MARK_FIELD_FUNC)(char *, const char *);
+MARK_FIELD_FUNC _mark_field_1;	/* nchar(delim) == 1 */
+MARK_FIELD_FUNC _mark_field_n;	/* nchar(delim) != 1 */
+
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
 SEXP count_lines(SEXP files);

@@ -139,6 +139,7 @@ read_solexa_fastq(SEXP files)
     qualities = new_CharBBuf(nrec, 0);
 
     for (i = 0; i < nfiles; ++i) {
+        R_CheckUserInterrupt();
         fname = translateChar(STRING_ELT(files, i));
         _read_solexa_fastq_file(fname, &seq, &name, &qualities);
     }
@@ -169,9 +170,9 @@ read_solexa_fastq(SEXP files)
 
 int
 _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
-                       const char *sep, int header,
-                       const char *commentChar, CharBBuf *sets,
-                       const int *toIUPAC)
+                       const char *sep, MARK_FIELD_FUNC *mark_field,
+		       int header, const char *commentChar, 
+		       CharBBuf *sets, const int *toIUPAC)
 {
     FILE *file;
     char *linebuf;
@@ -201,7 +202,7 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
         int j = 0, cidx=0;
         char *curr = linebuf, *next;
         for (j = 0; cidx < ncol && curr != NULL; ++j) {
-            next = _mark_field(curr, sep);
+            next = (*mark_field)(curr, sep);
             if (j == colidx[cidx]) {
                 if (toIUPAC[cidx])
                     _solexa_to_IUPAC(curr);
@@ -227,7 +228,8 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     if (!IS_CHARACTER(colClasses) || LENGTH(colClasses) != LENGTH(colIndex))
         Rf_error("'colClasses' must be 'character' with length(colClasses) == length(colIndex)");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'sep' must be character(1)");
+        Rf_error("'sep' must be character(1)"); 
+    /* FIXME: !nzchar(sep[1]) */
     if (!IS_LOGICAL(header) || LENGTH(header) != 1)
         Rf_error("'header' must be logical(1)");
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
@@ -240,6 +242,11 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     const char *csep = translateChar(STRING_ELT(sep, 0));
     const int nfiles = LENGTH(files);
     const int *nlines = INTEGER(count_lines(files));
+    MARK_FIELD_FUNC *sep_func;	/* how to parse fields; minor efficiency */
+    if (csep[0] != '\0' && csep[1] == '\0')
+	sep_func = _mark_field_1;
+    else
+	sep_func = _mark_field_n;
     int nrow = 0;
     int i, j;
     for (i = 0; i < nfiles; ++i)
@@ -259,8 +266,10 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     int nreads = 0;
     for (i = 0; i < nfiles; ++i) {
         const char *fname = translateChar(STRING_ELT(files, i));
+        R_CheckUserInterrupt();
         nreads += _io_XStringSet_columns(fname, colidx, ncol,
-                                         csep, LOGICAL(header)[0],
+                                         csep, sep_func,
+					 LOGICAL(header)[0],
                                          CHAR(STRING_ELT(commentChar, 0)),
                                          sets, toIUPAC);
     }

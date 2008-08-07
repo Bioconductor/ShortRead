@@ -54,7 +54,18 @@ decoder(const char* base)
  */
 
 char *
-_mark_field(char *curr, const char *delim)
+_mark_field_1(char *curr, const char *delim)
+{
+    char *c = curr;
+    while (*c != '\0' && *c != *delim)
+	c++;
+    if (*c != '\0')		/* i.e., delim */
+	*c++ = '\0';
+    return c;
+}
+
+char *
+_mark_field_n(char *curr, const char *delim)
 {
     const char *d = '\0';
     while (*curr != '\0' && *curr != '\n') {
@@ -103,7 +114,7 @@ _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
         while (curr != NULL) {
             if (j >= INTEGER(dim)[1])
                 error("too many fields");
-            next = _mark_field(curr, delim);
+            next = _mark_field_n(curr, delim);
             SET_STRING_ELT(VECTOR_ELT(ans, i), j, mkChar(curr));
             j++;
             curr = next;
