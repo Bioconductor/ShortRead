@@ -6,8 +6,10 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet)
 
 importFrom(Biobase, selectSome, phenoData, featureData)
 
+importFrom(IRanges, width)
+
 importFrom(Biostrings, BStringSet, DNAStringSet,
-           width, alphabetFrequency, alphabet, quality, pairwiseAlignment)
+           alphabetFrequency, alphabet, quality, pairwiseAlignment)
 
 exportClasses(SRError, SRWarn, SRList, SRVector,
               QualityScore, IntegerQuality, NumericQuality, MatrixQuality,

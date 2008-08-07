@@ -24,7 +24,7 @@ alphabetByCycle <-
                       "'stringSet' must have non-zero length"))
     if (missing(alphabet))
         alphabet <- Biostrings::alphabet(stringSet[[1]])
-    width <- unique(Biostrings::width(stringSet))
+    width <- unique(IRanges::width(stringSet))
     if (length(width)!=1)
         .throw(SRError("UserArgumentMismatch",
                       "'width' must be unique, but is '%s'",
