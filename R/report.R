@@ -36,6 +36,8 @@
 {
     src <- system.file("template", "qa_solexa.Rnw",
                        package="ShortRead")
+    if (.Platform$OS.type == "windows")
+      x <- gsub("\\\\", .Platform$file.sep, x)
     symbolValues <- list(QA_SAVE_FILE=x)
     .report(type, src, dest, symbolValues)
 }
