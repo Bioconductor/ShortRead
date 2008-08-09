@@ -285,7 +285,7 @@ Other elements of \Robject{qaSummary} are more complicated, and their
 interpretation is not directly obvious. Instead, a common use is to
 forward the results of \Rfunction{qa} to a report generator. 
 <<report, eval=FALSE>>=
-report(qa, dest="/path/to/qa_report.pdf")
+report(qaSummary, dest="/path/to/qa_report.pdf")
 @ 
 %% 
 The report includes \R{} code that can be used to understand how
@@ -454,8 +454,14 @@ short read into lexicographic order, using \Rfunction{srsort} and
 independent of the locale, and operate quickly on
 \Rclass{DNAStringSet} and \Rclass{BStringSet} objects.
 
-Duplicate reads can be identified with \Rfunction{srduplicated}, which
-returns a logical vector much like \Rfunction{duplicated}.
+The function \Rfunction{srduplicated} identifies duplicate reads. This
+function returns a logical vector much like \Rfunction{duplicated}.
+The negation of the result from \Rfunction{srduplicated} is useful to
+create a collection of unique reads. An experimental scenario where
+This might be useful is when sample preparation involves PCR. In this
+case, replicate reads may be due to artifacts of sample preparation,
+rather than differential representation of sequence in the sample
+prior to PCR.
 
 \subsection{Summarizing read occurrence}
 
