@@ -1,4 +1,5 @@
 #include <Rdefines.h>
+#include "IRanges_interface.h"
 #include "Biostrings_interface.h"
 
 /* util.c */

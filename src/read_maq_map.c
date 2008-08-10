@@ -27,9 +27,10 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
     SEXP seqnames, seq, start, dir, aq, mm, mm24, errsum, nhits0, 
         nhits1, eltnm, df, klass, levels;
     char readseqbuf[ MAX_READLEN ], fastqbuf[ MAX_READLEN ];
-    CharBBuf readid, readseq, fastq;
+    CharAEAE readid, readseq, fastq;
     int i, actnreads, j;
     maqmap1_t read;
+    RoSeqs roSeqs;
 
     static const char *eltnames[] = {
         "chromosome", "position", "strand", "alignQuality",
@@ -89,9 +90,9 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
     PROTECT( errsum = allocVector( INTSXP, actnreads ) );
     PROTECT( nhits0 = allocVector( INTSXP, actnreads ) );
     PROTECT( nhits1 = allocVector( INTSXP, actnreads ) );
-    readid  = new_CharBBuf( actnreads, 0 );
-    readseq = new_CharBBuf( actnreads, 0 );
-    fastq   = new_CharBBuf( actnreads, 0 );
+    readid  = new_CharAEAE( actnreads, 0 );
+    readseq = new_CharAEAE( actnreads, 0 );
+    fastq   = new_CharAEAE( actnreads, 0 );
 
     for( i = 0; i < actnreads; i++ ) {
       
@@ -128,9 +129,9 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
         INTEGER(errsum)[i] = read.info2;
         INTEGER(nhits0)[i] = read.c[0];
         INTEGER(nhits1)[i] = read.c[1];
-        append_string_to_CharBBuf( &readid,  read.name );
-        append_string_to_CharBBuf( &readseq, readseqbuf );
-        append_string_to_CharBBuf( &fastq,   fastqbuf );
+        append_string_to_CharAEAE( &readid,  read.name );
+        append_string_to_CharAEAE( &readseq, readseqbuf );
+        append_string_to_CharAEAE( &fastq,   fastqbuf );
     }
    
     /* Build the data frame */
@@ -144,9 +145,12 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
     SET_VECTOR_ELT( df, 6, errsum );
     SET_VECTOR_ELT( df, 7, nhits0 );
     SET_VECTOR_ELT( df, 8, nhits1 );
-    SET_VECTOR_ELT( df, 9, new_XStringSet_from_RoSeqs( "BString",   new_RoSeqs_from_BBuf( readid ) ) );
-    SET_VECTOR_ELT( df, 10, new_XStringSet_from_RoSeqs( "DNAString", new_RoSeqs_from_BBuf( readseq ) ) );
-    SET_VECTOR_ELT( df, 11, new_XStringSet_from_RoSeqs( "BString",   new_RoSeqs_from_BBuf( fastq ) ) );
+    roSeqs = new_RoSeqs_from_CharAEAE( &readid );
+    SET_VECTOR_ELT( df, 9, new_XStringSet_from_RoSeqs( "BString",   &roSeqs ) );
+    roSeqs = new_RoSeqs_from_CharAEAE( &readseq );
+    SET_VECTOR_ELT( df, 10, new_XStringSet_from_RoSeqs( "DNAString", &roSeqs ) );
+    roSeqs = new_RoSeqs_from_CharAEAE( &fastq );
+    SET_VECTOR_ELT( df, 11, new_XStringSet_from_RoSeqs( "BString",   &roSeqs ) );
 
     setAttrib( seq, install( "levels" ), seqnames );
     PROTECT( klass = allocVector( STRSXP, 1 ) );

@@ -63,11 +63,11 @@ read_prb_as_character(SEXP fname, SEXP cycles)
 }
 
 /*
- * Read a solexa 's_<lane>_sequence.txt' file into CharBBuf objects.
+ * Read a solexa 's_<lane>_sequence.txt' file into CharAEAE objects.
  */
 static void
 _read_solexa_fastq_file(const char *fname,
-                        CharBBuf *seq, CharBBuf *name, CharBBuf *qualities)
+                        CharAEAE *seq, CharAEAE *name, CharAEAE *qualities)
 {
     FILE *file;
     char linebuf[LINEBUF_SIZE];
@@ -93,16 +93,16 @@ _read_solexa_fastq_file(const char *fname,
         }
         switch(reclineno) {
         case 0:
-            /* add linebuf to CharBBuf; start at char +1 to skip the
+            /* add linebuf to CharAEAE; start at char +1 to skip the
              * fastq annotation. */
-            append_string_to_CharBBuf(name, linebuf+1);
+            append_string_to_CharAEAE(name, linebuf+1);
             break;
         case 1:
             _solexa_to_IUPAC(linebuf);
-            append_string_to_CharBBuf(seq, linebuf);
+            append_string_to_CharAEAE(seq, linebuf);
             break;
         case 3:
-            append_string_to_CharBBuf(qualities, linebuf);
+            append_string_to_CharAEAE(qualities, linebuf);
             break;
         default:
             error("unexpected 'reclineno'; consult maintainer");
@@ -118,7 +118,7 @@ _read_solexa_fastq_file(const char *fname,
 SEXP
 read_solexa_fastq(SEXP files)
 {
-    CharBBuf seq, name, qualities;
+    CharAEAE seq, name, qualities;
     RoSeqs roSeqs;
     int i, nfiles, nrec = 0;
     const char *fname;
@@ -134,9 +134,9 @@ read_solexa_fastq(SEXP files)
         nrec += INTEGER(nlines)[i];
     UNPROTECT(1);
     nrec /= LINES_PER_FASTQ_REC;
-    seq = new_CharBBuf(nrec, 0);
-    name = new_CharBBuf(nrec, 0);
-    qualities = new_CharBBuf(nrec, 0);
+    seq = new_CharAEAE(nrec, 0);
+    name = new_CharAEAE(nrec, 0);
+    qualities = new_CharAEAE(nrec, 0);
 
     for (i = 0; i < nfiles; ++i) {
         R_CheckUserInterrupt();
@@ -147,18 +147,18 @@ read_solexa_fastq(SEXP files)
     PROTECT(ans = NEW_LIST(3));
     PROTECT(nms = NEW_CHARACTER(3));
 
-    roSeqs = new_RoSeqs_from_BBuf(seq);
-    PROTECT(elt = new_XStringSet_from_RoSeqs("DNAString", roSeqs));
+    roSeqs = new_RoSeqs_from_CharAEAE(&seq);
+    PROTECT(elt = new_XStringSet_from_RoSeqs("DNAString", &roSeqs));
     SET_VECTOR_ELT(ans, 0, elt);
     SET_STRING_ELT(nms, 0, mkChar("sread"));
 
-    roSeqs = new_RoSeqs_from_BBuf(name);
-    PROTECT(elt = new_XStringSet_from_RoSeqs("BString", roSeqs));
+    roSeqs = new_RoSeqs_from_CharAEAE(&name);
+    PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
     SET_VECTOR_ELT(ans, 1, elt);
     SET_STRING_ELT(nms, 1, mkChar("id"));
     
-    roSeqs = new_RoSeqs_from_BBuf(qualities);
-    PROTECT(elt = new_XStringSet_from_RoSeqs("BString", roSeqs));
+    roSeqs = new_RoSeqs_from_CharAEAE(&qualities);
+    PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
     SET_VECTOR_ELT(ans, 2, elt);
     SET_STRING_ELT(nms, 2, mkChar("quality"));
 
@@ -172,7 +172,7 @@ int
 _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
                        const char *sep, MARK_FIELD_FUNC *mark_field,
 		       int header, const char *commentChar, 
-		       CharBBuf *sets, const int *toIUPAC)
+		       CharAEAE *sets, const int *toIUPAC)
 {
     FILE *file;
     char *linebuf;
@@ -206,7 +206,7 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
             if (j == colidx[cidx]) {
                 if (toIUPAC[cidx])
                     _solexa_to_IUPAC(curr);
-                append_string_to_CharBBuf(&sets[cidx], curr);
+                append_string_to_CharAEAE(&sets[cidx], curr);
                 cidx++;
             }
             curr = next;
@@ -253,11 +253,11 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
         nrow += nlines[i];
     nrow -= nfiles * LOGICAL(header)[0];
     int ncol = LENGTH(colIndex);
-    CharBBuf *sets = (CharBBuf*) R_alloc(sizeof(CharBBuf), ncol);
+    CharAEAE *sets = (CharAEAE*) R_alloc(sizeof(CharAEAE), ncol);
     int *colidx = (int *) R_alloc(sizeof(int), ncol);
     int *toIUPAC = (int *) R_alloc(sizeof(int), ncol);
     for (j = 0; j < ncol; ++j) {
-        sets[j] = new_CharBBuf(nrow, 0);
+        sets[j] = new_CharAEAE(nrow, 0);
         colidx[j] = INTEGER(colIndex)[j] - 1;
         toIUPAC[j] = !strcmp(CHAR(STRING_ELT(colClasses, j)), "DNAString");
     }
@@ -282,8 +282,8 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     PROTECT(ans = NEW_LIST(ncol));
     for (j = 0; j < ncol; ++j) {
         const char *clsName = CHAR(STRING_ELT(colClasses, j));
-        roSeqs = new_RoSeqs_from_BBuf(sets[j]);
-        PROTECT(elt = new_XStringSet_from_RoSeqs(clsName, roSeqs));
+        roSeqs = new_RoSeqs_from_CharAEAE(sets + j);
+        PROTECT(elt = new_XStringSet_from_RoSeqs(clsName, &roSeqs));
         SET_VECTOR_ELT(ans, j, elt);
         UNPROTECT(1);
     }
