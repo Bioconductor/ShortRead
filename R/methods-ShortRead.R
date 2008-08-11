@@ -9,7 +9,9 @@
 
 setMethod(".srValidity", "ShortRead", .ShortRead_validity)
 
-.make_getter(slotNames("ShortRead"))
+.make_getter("id")
+
+setMethod("sread", "ShortRead", function(object) object@sread)
 
 setMethod("length", "ShortRead", function(x) length(sread(x)))
 
@@ -20,7 +22,18 @@ setMethod("width", "ShortRead", function(x) {
         0
     }
 })
-    
+
+## import
+
+setMethod("readFasta", "character", function(dirPath, pattern=character(),
+                                             sample = 1, ...) {
+  src <- .file_names(dirPath, pattern)[sample]
+  FASTAlist <- lapply(src, readFASTA, strip.desc = TRUE)
+  FASTArecs <- do.call("c", FASTAlist)
+  strings <- FASTArecordsToXStringViews(FASTArecs, "BStringSet")
+  new("ShortRead", ..., sread=strings, id=names(strings))
+})
+
 ## subset
 
 setMethod("[", c("ShortRead", "missing", "missing"),
@@ -93,3 +106,7 @@ setMethod("detail", "ShortRead", function(object, ...) {
     cat("\nid:\n")
     show(id(object))
 })
+
+## summary
+
+## perhaps a 'summary' method with statistics on reads for each sample

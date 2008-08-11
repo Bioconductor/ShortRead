@@ -4,7 +4,7 @@ importClassesFrom(Biobase, AnnotatedDataFrame, Versioned)
 
 importClassesFrom(Biostrings, BStringSet, DNAStringSet)
 
-importFrom(Biobase, selectSome, phenoData, featureData)
+importFrom(Biobase, selectSome, phenoData, featureData, sampleNames)
 
 importFrom(IRanges, width)
 

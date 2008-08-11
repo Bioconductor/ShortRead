@@ -83,3 +83,7 @@ setMethod("detail", "ShortReadQ", function(object, ...) {
     callNextMethod()
     detail(quality(object))
 })
+
+## summary
+
+## perhaps summary stats like ShortRead except with qualities

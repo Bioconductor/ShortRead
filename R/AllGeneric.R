@@ -63,6 +63,14 @@ setGeneric("readPrb", function(dirPath, pattern=character(0), ...)
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)
            standardGeneric("readFastq"), signature="dirPath")
 
+setGeneric("readFasta",
+           function(dirPath, pattern=character(0), ...)
+           standardGeneric("readFasta"))
+
+setGeneric("readQual",
+           function(dirPath, pattern=character(0), ...)
+           standardGeneric("readQual"))
+
 setGeneric("length")
 
 setGeneric("clean", function(object, ...) standardGeneric("clean"))
@@ -91,6 +99,8 @@ setGeneric("report", function(x, ..., dest=tempfile(), type="pdf") {
     standardGeneric("report")
 }, signature="x")
 
+setGeneric("sread", function(object, ...) standardGeneric("sread"))
+
 ## SolexaSet
 
 setGeneric("SolexaSet", function(path, ...)
@@ -100,3 +110,10 @@ setGeneric("laneNames", function(object, ...) {
     standardGeneric("laneNames")
 })
 
+## Roche
+
+setGeneric("RocheSet", function(path, ...)
+           standardGeneric("RocheSet"))
+
+setGeneric("runNames", function(object, ...)
+           standardGeneric("runNames"))

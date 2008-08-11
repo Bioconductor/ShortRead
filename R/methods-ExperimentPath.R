@@ -5,7 +5,7 @@ setMethod(".srValidity", "ExperimentPath", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-.srPath <- function(path, pattern) {
+.srPath <- function(path, pattern = character()) {
     path <- path.expand(path)
     tryCatch({
         res <- list.files(path, pattern=pattern, full.name=TRUE)

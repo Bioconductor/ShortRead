@@ -103,12 +103,14 @@ setClass("ExperimentPath", contains = c(".ShortReadBase"),
 setClass("SRSet", contains = ".ShortReadBase",
          representation = representation(
            sourcePath="ExperimentPath", # for lazy loading
-           subsetMask="MaskCollection", # for tracking subsets
+           readInds="integer", # for tracking subsets and sorting
+           readCounts="integer", # counts of reads in each sample
            phenoData="AnnotatedDataFrame", # experimental design
            readData="AnnotatedDataFrame"), # arbitrary read annotations
          prototype = prototype(
            sourcePath=new("ExperimentPath"),
-           subsetMask=new("MaskCollection"),
+           readInds=NA_integer_,
+           readCounts=NA_integer_,
            phenoData=new("AnnotatedDataFrame"),
            readData=new("AnnotatedDataFrame")),
          validity = .srValidity)
@@ -132,6 +134,15 @@ setClass("AlignedRead", contains="ShortReadQ",
            strand=factor(levels=c("+", "-")),
            alignQuality=NumericQuality()),
          validity=.srValidity)
+
+## represents an alignment scored against multiple targets
+## not sure if this will be useful
+## setClass("MultiAlignedRead", contains="AlignedRead",
+##          representation=representation(
+##            alignQuality="MatrixQuality"),
+##          prototype=prototype(
+##            alignQuality=MatrixQuality()),
+##          validity=.srValidity)
 
 ## .Solexa
 
@@ -186,10 +197,10 @@ setClass(".Roche", contains=".ShortReadBase",
 
 setClass("RochePath", contains=c("ExperimentPath", ".Roche"),
          representation=representation(
-           dataPath="character",
+           readPath="character",
            qualPath="character"),
          prototype=prototype(
-           dataPath=NA_character_,
+           readPath=NA_character_,
            qualPath=NA_character_),
          validity=.srValidity)
 

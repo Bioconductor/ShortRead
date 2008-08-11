@@ -47,6 +47,28 @@ IntegerQuality <- function(quality=integer(0)) {
     new("IntegerQuality", quality=quality)
 }
 
+## Import integer qualities from 454 .qual files
+.readQual <- function(file, reads = NULL) {
+  if (!is.null(reads)) { ## a lot faster if the reads are known
+    nums <- scan(file, integer(0), n = sum(width(reads)), comment.char = ">")
+    scores <- split(nums, rep(seq_len(length(reads)), width(reads)))
+  } else {
+    lines <- readLines(file)
+    headerLines <- grep("^>", lines)
+    ids <- sub("^(.*?) .*", "\\1", lines[headerLines])
+    scores <- lapply(strsplit(lines[headerLines+1], " "), as.integer)
+    names(scores) <- ids
+  }
+  scores
+}
+setMethod("readQual", "character", function(dirPath, reads = NULL,
+                                            pattern=character(), sample = 1,
+                                            ...) {
+  src <- .file_names(dirPath, pattern)[sample]
+  scores <- do.call("c", lapply(scores, .readQual, reads))
+  IntegerQuality(scores)
+})
+
 ## MatrixQuality
 
 MatrixQuality <- function(quality=new("matrix")) {

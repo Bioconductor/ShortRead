@@ -51,6 +51,35 @@ setMethod("[", c("AlignedRead", "ANY", "ANY"),
 
 setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
+## align
+
+setMethod("pairwiseAlignment", "ShortRead",
+          function(pattern, subject, ...)
+          {
+            pairwiseAlignment(sread(object), subject, ...)
+          })
+
+setMethod("pairwiseAlignment", "ShortReadQ",
+          function(pattern, subject, ...)
+          {
+            mc <- as.list(match.call())
+            if (is.null(mc$patternQuality))
+              mc$patternQuality <- quality(quality(pattern))
+            do.call("callNextMethod", c(list(pattern, subject), mc))
+          })
+
+setAs("PairwiseAlignment", "AlignedRead",
+      function(from, to) {
+        pat <- pattern(from)
+        quality <- character()
+        if (is(pat, "QualityAlignedXStringSet"))
+          quality <- quality(pat)
+        new("AlignedRead", sread = unaligned(pat), id = names(pat),
+            quality = FastqQuality(quality),
+            position = start(views(alignment)),
+            alignQuality = IntegerQuality(score(alignment)))
+      })
+
 ## show
 
 setMethod("show", "AlignedRead", function(object) {
@@ -73,3 +102,8 @@ setMethod("detail", "AlignedRead", function(object, ...) {
     cat("\nalignData:\n")
     show(alignData(object))
 })
+
+## summary
+
+## perhaps summary statistics like ShortReadQ except broken down by chromosome,
+## strand, and their combination
