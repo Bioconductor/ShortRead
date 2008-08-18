@@ -42,14 +42,14 @@ setMethod("readFasta", "RochePath", .readFasta_RochePath)
 
 setMethod("readQual", "RochePath", .readQual_RochePath)
 
-.sread_RochePath <- function(object, sample = 1, run = 1) {
-  reads <- readFasta(object, sample = sample, run = run)
-  quals <- readQual(object, reads = reads, sample = sample, run = run)
+.read454_RochePath <- function(dirPath, sample = 1, run = 1) {
+  reads <- readFasta(dirPath, sample = sample, run = run)
+  quals <- readQual(dirPath, reads = reads, sample = sample, run = run)
   ## combine the two
   new("ShortReadQ", reads, quality=quals)
 }
 
-setMethod("sread", "RochePath", .sread_RochePath)
+setMethod("read454", "RochePath", .read454_RochePath)
 
 .sampleNames_RochePath <- function(object) {
   sub("_.*", "", basename(.file_names(readPath(object), "\\.fna")))

@@ -1,8 +1,7 @@
 .SRSet_validity <- function(object) {
   msg <- NULL
-  len <- length(sread(object))
-  rlen <- c(readInd = length(readInd(object)),
-            readData = nrow(readData(object)))
+  len <- length(readInd(object))
+  rlen <- c(readData = nrow(readData(object)))
   if (!all(rlen==len)) {
     bad <- rlen!=len
     msg <- c(msg,
@@ -69,4 +68,5 @@ setMethod("phenoData", "SRSet", function(object) object@phenoData)
 
 .make_getter(c("readData", "sourcePath"))
 
-setMethod("sread", "SRSet", function(object) sread(sourcePath(object)))
+## proposed
+##setMethod("readSRQ", "SRSet", function(object) readSRQ(sourcePath(object)))

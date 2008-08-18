@@ -71,6 +71,10 @@ setGeneric("readQual",
            function(dirPath, pattern=character(0), ...)
            standardGeneric("readQual"))
 
+setGeneric("read454",
+           function(dirPath, ...)
+           standardGeneric("read454"))
+
 setGeneric("length")
 
 setGeneric("clean", function(object, ...) standardGeneric("clean"))
@@ -98,8 +102,6 @@ setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))
 setGeneric("report", function(x, ..., dest=tempfile(), type="pdf") {
     standardGeneric("report")
 }, signature="x")
-
-setGeneric("sread", function(object, ...) standardGeneric("sread"))
 
 ## SolexaSet
 

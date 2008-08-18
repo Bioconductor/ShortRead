@@ -9,9 +9,7 @@
 
 setMethod(".srValidity", "ShortRead", .ShortRead_validity)
 
-.make_getter("id")
-
-setMethod("sread", "ShortRead", function(object) object@sread)
+.make_getter(c("id", "sread"))
 
 setMethod("length", "ShortRead", function(x) length(sread(x)))
 
