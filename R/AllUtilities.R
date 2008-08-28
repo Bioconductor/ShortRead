@@ -29,9 +29,23 @@ polyn <- function(nucleotides, n)
                    "'[' must be called with only subscript 'i'"))
 }
 
+.arg_missing_err <- function(arg, method, help) {
+    .throw(SRError("UserArgumentMismatch",
+                   "argument '%s' required for '%s'\n  see %s",
+                   arg, method, help))
+}
+
 .arg_mismatch_type_err <- function(arg, type) {
-    .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
+    .throw(SRError("UserArgumentMismatch",
+                   "'%s' must be '%s'",
                    arg, type))
+}
+
+.arg_mismatch_value_err <- function(arg, value, possible_vals) {
+    .throw(SRError("UserArgumentMismatch",
+                   "arugment '%s' had value '%s'\n  allowable values: '%s'",
+                   arg, value,
+                   paste(possible_vals, collapse="' '")))
 }
 
 ## Misc

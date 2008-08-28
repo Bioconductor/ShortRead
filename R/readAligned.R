@@ -162,8 +162,14 @@
                "MAQMap", "MAQMapview"),
              ...)
 {
+    if (missing(type))
+        .arg_missing_err("type", "readAligned,character-method",
+                       "help(\"readAligned,character-method\")")
     if (!is.character(type) || length(type) != 1)
         .arg_mismatch_type_err("type", "character(1)")
+    vals <- eval(formals(sys.function())$type)
+    if (!type %in% vals)
+        .arg_mismatch_value_err("type", type, vals)
     tryCatch({
         switch(type,
                SolexaExport=.readAligned_SolexaExport(dirPath,
@@ -174,10 +180,7 @@
                  pattern=pattern, ...),
                MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
                MAQMapview=.readAligned_MaqMapview(
-                 dirPath, pattern=pattern, ...),
-               .throw(SRError("UserArgumentMismatch",
-                              "'%s' unknown; value was '%s'",
-                              "type", type)))
+                 dirPath, pattern=pattern, ...))
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {
