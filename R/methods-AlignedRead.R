@@ -56,7 +56,7 @@ setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 setMethod("pairwiseAlignment", "ShortRead",
           function(pattern, subject, ...)
           {
-            pairwiseAlignment(sread(object), subject, ...)
+            pairwiseAlignment(sread(pattern), subject, ...)
           })
 
 setMethod("pairwiseAlignment", "ShortReadQ",
@@ -76,8 +76,8 @@ setAs("PairwiseAlignment", "AlignedRead",
           quality <- quality(pat)
         new("AlignedRead", sread = unaligned(pat), id = names(pat),
             quality = FastqQuality(quality),
-            position = start(views(alignment)),
-            alignQuality = IntegerQuality(score(alignment)))
+            position = start(views(pat)),
+            alignQuality = IntegerQuality(score(from)))
       })
 
 ## show
