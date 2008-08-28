@@ -69,6 +69,17 @@ setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
 
 setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 
+.readBaseQuality_SolexaPath <- function(dirPath,
+                                        seqPattern="s_[1-8]_seq.txt",
+                                        prbPattern="s_[1-8]_prb.txt",
+                                        run=1, ...) {
+    dirPath <- baseCallPath(dirPath)[[run]]
+    .readBaseQuality_Solexa(dirPath, seqPattern=seqPattern,
+                            prbPattern=prbPattern, ...)
+}
+
+setMethod("readBaseQuality", "SolexaPath", .readBaseQuality_SolexaPath)
+
 .readAligned_SolexaPath <- function(dirPath,
                                     pattern="s_[1-8]_export.txt",
                                     run=1, ...) {

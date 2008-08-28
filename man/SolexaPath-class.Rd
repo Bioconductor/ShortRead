@@ -11,6 +11,7 @@
 % transforming methods
 \alias{readPrb,SolexaPath-method}
 \alias{readFastq,SolexaPath-method}
+\alias{readBaseQuality,SolexaPath-method}
 \alias{readAligned,SolexaPath-method}
 
 \title{"SolexaPath" class representing a standard output file hierarchy}
@@ -94,6 +95,17 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \code{\linkS4class{ShortReadQ}} object. Note that the default
       method reads \emph{all} sequence files into a single object; often
       one will want to specify a pattern for each lane. }
+
+    \item{readBaseQuality}{
+      \code{signature(dirPath = "SolexaPath", seqPattern = "s_[1-8]_seq.txt",
+        prbPattern = "s_[1-8]_prb.txt", run=1, ...)}: 
+      
+      Use \code{baseCallPath(dirPath)[[run]]} as the directory path and
+      \code{seqPattern="s_[1-8]_seq.txt"} as the pattern for discovering
+      base calls and \code{prbPattern="s_[1-8]_prb.txt"} as the pattern
+      for discovering quality scores. Note that the default method reads
+      \emph{all} base call and quality score files into a single object;
+      often one will want to specify a pattern for each lane.}
 
     \item{readAligned}{
       \code{signature(dirPath = "SolexaPath", pattern = "s_[1-8]_export.txt", run=1, ...)}: 
