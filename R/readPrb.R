@@ -16,7 +16,7 @@
 
 .readPrb_character <- function(dirPath, pattern, ...)
 {
-    fls <- list.files(dirPath, pattern, full=TRUE)
+    fls <- .file_names(dirPath, pattern)
     SFastqQuality(unlist(srapply(fls, .readPrb)))
 }
 
