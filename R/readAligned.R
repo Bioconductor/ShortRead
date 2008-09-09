@@ -40,7 +40,7 @@
     len <- length(sets[["sequence"]])
     wd <- width(sets[["sequence"]])
     q <- paste(rep(" ", max(wd)), collapse="")
-    quality <- BStringSet(views(BString(q), rep(1, len), wd))
+    quality <- BStringSet(Views(BString(q), start=rep(1, len), end=wd))
     AlignedRead(sread=sets[["sequence"]],
                 id=BStringSet(character(len)),
                 quality=SFastqQuality(quality),

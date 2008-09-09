@@ -76,7 +76,7 @@ setAs("PairwiseAlignment", "AlignedRead",
           quality <- quality(pat)
         new("AlignedRead", sread = unaligned(pat), id = names(pat),
             quality = FastqQuality(quality),
-            position = start(views(pat)),
+            position = start(Views(pat)),
             alignQuality = IntegerQuality(score(from)))
       })
 
