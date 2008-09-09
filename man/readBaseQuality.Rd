@@ -38,10 +38,6 @@ readBaseQuality(dirPath, seqPattern=character(0), prbPattern=character(0), ...)
 
 }
 
-\details{
-
-}
-
 \value{
 
   A single R object (e.g., \code{\linkS4class{ShortReadQ}}) containing
@@ -60,7 +56,8 @@ readBaseQuality(dirPath, seqPattern=character(0), prbPattern=character(0), ...)
 }
 
 \author{
-  Martin Morgan <mtmorgan@fhcrc.org>}
+  Patrick Aboyoun <paboyoun@fhcrc.org>
+}
 
 \examples{
 sp <- SolexaPath(system.file("extdata", package="ShortRead"))

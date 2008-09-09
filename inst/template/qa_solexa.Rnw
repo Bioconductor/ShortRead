@@ -30,17 +30,17 @@ plotReadQuality <- function(df) {
            ylab="Proportion of reads",
            aspect=2)
 }
-plotReadOccurrences <- function(df) {
+plotReadOccurrences <- function(df, ...) {
     xyplot(log10(nReads)~log10(nOccurrences)|lane, df,
-           xlab= expression(paste(
+           xlab=expression(paste(
                "Number of occurrences of each read (",
                log[10], ")", sep="")),
            ylab=expression(paste(
                "Number of reads (", log[10], ")", sep="")),
-           aspect=2)
+           aspect=2, ...)
 }
 plotAlignQuality <- function(df) {
-    xyplot(count~score|lane, qa[["alignQuality"]],
+    xyplot(count~score|lane, df,
            type="l",
            prepanel=function(x, y, ...) {
                list(ylim=c(0, 1))
@@ -137,13 +137,20 @@ load("@QA_SAVE_FILE@")
 
 \section{Reads}
 
-Read counts
+Read counts. Filtered and aligned read counts are reported relative to
+the total number of reads (clusters).
 <<read-counts>>=
 ppnCount(qa[["readCounts"]])
 @
 
-Base calls
+Base calls. Frequency of base calls over all reads.
 <<base-calls>>=
+qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])
+@ 
+% 
+Frequency of each called base, relative to the frequency of
+\texttt{A}.
+<<base-calls-relative>>=
 ppnCount(qa[["baseCalls"]])
 @
 
@@ -156,7 +163,7 @@ print(plotReadQuality(df[df$type=="read",]))
 Read distribution: occurrences
 <<read-distribution-occurrence, fig=TRUE>>=
 df <- qa[["sequenceDistribution"]]
-print(plotReadOccurrences(df[df$type=="read",]))
+print(plotReadOccurrences(df[df$type=="read",], cex=.5))
 @ 
 
 Common duplicate reads
@@ -177,25 +184,46 @@ perCycle <- qa[["perCycle"]]
 print(plotCycleBaseCall(perCycle$baseCall))
 @ 
 
-Per-cycle quality score
+Per-cycle quality score. Reported quality scores are `calibrated',
+i.e., incorporating phred-like adjustments following seuqence
+alignment.
 <<per-cycle-quality, fig=TRUE>>=
 print(plotCycleQuality(perCycle$quality))
 @ 
 
-Counts per tile (log 10)
-<<read-counts-per-tile, fig=TRUE>>=
+Counts per tile. 
+<<counts-histo, fig=TRUE>>=
 perTile <- qa[["perTile"]]
 df <- perTile[["readCounts"]]
-print(plotTileCounts(df[df$type=="read",]))
+cnts <- df[df$type=="read", "count"]
+print(histogram(cnts))
 @ 
 
-Median read quality score per tile
+Number of tiles with fewer than 1, 5, and 10\% of reads.
+<<counts-quantile>>=
+q <- quantile(cnts, c(.01, .05, .1))
+sapply(lapply(q, ">", cnts), sum)
+@ 
+% 
+Spatial counts per tile. Divisions on the color scale are quantized,
+so that the range of counts per tile is divided into 10 equal
+increments. Parenthetic numbers on the scale represent the break
+points of the quantized values.
+<<read-counts-per-tile, fig=TRUE>>=
+print(plotTileCounts(df[df$type=="read",]))
+@ 
+ 
+Median read quality score per tile. Divisions on the color scale are
+quantized, so that the range of average quality scores per tile is
+divided into 10 equal increments. Parenthetic numbers on the scale
+represent the break points of the quantized values.
 <<read-score-per-tile, fig=TRUE>>=
 df <- perTile[["medianReadQualityScore"]]
 print(plotTileQualityScore(df[df$type=="read",]))
 @
 
-Mapped alignment score
+Mapped alignment score. Counts measured relative to counts in score
+category with maximum representation.
 <<mapped-alignment-score, fig=TRUE>>=
 print(plotAlignQuality(qa[["alignQuality"]]))
 @ 
