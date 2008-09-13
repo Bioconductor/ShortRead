@@ -107,14 +107,17 @@ polyn <- function(nucleotides, n)
     x
 }
 
-.make_getter <- function(slots, where=topenv(parent.frame())) {
+.make_getter <-
+    function(slots, where=topenv(parent.frame()), verbose=FALSE)
+{
     slots <- .nameAll(slots)
     nms <- names(slots)
     ok <- !sapply(nms, exists, where)
-    if (!all(ok))
+    if (verbose && !all(ok))
         .throw(SRError("InternalError",
                       "getter '%s' already exists",
                       paste(nms[!ok], collapse=", ")))
+    slots <- slots[ok]
     for (i in seq_along(slots)) {
         func <- eval(substitute(function(object, ...) slot(object, SLOT),
                                 list(SLOT=slots[i])))

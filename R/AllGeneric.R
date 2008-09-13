@@ -76,7 +76,9 @@ setGeneric("read454",
            standardGeneric("read454"))
 
 setGeneric("readBaseQuality",
-           function(dirPath, seqPattern=character(0), prbPattern=character(0), ...)
+           function(dirPath,
+                    seqPattern=character(0), prbPattern=character(0),
+                    ...)
            standardGeneric("readBaseQuality"), signature="dirPath")
 
 setGeneric("length")

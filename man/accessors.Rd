@@ -14,6 +14,7 @@
 \alias{alignData}
 % Solexa
 \alias{experimentPath}
+\alias{basePath}
 \alias{dataPath}
 \alias{scanPath}
 \alias{imageAnalysisPath}
@@ -47,6 +48,7 @@ alignQuality(object, ...)
 alignData(object, ...)
 ## Solexa
 experimentPath(object, ...)
+basePath(object, ...)
 dataPath(object, ...)
 scanPath(object, ...)
 imageAnalysisPath(object, ...)

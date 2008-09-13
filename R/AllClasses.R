@@ -149,16 +149,14 @@ setClass("AlignedRead", contains="ShortReadQ",
 setClass(".Solexa", contains=".ShortReadBase",
          representation=representation("VIRTUAL"))
 
-setClass("SolexaPath", contains=".Solexa",
+setClass("SolexaPath", contains=c("ExperimentPath", ".Solexa"),
          representation=representation(
-           experimentPath="character",
            dataPath="character",
            scanPath="character",
            imageAnalysisPath="character",
            baseCallPath="character",
            analysisPath="character"),
          prototype=prototype(
-           experimentPath=NA_character_,
            scanPath=NA_character_,
            dataPath=NA_character_,
            imageAnalysisPath=NA_character_,

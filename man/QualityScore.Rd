@@ -3,7 +3,13 @@
 \alias{IntegerQuality}
 \alias{MatrixQuality}
 \alias{FastqQuality}
+\alias{FastqQuality,BStringSet-method}
+\alias{FastqQuality,character-method}
+\alias{FastqQuality,missing-method}
 \alias{SFastqQuality}
+\alias{SFastqQuality,BStringSet-method}
+\alias{SFastqQuality,character-method}
+\alias{SFastqQuality,missing-method}
 
 \title{Construct objects indicating read or alignment quality}
 \description{
@@ -22,7 +28,10 @@ SFastqQuality(quality, ...)
 \arguments{
   \item{quality}{An object used to initialize the data
     structure. Appropriate objects are indicated in the constructors
-    above.}
+    above for Numeric, Integer, and Matrix qualities. For
+    \code{FastqQuality} and \code{SFastqQuality}, methods are defined
+    for \code{\linkS4class{BStringSet}}, \code{character}, and
+    \code{missing}.}
 
   \item{...}{Additional arguments, currently unused.}
 }

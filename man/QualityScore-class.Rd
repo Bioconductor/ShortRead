@@ -23,6 +23,7 @@
 % FastqQuality
 \alias{width,FastqQuality-method}
 \alias{show,FastqQuality-method}
+\alias{alphabet,FastqQuality-method}
 \alias{alphabetFrequency,FastqQuality-method}
 \alias{alphabetByCycle,FastqQuality-method}
 \alias{srsort,FastqQuality-method}
@@ -109,6 +110,10 @@
   The following methods are defined on specific classes:
 
   \describe{
+    \item{alphabet}{\code{signature(x = "FastqQuality")}:
+      Return a character vector of valid quality characters.
+    }
+
     \item{alphabetFrequency}{\code{signature(stringSet = "FastqQuality")}:
 
       Apply \code{\link[Biostrings]{alphabetFrequency}} to quality

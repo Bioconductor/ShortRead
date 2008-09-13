@@ -1,7 +1,7 @@
 setMethod(".srValidity", "ExperimentPath", function(object) {
     msg <- NULL
-    if (length(basePath(object))!=1)
-        msg <- c(msg, "ExperimentPath 'basePath' must be character(1)")
+    if (length(experimentPath(object))!=1)
+        msg <- c(msg, "ExperimentPath 'experimentPath' must be character(1)")
     if (is.null(msg)) TRUE else msg
 })
 
@@ -15,19 +15,30 @@ setMethod(".srValidity", "ExperimentPath", function(object) {
 }
 
 .checkPath <- function(path) {
-  nm <- deparse(substitute(path))
-  if (length(path)==0) {
-    warning(nm, " not defined")
-  } else {
-    for (p in path)
-      if (!file.exists(p)) 
-        warning(nm, " '", p, "' does not exist")
-  }
+    nm <- deparse(substitute(path))
+    if (length(path)==0) {
+        warning(nm, " not defined")
+    } else {
+        for (p in path)
+            if (!file.exists(p)) 
+                warning(nm, " '", p, "' does not exist")
+    }
 }
 
-.make_getter(slotNames("ExperimentPath"))
+ExperimentPath <- function(experimentPath, ...) {
+    new("ExperimentPath", basePath=experimentPath, ...)
+}
 
-setMethod("show", "ExperimentPath", function(object) {
+experimentPath <- basePath <- function(object, ...) {
+    slot(object, "basePath")
+}
+
+basePath <- function(object, ...) {
+    .Deprecated("experimentPath")
+    experimentPath(object, ...)
+}
+
+.show_additionalPathSlots <- function(object) { # for derived classes
     catPath <- function(nm) {
         vals <- do.call(nm, list(object))
         vals <- substr(basename(vals), 1, 15)
@@ -35,20 +46,26 @@ setMethod("show", "ExperimentPath", function(object) {
                       sep="")
         cat(nm, ": ", paste(vals, collapse=", "), "\n", sep="")
     }
-    callNextMethod()
-    cat("basePath: ", basePath(object), "\n", sep="")
     slts <- slotNames(object)
     for (slt in slts[slts!="basePath"]) catPath(slt)
+}
+
+setMethod("show", "ExperimentPath", function(object) {
+    callNextMethod()
+    cat("experimentPath: ", experimentPath(object), "\n", sep="")
 })
 
-setMethod("detail", "ExperimentPath", function(object, ...) {
+.detail_additionalPathSlots <- function(object) {
     catPath <- function(nm) {
         fnms <- do.call(nm, list(object))
         cat(nm, ":\n  ", paste(fnms, collapse="\n  "), sep="")
         cat("\n")
     }
-    callNextMethod()
-    cat("basePath:\n  ", basePath(object), "\n", sep="")
     slts <- slotNames(object)
     for (slt in slts[slts!="basePath"]) catPath(slt)
+}
+
+setMethod("detail", "ExperimentPath", function(object, ...) {
+    callNextMethod()
+    cat("experimentPath:\n  ", experimentPath(object), "\n", sep="")
 })

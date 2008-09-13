@@ -62,3 +62,13 @@ setMethod("sampleNames", "RochePath", .sampleNames_RochePath)
 }
 
 setMethod("runNames", "RochePath", .runNames_RochePath)
+
+setMethod("show", "RochePath", function(object) {
+    callNextMethod()
+    .show_additionalPathSlots(object)
+})
+
+setMethod("detail", "RochePath", function(object, ...) {
+    callNextMethod()
+    .detail_additionalPathSlots(object)
+})

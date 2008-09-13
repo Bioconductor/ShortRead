@@ -1,8 +1,8 @@
 Package: ShortRead
 Type: Package
 Title: Base classes and methods for high-throughput short-read sequencing data.
-Version: 0.1.51
-Author: Martin Morgan
+Version: 0.1.52
+Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 Description: Base classes, functions, and methods for representation of
 	high-throughput, short-read sequencing data.

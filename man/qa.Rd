@@ -1,5 +1,6 @@
 \name{qa}
 \alias{qa}
+\alias{qa,character-method}
 
 \title{Perform quality assessment on short reads}
 
@@ -17,21 +18,20 @@ qa(dirPath, ...)
 
 \arguments{
 
-  \item{dirPath}{A character vector or other object locating the data
-    for which quality assessment is to be performed. See help pages for
-    defined methods (by evaluating the example code, below) for details
-    of available methods.}
+  \item{dirPath}{A character vector or other object (e.g.,
+    \code{\link{SolexaPath}}; see \code{showMethods}, below) locating
+    the data for which quality assessment is to be performed. See help
+    pages for defined methods (by evaluating the example code, below)
+    for details of available methods.}
 
   \item{\dots}{Additional arguments used by methods.}
 }
 
 \details{
-  The following general method is defined, in addition to those for
-  specific objects:
+  The following methods are defined:
   \itemize{
     \item{
       \code{dirPath="character", pattern="character", type="SolexaExport", ...}}{
-
       Quality assessment is performed on all files in directory
       \code{dirPath} whose file name matches \code{pattern}. The type of
       analysis performed is based on the \code{type} argument.

@@ -1,5 +1,6 @@
 \name{report}
 \alias{report}
+\alias{report,character-method}
 
 \title{Summarize quality assessment results into a report}
 
@@ -27,6 +28,15 @@ report(x, ..., dest = tempfile(), type = "pdf")
 
   \item{type}{A text string defining the type of report; available
     report types depend on the type of object \code{x}.}
+}
+
+\details{
+  The following methods are defined:
+  \itemize{
+    \item{
+      \code{dirPath="character", ..., dest=tempfile(), type="pdf"}
+    }{This method is used internally}
+  }
 }
 
 \value{

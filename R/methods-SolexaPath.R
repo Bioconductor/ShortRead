@@ -15,13 +15,13 @@ setMethod(".srValidity", "SolexaPath", function(object) {
 }
 
 SolexaPath <- function(experimentPath,
-                        dataPath=.solexaPath(experimentPath, "Data"),
-                        scanPath=.solexaPath(dataPath, "GoldCrest"),
-                        imageAnalysisPath=.solexaPath(dataPath, "^C"),
-                        baseCallPath=.solexaPath(imageAnalysisPath,
-                          "^Bustard"),
-                        analysisPath=.solexaPath(baseCallPath,
-                          "^GERALD"),
+                       dataPath=.solexaPath(experimentPath, "Data"),
+                       scanPath=.solexaPath(dataPath, "GoldCrest"),
+                       imageAnalysisPath=.solexaPath(dataPath, "^C"),
+                       baseCallPath=.solexaPath(imageAnalysisPath,
+                         "^Bustard"),
+                       analysisPath=.solexaPath(baseCallPath,
+                         "^GERALD"),
                        ..., verbose=FALSE) {
     checkPath <- function(path) {
         nm <- deparse(substitute(path))
@@ -41,7 +41,8 @@ SolexaPath <- function(experimentPath,
         checkPath(baseCallPath)
         checkPath(analysisPath)
     }
-    new("SolexaPath", ..., experimentPath=experimentPath,
+    new("SolexaPath", ...,
+        basePath=experimentPath,
         dataPath=dataPath, scanPath=scanPath,
         imageAnalysisPath=imageAnalysisPath, baseCallPath=baseCallPath,
         analysisPath=analysisPath)
@@ -107,27 +108,11 @@ setMethod("qa", "SolexaPath", .qa_SolexaPath)
 setMethod("report", "SolexaPath", .report_SolexaPath)
 
 setMethod("show", "SolexaPath", function(object) {
-    catPath <- function(nm) {
-        vals <- do.call(nm, list(object))
-        vals <- substr(basename(vals), 1, 15)
-        vals <- paste(vals, ifelse(nchar(vals)==15, "...", ""),
-                      sep="")
-        cat(nm, ": ", paste(vals, collapse=", "), "\n", sep="")
-    }
     callNextMethod()
-    cat("experimentPath: ", experimentPath(object), "\n", sep="")
-    slts <- slotNames("SolexaPath")
-    for (slt in slts[slts!="experimentPath"]) catPath(slt)
+    .show_additionalPathSlots(object)
 })
 
 setMethod("detail", "SolexaPath", function(object, ...) {
-    catPath <- function(nm) {
-        fnms <- do.call(nm, list(object))
-        cat(nm, ":\n  ", paste(fnms, collapse="\n  "), sep="")
-        cat("\n")
-    }
     callNextMethod()
-    cat("experimentPath:\n  ", experimentPath(object), "\n", sep="")
-    slts <- slotNames("SolexaPath")
-    for (slt in slts[slts!="experimentPath"]) catPath(slt)
+    .detail_additionalPathSlots(object)
 })
