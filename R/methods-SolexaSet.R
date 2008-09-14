@@ -72,7 +72,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
              nReads=length(dna),
              nClean=sum(alphabetFrequency(dna, baseOnly=TRUE)[,"other"]==0))
     }
-    if (length(pattern)==0) pattern=".*_seq.txt"
+    if (length(pattern)==0) pattern=".*_seq.txt$"
     lst <- srapply(list.files(dirPath, pattern, full.names=TRUE),
                    .qa_Solexa_tileStats_tile, dirPath=dirPath)
     .qa_lst_as_data_frame(lst)
@@ -256,7 +256,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 ## {
 ##     dirPath <- analysisPath(dirPath)
 ##     if (missing(pattern))
-##         pattern <- "s_[1-8]_export.txt"
+##         pattern <- ".*_export.txt$"
 ##     callGeneric(dirPath, pattern, type="SolexaExport", ...)
 ## }
 
@@ -274,9 +274,9 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 ## alignment
 
 .readAligned_SolexaSet <- function(dirPath,
-                                   pattern="s_[1-8]_export.txt",
-                                   run=1, ...) {
-    dirPath <- analysisPath(solexaPath(dirPath))[[run]]
+                                   pattern=".*_export.txt$",
+                                   run, ...) {
+    dirPath <- analysisPath(solexaPath(dirPath))[run]
     .readAligned_SolexaExport(dirPath, pattern, ...)
 }
 

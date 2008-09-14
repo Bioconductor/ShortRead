@@ -16,9 +16,8 @@ RochePath <- function(experimentPath=NA_character_,
 .readFasta_RochePath <- function(dirPath,
                                  pattern = "\\.fna$",
                                  sample = 1,
-                                 run = 1,
-                                 ...) {
-  dirPath <- readPath(dirPath)[[run]]
+                                 run, ...) {
+  dirPath <- readPath(dirPath)[run]
   if (is.na(dirPath))
     .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                    "readPath", "dirPath"))
@@ -31,9 +30,8 @@ setMethod("readFasta", "RochePath", .readFasta_RochePath)
                                 pattern = "\\.qual$",
                                 reads = NULL,
                                 sample = 1,
-                                run = 1,
-                                ...) {
-  dirPath <- qualPath(dirPath)[[run]]
+                                run, ...) {
+  dirPath <- qualPath(dirPath)[run]
   if (is.na(dirPath))
     .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                    "qualPath", "dirPath"))

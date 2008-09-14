@@ -76,10 +76,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
   Methods transforming \code{SolexaSet} objects include:
   \describe{
     \item{readAligned}{
-      \code{signature(dirPath = "SolexaSet", pattern = "s_[1-8]_export.txt", run=1, ...)}: 
+      \code{signature(dirPath = "SolexaSet", pattern = ".*_export.txt", run, ...)}: 
       
-      Use \code{analysisPath(solexaPath(dirPath))[[run]]} as the
-      directory path and \code{pattern="s_[1-8]_export.txt"} as the
+      Use \code{analysisPath(solexaPath(dirPath))[run]} as the
+      directory path(s) and \code{pattern=".*_export.txt"} as the
       pattern for discovering Eland-aligned reads in the Solexa 'export'
       file format. Note that the default method reads \emph{all} aligned
       read files into a single object; often one will want to specify a
@@ -96,7 +96,6 @@ sf <- system.file("extdata", package="ShortRead")
 df <- data.frame(Sample=c("Sample 1", "Sample 2", "Sample 3", "Sample
                           4", "Center-wide control", "Sample 6", "Sample
                           7", "Sample 8"),
-
                  Genome=c(rep("hg18", 4), "phi_plus_SNPs.txt",
                           rep("hg18", 3)))
 dfMeta <- data.frame(labelDescription=c("Type of sample",

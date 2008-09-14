@@ -61,11 +61,12 @@ IntegerQuality <- function(quality=integer(0)) {
   }
   scores
 }
+
 setMethod("readQual", "character", function(dirPath, reads = NULL,
                                             pattern=character(), sample = 1,
                                             ...) {
   src <- .file_names(dirPath, pattern)[sample]
-  scores <- do.call("c", lapply(scores, .readQual, reads))
+  scores <- do.call("c", lapply(src, .readQual, reads))
   IntegerQuality(scores)
 })
 

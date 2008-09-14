@@ -78,9 +78,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 
     \item{readPrb}{
 
-      \code{signature(dirPath = "SolexaPath", pattern=character(0), run=1, ...)}:
+      \code{signature(dirPath = "SolexaPath", pattern=character(0), run, ...)}:
 
-      Use \code{baseCallPath(dirPath)[[run]]} as the directory path and
+      Use \code{baseCallPath(dirPath)[run]} as the directory path(s) and
       \code{pattern=character(0)} as the pattern for discovering Solexa
       \sQuote{prb} files, retuning a \code{\linkS4class{SFastqQuality}}
       object containing the maximum qualities found for each base of
@@ -88,41 +88,40 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 
     \item{readFastq}{
 
-      \code{signature(dirPath = "SolexaPath", pattern = "s_[1-8]_sequence.txt", run = 1, ...)}:
+      \code{signature(dirPath = "SolexaPath", pattern = ".*_sequence.txt", run, ...)}:
 
-      Use \code{analysisPath(dirPath)[[run]]} as the directory path and
-      \code{pattern="s_[1-8]_sequence.txt"} as the pattern for
+      Use \code{analysisPath(dirPath)[run]} as the directory path(s) and
+      \code{pattern=".*_sequence.txt"} as the pattern for
       discovering fastq-formatted files, returning a
       \code{\linkS4class{ShortReadQ}} object. Note that the default
       method reads \emph{all} sequence files into a single object; often
       one will want to specify a pattern for each lane. }
 
     \item{readBaseQuality}{
-      \code{signature(dirPath = "SolexaPath", seqPattern = "s_[1-8]_seq.txt",
-        prbPattern = "s_[1-8]_prb.txt", run=1, ...)}: 
+      \code{signature(dirPath = "SolexaPath", seqPattern = ".*_seq.txt", prbPattern = "s_[1-8]_prb.txt", run, ...)}: 
       
-      Use \code{baseCallPath(dirPath)[[run]]} as the directory path and
-      \code{seqPattern="s_[1-8]_seq.txt"} as the pattern for discovering
-      base calls and \code{prbPattern="s_[1-8]_prb.txt"} as the pattern
+      Use \code{baseCallPath(dirPath)[run]} as the directory path(s) and
+      \code{seqPattern=".*_seq.txt"} as the pattern for discovering
+      base calls and \code{prbPattern=".*_prb.txt"} as the pattern
       for discovering quality scores. Note that the default method reads
       \emph{all} base call and quality score files into a single object;
       often one will want to specify a pattern for each lane.}
 
     \item{readAligned}{
-      \code{signature(dirPath = "SolexaPath", pattern = "s_[1-8]_export.txt", run=1, ...)}: 
+      \code{signature(dirPath = "SolexaPath", pattern = ".*_export.txt", run, ...)}: 
       
-      Use \code{analysisPath(dirPath)[[run]]} as the directory path and
-      \code{pattern="s_[1-8]_export.txt"} as the pattern for discovering
+      Use \code{analysisPath(dirPath)[run]} as the directory path and
+      \code{pattern=".*_export.txt"} as the pattern for discovering
       Eland-aligned reads in the Solexa 'export' file format. Note that
       the default method reads \emph{all} aligned read files into a
       single object; often one will want to specify a pattern for each
       lane.}
 
     \item{qa}{
-      \code{signature(dirPath="SolexaPath", pattern="character(0)", run=1, ...)}:
+      \code{signature(dirPath="SolexaPath", pattern="character(0)", run, ...)}:
 
-      Use \code{analysisPath(dirPath)[[run]]} as the directorpy path and
-      \code{pattern="s_[1-8]_export.txt"} as the pattern for discovering solexa
+      Use \code{analysisPath(dirPath)[run]} as the directorpy path(s) and
+      \code{pattern=".*_export.txt"} as the pattern for discovering solexa
       \code{export}-formatted fileds, returning a
       \code{\linkS4class{SolexaExportQA}} object summarizing quality
       assessment. If \code{Rmpi} has been initiated, quality assessment

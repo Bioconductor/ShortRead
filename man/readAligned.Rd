@@ -46,7 +46,7 @@ readAligned(dirPath, pattern=character(0), ...)
 
     \item{\code{type="SolexaExport"}}{
 
-      This type parses \code{s_L_export.txt} files following the
+      This type parses \code{.*_export.txt} files following the
       documentation in the Solexa Genome Alignment software manual,
       version 0.3.0. These files consist of the following columns;
       consult Solexa documentation for precise descriptions. If parsed,

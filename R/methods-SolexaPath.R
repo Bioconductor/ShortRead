@@ -29,18 +29,17 @@ SolexaPath <- function(experimentPath=NA_character_,
 
 .make_getter(slotNames("SolexaPath"))
 
-.readPrb_SolexaPath <- function(dirPath, pattern, run = 1, ...)
+.readPrb_SolexaPath <- function(dirPath, pattern, run, ...)
 {
-    callGeneric(baseCallPath(dirPath)[[run]], pattern, ...)
+    callGeneric(baseCallPath(dirPath)[run], pattern, ...)
 }
 
 setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
 
 .readFastq_SolexaPath <- function(dirPath, 
-                                  pattern="s_[1-8]_sequence.txt",
-                                  run = 1,
-                                  ...) {
-    dirPath <- analysisPath(dirPath)[[run]]
+                                  pattern=".*_sequence.txt$",
+                                  run, ...) {
+    dirPath <- analysisPath(dirPath)[run]
     if (is.na(dirPath))
         .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                       "analysisPath", "dirPath"))
@@ -50,10 +49,11 @@ setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
 setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 
 .readBaseQuality_SolexaPath <- function(dirPath,
-                                        seqPattern="s_[1-8]_seq.txt",
-                                        prbPattern="s_[1-8]_prb.txt",
-                                        run=1, ...) {
-    dirPath <- baseCallPath(dirPath)[[run]]
+                                        seqPattern=".*_seq.txt$",
+                                        prbPattern=".*_prb.txt$",
+                                        run, ...)
+{
+    dirPath <- baseCallPath(dirPath)[run]
     .readBaseQuality_Solexa(dirPath, seqPattern=seqPattern,
                             prbPattern=prbPattern, ...)
 }
@@ -61,19 +61,21 @@ setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 setMethod("readBaseQuality", "SolexaPath", .readBaseQuality_SolexaPath)
 
 .readAligned_SolexaPath <- function(dirPath,
-                                    pattern="s_[1-8]_export.txt",
-                                    run=1, ...) {
-    dirPath <- analysisPath(dirPath)[[run]]
+                                    pattern=".*_export.txt$",
+                                    run, ...) 
+{
+    dirPath <- analysisPath(dirPath)[run]
     .readAligned_SolexaExport(dirPath, pattern, ...)
 }
 
 setMethod("readAligned", "SolexaPath", .readAligned_SolexaPath)
 
-.qa_SolexaPath <- function(dirPath, pattern=character(0), run=1, ...)
+.qa_SolexaPath <- function(dirPath, pattern=character(0),
+                           run, ...)
 {
-    dirPath <- analysisPath(dirPath)[[run]]
+    dirPath <- analysisPath(dirPath)[run]
     if (missing(pattern))
-        pattern <- "s_[1-8]_export.txt"
+        pattern <- ".*_export.txt$"
     callGeneric(dirPath, pattern, type="SolexaExport", ...)
 }
 
