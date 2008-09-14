@@ -101,6 +101,14 @@ setGeneric("alphabetScore", function(object, ...) {
 setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
            standardGeneric("readAligned"), signature="dirPath")
 
+## ExperimentPath
+
+experimentPath <- function(object, ...) {
+    slot(object, "basePath")
+}
+
+setGeneric("experimentPath")
+
 ## *Set
 
 setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))

@@ -5,47 +5,26 @@ setMethod(".srValidity", "SolexaPath", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-.solexaPath <- function(path, pattern) {
-    path <- path.expand(path)
-    tryCatch({
-        res <- list.files(path, pattern=pattern, full.name=TRUE)
-        if (length(res)==0) NA_character_
-        else res
-    }, warning=function(warn) NA_character_)
-}
-
-SolexaPath <- function(experimentPath,
-                       dataPath=.solexaPath(experimentPath, "Data"),
-                       scanPath=.solexaPath(dataPath, "GoldCrest"),
-                       imageAnalysisPath=.solexaPath(dataPath, "^C"),
-                       baseCallPath=.solexaPath(imageAnalysisPath,
+SolexaPath <- function(experimentPath=NA_character_,
+                       dataPath=.srPath(experimentPath, "Data"),
+                       scanPath=.srPath(dataPath, "GoldCrest"),
+                       imageAnalysisPath=.srPath(dataPath, "^C"),
+                       baseCallPath=.srPath(imageAnalysisPath,
                          "^Bustard"),
-                       analysisPath=.solexaPath(baseCallPath,
+                       analysisPath=.srPath(baseCallPath,
                          "^GERALD"),
                        ..., verbose=FALSE) {
-    checkPath <- function(path) {
-        nm <- deparse(substitute(path))
-        if (length(path)==0) {
-            warning(nm, " not defined")
-        } else {
-            for (p in path)
-                if (!file.exists(p)) 
-                    warning(nm, " '", p, "' does not exist")
-        }
-    }
     if (verbose) {
-        checkPath(experimentPath)
-        checkPath(dataPath)
-        checkPath(scanPath)
-        checkPath(imageAnalysisPath)
-        checkPath(baseCallPath)
-        checkPath(analysisPath)
+        .checkPath(experimentPath)
+        .checkPath(dataPath)
+        .checkPath(scanPath)
+        .checkPath(imageAnalysisPath)
+        .checkPath(baseCallPath)
+        .checkPath(analysisPath)
     }
-    new("SolexaPath", ...,
-        basePath=experimentPath,
-        dataPath=dataPath, scanPath=scanPath,
-        imageAnalysisPath=imageAnalysisPath, baseCallPath=baseCallPath,
-        analysisPath=analysisPath)
+    new("SolexaPath", ..., basePath=experimentPath, dataPath=dataPath,
+        scanPath=scanPath, imageAnalysisPath=imageAnalysisPath,
+        baseCallPath=baseCallPath, analysisPath=analysisPath)
 }
 
 .make_getter(slotNames("SolexaPath"))

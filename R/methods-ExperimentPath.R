@@ -25,18 +25,18 @@ setMethod(".srValidity", "ExperimentPath", function(object) {
     }
 }
 
-ExperimentPath <- function(experimentPath, ...) {
+ExperimentPath <- function(experimentPath=NA_character_, ...) {
     new("ExperimentPath", basePath=experimentPath, ...)
-}
-
-experimentPath <- basePath <- function(object, ...) {
-    slot(object, "basePath")
 }
 
 basePath <- function(object, ...) {
     .Deprecated("experimentPath")
     experimentPath(object, ...)
 }
+
+setMethod("sampleNames", "ExperimentPath", function(object) {
+    character(0)
+})
 
 .show_additionalPathSlots <- function(object) { # for derived classes
     catPath <- function(nm) {

@@ -39,7 +39,7 @@
   \describe{
     \item{\code{basePath}}{See above.}
   }
-  The slot is accessed with \code{basePath} or \code{experimentPath}.
+  The slot is accessed with \code{experimentPath}.
 }
 \section{Extends}{
   Class \code{"\linkS4class{.ShortReadBase}"}, directly.

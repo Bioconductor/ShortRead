@@ -1,13 +1,13 @@
-RochePath <- function(basePath,
-                      readPath=.srPath(basePath, "^run"),
+RochePath <- function(experimentPath=NA_character_,
+                      readPath=.srPath(experimentPath, "^run"),
                       qualPath=readPath,
                       ..., verbose=FALSE) {
     if (verbose) {
-      .checkPath(basePath)
+      .checkPath(experimentPath)
       .checkPath(readPath)
       .checkPath(qualPath)
     }
-    new("RochePath", ..., basePath=basePath,
+    new("RochePath", ..., basePath=experimentPath,
         readPath=readPath, qualPath=qualPath)
 }
 
@@ -52,7 +52,11 @@ setMethod("readQual", "RochePath", .readQual_RochePath)
 setMethod("read454", "RochePath", .read454_RochePath)
 
 .sampleNames_RochePath <- function(object) {
-  sub("_.*", "", basename(.file_names(readPath(object), "\\.fna")))
+    path <- readPath(object)
+    if (!is.na(path))
+        sub("_.*", "", basename(.file_names(path, "\\.fna")))
+    else
+        callNextMethod()
 }
 
 setMethod("sampleNames", "RochePath", .sampleNames_RochePath)
