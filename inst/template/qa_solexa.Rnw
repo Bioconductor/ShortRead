@@ -34,13 +34,26 @@ plotReadQuality <- function(df) {
 }
 plotReadOccurrences <- function(df, ...) {
     df$lane <- .laneLbl(df$lane)
-    xyplot(log10(nReads)~log10(nOccurrences)|lane, df,
+    df$cummulative <- 
+        with(df, unlist(tapply(nOccurrences * nReads, lane, function(elt) {
+           cs <- cumsum(elt)
+           (cs-cs[1] + 1)/ diff(range(cs))
+        })))
+    xyplot(cummulative~log10(nOccurrences)|lane, df,
            xlab=expression(paste(
                "Number of occurrences of each read (",
                log[10], ")", sep="")),
-           ylab=expression(paste(
-               "Number of reads (", log[10], ")", sep="")),
-           aspect=2, ...)
+           ylab="Cummulative proportion of reads",
+           aspect=2, type="l", ...)
+}
+freqSequences <- function(qa, read, n=20)
+{
+    cnt <- qa[["readCounts"]]
+    df <- qa[["frequentSequences"]]
+    df1 <- df[df$type==read,]
+    df1[["ppn"]] <- df1[["count"]] / cnt[df1[["lane"]], read]
+    head(df1[order(df1$count, decreasing=TRUE),
+             c("sequence", "count", "lane")], n)
 }
 plotAlignQuality <- function(df) {
     df$lane <- .laneLbl(df$lane)
@@ -84,8 +97,8 @@ plotTileCounts <- function(df, nrow=100) {
     df$lane <- .laneLbl(df$lane)
     levelplot(cut(count, at)~col*row|lane, df,
               main="Read count (percentile rank)",
-              xlab="Tile local x-coordinate",
-              ylab="Tile local y-coordinate",
+              xlab="Tile x-coordinate",
+              ylab="Tile y-coordinate",
               cuts=length(at)-2,
               colorkey=list(
                 labels=.colorkeyNames(at, "%d")),
@@ -99,8 +112,8 @@ plotTileQualityScore <- function(df, nrow=100) {
     df$lane <- .laneLbl(df$lane)
     levelplot(cut(score, at)~col*row|lane, df,
               main="Read quality (percentile rank)",
-              xlab="Tile local x-coordinate",
-              ylab="Tile local y-coordinate",
+              xlab="Tile x-coordinate",
+              ylab="Tile y-coordinate",
               cuts=length(at)-2,
               colorkey=list(
                 labels=.colorkeyNames(at, "%.2f")),
@@ -154,12 +167,6 @@ Base calls. Frequency of base calls over all reads.
 <<base-calls>>=
 qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])
 @ 
-% 
-Frequency of each called base, relative to the frequency of
-\texttt{A}.
-<<base-calls-relative>>=
-ppnCount(qa[["baseCalls"]])
-@
 
 Overall read quality
 <<read-quality-raw, fig=TRUE>>=
@@ -175,14 +182,13 @@ print(plotReadOccurrences(df[df$type=="read",], cex=.5))
 
 Common duplicate reads
 <<common-duplicate-reads>>=
-df <- qa[["frequentSequences"]]
-lapply(split(df[,c("sequence", "count")], df$lane), head)
-@
+freqSequences(qa, "read")
+@ 
+
 
 Common duplicate reads after filtering
 <<common-duplicate-mapped-reads>>=
-df1 <- df[df$type=="filtered",]
-lapply(split(df1[,c("sequence", "count")], df1$lane), head)
+freqSequences(qa, "filtered")
 @
 
 Per-cycle base call
@@ -201,15 +207,14 @@ print(plotCycleQuality(perCycle$quality))
 Counts per tile. 
 <<counts-histo, fig=TRUE>>=
 perTile <- qa[["perTile"]]
-df <- perTile[["readCounts"]]
-cnts <- df[df$type=="read", "count"]
-print(histogram(cnts))
+readCnt <- perTile[["readCounts"]]
+cnts <- readCnt[readCnt$type=="read", "count"]
+print(histogram(cnts, breaks=40, xlab="Reads per tile"))
 @ 
 
 Number of tiles with fewer than 1, 5, and 10\% of reads.
 <<counts-quantile>>=
-q <- quantile(cnts, c(.01, .05, .1))
-sapply(lapply(q, ">", cnts), sum)
+quantile(cnts, c(.01, .05, .1))
 @ 
 % 
 Spatial counts per tile. Divisions on the color scale are quantized,
@@ -217,7 +222,7 @@ so that the range of counts per tile is divided into 10 equal
 increments. Parenthetic numbers on the scale represent the break
 points of the quantized values.
 <<read-counts-per-tile, fig=TRUE>>=
-print(plotTileCounts(df[df$type=="read",]))
+print(plotTileCounts(readCnt[readCnt$type=="read",]))
 @ 
  
 Median read quality score per tile. Divisions on the color scale are
@@ -225,8 +230,8 @@ quantized, so that the range of average quality scores per tile is
 divided into 10 equal increments. Parenthetic numbers on the scale
 represent the break points of the quantized values.
 <<read-score-per-tile, fig=TRUE>>=
-df <- perTile[["medianReadQualityScore"]]
-print(plotTileQualityScore(df[df$type=="read",]))
+qscore <- perTile[["medianReadQualityScore"]]
+print(plotTileQualityScore(qscore[qscore$type=="read",]))
 @
 
 Mapped alignment score. Counts measured relative to counts in score
