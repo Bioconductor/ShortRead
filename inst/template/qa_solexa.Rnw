@@ -23,7 +23,9 @@ ppnCount <- function(m) {
     m[,-1] <- m[,-1] / m[,1]
     m
 }
+.laneLbl <- function(lane) sub("s_(.*)_.*", "\\1", lane)
 plotReadQuality <- function(df) {
+    df$lane <- .laneLbl(df$lane)
     xyplot(density~quality|lane, df,
            type="l",
            xlab="Average (calibrated) base quality",
@@ -31,6 +33,7 @@ plotReadQuality <- function(df) {
            aspect=2)
 }
 plotReadOccurrences <- function(df, ...) {
+    df$lane <- .laneLbl(df$lane)
     xyplot(log10(nReads)~log10(nOccurrences)|lane, df,
            xlab=expression(paste(
                "Number of occurrences of each read (",
@@ -40,6 +43,7 @@ plotReadOccurrences <- function(df, ...) {
            aspect=2, ...)
 }
 plotAlignQuality <- function(df) {
+    df$lane <- .laneLbl(df$lane)
     xyplot(count~score|lane, df,
            type="l",
            prepanel=function(x, y, ...) {
@@ -77,6 +81,7 @@ plotTileCounts <- function(df, nrow=100) {
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
     at <- .atQuantile(df$count, seq(0, 1, .1))
+    df$lane <- .laneLbl(df$lane)
     levelplot(cut(count, at)~col*row|lane, df,
               main="Read count (percentile rank)",
               xlab="Tile local x-coordinate",
@@ -91,6 +96,7 @@ plotTileQualityScore <- function(df, nrow=100) {
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
     at <- .atQuantile(df$score, seq(0, 1, .1))
+    df$lane <- .laneLbl(df$lane)
     levelplot(cut(score, at)~col*row|lane, df,
               main="Read quality (percentile rank)",
               xlab="Tile local x-coordinate",
@@ -104,6 +110,7 @@ plotCycleBaseCall <- function(df) {
     col <- rep(c("red", "blue"), 2)
     lty <- rep(1:2, each=2)
     df <- df[df$Base != "N",]
+    df$lane <- .laneLbl(df$lane)
     xyplot(log10(Count)~as.integer(Cycle)|lane, 
            group=factor(Base), df, 
            type="l", col=col, lty=lty,
@@ -124,7 +131,7 @@ plotCycleQuality <- function(df)
                      tapply(Count, list(lane, Cycle), sum))
     score <- data.frame(AverageScore=as.vector(aveScore),
                         Cycle=as.vector(col(aveScore)),
-                        Lane=rownames(aveScore))
+                        Lane=.laneLbl(rownames(aveScore)))
     xyplot(AverageScore~Cycle | Lane, score,
            ylab="Average score",
            aspect=2)
