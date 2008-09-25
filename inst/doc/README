@@ -1,0 +1,13 @@
+I have added an unserscore to the extention of the vignette file, 
+i.e., it is called ShortRead_and_HilbertCurveDisplay.Rnw_, so that
+it does not get processed automatically. This is because it takes 
+quite long to get build the vignette and you have to download some 
+example data before building it. 
+
+If you do want to rebuild the vignette: In the same directory that
+contains the Rnw file, make two subdirecties, called H3K4me1 and 
+H3K4me3. Go to 
+    http://www.ebi.ac.uk/~anders/ShortReadExampleData/,
+download the content of the two directories H3K4me1 and H3K4me3 
+there and put these files in the directories just created. Then
+run Sweave.
