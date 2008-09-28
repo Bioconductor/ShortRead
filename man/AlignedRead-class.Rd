@@ -5,6 +5,7 @@
 \alias{[,AlignedRead,missing,ANY-method}
 \alias{[,AlignedRead,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,missing-method}
+\alias{strand,AlignedRead-method}
 \alias{detail,AlignedRead-method}
 \alias{show,AlignedRead-method}
 
@@ -75,6 +76,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       those reads indexed by \code{i}. Additional methods on
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
+
+    \item{strand}{\code{signature(object = "AlignedRead")}: access the
+      strand slot of \code{object}.}
 
     \item{show}{\code{signature(object = "AlignedRead")}: provide a
       compact display of the \code{AlignedRead}  content.}

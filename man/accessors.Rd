@@ -9,7 +9,6 @@
 % AlignedRead
 \alias{chromosome}
 \alias{position}
-\alias{strand}
 \alias{alignQuality}
 \alias{alignData}
 % Solexa
@@ -42,7 +41,6 @@ id(object, ...)
 ## AlignedRead
 chromosome(object, ...)
 position(object, ...)
-strand(object, ...)
 alignQuality(object, ...)
 alignData(object, ...)
 ## Solexa

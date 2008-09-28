@@ -6,7 +6,7 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet)
 
 importFrom(Biobase, selectSome, phenoData, featureData, sampleNames)
 
-importFrom(IRanges, width)
+importFrom(IRanges, width, strand)
 
 importFrom(Biostrings, BStringSet, DNAStringSet,
            alphabetFrequency, alphabet, quality, pairwiseAlignment)
@@ -18,7 +18,8 @@ exportClasses(SRError, SRWarn, SRList, SRVector,
               AlignedDataFrame, AlignedRead,
               SolexaPath, SolexaSet, SolexaExportQA)
 
-exportMethods(show, length, width, "[", "[[",
-              alphabetFrequency, alphabet)
+exportMethods(show, length, "[", "[[",
+              alphabetFrequency, alphabet,
+              strand, width)
 
 exportPattern("^[^\\.]")

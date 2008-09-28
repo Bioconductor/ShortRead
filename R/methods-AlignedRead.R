@@ -27,8 +27,13 @@ AlignedRead <- function(sread, id, quality,
         alignQuality=alignQuality, alignData=alignData)
 }
 
-.make_getter(c("chromosome", "position", "strand", "alignQuality",
+.make_getter(c("chromosome", "position", "alignQuality",
                "alignData"))
+
+setMethod("strand", "AlignedRead", function(object, ...) 
+{
+    slot(object, "strand")
+})
 
 ## subset
 
