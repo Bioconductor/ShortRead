@@ -70,7 +70,20 @@ setMethod("[", c("AlignedRead", "ANY", "ANY"),
 
 setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
-## manip
+## srorder, etc; srsort picked up by generic
+
+setMethod("srorder", "AlignedRead", function(x, ...) {
+    order(chromosome(x), strand(x), position(x), srorder(sread(x)))
+})
+
+setMethod("srrank", "AlignedRead", function(x, ...) {
+    o <- srorder(x)
+    .Call(.aligned_read_rank, x, o, environment())
+})
+
+setMethod("srduplicated", "AlignedRead", function(x, ...) {
+    duplicated(srrank(x, ...))
+})
 
 ## show
 

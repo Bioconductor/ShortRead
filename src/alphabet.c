@@ -318,3 +318,33 @@ alphabet_rank(SEXP stringSet)
     UNPROTECT(1);
     return rank;
 }
+
+SEXP
+aligned_read_rank(SEXP alignedRead, SEXP order, SEXP rho)
+{
+    SEXP chr, str, pos, sread;
+    PROTECT(chr = _get_SEXP(alignedRead, rho, "chromosome"));
+    PROTECT(str = _get_SEXP(alignedRead, rho, "strand"));
+    PROTECT(pos = _get_SEXP(alignedRead, rho, "position"));
+    PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
+    int *c = INTEGER(chr), *s = INTEGER(str), *p = INTEGER(pos),
+        *o = INTEGER(order), len = LENGTH(order);
+    CachedXStringSet cache = new_CachedXStringSet(sread);
+    XSort *xptr = (XSort*) R_alloc(2, sizeof(XSort));
+    SEXP rank;
+    PROTECT(rank = NEW_INTEGER(len));
+    int *r = INTEGER(rank), i;
+    xptr[0].ref = get_CachedXStringSet_elt_asRoSeq(&cache, 0);
+    r[o[0]-1] = 1;
+    for (i = 1; i < len; ++i) {
+        const int this = o[i]-1, prev=o[i-1]-1;
+        xptr[i%2].ref = get_CachedXStringSet_elt_asRoSeq(&cache, this);
+        if (c[this] != c[prev] || s[this] != s[prev] ||
+            p[this] != p[prev] || compare_RoSeq(xptr, xptr+1) != 0)
+            r[this] = i + 1;
+        else
+            r[this] = r[prev];
+    }
+    UNPROTECT(5);
+    return rank;
+}

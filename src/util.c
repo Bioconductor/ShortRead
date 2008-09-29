@@ -44,6 +44,21 @@ decoder(const char* base)
 }
 
 /*
+ * apply function 'with' to object 'from' in environment 'rho', e.g.,
+ * becuase 'from' is an object and 'with' an accessor.
+ */
+
+SEXP
+_get_SEXP(SEXP from, SEXP rho, const char *with)
+{
+    SEXP fun = PROTECT(findFun(install(with), rho));
+    SEXP res = eval(lang2(fun, from), rho);
+    UNPROTECT(1);
+    return res;
+}
+
+
+/*
  * parse lines into fields.
  *
  * string is parsed until a character in delim is found, or end of

@@ -15,6 +15,7 @@ static const R_CallMethodDef callMethods[] = {
     {".alphabet_order", (DL_FUNC) &alphabet_order, 1},
     {".alphabet_duplicated", (DL_FUNC) &alphabet_duplicated, 1},
     {".alphabet_rank", (DL_FUNC) &alphabet_rank, 1},
+    {".aligned_read_rank", (DL_FUNC) &aligned_read_rank, 3},
     {".read_maq_map", (DL_FUNC) &read_maq_map, 2},
     /* pileup */
     {".pileup", (DL_FUNC) &pileup, 6},

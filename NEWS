@@ -1,0 +1,23 @@
+        **************************************************
+        *                                                *
+        *              2.8 SERIES NEWS                   *
+        *                                                *
+        **************************************************
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o srorder, srsort, srrank, and srduplicated for AligendRead class
+    now sort based on chromosome, strand, position AND sread; previous
+    behavior can be recovers by extracting the sequences
+    srsort(sread(aln)), etc.
+
+    o Functions using SolexaPath now search all relevant directories,
+    e.g., in analysisPath, rather than the first
+
+NEW FEATURES
+
+
+BUG FIXES
+
+
+(start date: 29 September, 2008)

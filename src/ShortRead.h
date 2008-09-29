@@ -14,6 +14,7 @@ MARK_FIELD_FUNC _mark_field_n;	/* nchar(delim) != 1 */
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
 SEXP count_lines(SEXP files);
+SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
 /* io.c */
 
@@ -33,6 +34,7 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score);
 SEXP alphabet_order(SEXP stringSet);
 SEXP alphabet_duplicated(SEXP stringSet);
 SEXP alphabet_rank(SEXP stringSet);
+SEXP aligned_read_rank(SEXP stringSet, SEXP order, SEXP rho);
 
 /* read_maq_map.c */
 
