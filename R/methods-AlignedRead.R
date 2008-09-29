@@ -35,6 +35,20 @@ setMethod("strand", "AlignedRead", function(object, ...)
     slot(object, "strand")
 })
 
+## coerce
+
+setAs("PairwiseAlignment", "AlignedRead",
+      function(from, to) {
+        pat <- pattern(from)
+        quality <- character()
+        if (is(pat, "QualityAlignedXStringSet"))
+          quality <- quality(pat)
+        new("AlignedRead", sread = unaligned(pat), id = names(pat),
+            quality = FastqQuality(quality),
+            position = start(Views(pat)),
+            alignQuality = IntegerQuality(score(from)))
+      })
+
 ## subset
 
 setMethod("[", c("AlignedRead", "missing", "missing"),
@@ -56,34 +70,7 @@ setMethod("[", c("AlignedRead", "ANY", "ANY"),
 
 setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
-## align
-
-setMethod("pairwiseAlignment", "ShortRead",
-          function(pattern, subject, ...)
-          {
-            pairwiseAlignment(sread(pattern), subject, ...)
-          })
-
-setMethod("pairwiseAlignment", "ShortReadQ",
-          function(pattern, subject, ...)
-          {
-            mc <- as.list(match.call())
-            if (is.null(mc$patternQuality))
-              mc$patternQuality <- quality(quality(pattern))
-            do.call("callNextMethod", c(list(pattern, subject), mc))
-          })
-
-setAs("PairwiseAlignment", "AlignedRead",
-      function(from, to) {
-        pat <- pattern(from)
-        quality <- character()
-        if (is(pat, "QualityAlignedXStringSet"))
-          quality <- quality(pat)
-        new("AlignedRead", sread = unaligned(pat), id = names(pat),
-            quality = FastqQuality(quality),
-            position = start(Views(pat)),
-            alignQuality = IntegerQuality(score(from)))
-      })
+## manip
 
 ## show
 

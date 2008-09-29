@@ -21,6 +21,14 @@ setMethod("width", "ShortRead", function(x) {
     }
 })
 
+## coerce
+
+setMethod("pairwiseAlignment", "ShortRead",
+          function(pattern, subject, ...)
+          {
+            pairwiseAlignment(sread(pattern), subject, ...)
+          })
+
 ## import
 
 setMethod("readFasta", "character", function(dirPath, pattern=character(),

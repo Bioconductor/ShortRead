@@ -24,6 +24,17 @@ setMethod("readFastq", "character", function(dirPath, pattern=character(),
         quality=SFastqQuality(elts[["quality"]]))
 })
 
+## coerce
+
+setMethod("pairwiseAlignment", "ShortReadQ",
+          function(pattern, subject, ...)
+          {
+            mc <- as.list(match.call())
+            if (is.null(mc$patternQuality))
+              mc$patternQuality <- quality(quality(pattern))
+            do.call("callNextMethod", c(list(pattern, subject), mc))
+          })
+
 ## subset
 
 setMethod("[", c("ShortReadQ", "missing", "missing"),
