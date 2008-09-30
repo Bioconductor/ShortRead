@@ -108,7 +108,7 @@ head( quality( alignQuality( maps.me1$run4_lane8.map ) ) )
 
 \begin{figure}
 \centering
-\includegraphics[height=5cm]{Strand_and_Dir}
+\includegraphics[height=5cm]{images/Strand_and_Dir}
 \caption{The \texttt{strand} information shows how the read is aligned against the genome. If \texttt{strand} is \texttt{"+"}, the \texttt{position} indicates the start of the DNA read (dark green) as well as the start of the whole fragment. The part of the fragment that was not read (light green) extends to the right (i.e. towards larger chromosome coordinates). If \texttt{strand} is \texttt{"-"}, then the fragment extends to the left. As \texttt{position} always indicates the left edge of the read (but not necessarily an edge of the whole fragment) it now points to a position within the whole fragment.  }
 \label{strand}
 \end{figure}
@@ -287,8 +287,8 @@ The standard approach would be to export the pile-up vectors into a genome track
 
 \begin{figure}
 \centering
-\includegraphics[width=.4\textwidth]{HilbertPlot_H3K4me1}\qquad
-\includegraphics[width=.4\textwidth]{HilbertPlot_H3K4me3}
+\includegraphics[width=.4\textwidth]{images/HilbertPlot_H3K4me1}\qquad
+\includegraphics[width=.4\textwidth]{images/HilbertPlot_H3K4me3}
 \caption{Hilbert curve plot of pile-ups for H3K4me1 (left) and H3K4me3 (right) on chromosome 10.}
 \label{twoHilbertPlots}
 \end{figure}
@@ -327,7 +327,7 @@ hilbertDisplay( me1.p10, me3.p10 )
 
 \begin{figure}
 \centering
-\includegraphics[width=.6\textwidth]{HilbertDisplay_GUI}
+\includegraphics[width=.6\textwidth]{images/HilbertDisplay_GUI}
 \caption{The graphical user interface (GUI) provided by \texttt{HilbertVisGUI}.}
 \label{GUI}
 \end{figure}
@@ -412,7 +412,7 @@ for( i in 1:nrow(exons) )
 
 \begin{figure}
 \centering
-\includegraphics[width=.7\textwidth]{hilbert_3col}
+\includegraphics[width=.7\textwidth]{images/hilbert_3col}
 \caption{A three-color overlay (obtained with the function \texttt{hilbertDisplayThreeChannel}) of Hilbert curves for H3K4me1 (red), H3K4me3 (green) and an exon indication (blue). The image shows a zoom into the first quarter of chromosome 10 (i.e., the top left quarter of the images in Fig.\ \ref{twoHilbertPlots}).}
 \label{threeColor}
 \end{figure}
