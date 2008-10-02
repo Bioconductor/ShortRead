@@ -127,7 +127,9 @@
 }
 
 .readAligned_MaqMapview <- function(dirPath, pattern=character(0), 
-                                    sep="\t", header=FALSE) {
+                                    sep="\t", header=FALSE, quote="",
+                                    ...)
+{
     colClasses <-
         list(NULL, chromosome="factor", position="integer",
              strand="factor", NULL, NULL, alignQuality="integer", NULL,
@@ -136,7 +138,7 @@
              nOneMismatch24="integer", NULL, NULL, NULL)
     ## CSV portion
     csv <- .read_csv_portion(dirPath, pattern, colClasses, sep=sep,
-                             header=header)
+                             header=header, quote=quote, ...)
     ## XStringSet components
     colClasses <- list("BString", NULL, NULL, NULL, NULL,
                        NULL, NULL, NULL, NULL, NULL, NULL, NULL,
