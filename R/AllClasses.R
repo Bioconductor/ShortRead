@@ -1,3 +1,8 @@
+## .STRAND_LEVELS needs to be early, to be used in class
+## prototypes. C-level code retrieves this value. pileup and
+## readAligned,type=MAQMap depend on this ordering
+.STRAND_LEVELS <- c("-", "+", "*")
+
 .srValidity <- function(object) TRUE
 
 setGeneric(".srValidity")
@@ -131,7 +136,7 @@ setClass("AlignedRead", contains="ShortReadQ",
            alignQuality="QualityScore",
            alignData="AlignedDataFrame"),
          prototype=prototype(
-           strand=factor(levels=c("+", "-")),
+           strand=factor(levels=.STRAND_LEVELS),
            alignQuality=NumericQuality()),
          validity=.srValidity)
 

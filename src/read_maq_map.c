@@ -158,14 +158,8 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
     setAttrib( seq, install( "class" ), klass );
     UNPROTECT( 1 );
 
-
-    PROTECT( levels = allocVector( STRSXP, 2 ) );
-    SET_STRING_ELT( levels, 0, mkChar( "-" ) );
-    SET_STRING_ELT( levels, 1, mkChar( "+" ) );
-    setAttrib( dir, install( "levels" ), levels );
-    PROTECT( klass = allocVector( STRSXP, 1 ) );
-    SET_STRING_ELT( klass, 0, mkChar( "factor" ) );
-    setAttrib( dir, install( "class" ), klass );
+    SEXP strand_levels = PROTECT(_get_strand_levels());
+    _as_factor_SEXP(dir, strand_levels);
     UNPROTECT( 1 );
    
     PROTECT( eltnm = allocVector( STRSXP, 12 ) );

@@ -43,6 +43,18 @@ decoder(const char* base)
     return decode;
 }
 
+SEXP
+_get_strand_levels()
+{
+    SEXP fun = PROTECT(findFun(install("getNamespace"), R_GlobalEnv));
+    SEXP nmspc = PROTECT(NEW_CHARACTER(1));
+    SET_STRING_ELT(nmspc, 0, mkChar("ShortRead"));
+    nmspc = PROTECT(eval(lang2(fun, nmspc), R_GlobalEnv));
+    SEXP ans = eval(findVar(install(".STRAND_LEVELS"), nmspc), nmspc);
+    UNPROTECT(3);
+    return ans;
+}
+
 /*
  * apply function 'with' to object 'from' in environment 'rho', e.g.,
  * becuase 'from' is an object and 'with' an accessor.
@@ -170,6 +182,40 @@ _solexa_to_IUPAC(char *linebuf)
 }
 
 /*
+ * Convert roSeq to named XStringSet
+ */
+SEXP
+_CharAEAE_to_XStringSet(CharAEAE* aeae, const char *clsName)
+{
+    RoSeqs roSeqs = new_RoSeqs_from_CharAEAE(aeae);
+    return new_XStringSet_from_RoSeqs(clsName, &roSeqs);
+}
+
+/*
+ * chenge vector class and attribute to represent 'strand' factor
+ */
+void
+_as_factor_SEXP(SEXP vec, SEXP lvls)
+{
+    SEXP cls = PROTECT(NEW_CHARACTER(1));
+    SET_STRING_ELT(cls, 0, mkChar("factor"));
+    SET_CLASS(vec, cls);
+    SET_ATTR(vec, install("levels"), lvls);
+    UNPROTECT(1);
+}
+
+void
+_as_factor(SEXP vec, const char **levels, const int n_lvls)
+{
+    SEXP lvls = PROTECT(NEW_CHARACTER(n_lvls));
+    int i;
+    for (i = 0; i < n_lvls; ++i)
+        SET_STRING_ELT(lvls, i, mkChar(levels[i]));
+    _as_factor_SEXP(vec, lvls);
+    UNPROTECT(1);
+}
+
+/*
  * Count the number of lines ('\n') in a file.
  *
  * file: an open file stream at position 0
@@ -193,6 +239,16 @@ _count_lines(FILE *file)
         bytes_read += bytes_read;
     }
     return lines;
+}
+
+int
+_count_lines_sum(SEXP files)
+{
+    SEXP nlines = count_lines(files);
+    int i, nrec = 0;
+    for (i = 0; i < LENGTH(files); ++i)
+        nrec += INTEGER(nlines)[i];
+    return nrec;
 }
 
 SEXP

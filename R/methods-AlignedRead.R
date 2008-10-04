@@ -17,10 +17,18 @@
 
 setMethod(".srValidity", "AlignedRead", .AlignedRead_validity)
 
-AlignedRead <- function(sread, id, quality,
-                        chromosome, position, strand,
-                        alignQuality,
-                        alignData=AlignedDataFrame(nrow=length(sread))) {
+AlignedRead <- function(sread = DNAStringSet(character(0)),
+                        id = BStringSet(character(length(sread))),
+                        quality = FastqQuality(character(length(sread))),
+                        chromosome = factor(rep(NA, length(sread))),
+                        position = rep(NA_integer_, length(sread)),
+                        strand = factor(rep(NA_integer_, length(sread)),
+                          levels=.STRAND_LEVELS),
+                        alignQuality = NumericQuality(
+                          rep(NA_real_, length(sread))),
+                        alignData = AlignedDataFrame(
+                          nrow=length(sread)))
+{
     new("AlignedRead",
         sread=sread, id=id, quality=quality,
         chromosome=chromosome, position=position, strand=strand,

@@ -6,6 +6,10 @@
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o readAligned for Solexa-based alignments return 'strand'
+    information as factor with levels "-", "+", "*" (strand not
+    relevant), NA (no strand information available).
+
     o srorder, srsort, srrank, and srduplicated for AligendRead class
     now sort based on chromosome, strand, position AND sread; previous
     behavior can be recovers by extracting the sequences

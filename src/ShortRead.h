@@ -7,12 +7,18 @@
 typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
 DECODE_FUNC decoder(const char*);
 
+SEXP _get_strand_levels();
+
 typedef char * (MARK_FIELD_FUNC)(char *, const char *);
 MARK_FIELD_FUNC _mark_field_1;	/* nchar(delim) == 1 */
 MARK_FIELD_FUNC _mark_field_n;	/* nchar(delim) != 1 */
 
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
+SEXP _CharAEAE_to_XStringSet(CharAEAE* aeae, const char *clsName);
+void _as_factor_SEXP(SEXP vec, SEXP lvls);
+void _as_factor(SEXP vec, const char **levels, const int n_lvls);
+int _count_lines_sum(SEXP files);
 SEXP count_lines(SEXP files);
 SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
@@ -23,6 +29,8 @@ SEXP read_solexa_fastq(SEXP files);
 SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
                              SEXP colClasses, SEXP delim,
                              SEXP header, SEXP commentChar);
+SEXP read_solexa_export(SEXP files, SEXP filters,
+                        SEXP sep, SEXP commentChar);
 
 /* alphabet.c */
 

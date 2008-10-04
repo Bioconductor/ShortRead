@@ -1,9 +1,43 @@
 #include <string.h>
+#include <stdlib.h>             /* atoi */
 #include "ShortRead.h"
 
 static const int LINEBUF_SIZE = 20001;
 static const int LINES_PER_FASTQ_REC = 4;
 static const int LINES_PER_FASTA_REC = 2;
+
+/* utilities */
+
+/*
+ * open and check file; signal error
+ */
+FILE *
+_fopen(const char *fname, const char *mode)
+{
+    FILE *file = fopen(fname, mode);
+    if (file == NULL)
+        error("cannot open file %s", fname);
+    return file;
+}
+
+/*
+ * trim & check linebuf, return 0 if processing should continue
+ */
+int
+_linebuf_skip_p(char *linebuf, FILE *file,
+                const char *fname, int lineno, const char *commentChar)
+{
+    int nchar_in_buf;
+    nchar_in_buf = _rtrim(linebuf);
+    if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+        fclose(file);
+        error("line too long %s:%d", fname, lineno);
+    } else if (nchar_in_buf == 0) {
+        fclose(file);
+        error("unexpected empty line %s:%d", fname, lineno);
+    }
+    return *linebuf == *commentChar;
+}              
 
 /*
  * Solexa 'fastq' files consist of records, each 4 lines long. Here is
@@ -36,9 +70,7 @@ read_prb_as_character(SEXP fname, SEXP cycles)
     const int n_cycles = INTEGER(cycles)[0];
     SEXP ans = PROTECT(NEW_CHARACTER(n_reads));
 
-    FILE *file = fopen(CHAR(STRING_ELT(fname, 0)), "r");
-    if (file == NULL)
-        error("cannot open file %s", CHAR(STRING_ELT(fname, 0)));
+    FILE *file = _fopen(CHAR(STRING_ELT(fname, 0)), "r");
 
     int read=0, cycle=0, nuc=0, curr_max=MIN_SCORE, val;
     char *score = R_alloc(sizeof(char), n_cycles + 1);
@@ -73,9 +105,7 @@ _read_solexa_fastq_file(const char *fname,
     char linebuf[LINEBUF_SIZE];
     int lineno, reclineno, nchar_in_buf;
 
-    if ((file = fopen(fname, "r")) == NULL)
-        error("cannot open file %s", fname);
-
+    file = _fopen(fname, "r");
     lineno = 0;
     while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
         if ((reclineno = lineno % LINES_PER_FASTQ_REC) == 2) {
@@ -122,18 +152,14 @@ read_solexa_fastq(SEXP files)
     RoSeqs roSeqs;
     int i, nfiles, nrec = 0;
     const char *fname;
-    SEXP nlines, ans = R_NilValue, nms=R_NilValue, elt;
+    SEXP ans = R_NilValue, nms = R_NilValue, elt;
 
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character'");
 
-    /* Count total number of lines and pre-allocated space */
+    /* pre-allocated space */
     nfiles = LENGTH(files);
-    PROTECT(nlines = count_lines(files));
-    for (i = 0; i < nfiles; ++i) 
-        nrec += INTEGER(nlines)[i];
-    UNPROTECT(1);
-    nrec /= LINES_PER_FASTQ_REC;
+    nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
     seq = new_CharAEAE(nrec, 0);
     name = new_CharAEAE(nrec, 0);
     qualities = new_CharAEAE(nrec, 0);
@@ -176,10 +202,9 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
 {
     FILE *file;
     char *linebuf;
-    int lineno, nchar_in_buf;
+    int lineno;
 
-    if ((file = fopen(fname, "r")) == NULL)
-        error("cannot open file %s", fname);
+    file = _fopen(fname, "r");
     linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
 
     /* header: first line ignored, errors ignored */
@@ -187,14 +212,8 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
         fgets(linebuf, LINEBUF_SIZE, file);
     lineno = 0;
     while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
-        nchar_in_buf = _rtrim(linebuf);
-        if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
-            fclose(file);
-            error("line too long %s:%d", fname, lineno);
-        } else if (nchar_in_buf == 0) {
-            fclose(file);
-            error("unexpected empty line %s:%d", fname, lineno);
-        } else if (*linebuf == *commentChar) {
+        if (_linebuf_skip_p(linebuf, file, fname,
+                            lineno, commentChar)) {
             lineno++;
             continue;
         }
@@ -278,15 +297,206 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
 
     /* formulate return value */
     SEXP ans, elt;
-    RoSeqs roSeqs;
     PROTECT(ans = NEW_LIST(ncol));
     for (j = 0; j < ncol; ++j) {
         const char *clsName = CHAR(STRING_ELT(colClasses, j));
-        roSeqs = new_RoSeqs_from_CharAEAE(sets + j);
-        PROTECT(elt = new_XStringSet_from_RoSeqs(clsName, &roSeqs));
+        PROTECT(elt = _CharAEAE_to_XStringSet(sets + j, clsName));
         SET_VECTOR_ELT(ans, j, elt);
         UNPROTECT(1);
     }
     UNPROTECT(1);
     return ans;
 }
+
+/*
+ * _export parser
+ */
+
+typedef struct {
+    int offset;
+    int *run,
+        *lane,
+        *tile,
+        *x,
+        *y;
+    CharAEAE *read, *quality;
+    SEXP chromosome;
+    int *position,
+        *strand,
+        *alignQuality,
+        *filtering;
+} SOLEXA_EXPORT_REC;
+
+int
+_read_solexa_export_file(const char *fname, const char *csep,
+                         const char *commentChar,
+                         MARK_FIELD_FUNC *mark_func,
+                         SOLEXA_EXPORT_REC *sx_rec)
+{
+    const int N_FIELDS = 22;
+    FILE *file;
+    char *linebuf;
+    int lineno = 0, nrec = 0, i;
+
+    file = _fopen(fname, "r");
+    linebuf = S_alloc(LINEBUF_SIZE, sizeof(char));
+
+    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+        if (_linebuf_skip_p(linebuf, file,
+                            fname, lineno, commentChar)) {
+            lineno++;
+            continue;
+        }
+
+        /* field-ify */
+        char **elt = (char**) S_alloc(N_FIELDS, sizeof(char*));
+        elt[0] = linebuf;
+        for (i = 1; i < N_FIELDS; ++i) {
+            elt[i] = (*mark_func)(elt[i-1], csep);
+            if (elt[i] == elt[i-1])
+                error("too few fields, %s:%d", fname, lineno);
+        }
+            
+        sx_rec->run[lineno] = atoi(elt[1]);
+        sx_rec->lane[lineno] = atoi(elt[2]);
+        sx_rec->tile[lineno] = atoi(elt[3]);
+        sx_rec->x[lineno] = atoi(elt[4]);
+        sx_rec->y[lineno] = atoi(elt[5]);
+        /* 6: indexString, 7: pairedReadNumber */
+        append_string_to_CharAEAE(sx_rec->read, elt[8]);
+        append_string_to_CharAEAE(sx_rec->quality, elt[9]);
+        SET_STRING_ELT(sx_rec->chromosome,
+                       sx_rec->offset + nrec, mkChar(elt[10]));
+        /* 11: contig */
+        if (*elt[12] == '\0')
+            sx_rec->position[lineno] = NA_INTEGER;
+        else
+            sx_rec->position[lineno] = atoi(elt[12]);
+        if (*elt[13] == '\0')
+            sx_rec->strand[lineno] = NA_INTEGER;
+        else {
+            switch(*elt[13]) {
+            case 'R':
+                sx_rec->strand[lineno] = 1;
+                break;
+            case 'F':
+                sx_rec->strand[lineno] = 2;
+                break;
+            default:
+                error("invalid 'strand' field '%s', %s:%d",
+                      *elt[13], fname, lineno);
+                break;
+            }
+        }
+        /* 14: descriptor */
+        sx_rec->alignQuality[lineno] = atoi(elt[15]);
+        /* 16: pairedScore, 17: partnerCzome, 18: partnerContig
+           19: partnerOffset, 29: partnerStrand */
+        switch (*elt[21]) {
+        case 'Y':
+            sx_rec->filtering[lineno] = 1;
+            break;
+        case 'N':
+            sx_rec->filtering[lineno] = 2;
+            break;
+        default:
+            error("invalid 'filtering' field '%s', %s:%d",
+                  *elt[21], fname, lineno);
+            break;
+        }
+        lineno++;
+        nrec++;
+    }
+    
+    return nrec;
+}
+
+SEXP
+read_solexa_export(SEXP files, SEXP filters,
+                   SEXP sep, SEXP commentChar)
+{
+    const char *ELT_NMS[] = {
+        "run", "lane", "tile", "x", "y", "sread", "quality",
+        "chromosome", "position", "strand", "alignQuality",
+        "filtering"
+    };
+    const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
+    const char *FILTER_LEVELS[] = { "Y", "N" };
+
+    if (!IS_CHARACTER(files))
+        Rf_error("'files' must be 'character()'");
+    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
+        Rf_error("'sep' must be character(1)"); 
+    /* FIXME: !nzchar(sep[1]) */
+    if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
+        Rf_error("'commentChar' must be character(1)");
+    if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
+        Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
+                 LENGTH(STRING_ELT(commentChar, 0)));
+
+    int nrec = _count_lines_sum(files), i;
+    SEXP result = PROTECT(NEW_LIST(N_ELTS));;
+    SEXP names = PROTECT(NEW_CHARACTER(N_ELTS));
+
+    CharAEAE dnaString, qualityString;
+
+    SET_VECTOR_ELT(result, 0, NEW_INTEGER(nrec)); /* run */
+    SET_VECTOR_ELT(result, 1, NEW_INTEGER(nrec)); /* lane */
+    SET_VECTOR_ELT(result, 2, NEW_INTEGER(nrec)); /* tile */
+    SET_VECTOR_ELT(result, 3, NEW_INTEGER(nrec)); /* x */
+    SET_VECTOR_ELT(result, 4, NEW_INTEGER(nrec)); /* y */
+    dnaString = new_CharAEAE(nrec, 0);            /* DNAString */
+    qualityString = new_CharAEAE(nrec, 0);        /* QualityString */
+    SET_VECTOR_ELT(result, 7, NEW_STRING(nrec)); /* chromosome: was factor */
+    SET_VECTOR_ELT(result, 8, NEW_INTEGER(nrec)); /* position */
+    SET_VECTOR_ELT(result, 9, NEW_INTEGER(nrec)); /* strand: factor */
+    SET_VECTOR_ELT(result, 10, NEW_INTEGER(nrec)); /* alignQuality */
+    SET_VECTOR_ELT(result, 11, NEW_INTEGER(nrec)); /* filtering: factor */
+    for (i = 0; i < N_ELTS; ++i)
+        SET_STRING_ELT(names, i, mkChar(ELT_NMS[i]));
+    SET_ATTR(result, R_NamesSymbol, names);
+
+    const char *csep = translateChar(STRING_ELT(sep, 0));
+    MARK_FIELD_FUNC *sep_func;/* how to parse fields; minor efficiency */
+    if (csep[0] != '\0' && csep[1] == '\0')
+        sep_func = _mark_field_1;
+    else
+        sep_func = _mark_field_n;
+
+    nrec = 0;
+    for (i = 0; i < LENGTH(files); ++i) {
+        R_CheckUserInterrupt();
+        SOLEXA_EXPORT_REC sx_rec = {
+            nrec,
+            INTEGER(VECTOR_ELT(result, 0)) + nrec,
+            INTEGER(VECTOR_ELT(result, 1)) + nrec,
+            INTEGER(VECTOR_ELT(result, 2)) + nrec,
+            INTEGER(VECTOR_ELT(result, 3)) + nrec,
+            INTEGER(VECTOR_ELT(result, 4)) + nrec,
+            &dnaString, &qualityString,
+            VECTOR_ELT(result, 7), /* chromosome */
+            INTEGER(VECTOR_ELT(result, 8)) + nrec,
+            INTEGER(VECTOR_ELT(result, 9)) + nrec,
+            INTEGER(VECTOR_ELT(result, 10)) + nrec,
+            INTEGER(VECTOR_ELT(result, 11)) + nrec
+        };
+        nrec += _read_solexa_export_file(
+            CHAR(STRING_ELT(files, i)), csep,
+            CHAR(STRING_ELT(commentChar, 0)),
+            sep_func, &sx_rec);
+    }
+
+    SEXP stringSet;
+    PROTECT(stringSet = _CharAEAE_to_XStringSet(&dnaString, "DNAString"));
+    SET_VECTOR_ELT(result, 5, stringSet);
+    PROTECT(stringSet = _CharAEAE_to_XStringSet(&qualityString, "BString"));
+    SET_VECTOR_ELT(result, 6, stringSet);
+    /* 9: strand: factor */
+    SEXP strand_lvls = PROTECT(_get_strand_levels());
+    _as_factor_SEXP(VECTOR_ELT(result, 9), strand_lvls);
+    _as_factor(VECTOR_ELT(result, 11), FILTER_LEVELS,
+                sizeof(FILTER_LEVELS) / sizeof(const char *));
+    UNPROTECT(5);
+    return result;
+}
+

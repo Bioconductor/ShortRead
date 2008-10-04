@@ -46,35 +46,25 @@
                 quality=SFastqQuality(quality),
                 chromosome=factor(rep(NA, len)),
                 position=lst[["position"]],
-                strand=lst[["strand"]],
+                strand=factor(lst[["strand"]], levels=.STRAND_LEVELS),
                 alignQuality=NumericQuality(lst[["alignQuality"]]),
                 alignData=alignData)
 }
 
-.readAligned_SolexaExport <- function(dirPath, pattern=character(0),
-                                      ..., sep="\t", header=FALSE) {
-    ## NULL are currently ignored, usually from paired-end reads
-    csvClasses <- xstringClasses <-
-        list(machine=NULL, run="integer", lane="integer",
-             tile="integer", x="integer", y="integer",
-             indexString=NULL, pairedReadNumber=NULL,
-             sequence="DNAString", quality="BString",
-             chromosome="factor", contig=NULL, position="integer",
-             strand="factor", descriptor=NULL, alignQuality="integer",
-             pairedScore=NULL, partnerCzome=NULL, partnerContig=NULL,
-             partnerOffset=NULL, partnerStrand=NULL,
-             filtering="factor")
-
-    xstringNames <- c("sequence", "quality")
-    csvClasses[xstringNames] <- list(NULL)
-    xstringClasses[!names(xstringClasses) %in% xstringNames] <-
-        list(NULL)
-
-    ## CSV portion
-    lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
-                             sep=sep, header=header)
-    df <- with(lst, data.frame(run=run, lane=lane, tile=tile, x=x,
-                               y=y, filtering=filtering))
+.readAligned_SolexaExport <-
+  function(dirPath, pattern=character(0),
+           ..., sep="\t", commentChar="#")
+{
+    files <- .file_names(dirPath, pattern)
+    lst <- .Call(.read_solexa_export, files,
+                 filters=list(),        # placeholder
+                 sep, commentChar)
+    df <- data.frame(run=lst[["run"]],
+                     lane=lst[["lane"]],
+                     tile=lst[["tile"]],
+                     x=lst[["x"]],
+                     y=lst[["y"]],
+                     filtering=lst[["filtering"]])
     meta <- data.frame(labelDescription=c(
                          "Analysis pipeline run",
                          "Flow cell lane",
@@ -83,15 +73,10 @@
                          "Cluster y-coordinate",
                          "Read successfully passed filtering?"))
     alignData <- AlignedDataFrame(df, meta)
-
-    ## XStringSet classes
-    sets <- readXStringColumns(dirPath, pattern, xstringClasses,
-                               sep=sep, header=header)
-
-    AlignedRead(sread=sets[["sequence"]],
-                id=BStringSet(character(length(sets[["sequence"]]))),
-                quality=SFastqQuality(sets[["quality"]]),
-                chromosome=lst[["chromosome"]],
+    AlignedRead(sread=lst[["sread"]],
+                id=BStringSet(character(length(lst[["sread"]]))),
+                quality=SFastqQuality(lst[["quality"]]),
+                chromosome=factor(lst[["chromosome"]]),
                 position=lst[["position"]],
                 strand=lst[["strand"]],
                 alignQuality=NumericQuality(lst[["alignQuality"]]),
@@ -145,13 +130,12 @@
                        NULL, NULL, "DNAString", "BString")
     sets <- readXStringColumns(dirPath, pattern,
                                colClasses, sep=sep, header=header)
-
     AlignedRead(sread=sets[[2]], id=sets[[1]],
                 quality=FastqQuality(sets[[3]]),
                 chromosome=factor(csv[["chromosome"]],
                   levels=.order_chr_levels(levels(csv[["chromosome"]]))),
                 position=csv[["position"]],
-                strand=csv[["strand"]],
+                strand=factor(csv[["strand"]], levels=.STRAND_LEVELS),
                 alignQuality=IntegerQuality(csv[["alignQuality"]]),
                 alignData=.readAligned_Maq_ADF(csv))
 }
