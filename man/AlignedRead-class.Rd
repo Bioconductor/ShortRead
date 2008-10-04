@@ -1,12 +1,15 @@
 \name{AlignedRead-class}
 \docType{class}
 \alias{AlignedRead-class}
-\alias{[,AlignedRead,missing,missing-method}
-\alias{[,AlignedRead,missing,ANY-method}
-\alias{[,AlignedRead,ANY,ANY-method}
-\alias{[,AlignedRead,ANY,missing-method}
+\alias{[,AlignedRead,missing,missing,ANY-method}
+\alias{[,AlignedRead,missing,ANY,ANY-method}
+\alias{[,AlignedRead,ANY,ANY,ANY-method}
+\alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{strand,AlignedRead-method}
 \alias{detail,AlignedRead-method}
+\alias{srrank,AlignedRead-method}
+\alias{srorder,AlignedRead-method}
+\alias{srduplicated,AlignedRead-method}
 \alias{show,AlignedRead-method}
 
 \title{"AlignedRead" class for aligned short reads}
@@ -79,6 +82,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}
+
+    \item{srorder}{\code{\signature{x = "AlignedRead"}}:}
+    \item{srrank}{\code{\signature{x = "AlignedRead"}}:}
+    \item{srsort}{\code{\signature{x = "AlignedRead"}}:}
+    \item{srduplicated}{\code{\signature{x = "AlignedRead"}}:
+      Order, rank, sort, and find duplicates in \code{AlignedRead}
+      objects. Reads are sorted by \code{chromosome}, \code{strand},
+      \code{position}, and then \code{sread}; less fine-grained sorting
+      can be accomplished with, e.g., \code{x[srorder(sread(x))]}.}
 
     \item{show}{\code{signature(object = "AlignedRead")}: provide a
       compact display of the \code{AlignedRead}  content.}

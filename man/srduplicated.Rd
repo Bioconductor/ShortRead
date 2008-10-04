@@ -53,8 +53,9 @@ srduplicated(x, ...)
     \item{srduplicated}{\code{signature(x = "XStringSet")}:
 
       Apply \code{srorder}, \code{srrank}, \code{srsort},
-      \code{srduplicated} to \code{\linkS4class{XStringSet}} objects
-      such as those returned by \code{\link{sread}}.}
+      \code{srduplicated} to
+      \code{\link[Biostrings:XStringSet-class]{XStringSet}} objects such
+      as those returned by \code{\link{sread}}.}
 
 
     \item{srsort}{\code{signature(x = "ShortRead")}:}
@@ -62,7 +63,8 @@ srduplicated(x, ...)
     \item{srduplicated}{\code{signature(x = "ShortRead")}:
 
       Apply \code{srorder}, \code{srrank}, \code{srsort},
-      \code{srduplicated} to \code{\linkS4class{XStringSet}} objects to
+      \code{srduplicated} to
+      \code{\link[Biostrings:XStringSet-class]{XStringSet}} objects to
       the \code{sread} component of \code{\linkS4class{ShortRead}} and
       derived objects.}
 

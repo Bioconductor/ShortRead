@@ -7,7 +7,7 @@
 \alias{FastqQuality-class}
 \alias{SFastqQuality-class}
 % QualityScore
-\alias{[,QualityScore,ANY,missing-method}
+\alias{[,QualityScore,ANY,missing,ANY-method}
 \alias{[[,QualityScore,ANY,missing-method}
 \alias{length,QualityScore-method}
 \alias{width,QualityScore-method}
@@ -16,7 +16,7 @@
 \alias{width,NumericQuality-method}
 \alias{show,NumericQuality-method}
 % MatrixQuality
-\alias{[,MatrixQuality,ANY,missing-method}
+\alias{[,MatrixQuality,ANY,missing,ANY-method}
 \alias{[[,MatrixQuality,ANY,missing-method}
 \alias{length,MatrixQuality-method}
 \alias{width,MatrixQuality-method}

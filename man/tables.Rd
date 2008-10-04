@@ -6,7 +6,7 @@
 
 \description{
   This generic summarizes the number of times each sequence occurs in an
-  \code{\linkS4class{XStringSet}} instance.
+  \code{\link[Biostrings:XStringSet-class]{XStringSet}} instance.
 }
 
 \usage{

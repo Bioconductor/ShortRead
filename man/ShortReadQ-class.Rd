@@ -3,10 +3,10 @@
 
 \alias{ShortReadQ-class}
 \alias{alphabetByCycle,ShortReadQ-method}
-\alias{[,ShortReadQ,missing,missing-method}
-\alias{[,ShortReadQ,missing,ANY-method}
-\alias{[,ShortReadQ,ANY,ANY-method}
-\alias{[,ShortReadQ,ANY,missing-method}
+\alias{[,ShortReadQ,missing,missing,ANY-method}
+\alias{[,ShortReadQ,missing,ANY,ANY-method}
+\alias{[,ShortReadQ,ANY,ANY,ANY-method}
+\alias{[,ShortReadQ,ANY,missing,ANY-method}
 \alias{detail,ShortReadQ-method}
 
 \title{"ShortReadQ" class for short reads and their quality scores}

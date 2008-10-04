@@ -17,7 +17,7 @@
 \alias{names,SRList-method}
 \alias{lapply,SRList-method}
 \alias{sapply,SRList-method}
-\alias{[,SRList,ANY,missing-method}
+\alias{[,SRList,ANY,missing,ANY-method}
 \alias{[[,SRList,ANY,missing-method}
 \alias{detail,SRList-method}
 \alias{show,SRList-method}

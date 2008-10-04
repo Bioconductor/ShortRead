@@ -25,7 +25,7 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
     gzFile mapfile;   
     maqmap_t * mapheader;
     SEXP seqnames, seq, start, dir, aq, mm, mm24, errsum, nhits0, 
-        nhits1, eltnm, df, klass, levels;
+        nhits1, eltnm, df, klass;
     char readseqbuf[ MAX_READLEN ], fastqbuf[ MAX_READLEN ];
     CharAEAE readid, readseq, fastq;
     int i, actnreads, j;

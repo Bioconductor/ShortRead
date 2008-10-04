@@ -38,7 +38,7 @@ alphabetByCycle(stringSet, alphabet, ...)
 \details{
 
   The default method requires that \code{stringSet} extends the
-  \code{\linkS4class{XStringSet}} class of \pkg{Biostrings}.
+  \code{\link[Biostrings:XStringSet-class]{XStringSet}} class of \pkg{Biostrings}.
 
   The following method is defined, in addition to methods described in
   class-specific documentation:

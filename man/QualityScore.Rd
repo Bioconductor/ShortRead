@@ -26,12 +26,13 @@ SFastqQuality(quality, ...)
 }
 
 \arguments{
+
   \item{quality}{An object used to initialize the data
     structure. Appropriate objects are indicated in the constructors
     above for Numeric, Integer, and Matrix qualities. For
     \code{FastqQuality} and \code{SFastqQuality}, methods are defined
-    for \code{\linkS4class{BStringSet}}, \code{character}, and
-    \code{missing}.}
+    for \code{\link[Biostrings:BStringSet]{BStringSet}},
+    \code{character}, and \code{missing}.}
 
   \item{...}{Additional arguments, currently unused.}
 }
