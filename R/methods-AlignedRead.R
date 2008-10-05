@@ -71,7 +71,8 @@ setMethod("[", c("AlignedRead", "ANY", "ANY"),
 .AlignedRead_subset <- function(x, i, j, ..., drop=TRUE) {
     if (nargs() != 2) .subset_err()
     initialize(x, sread=sread(x)[i], id=id(x)[i],
-               quality=quality(x)[i], chromosome=chromosome(x)[i],
+               quality=quality(x)[i],
+               chromosome=factor(chromosome(x)[i]),
                position=position(x)[i], strand=strand(x)[i],
                alignQuality=alignQuality(x)[i],
                alignData=alignData(x)[i,]) }

@@ -74,11 +74,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
   \describe{
 
-    \item{[}{\code{signature(x = "ShortReadQ", i = "ANY", j = "missing")}: 
-      This method creates a new \code{ShortReadQ} object containing only
-      those reads indexed by \code{i}. Additional methods on
-      \sQuote{[,ShortRead} do not provide additional functionality, but
-      are present to limit inappropriate use.}
+    \item{[}{\code{signature(x = "AlignedRead", i = "ANY", j = "missing")}: 
+      This method creates a new \code{AlignedRead} object containing only
+      those reads indexed by \code{i}. \code{chromosome} is recoded to
+      contain only those levels in the new subset.}
 
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}
