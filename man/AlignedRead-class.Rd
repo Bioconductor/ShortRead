@@ -6,10 +6,11 @@
 \alias{[,AlignedRead,ANY,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{strand,AlignedRead-method}
-\alias{detail,AlignedRead-method}
+\alias{coverage,AlignedRead-method}
 \alias{srrank,AlignedRead-method}
 \alias{srorder,AlignedRead-method}
 \alias{srduplicated,AlignedRead-method}
+\alias{detail,AlignedRead-method}
 \alias{show,AlignedRead-method}
 
 \title{"AlignedRead" class for aligned short reads}
@@ -81,6 +82,32 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}
+
+    \item{coverage}{\code{signature(x = "AlignedRead", start = NA, end = NA, ..., coords=c("leftmost", "fiveprime"), extend=0L)}:
+
+      Calculate coverage across reads present in \code{x}. 
+
+      \code{start} and \code{end} are are regions (e.g., of chromosomes)
+      over which coverage is to be calculated. If provided, these are
+      length 1 integers or \emph{named} integer vectors of length
+      greater than 1. If named integer vectors, the names must match
+      \code{levels(chromosome(x))}. If omitted, coverage is calculated
+      over the range of values spanned by the reads in \code{x}
+
+      \code{coords} specifies the coordinate system used to record
+      position. Both systems number base pairs from left to right on the
+      5' strand. \code{leftmost} indicates the eland convention,
+      where \code{position(x)} is the left-most (minimum) base pair,
+      regardless of strand. \code{fiveprime} is the MAQ convetion, where
+      \code{position(x)} is the coordinate of the 5' end of the
+      aligned read.
+
+      \code{extend} indicates the number of base pairs to extend the
+      read. Extension is in the 3' direction, measured from the
+      3' end of the aligned read.
+
+    }
+    
 
     \item{srorder}{\code{\signature{x = "AlignedRead"}}:}
     \item{srrank}{\code{\signature{x = "AlignedRead"}}:}
