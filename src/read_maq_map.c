@@ -167,6 +167,6 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
         SET_STRING_ELT( eltnm, i, mkChar( eltnames[i] ) );
     namesgets( df, eltnm );
 
-    UNPROTECT( 13 );
+    UNPROTECT( 12 );
     return df;   
 }   
