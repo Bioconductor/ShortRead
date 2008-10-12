@@ -41,11 +41,29 @@ polyn <- function(nucleotides, n)
                    arg, type))
 }
 
+.arg_mismatch_type_err2 <- function(arg, type, was) {
+    .throw(SRError("UserArgumentMismatch",
+                   "'%s' must be '%s', was '%s'",
+                   arg, type, was))
+}
+
 .arg_mismatch_value_err <- function(arg, value, possible_vals) {
     .throw(SRError("UserArgumentMismatch",
                    "arugment '%s' had value '%s'\n  allowable values: '%s'",
                    arg, value,
                    paste(possible_vals, collapse="' '")))
+}
+
+.check_type_and_length <- function(x, type, len) {
+    name <- deparse(substitute(x))
+    if (!is(x, type))
+        .arg_mismatch_type_err2(name, type, class(x))
+    if (!is.na(len) && sum(length(x) == len)==0) {
+        typelen <- paste(type, paste("(", len, ")", sep=""),
+                         sep="", collapse="' '")
+        was <- sprintf("%s(%d)", class(x), length(x))
+        .arg_mismatch_type_err2(name, typelen, was)
+    }
 }
 
 ## Misc

@@ -1,10 +1,12 @@
 useDynLib(ShortRead, .registration=TRUE)
 
-importClassesFrom(Biobase, AnnotatedDataFrame, Versioned)
+importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
+                  ScalarCharacter)
 
 importClassesFrom(Biostrings, BStringSet, DNAStringSet)
 
-importFrom(Biobase, selectSome, phenoData, featureData, sampleNames)
+importFrom(Biobase, selectSome, phenoData, featureData, sampleNames,
+           mkScalar)
 
 importFrom(IRanges, coverage, width, strand)
 
@@ -12,7 +14,7 @@ importFrom(Biostrings, BStringSet, DNAStringSet,
            alphabetFrequency, alphabet,
            quality, pairwiseAlignment)
 
-exportClasses(SRError, SRWarn, SRList, SRVector,
+exportClasses(SRError, SRWarn, SRList, SRVector, SRFilter,
               QualityScore, IntegerQuality, NumericQuality, MatrixQuality,
               FastqQuality, SFastqQuality,
               ShortRead, ShortReadQ,

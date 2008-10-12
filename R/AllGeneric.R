@@ -96,6 +96,14 @@ setGeneric("alphabetScore", function(object, ...) {
     standardGeneric("alphabetScore")
 })
 
+## SRFilter
+
+setGeneric("name", function(x, ...) standardGeneric("name"))
+
+setGeneric("srFilter", function(fun, name=NA_character_, ...)
+           standardGeneric("srFilter"),
+           signature="fun")
+
 ## AlignedRead
 
 setGeneric("readAligned", function(dirPath, pattern=character(0), ...)

@@ -6,6 +6,7 @@
 .SRError_types <- c("UnspecifiedError",
                     "InternalError",
                     "RemoteError",
+                    "InvalidReadFilter",
                     .SRErrorWarning_types)
 
 .SRWarn_types <- c("UnspecifiedWarning",

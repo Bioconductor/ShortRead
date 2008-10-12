@@ -11,7 +11,7 @@ setGeneric(".srValidity")
 
 setClass(".ShortReadBase")
 
-## .SRUtil: SRError / SRList / SRVector
+## .SRUtil: SRError / SRList / SRVector / SRFilter
 
 setClass(".SRUtil",
          representation=representation("VIRTUAL"))
@@ -45,6 +45,12 @@ setClass("SRVector", contains="SRList",
            vclass="character"),
          prototype=prototype(
            vclass=NA_character_),
+         validity=.srValidity)
+
+setClass("SRFilter",
+         contains=c("function", ".SRUtil"),
+         representation=representation(
+           name="ScalarCharacter"),
          validity=.srValidity)
 
 ## QualityScore
