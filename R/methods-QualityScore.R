@@ -180,7 +180,13 @@ setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
     .Call(.alphabet_score, quality(object), as.numeric(score))
 }
 
-setMethod("alphabetScore", "SFastqQuality", .SFastqQuality_ascore)
+setMethod(alphabetScore, "SFastqQuality", .SFastqQuality_ascore)
+
+.FastqQuality_ascore <- function(object, score=0:255-32L, ...) {
+    .Call(.alphabet_score, quality(object), as.numeric(score))
+}
+
+setMethod(alphabetScore, "FastqQuality", .FastqQuality_ascore)
 
 setMethod("srrank", "FastqQuality", .forward_xq)
 

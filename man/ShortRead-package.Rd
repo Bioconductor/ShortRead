@@ -3,6 +3,7 @@
 \alias{.ShortReadBase-class}
 \alias{show,.ShortReadBase-method}
 \alias{.Solexa-class}
+\alias{.Roche-class}
 \docType{package}
 \title{
 

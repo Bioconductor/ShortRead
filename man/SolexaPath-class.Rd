@@ -36,7 +36,8 @@
                      "^Bustard"),
                    analysisPath=.solexaPath(baseCallPath,
                      "^GERALD"),
-                     ..., verbose=FALSE)}
+                   ..., verbose=FALSE)
+		 }
 
   \describe{
     \item{experimentPath}{\code{character(1)} object pointing to the

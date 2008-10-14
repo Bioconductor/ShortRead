@@ -3,6 +3,7 @@
 
 \alias{ShortReadQ-class}
 \alias{alphabetByCycle,ShortReadQ-method}
+\alias{alphabetScore,ShortReadQ-method}
 \alias{[,ShortReadQ,missing,missing,ANY-method}
 \alias{[,ShortReadQ,missing,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}
@@ -57,7 +58,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component,
       the \code{quality} component, and the combination of these two
       components of \code{stringSet}, returning a list of matrices with
-      three elements:  \code{"sread"}, \code{"quality"}, and \code{"both"}.}
+      three elements: \code{"sread"}, \code{"quality"}, and
+      \code{"both"}.}
+
+    \item{alphabetScore}{\code{signature(object = "ShortReadQ")}:
+      See \code{\link{alphabetScore}} for details.}
 
     \item{detail}{\code{signature(object = "ShortReadQ")}: display the
 	  first and last entries of each of \code{sread}, \code{id}, and

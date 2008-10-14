@@ -19,7 +19,8 @@ exportClasses(SRError, SRWarn, SRList, SRVector, SRFilter,
               FastqQuality, SFastqQuality,
               ShortRead, ShortReadQ,
               AlignedDataFrame, AlignedRead,
-              SolexaPath, SolexaSet, SolexaExportQA)
+              SolexaPath, SolexaSet, SolexaExportQA,
+              SRSet, RochePath, RocheSet)
 
 exportMethods(show, length, "[", "[[",
               alphabetFrequency, alphabet, coverage,

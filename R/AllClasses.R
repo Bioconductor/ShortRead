@@ -146,15 +146,6 @@ setClass("AlignedRead", contains="ShortReadQ",
            alignQuality=NumericQuality()),
          validity=.srValidity)
 
-## represents an alignment scored against multiple targets
-## not sure if this will be useful
-## setClass("MultiAlignedRead", contains="AlignedRead",
-##          representation=representation(
-##            alignQuality="MatrixQuality"),
-##          prototype=prototype(
-##            alignQuality=MatrixQuality()),
-##          validity=.srValidity)
-
 ## .Solexa
 
 setClass(".Solexa", contains=".ShortReadBase",
@@ -185,19 +176,6 @@ setClass("SolexaSet", contains=".Solexa",
              data=data.frame(1:8)[,FALSE],
              dimLabels=c("laneNames", "laneColumns"))),
          validity=.srValidity)
-
-## setClass("SolexaTile", contains=".Solexa",
-##          representation=representation(
-##            srfile="character",
-##            lane="integer",
-##            tile="integer"),
-##          validity=.srValidity)
-
-## setClass("SolexaQAVector", contains=".Solexa",
-##          prototype=prototype(
-##            .class="SolexaTile"),
-##          validity=.srValidity)
-
 
 ### .Roche
 

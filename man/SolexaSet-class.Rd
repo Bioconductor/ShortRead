@@ -34,8 +34,11 @@
       \code{\linkS4class{SolexaPath}} for this method).}
 
     \item{...}{Additional arguments, especially \code{laneDescription},
-	  an \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} describing the 
-	  content of each of the 8 lanes in the Solexa flow cell.}
+      an
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      describing the content of each of the 8 lanes in the Solexa flow
+      cell.}
+
   }
 }
 \section{Slots}{
