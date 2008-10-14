@@ -2,13 +2,19 @@
 \docType{class}
 \alias{RochePath-class}
 \alias{detail,RochePath-method}
-\alias{read454}
 \alias{read454,RochePath-method}
+\alias{readFasta}
+\alias{readFasta,character-method}
 \alias{readFasta,RochePath-method}
+\alias{readPath}
+\alias{readQual}
+\alias{readQual,character-method}
 \alias{readQual,RochePath-method}
+\alias{read454}
 \alias{runNames}
-\alias{runNames,RochePath-method}
 \alias{qualPath}
+\alias{runNames,RochePath-method}
+\alias{RocheSet,character-method}
 \alias{RocheSet,RochePath-method}
 \alias{runNames,RochePath-method}
 \alias{show,RochePath-method}
@@ -36,8 +42,9 @@
 
   \describe{
 
-    \item{experimentPath}{\code{character(1)} object pointing to the
-      top-level directory of a Roche experiment.}
+    \item{experimentPath}{\code{character(1)} or
+      \code{\linkS4class{RochePath}} pointing to the top-level directory
+      of a Roche experiment.}
 
     \item{readPath}{\code{character()} of directories (typically in
       \code{experimentPath}) containing sequence (read) information. The
@@ -78,9 +85,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
 \section{Methods}{
   \code{RochePath} has the following methods or functions defined:
   \describe{
+    \item{readFasta}{\code{signature(dirPath = "character", pattern=".\\.fna$", sample = 1,  ...)}:}
     \item{readFasta}{\code{signature(dirPath = "RochePath", pattern=".\\.fna$", sample = 1, run, ...)}: 
 
-      Read sequences from files matching
+      Read sequences from files matching \code{list.files(dirPath,
+      pattern)} (when \code{dirPath="character"}) or
       \code{list.files(readPath(dir)[run], pattern)}, retaining reads
       corresponding to \code{sample}. The result is a
       \code{DNAStringSet}.}
@@ -95,6 +104,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
     \item{read454}{\code{signature(dirPath = "RochePath")}: read
       sequences and quality scores into a
       \code{\linkS4class{ShortReadQ}}.}
+
+    \item{readPath}{\code{signature(object = "RochePath")}: return the
+      contents of the \code{readPath} slot.}
 
     \item{runNames}{\code{signature(object = "RochePath")}: return the
       \code{basename}s of \code{readPath(object)}.}

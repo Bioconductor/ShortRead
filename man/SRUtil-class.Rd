@@ -15,6 +15,7 @@
 \alias{detail,.ShortReadBase-method} % internal method, not documented
 \alias{length,SRList-method}
 \alias{names,SRList-method}
+\alias{names<-,SRList,character-method}
 \alias{lapply,SRList-method}
 \alias{sapply,SRList-method}
 \alias{[,SRList,ANY,missing,ANY-method}
@@ -154,6 +155,9 @@
     \item{names}{\code{signature(x = "SRList")}: return a character
       vector of list element names. The length of the returned vector is
       the same as the length of \code{x}.}
+
+    \item{names<-}{\code{signature(x = "SRList", value = "character")}:
+      assign \code{value} as names for members of \code{x}.}
 
     \item{[}{\code{signature(x = "SRList", i = "ANY", j = "missing")}:
       subset the list using standard R list subset paradigms.}

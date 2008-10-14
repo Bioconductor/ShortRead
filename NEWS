@@ -6,6 +6,10 @@
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o SRFilter allows construction of filters that can be used to
+    subset existing data objects, or filter incoming (readAligned, at
+    the moment) objects.
+
     o readAligned for Solexa-based alignments return 'strand'
     information as factor with levels "-", "+", "*" (strand not
     relevant), NA (no strand information available).

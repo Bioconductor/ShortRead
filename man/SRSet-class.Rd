@@ -3,6 +3,8 @@
 \alias{SRSet-class}
 \alias{readCount}
 \alias{readData}
+\alias{readIndex}
+\alias{sourcePath}
 \alias{experimentPath,SRSet-method}
 \alias{show,SRSet-method}
 \alias{detail,SRSet-method}
@@ -59,7 +61,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
 
     \item{readCount}{\code{signature(object="SRSet")}:}
     \item{readIndex}{\code{signature(object="SRSet")}:}
-    \item{readData}{\code{signature(object="SRSet")}: Retrieve the
+    \item{readData}{\code{signature(object="SRSet")}:}
+    \item{sourcePath}{\code{signature(object="SRSet")}: Retrieve the
       corresponding slot from \code{object}.}
     
 
