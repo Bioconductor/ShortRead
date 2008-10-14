@@ -62,13 +62,15 @@ Executing test function test_AlignedRead_readAligned_MAQMapview  ...  done succe
 
 
 
+Executing test function test_AlignedRead_readAligned_run_as_factor  ...  done successfully.
+
+
+
 Executing test function test_AlignedRead_readAligned_SolexaExport  ...  done successfully.
 
 
 
-Executing test function test_AlignedRead_readAligned_SolexaExport_filter  ... Timing stopped at: 0.088 0 0.088 
-Error in checkIdentical(obs, aln[grep(chr, chromosome(aln))]) : FALSE 
- done successfully.
+Executing test function test_AlignedRead_readAligned_SolexaExport_filter  ...  done successfully.
 
 
 
