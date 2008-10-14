@@ -1,12 +1,40 @@
+sp <- SolexaPath(system.file("extdata", package="ShortRead"))
+aln <- readAligned(sp, "s_2_export.txt")
+
+.checkAlignedRead_identical<- function(obs, exp)
+    ## can't compare external pointers
+{
+    checkIdentical(as.character(sread(obs)),
+                   as.character(sread(exp)))
+    checkIdentical(as.character(quality(quality(obs))),
+                   as.character(quality(quality(exp))))
+    checkIdentical(as.character(id(obs)), as.character(id(exp)))
+    checkIdentical(chromosome(obs), chromosome(exp))
+    checkIdentical(strand(obs), strand(exp))
+    checkIdentical(alignQuality(obs), alignQuality(exp))
+    checkIdentical(alignData(obs), alignData(exp))
+}
+
 test_AlignedRead_readAligned_SolexaExport <- function() {
-    fl <- system.file("extdata", "Data", "C1-36Firecrest", "Bustard",
-                      "GERALD", package="ShortRead")
-    obj <- readAligned(fl, pattern="s_2_export.txt", type="SolexaExport")
+    obj <- readAligned(analysisPath(sp),
+                       pattern="s_2_export.txt", type="SolexaExport")
     checkTrue(validObject(obj))
     checkTrue(is(quality(obj), "SFastqQuality"))
     checkTrue(is(alignQuality(obj), "NumericQuality"))
     checkIdentical(varLabels(alignData(obj)),
                    c("run", "lane", "tile", "x", "y", "filtering"))
+}
+
+test_AlignedRead_readAligned_SolexaExport_filter <- function()
+{
+    chr <- "chr5.fa"
+    filt <- chromosomeFilter(chr)
+    obs <- readAligned(sp, "s_2_export.txt", filter=filt)
+    exp <- aln[grep(chr, chromosome(aln))]
+    .checkAlignedRead_identical(obs, exp)
+    obs <- readAligned(analysisPath(sp), "s_2_export.txt",
+                       "SolexaExport", filter=filt)
+    .checkAlignedRead_identical(obs, exp)
 }
 
 test_AlignedRead_readAligned_MAQMapview <- function() {

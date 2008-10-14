@@ -76,14 +76,16 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
   Methods transforming \code{SolexaSet} objects include:
   \describe{
     \item{readAligned}{
-      \code{signature(dirPath = "SolexaSet", pattern = ".*_export.txt", run, ...)}: 
+      \code{signature(dirPath = "SolexaSet", pattern = ".*_export.txt", run, ..., filter=srFilter())}: 
       
-      Use \code{analysisPath(solexaPath(dirPath))[run]} as the
-      directory path(s) and \code{pattern=".*_export.txt"} as the
-      pattern for discovering Eland-aligned reads in the Solexa 'export'
-      file format. Note that the default method reads \emph{all} aligned
-      read files into a single object; often one will want to specify a
-      pattern for each lane.}
+      Use \code{analysisPath(solexaPath(dirPath))[run]} as the directory
+      path(s) and \code{pattern=".*_export.txt"} as the pattern for
+      discovering Eland-aligned reads in the Solexa 'export' file
+      format. Note that the default method reads \emph{all} aligned read
+      files into a single object; often one will want to specify a
+      pattern for each lane. Use an object of
+      \code{\linkS4class{SRFilter}} to select specific chromosomes,
+      strands, etc.}
 
   }
 }

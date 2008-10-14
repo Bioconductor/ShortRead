@@ -29,10 +29,9 @@ AlignedRead <- function(sread = DNAStringSet(character(0)),
                         alignData = AlignedDataFrame(
                           nrow=length(sread)))
 {
-    new("AlignedRead",
-        sread=sread, id=id, quality=quality,
-        chromosome=chromosome, position=position, strand=strand,
-        alignQuality=alignQuality, alignData=alignData)
+    new("AlignedRead", sread=sread, id=id, quality=quality,
+        chromosome=as.factor(chromosome), position=position,
+        strand=strand, alignQuality=alignQuality, alignData=alignData)
 }
 
 .make_getter(c("chromosome", "position", "alignQuality",

@@ -7,6 +7,7 @@
 typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
 DECODE_FUNC decoder(const char*);
 
+SEXP _get_namespace(const char *pkg);
 SEXP _get_strand_levels();
 
 typedef char * (MARK_FIELD_FUNC)(char *, const char *);
@@ -29,8 +30,7 @@ SEXP read_solexa_fastq(SEXP files);
 SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
                              SEXP colClasses, SEXP delim,
                              SEXP header, SEXP commentChar);
-SEXP read_solexa_export(SEXP files, SEXP filters,
-                        SEXP sep, SEXP commentChar);
+SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar);
 
 /* alphabet.c */
 

@@ -156,15 +156,17 @@ sp <- SolexaPath(system.file("extdata", package="ShortRead"))
 aln <- readAligned(sp, "s_2_export.txt") # Solexa export file, as example
 
 # a 'chromosome 5' filter
-chr5 <- chromosomeFilter("chr5.fa")
-aln[chr5(aln)]
+filt <- chromosomeFilter("chr5.fa")
+aln[filt(aln)]
+# filter during input
+readAligned(sp, "s_2_export.txt", filter=filt)
 
 # x- and y- coordinates stored in alignData, when source is SolexaExport
 xy <- alignDataFilter(expression(abs(x-500) > 200 & abs(y-500) > 200))
 aln[xy(aln)]
 
 # both filters
-chr5xy <- compose(chr5, xy)
+chr5xy <- compose(filt, xy)
 aln[chr5xy(aln)]
 
 # custom filter: minimum calibrated base call quality >20

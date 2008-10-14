@@ -51,20 +51,11 @@
                 alignData=alignData)
 }
 
-.readAligned_SolexaExport <-
-  function(dirPath, pattern=character(0),
-           ..., sep="\t", commentChar="#")
+.SolexaExport_AlignedDataFrame <-
+    function(run, lane, tile, x, y, filtering)
 {
-    files <- .file_names(dirPath, pattern)
-    lst <- .Call(.read_solexa_export, files,
-                 filters=list(),        # placeholder
-                 sep, commentChar)
-    df <- data.frame(run=lst[["run"]],
-                     lane=lst[["lane"]],
-                     tile=lst[["tile"]],
-                     x=lst[["x"]],
-                     y=lst[["y"]],
-                     filtering=lst[["filtering"]])
+    df <- data.frame(run=run, lane=lane, tile=tile, x=x, y=y,
+                     filtering=filtering)
     meta <- data.frame(labelDescription=c(
                          "Analysis pipeline run",
                          "Flow cell lane",
@@ -72,15 +63,15 @@
                          "Cluster x-coordinate",
                          "Cluster y-coordinate",
                          "Read successfully passed filtering?"))
-    alignData <- AlignedDataFrame(df, meta)
-    AlignedRead(sread=lst[["sread"]],
-                id=BStringSet(character(length(lst[["sread"]]))),
-                quality=SFastqQuality(lst[["quality"]]),
-                chromosome=factor(lst[["chromosome"]]),
-                position=lst[["position"]],
-                strand=lst[["strand"]],
-                alignQuality=NumericQuality(lst[["alignQuality"]]),
-                alignData=alignData)
+    AlignedDataFrame(df, meta)
+}
+
+.readAligned_SolexaExport <-
+  function(dirPath, pattern=character(0), ..., sep="\t",
+           commentChar="#")
+{
+    files <- .file_names(dirPath, pattern)
+    .Call(.read_solexa_export, files, sep, commentChar)
 }
 
 .readAligned_Maq_ADF <- function(lst) {
@@ -96,7 +87,9 @@
     AlignedDataFrame(df, meta)
 }
 
-.readAligned_MaqMap <- function(dirPath, pattern=character(0), records=-1L, ...) {
+.readAligned_MaqMap <-
+    function(dirPath, pattern=character(0), records=-1L, ...)
+{
     files <- .file_names(dirPath, pattern)
     if (length(files) > 1)
         .arg_mismatch_type_err("dirPath', 'pattern", "character(1)")
@@ -111,9 +104,9 @@
                 alignData=.readAligned_Maq_ADF(lst))
 }
 
-.readAligned_MaqMapview <- function(dirPath, pattern=character(0), 
-                                    sep="\t", header=FALSE, quote="",
-                                    ...)
+.readAligned_MaqMapview <-
+    function(dirPath, pattern=character(0), ..., sep="\t", header=FALSE,
+             quote="")
 {
     colClasses <-
         list(NULL, chromosome="factor", position="integer",
@@ -146,27 +139,30 @@
                "SolexaExport", "SolexaAlign",
                "SolexaPrealign", "SolexaRealign",
                "MAQMap", "MAQMapview"),
-             ...)
+             ..., filter=srFilter())
 {
     if (missing(type))
         .arg_missing_err("type", "readAligned,character-method",
                        "help(\"readAligned,character-method\")")
     if (!is.character(type) || length(type) != 1)
         .arg_mismatch_type_err("type", "character(1)")
+    if (!missing(filter))
+        .check_type_and_length(filter, "SRFilter", NA)
     vals <- eval(formals(sys.function())$type)
     if (!type %in% vals)
         .arg_mismatch_value_err("type", type, vals)
-    tryCatch({
-        switch(type,
-               SolexaExport=.readAligned_SolexaExport(dirPath,
-                 pattern=pattern, ...),
-               SolexaPrealign=,
-               SolexaAlign=,
-               SolexaRealign=.readAligned_SolexaAlign(dirPath,
-                 pattern=pattern, ...),
-               MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
-               MAQMapview=.readAligned_MaqMapview(
-                 dirPath, pattern=pattern, ...))
+    aln <- 
+        tryCatch({
+            switch(type,
+                   SolexaExport=.readAligned_SolexaExport(dirPath,
+                     pattern=pattern, ...),
+                   SolexaPrealign=,
+                   SolexaAlign=,
+                   SolexaRealign=.readAligned_SolexaAlign(dirPath,
+                     pattern=pattern, ...),
+                   MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
+                   MAQMapview=.readAligned_MaqMapview(
+                     dirPath, pattern=pattern, ...))
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {
@@ -181,6 +177,9 @@
                 .throw(SRError("Input/Output", msg))
             }
         })
+    if (!missing(filter))
+        aln <- aln[filter(aln)]
+    aln
 }
 
 setMethod("readAligned", "character", .readAligned_character)

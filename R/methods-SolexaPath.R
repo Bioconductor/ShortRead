@@ -62,13 +62,13 @@ setMethod("readBaseQuality", "SolexaPath", .readBaseQuality_SolexaPath)
 
 .readAligned_SolexaPath <- function(dirPath,
                                     pattern=".*_export.txt$",
-                                    run, ...) 
+                                    run, ...)
 {
     dirPath <- analysisPath(dirPath)[run]
-    .readAligned_SolexaExport(dirPath, pattern, ...)
+    .readAligned_character(dirPath, pattern, type="SolexaExport", ...)
 }
 
-setMethod("readAligned", "SolexaPath", .readAligned_SolexaPath)
+setMethod(readAligned, "SolexaPath", .readAligned_SolexaPath)
 
 .qa_SolexaPath <- function(dirPath, pattern=character(0),
                            run, ...)

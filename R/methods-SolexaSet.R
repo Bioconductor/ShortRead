@@ -275,12 +275,13 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 
 .readAligned_SolexaSet <- function(dirPath,
                                    pattern=".*_export.txt$",
-                                   run, ...) {
+                                   run, ...)
+{
     dirPath <- analysisPath(solexaPath(dirPath))[run]
-    .readAligned_SolexaExport(dirPath, pattern, ...)
+    .readAligned_character(dirPath, pattern, type="SolexaExport", ...)
 }
 
-setMethod("readAligned", "SolexaSet", .readAligned_SolexaSet)
+setMethod(readAligned, "SolexaSet", .readAligned_SolexaSet)
 
 setMethod("show", "SolexaSet", function(object) {
     callNextMethod()

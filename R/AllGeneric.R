@@ -106,7 +106,8 @@ setGeneric("srFilter", function(fun, name=NA_character_, ...)
 
 ## AlignedRead
 
-setGeneric("readAligned", function(dirPath, pattern=character(0), ...)
+setGeneric("readAligned",
+           function(dirPath, pattern=character(0), ...)
            standardGeneric("readAligned"), signature="dirPath")
 
 ## ExperimentPath

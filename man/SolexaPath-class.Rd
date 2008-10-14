@@ -108,14 +108,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       often one will want to specify a pattern for each lane.}
 
     \item{readAligned}{
-      \code{signature(dirPath = "SolexaPath", pattern = ".*_export.txt", run, ...)}: 
+      \code{signature(dirPath = "SolexaPath", pattern = ".*_export.txt", run, ..., filter=srFilter())}: 
       
       Use \code{analysisPath(dirPath)[run]} as the directory path and
       \code{pattern=".*_export.txt"} as the pattern for discovering
       Eland-aligned reads in the Solexa 'export' file format. Note that
       the default method reads \emph{all} aligned read files into a
       single object; often one will want to specify a pattern for each
-      lane.}
+      lane. Use an object of \code{\linkS4class{SRFilter}} to select
+      specific chromosomes, strands, etc.}
 
     \item{qa}{
       \code{signature(dirPath="SolexaPath", pattern="character(0)", run, ...)}:

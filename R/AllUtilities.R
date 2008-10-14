@@ -54,7 +54,8 @@ polyn <- function(nucleotides, n)
                    paste(possible_vals, collapse="' '")))
 }
 
-.check_type_and_length <- function(x, type, len) {
+.check_type_and_length <- function(x, type, len)
+{
     name <- deparse(substitute(x))
     if (!is(x, type))
         .arg_mismatch_type_err2(name, type, class(x))

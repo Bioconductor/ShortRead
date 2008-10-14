@@ -31,7 +31,9 @@ readAligned(dirPath, pattern=character(0), ...)
     names to be read. The default (\code{character(0)}) results in
     (attempted) input of all files in the directory.}
 
-  \item{...}{Additional arguments, perhaps used by methods.}
+  \item{...}{Additional arguments, used by methods. Most methods
+    implement \code{filter=srFilter()}, allowing objects of
+    \code{\linkS4class{SRFilter}} to selectively returns aligned reads.}
 
 }
 
@@ -198,5 +200,10 @@ readLines(list.files(dirPath, full.names=TRUE)[[1]], 1)
 countLines(dirPath)
 ## two files collapse into one
 readAligned(dirPath, type="MAQMapview")
+
+## select only chr1-5.fa, '+' strand
+filt <- compose(chromosomeFilter("chr[1-5].fa"),
+                strandFilter("+"))
+readAligned(sp, "s_2_export.txt", filter=filt)
 }
 \keyword{manip}

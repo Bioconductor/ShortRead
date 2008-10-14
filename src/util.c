@@ -44,14 +44,22 @@ decoder(const char* base)
 }
 
 SEXP
-_get_strand_levels()
+_get_namespace(const char* pkg)
 {
     SEXP fun = PROTECT(findFun(install("getNamespace"), R_GlobalEnv));
     SEXP nmspc = PROTECT(NEW_CHARACTER(1));
-    SET_STRING_ELT(nmspc, 0, mkChar("ShortRead"));
-    nmspc = PROTECT(eval(lang2(fun, nmspc), R_GlobalEnv));
+    SET_STRING_ELT(nmspc, 0, mkChar(pkg));
+    nmspc = eval(lang2(fun, nmspc), R_GlobalEnv);
+    UNPROTECT(2);
+    return nmspc;
+}
+
+SEXP
+_get_strand_levels()
+{
+    SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
     SEXP ans = eval(findVar(install(".STRAND_LEVELS"), nmspc), nmspc);
-    UNPROTECT(3);
+    UNPROTECT(1);
     return ans;
 }
 

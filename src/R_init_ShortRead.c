@@ -7,7 +7,7 @@ static const R_CallMethodDef callMethods[] = {
     {".read_prb_as_character", (DL_FUNC) &read_prb_as_character, 2},
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 1},
     {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 6},
-    {".read_solexa_export", (DL_FUNC) &read_solexa_export, 4},
+    {".read_solexa_export", (DL_FUNC) &read_solexa_export, 3},
     /* alphabet */
     {".alphabet_by_cycle", (DL_FUNC) &alphabet_by_cycle, 3},
     {".alphabet_pair_by_cycle", (DL_FUNC) &alphabet_pair_by_cycle, 5},
