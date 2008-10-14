@@ -80,3 +80,11 @@ readAligned_maq_consistent <- function() {
     .checkXString(quality(quality(x)), quality(quality(y)))
     .checkXString(id(x), id(y))
 }
+
+test_AlignedRead_readAligned_run_as_factor <- function()
+{
+    aln <- readAligned("./cases", "^s_2_export_run_as_factor.txt$",
+                       "SolexaExport")
+    checkIdentical(alignData(aln)[["run"]],
+                   factor(rep("genome", length(aln))))
+}

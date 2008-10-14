@@ -54,7 +54,8 @@
 .SolexaExport_AlignedDataFrame <-
     function(run, lane, tile, x, y, filtering)
 {
-    df <- data.frame(run=run, lane=lane, tile=tile, x=x, y=y,
+    df <- data.frame(run=factor(run),
+                     lane=lane, tile=tile, x=x, y=y,
                      filtering=filtering)
     meta <- data.frame(labelDescription=c(
                          "Analysis pipeline run",

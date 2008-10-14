@@ -23,5 +23,6 @@ NEW FEATURES
 
 BUG FIXES
 
+    o 'run' in eland_export files is correctly parsed as a factor
 
 (start date: 29 September, 2008)

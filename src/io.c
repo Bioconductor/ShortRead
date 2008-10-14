@@ -315,8 +315,8 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
 typedef struct {
     SEXP ref;
     int offset;
-    int *run,
-        *lane,
+    SEXP run;
+    int *lane,
         *tile,
         *x,
         *y;
@@ -345,7 +345,7 @@ _solexa_export_rec_new(SEXP ref, int nrec)
 	Rf_error("_solexa_export_rec_new internal error: LENGTH(ref) != N_ELTS)");
 
     SEXP names = PROTECT(NEW_CHARACTER(N_ELTS));
-    SET_VECTOR_ELT(ref, 0, NEW_INTEGER(nrec)); /* run */
+    SET_VECTOR_ELT(ref, 0, NEW_STRING(nrec)); /* run */
     SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec)); /* lane */
     SET_VECTOR_ELT(ref, 2, NEW_INTEGER(nrec)); /* tile */
     SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* x */
@@ -379,7 +379,7 @@ _solexa_export_rec_set_offset(SOLEXA_EXPORT_REC *rec, int offset)
 {
     SEXP ref = rec->ref;
     rec->offset = offset;
-    rec->run = INTEGER(VECTOR_ELT(ref, 0)) + offset;
+    rec->run = VECTOR_ELT(ref, 0);
     rec->lane = INTEGER(VECTOR_ELT(ref, 1)) + offset;
     rec->tile = INTEGER(VECTOR_ELT(ref, 2)) + offset;
     rec->x = INTEGER(VECTOR_ELT(ref, 3)) + offset;
@@ -491,7 +491,8 @@ _read_solexa_export_file(const char *fname, const char *csep,
                 error("too few fields, %s:%d", fname, lineno);
         }
             
-        rec->run[lineno] = atoi(elt[1]);
+	SET_STRING_ELT(rec->run,
+		       rec->offset + nrec, mkChar(elt[1]));
         rec->lane[lineno] = atoi(elt[2]);
         rec->tile[lineno] = atoi(elt[3]);
         rec->x[lineno] = atoi(elt[4]);
