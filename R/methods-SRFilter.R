@@ -127,5 +127,5 @@ compose <- function(filt, ..., .name) {
 setMethod(show, "SRFilter", function(object) {
     cat("class:", class(object), "\n")
     cat("name:", name(object), "\n")
-    cat("use filter(object) to see filter\n")
+    cat("use srFilter(object) to see filter\n")
 })

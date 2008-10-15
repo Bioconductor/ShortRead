@@ -197,8 +197,8 @@ read_solexa_fastq(SEXP files)
 int
 _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
                        const char *sep, MARK_FIELD_FUNC *mark_field,
-		       int header, const char *commentChar, 
-		       CharAEAE *sets, const int *toIUPAC)
+                       int header, const char *commentChar, 
+                       CharAEAE *sets, const int *toIUPAC)
 {
     FILE *file;
     char *linebuf;
@@ -261,11 +261,11 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     const char *csep = translateChar(STRING_ELT(sep, 0));
     const int nfiles = LENGTH(files);
     const int *nlines = INTEGER(count_lines(files));
-    MARK_FIELD_FUNC *sep_func;	/* how to parse fields; minor efficiency */
+    MARK_FIELD_FUNC *sep_func;  /* how to parse fields; minor efficiency */
     if (csep[0] != '\0' && csep[1] == '\0')
-	sep_func = _mark_field_1;
+        sep_func = _mark_field_1;
     else
-	sep_func = _mark_field_n;
+        sep_func = _mark_field_n;
     int nrow = 0;
     int i, j;
     for (i = 0; i < nfiles; ++i)
@@ -288,7 +288,7 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
         R_CheckUserInterrupt();
         nreads += _io_XStringSet_columns(fname, colidx, ncol,
                                          csep, sep_func,
-					 LOGICAL(header)[0],
+                                         LOGICAL(header)[0],
                                          CHAR(STRING_ELT(commentChar, 0)),
                                          sets, toIUPAC);
     }
@@ -342,7 +342,7 @@ SOLEXA_EXPORT_REC *
 _solexa_export_rec_new(SEXP ref, int nrec)
 {
     if (LENGTH(ref) != N_ELTS)
-	Rf_error("_solexa_export_rec_new internal error: LENGTH(ref) != N_ELTS)");
+        Rf_error("_solexa_export_rec_set_offset internal error: LENGTH(ref) != N_ELTS)");
 
     SEXP names = PROTECT(NEW_CHARACTER(N_ELTS));
     SET_VECTOR_ELT(ref, 0, NEW_STRING(nrec)); /* run */
@@ -360,7 +360,7 @@ _solexa_export_rec_new(SEXP ref, int nrec)
     SET_ATTR(ref, R_NamesSymbol, names);
 
     SOLEXA_EXPORT_REC *rec = 
-	(SOLEXA_EXPORT_REC *) R_alloc(1, sizeof(SOLEXA_EXPORT_REC));
+        (SOLEXA_EXPORT_REC *) R_alloc(1, sizeof(SOLEXA_EXPORT_REC));
     rec->ref = ref;
     rec->read = new_CharAEAE(nrec, 0);
     rec->quality = new_CharAEAE(nrec, 0);
@@ -411,24 +411,24 @@ _AlignedRead_make(SOLEXA_EXPORT_REC *rec)
     SEXP ref = rec->ref;
     SEXP s, t, nmspc = PROTECT(_get_namespace("ShortRead"));
 
-    SEXP sfq;			/* SFastqQuality(rec->quality]) */
+    SEXP sfq;                   /* SFastqQuality(rec->quality]) */
     SEXP quality;
     PROTECT(quality = _CharAEAE_to_XStringSet(&(rec->quality), 
-					      "BString"));
+                                              "BString"));
     NEW_CALL(s, t, "SFastqQuality", nmspc, 2);
     CSET_CDR(t, "quality", quality);
     CEVAL_TO(s, nmspc, sfq);
     PROTECT(sfq);
 
-    SEXP alnq;			/* NumericQuality() */
+    SEXP alnq;                  /* NumericQuality() */
     NEW_CALL(s, t, "NumericQuality", nmspc, 2);
     CSET_CDR(t, "quality", VECTOR_ELT(ref, 10));
     CEVAL_TO(s, nmspc, alnq);
     PROTECT(alnq);
 
-    SEXP adf;	 /* .readAligned_SolexaExport_AlignedDataFrame(...) */
+    SEXP adf;    /* .readAligned_SolexaExport_AlignedDataFrame(...) */
     _as_factor(VECTOR_ELT(ref, 11), FILTER_LEVELS,
-	       sizeof(FILTER_LEVELS) / sizeof(const char *));
+               sizeof(FILTER_LEVELS) / sizeof(const char *));
     NEW_CALL(s, t, ".SolexaExport_AlignedDataFrame", nmspc, 7);
     CSET_CDR(t, "run", VECTOR_ELT(ref, 0)); 
     CSET_CDR(t, "lane", VECTOR_ELT(ref, 1)); 
@@ -442,7 +442,7 @@ _AlignedRead_make(SOLEXA_EXPORT_REC *rec)
     SEXP aln;
     SEXP sread;
     PROTECT(sread = _CharAEAE_to_XStringSet(&(rec->read), 
-					    "DNAString"));
+                                            "DNAString"));
     SEXP strand_lvls = PROTECT(_get_strand_levels());
     _as_factor_SEXP(VECTOR_ELT(ref, 9), strand_lvls);
     NEW_CALL(s, t, "AlignedRead", nmspc, 8);
@@ -471,7 +471,7 @@ _read_solexa_export_file(const char *fname, const char *csep,
 {
     const int N_FIELDS = 22;
     FILE *file;
-    char linebuf[LINEBUF_SIZE];
+    char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
     int lineno = 0, nrec = 0, i;
 
     file = _fopen(fname, "r");
@@ -483,7 +483,6 @@ _read_solexa_export_file(const char *fname, const char *csep,
         }
 
         /* field-ify */
-        char **elt = (char**) S_alloc(N_FIELDS, sizeof(char*));
         elt[0] = linebuf;
         for (i = 1; i < N_FIELDS; ++i) {
             elt[i] = (*mark_func)(elt[i-1], csep);
@@ -491,8 +490,8 @@ _read_solexa_export_file(const char *fname, const char *csep,
                 error("too few fields, %s:%d", fname, lineno);
         }
             
-	SET_STRING_ELT(rec->run,
-		       rec->offset + nrec, mkChar(elt[1]));
+        SET_STRING_ELT(rec->run,
+                       rec->offset + nrec, mkChar(elt[1]));
         rec->lane[lineno] = atoi(elt[2]);
         rec->tile[lineno] = atoi(elt[3]);
         rec->x[lineno] = atoi(elt[4]);
@@ -574,7 +573,7 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
-	_solexa_export_rec_set_offset(rec, nrec);
+        _solexa_export_rec_set_offset(rec, nrec);
         nrec += _read_solexa_export_file(
             CHAR(STRING_ELT(files, i)), csep,
             CHAR(STRING_ELT(commentChar, 0)),
