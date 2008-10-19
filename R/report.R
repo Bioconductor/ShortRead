@@ -1,4 +1,12 @@
 .report_pdf <- function(src, dest, symbolValues) {
+    if (!file.exists(dirname(dest)))
+        .throw(SRError("Input/Output",
+                       "'dest' directory '%s'\n  does not exist",
+                       dirname(dest)))
+    if (file.exists(dest))
+        .throw(SRError("Input/Output",
+                       "'dest' file '%s'\n  already exists",
+                       dest))
     tmpdir <- tempfile()
     if (!dir.create(tmpdir))
         .throw(SRError("Input/Output",
@@ -15,9 +23,8 @@
     ok <- file.copy(o_pdfFile, dest)
     if (!ok)
         .throw(SRError("Input/Output",
-                       "failed to copy '%s'\n  to '%s'\n  reason: %s",
-                       o_pdfFile, dest,
-                       "file exists / invalid directory?"))
+                       "failed to copy '%s'\n  to '%s'",
+                       o_pdfFile, dest))
     dest
 }
 

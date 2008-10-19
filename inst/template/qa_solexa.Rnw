@@ -8,9 +8,7 @@
 \date{\today{}}
 \maketitle{}
 
-\section{Setup}
-
-<<setup>>=
+<<setup, echo=FALSE>>=
 options(digits=3)
 library(ShortRead)
 library(lattice)
@@ -34,16 +32,16 @@ plotReadQuality <- function(df) {
 }
 plotReadOccurrences <- function(df, ...) {
     df$lane <- .laneLbl(df$lane)
-    df$cummulative <- 
+    df$cumulative <- 
         with(df, unlist(tapply(nOccurrences * nReads, lane, function(elt) {
            cs <- cumsum(elt)
            (cs-cs[1] + 1)/ diff(range(cs))
         })))
-    xyplot(cummulative~log10(nOccurrences)|lane, df,
+    xyplot(cumulative~log10(nOccurrences)|lane, df,
            xlab=expression(paste(
                "Number of occurrences of each read (",
                log[10], ")", sep="")),
-           ylab="Cummulative proportion of reads",
+           ylab="Cumulative proportion of reads",
            aspect=2, type="l", ...)
 }
 freqSequences <- function(qa, read, n=20)
@@ -155,72 +153,147 @@ plotCycleQuality <- function(df)
 load("@QA_SAVE_FILE@")
 @
 
-\section{Reads}
+\section{Overview}
+
+This document provides a quality assessment of Genome Analyzer
+results. The assessment is meant to complement, rather than replace,
+quality assessment available from the Genome Analyzer and its
+documentation. The narrative interpretation is based on experience of
+the package maintainer. It is applicable to results from the `Genome
+Analyzer' hardware single-end module, configured to scan 300 tiles per
+lane. The `control' results refered to below are from analysis of
+$\varphi$X-174 sequence provided by Illumina.
+
+An R script containing the code used in this document can be created
+with
+<<code,eval=false,echo=TRUE>>=
+fl <- system.file("template", "qa_solexa.Rnw", package="ShortRead")
+Stangle(fl)
+@ 
+
+\section{Run summary}
 
 Read counts. Filtered and aligned read counts are reported relative to
-the total number of reads (clusters).
+the total number of reads (clusters). Consult Genome Analyzer
+documentation for official guidelines. From experience, very good runs
+of the Genome Analyzer `control' lane result in 6-8 million reads,
+with up to 80\% passing pre-defined filters.
 <<read-counts>>=
 ppnCount(qa[["readCounts"]])
 @
 
-Base calls. Frequency of base calls over all reads.
+Base call frequency over all reads. Base frequencies should accurately
+reflect the frequencies of the regions sequenced.
 <<base-calls>>=
 qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])
 @ 
 
-Overall read quality
+Overall read quality. Lanes with consistently good quality reads have
+strong peaks at the right of the panel.
 <<read-quality-raw, fig=TRUE>>=
 df <- qa[["readQualityScore"]]
 print(plotReadQuality(df[df$type=="read",]))
 @ 
 
-Read distribution: occurrences
+\section{Read distribution}
+
+These curves show how coverage is distributed amongst reads. Ideally,
+the cumulative proportion of reads will transition sharply from low
+to high. 
+
+Portions to the left of the transition might correspond roughly to
+sequencing or sample processing errors, and correspond to reads that
+are represented relatively infrequently. 10-15\% of reads in a typical
+Genome Analyzer `control' lane fall in this category. 
+
+Portions to the right of the transition represent reads that are
+over-represented compared to expectation. These might include
+inadvertently sequenced primer or adapter sequences, sequencing or
+base calling artifacts (e.g., poly-A reads), or features of the sample
+DNA (highly repeated regions) not adequately removed during sample
+preparation. About 5\% of Genome Analyzer `control' lane reads fall in
+this category.
+
+Broad transitions from low to high cumulative proportion of reads may
+reflect sequencing bias or (perhaps intentional) features of sample
+preparation resulting in non-uniform coverage. the transition is about
+5 times as wide as expected from uniform sampling across the Genome
+Analyzer `control' lane.
 <<read-distribution-occurrence, fig=TRUE>>=
 df <- qa[["sequenceDistribution"]]
 print(plotReadOccurrences(df[df$type=="read",], cex=.5))
 @ 
 
-Common duplicate reads
+Common duplicate reads might provide clues to the source of
+over-represented sequences. Some of these reads are filtered by the
+alignment algorithms; other duplicate reads migth point to sample
+preparation issues.
 <<common-duplicate-reads>>=
 freqSequences(qa, "read")
 @ 
-
 
 Common duplicate reads after filtering
 <<common-duplicate-mapped-reads>>=
 freqSequences(qa, "filtered")
 @
 
-Per-cycle base call
+\section{Cycle-specific base calls and read quality}
+Per-cycle base call should usually be approximately uniform across
+cycles. Genome Analyzer `control' lane results often show a deline in
+A and increase in T as cycles progress. This is likely an artifact of
+the underlying technology.
 <<per-cycle-base-call, fig=TRUE>>=
 perCycle <- qa[["perCycle"]]
 print(plotCycleBaseCall(perCycle$baseCall))
 @ 
 
 Per-cycle quality score. Reported quality scores are `calibrated',
-i.e., incorporating phred-like adjustments following seuqence
-alignment.
+i.e., incorporating phred-like adjustments following sequence
+alignment. These typically decline with cycle, in an accelerating
+manner. Abrupt transitions in quality between cycles toward the end of
+the read might result when only some of the cycles are used for
+alignment: the cycles included in the alignment are calibrated more
+effectively than the reads excluded from the alignment.
 <<per-cycle-quality, fig=TRUE>>=
 print(plotCycleQuality(perCycle$quality))
 @ 
 
-Counts per tile. 
+\section{Tile performance}
+
+Counts per tile. Dashed red line indicates the 10\% of tiles with
+fewest reads. An approximately uniform distribution suggests
+consistent read representation in each tile. Distinct separation of
+'good' versus poor quality tiles might suggest systematic failure,
+e.g., of many tiles in a lane, or excessive variability (e.g., due to
+unintended differences in sample DNA concentration) in read number per
+lane.
 <<counts-histo, fig=TRUE>>=
 perTile <- qa[["perTile"]]
 readCnt <- perTile[["readCounts"]]
 cnts <- readCnt[readCnt$type=="read", "count"]
-print(histogram(cnts, breaks=40, xlab="Reads per tile"))
+print(histogram(cnts, breaks=40, xlab="Reads per tile",
+                panel=function(x, ...) {
+                    panel.abline(v=quantile(x, .1),
+                                 col="red", lty=2)
+                    panel.histogram(x, ...)
+                }, col="white"))
 @ 
 
-Number of tiles with fewer than 1, 5, and 10\% of reads.
-<<counts-quantile>>=
-quantile(cnts, c(.01, .05, .1))
-@ 
-% 
 Spatial counts per tile. Divisions on the color scale are quantized,
 so that the range of counts per tile is divided into 10 equal
 increments. Parenthetic numbers on the scale represent the break
-points of the quantized values.
+points of the quantized values. Because the scale is quantized, some
+tiles will necessarily have `few' reads and other necessarily `many'
+reads. 
+
+Consistent differences in read number per lane will result in some
+lanes being primarily one color, other lanes primarily another color.
+Genome Analyzer data typically have greatest read counts in the center
+column of each lane. There are usually consistent gradients from `top'
+to `bottom' of each column.
+
+Low count numbers in the same tile across runs of the same flow cell
+may indicate instrumentation issues.
 <<read-counts-per-tile, fig=TRUE>>=
 print(plotTileCounts(readCnt[readCnt$type=="read",]))
 @ 
@@ -229,13 +302,17 @@ Median read quality score per tile. Divisions on the color scale are
 quantized, so that the range of average quality scores per tile is
 divided into 10 equal increments. Parenthetic numbers on the scale
 represent the break points of the quantized values.
+
+Often, quality and count show an inverse relation.
 <<read-score-per-tile, fig=TRUE>>=
 qscore <- perTile[["medianReadQualityScore"]]
 print(plotTileQualityScore(qscore[qscore$type=="read",]))
 @
 
+\section{Alignment}
 Mapped alignment score. Counts measured relative to counts in score
-category with maximum representation.
+category with maximum representation. Successful alignments will be
+reflected in a strong peak to the right of each panel.
 <<mapped-alignment-score, fig=TRUE>>=
 print(plotAlignQuality(qa[["alignQuality"]]))
 @ 
