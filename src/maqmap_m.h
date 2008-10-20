@@ -92,8 +92,8 @@ template< int max_readlen > maqmap_T<max_readlen> *maqmap_read_header(gzFile fp)
 	gzread(fp, &mm->format, sizeof(int));
 	if (mm->format != MAQMAP_FORMAT_NEW) {
 		if (mm->format > 0) {
-			fprintf(stderr, "** Obsolete map format is detected. Please use 'mapass2maq' command to convert the format.\n");
-			exit(3);
+			maq_delete_maqmap(mm);
+			error("obsolete map format; use MAQ 'mapass2maq' command to convert");
 		}
 		assert(mm->format == MAQMAP_FORMAT_NEW);
 	}

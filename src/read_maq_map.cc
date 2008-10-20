@@ -133,8 +133,6 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
         append_string_to_CharAEAE( &readid,  read.name );
         append_string_to_CharAEAE( &readseq, readseqbuf );
         append_string_to_CharAEAE( &fastq,   fastqbuf );
-	
-	Rprintf( "DEBUG: Read '%s'\n", read.name );
     }
    
     /* Build the data frame */
