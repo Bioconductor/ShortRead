@@ -88,13 +88,36 @@
     AlignedDataFrame(df, meta)
 }
 
+.readAligned_MaqMapOld <-
+    function(dirPath, pattern=character(0), records=-1L, ...)
+{
+    files <- .file_names(dirPath, pattern)
+    if (length(files) > 1)
+        .arg_mismatch_type_err("dirPath', 'pattern", "character(1)")
+    lst <- .Call(.read_maq_map, files, as.integer(records), FALSE)
+    AlignedRead(sread=lst[["readSequence"]],
+                id=lst[["readId"]],
+                quality=FastqQuality(lst[["fastqScores"]]),
+                chromosome=lst[["chromosome"]],
+                position=lst[["position"]],
+                strand=lst[["strand"]],
+                alignQuality=IntegerQuality(lst[["alignQuality"]]),
+                alignData=.readAligned_Maq_ADF(lst))
+}
+
 .readAligned_MaqMap <-
     function(dirPath, pattern=character(0), records=-1L, ...)
 {
     files <- .file_names(dirPath, pattern)
     if (length(files) > 1)
         .arg_mismatch_type_err("dirPath', 'pattern", "character(1)")
-    lst <- .Call(.read_maq_map, files, as.integer(records))
+    warning( paste( "API change: The type 'MAQMap' now reads map files produced",
+       "with at least version 0.7.0 of Maq. Before version 0.99.3 of the",
+       "ShortRead package, this type was for reading map files produced by",
+       "Maq up to version 0.6.x. If you still use the old Maq version, change",
+       "the type argument to 'MAQMapShort'. [This warning will disappear in a",
+       "future version of ShortRead.]" ) )
+    lst <- .Call(.read_maq_map, files, as.integer(records), TRUE)
     AlignedRead(sread=lst[["readSequence"]],
                 id=lst[["readId"]],
                 quality=FastqQuality(lst[["fastqScores"]]),
@@ -139,7 +162,7 @@
              type=c(
                "SolexaExport", "SolexaAlign",
                "SolexaPrealign", "SolexaRealign",
-               "MAQMap", "MAQMapview"),
+               "MAQMap", "MAQMapShort", "MAQMapview"),
              ..., filter=srFilter())
 {
     if (missing(type))
@@ -162,6 +185,7 @@
                    SolexaRealign=.readAligned_SolexaAlign(dirPath,
                      pattern=pattern, ...),
                    MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
+                   MAQMapShort=.readAligned_MaqMapOld(dirPath, pattern, ...),
                    MAQMapview=.readAligned_MaqMapview(
                      dirPath, pattern=pattern, ...))
         }, error=function(err) {

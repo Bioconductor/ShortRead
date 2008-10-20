@@ -10,26 +10,26 @@
 #include <Rinternals.h>
 #include <zlib.h>
 #include "ShortRead.h"
-#include "maqmap.h"
+#include "maqmap_m.h"
 
 #if INT_MAX < 0x7fffffffL
 #error This package needs an int type with at least 32 bit.
 #endif   
 
-SEXP read_maq_map( SEXP filename, SEXP maxreads )
+template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
 /* Reads in the Maq map file with the given filename. If maxreads == -1, the whole file
    is read, otherwise at most the specified number of reads. The fucntion returns a list 
    (i.e., a VECSXP) with the elements listed below in eltnames, which correspond to the 
    columns of maq mapview. */
 {
     gzFile mapfile;   
-    maqmap_t * mapheader;
+    maqmap_T<max_readlen> * mapheader;
     SEXP seqnames, seq, start, dir, aq, mm, mm24, errsum, nhits0, 
         nhits1, eltnm, df, klass;
-    char readseqbuf[ MAX_READLEN ], fastqbuf[ MAX_READLEN ];
+    char readseqbuf[ max_readlen ], fastqbuf[ max_readlen ];
     CharAEAE readid, readseq, fastq;
     int i, actnreads, j;
-    maqmap1_t read;
+    maqmap1_T<max_readlen> read;
     RoSeqs roSeqs;
 
     static const char *eltnames[] = {
@@ -68,7 +68,7 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
 
    
     /* Read in header and map maqfile sequence indices to veclist indices */
-    mapheader =  maqmap_read_header( mapfile );   
+    mapheader =  maqmap_read_header<max_readlen>( mapfile );   
     PROTECT( seqnames = allocVector( STRSXP, mapheader->n_ref ) );
     for( i = 0; i < mapheader->n_ref; i++ ) {
         SET_STRING_ELT( seqnames, i, mkChar( mapheader->ref_name[i] ) );
@@ -101,14 +101,15 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
             error( "Unexpected end of file." );
             gzclose(mapfile);
         }	 
-        maqmap_read1( mapfile, &read );
+        maqmap_read1<max_readlen>( mapfile, &read );
         if( read.flag || read.dist ) {
             error( "Paired read found. This function cannot deal with paired reads (yet)." );
             gzclose(mapfile);
         }
       
         /* Build the read sequence and the FASTQ quality string */
-        assert( read.size <= MAX_READLEN );
+        if( read.size > max_readlen )
+	   error( "Read with illegal size encountered." );
         for (j = 0; j < read.size; j++) {
             if (read.seq[j] == 0)
                 readseqbuf[j] = 'N';
@@ -132,6 +133,8 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
         append_string_to_CharAEAE( &readid,  read.name );
         append_string_to_CharAEAE( &readseq, readseqbuf );
         append_string_to_CharAEAE( &fastq,   fastqbuf );
+	
+	Rprintf( "DEBUG: Read '%s'\n", read.name );
     }
    
     /* Build the data frame */
@@ -170,3 +173,11 @@ SEXP read_maq_map( SEXP filename, SEXP maxreads )
     UNPROTECT( 12 );
     return df;   
 }   
+
+extern "C" SEXP read_maq_map( SEXP filename, SEXP maxreads, SEXP maq_longreads )
+{
+   if( LOGICAL(maq_longreads)[0] )
+      return read_maq_map_B< MAX_READLEN_NEW >( filename, maxreads );
+   else
+      return read_maq_map_B< MAX_READLEN_OLD >( filename, maxreads );
+}

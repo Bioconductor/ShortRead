@@ -1,3 +1,11 @@
+#ifndef _SHORTREAD_H_
+#define _SHORTREAD_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <Rdefines.h>
 #include "IRanges_interface.h"
 #include "Biostrings_interface.h"
@@ -46,7 +54,7 @@ SEXP aligned_read_rank(SEXP stringSet, SEXP order, SEXP rho);
 
 /* read_maq_map.c */
 
-SEXP read_maq_map(SEXP filename, SEXP maxreads);
+SEXP read_maq_map(SEXP filename, SEXP maxreads, SEXP maq_longread);
 
 /* pileup.c */
 
@@ -56,3 +64,9 @@ SEXP pileup(SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir,
 /* readBfaToc.c */
 
 SEXP readBfaToc(SEXP bfa_filename);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _SHORTREAD_H_ */

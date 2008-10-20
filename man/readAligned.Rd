@@ -126,6 +126,12 @@ readAligned(dirPath, pattern=character(0), ...)
       \code{records} option determines how many lines are read;
       \code{-1L} (the default) means that all records are input.}
 
+    \item{\code{type="MAQMapShort", records=-1L}}{The same as \code{type="MAQMap"}
+      but for map files made with Maq prior to version 0.7.0. (These files
+      use a different maximum read length [64 instead of 128], and are hence
+      incompatible with newer Maq map files.)}
+
+
     \item{\code{type="MAQMapview"}}{
 
       Parse alignment files created by MAQ's \sQuote{mapiew} command.

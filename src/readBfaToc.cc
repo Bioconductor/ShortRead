@@ -3,7 +3,7 @@
 #include <string>
 #include <R.h>
 #include <Rinternals.h>
-#include "maqmap.h"
+#include "maqmap_m.h"
 
 struct seq_meta_info {
    seq_meta_info( int len_, char * name_ )
