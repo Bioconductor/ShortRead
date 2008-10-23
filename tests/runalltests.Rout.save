@@ -17,31 +17,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> library("ShortRead")
-Loading required package: IRanges
-Loading required package: Biostrings
-Loading required package: Biobase
-Loading required package: tools
-
-Welcome to Bioconductor
-
-  Vignettes contain introductory material. To view, type
-  'openVignette()'. To cite Bioconductor, see
-  'citation("Biobase")' and for packages 'citation(pkgname)'.
-
-
-Attaching package: 'Biostrings'
-
-
-	The following object(s) are masked from package:base :
-
-	 chartr,
-	 order,
-	 substr,
-	 substring 
-
-Loading required package: lattice
-> library("RUnit")
+> suppressMessages(library("ShortRead"))
+> suppressMessages(library("RUnit"))
 > 
 > options(warn=1)
 > 
@@ -55,138 +32,10 @@ Loading required package: lattice
 +                             rngKind="default",
 +                             rngNormalKind="default")
 > 
-> testData <- runTestSuite(allSuite)
-
-
-Executing test function test_AlignedRead_readAligned_MAQMapview  ...  done successfully.
-
-
-
-Executing test function test_AlignedRead_readAligned_run_as_factor  ...  done successfully.
-
-
-
-Executing test function test_AlignedRead_readAligned_SolexaExport  ...  done successfully.
-
-
-
-Executing test function test_AlignedRead_readAligned_SolexaExport_filter  ...  done successfully.
-
-
-
-Executing test function test_AllClasses_new  ...  done successfully.
-
-
-
-Executing test function test_alphabetByCycle  ...  done successfully.
-
-
-
-Executing test function test_alphabetOrder  ...  done successfully.
-
-
-
-Executing test function test_countLines  ...  done successfully.
-
-
-
-Executing test function test_mark_field  ...  done successfully.
-
-
-
-Executing test function test_readFastq_errors  ... Timing stopped at: 0 0 0.001 
+> results <- capture.output(runTestSuite(allSuite))
 Error in checkTrue(FALSE) : Test not TRUE.
 
- done successfully.
-
-
-
-Executing test function test_readXStringColumns_toIUPAC  ...  done successfully.
-
-
-
-Executing test function test_ShortReadQ_clean  ...  done successfully.
-
-
-
-Executing test function test_ShortReadQ_constructors  ...  done successfully.
-
-
-
-Executing test function test_ShortReadQ_srsort  ...  done successfully.
-
-
-
-Executing test function test_ShortReadQ_subset  ...  done successfully.
-
-
-
-Executing test function test_ShortRead_construction  ...  done successfully.
-
-
-
-Executing test function test_SRError_construction  ...  done successfully.
-
-
-
-Executing test function test_SRError_throw  ...  done successfully.
-
-
-
-Executing test function test_SRWarn_catch  ...  done successfully.
-
-
-
-Executing test function test_SRWarn_construction  ...  done successfully.
-
-
-
-Executing test function test_SRWarn_throw  ...  done successfully.
-
-
-
-Executing test function test_alignDataFilter  ...  done successfully.
-
-
-
-Executing test function test_alignQualityFilter  ...  done successfully.
-
-
-
-Executing test function test_chromosomeFilter  ...  done successfully.
-
-
-
-Executing test function test_compose  ...  done successfully.
-
-
-
-Executing test function test_nFilter  ...  done successfully.
-
-
-
-Executing test function test_polynFilter  ...  done successfully.
-
-
-
-Executing test function test_srdistanceFilter  ...  done successfully.
-
-
-
-Executing test function test_srFilter  ...  done successfully.
-
-
-
-Executing test function test_strandFilter  ...  done successfully.
-
-
-
-Executing test function test_SRList_construction  ...  done successfully.
-
-
-
-Executing test function test_SRVector_construction  ...  done successfully.
-
-> 
+> if (interactive())
++     cat(paste(results, collapse="\n"), "\n")
 > 
 > q(runLast=FALSE)

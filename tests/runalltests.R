@@ -1,5 +1,5 @@
-library("ShortRead")
-library("RUnit")
+suppressMessages(library("ShortRead"))
+suppressMessages(library("RUnit"))
 
 options(warn=1)
 
@@ -13,7 +13,8 @@ allSuite <- defineTestSuite(name="allSuite",
                             rngKind="default",
                             rngNormalKind="default")
 
-testData <- runTestSuite(allSuite)
-
+results <- capture.output(runTestSuite(allSuite))
+if (interactive())
+    cat(paste(results, collapse="\n"), "\n")
 
 q(runLast=FALSE)
