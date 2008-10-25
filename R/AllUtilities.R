@@ -69,14 +69,6 @@ polyn <- function(nucleotides, n)
 
 ## Misc
 
-.order_chr_levels <- function(lvls) {
-    idx <- grep("chr[0-9XYM]+$", lvls)
-    num <- grep("chr[0-9]+$", lvls[idx])
-    numIds <- lvls[idx][num]
-    c(numIds[order(as.numeric(sub("chr", "", numIds)))],
-      lvls[idx][-num], lvls[-idx])
-}
-
 .file_names <- function(dirPath, pattern, ..., full.names=TRUE) {
     if (!is(pattern, "character") || length(pattern)>1)
         .arg_mismatch_type_err("pattern", "character(0) or character(1)")

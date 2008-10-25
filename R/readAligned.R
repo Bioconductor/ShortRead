@@ -149,8 +149,7 @@
                                colClasses, sep=sep, header=header)
     AlignedRead(sread=sets[[2]], id=sets[[1]],
                 quality=FastqQuality(sets[[3]]),
-                chromosome=factor(csv[["chromosome"]],
-                  levels=.order_chr_levels(levels(csv[["chromosome"]]))),
+                chromosome=csv[["chromosome"]],
                 position=csv[["position"]],
                 strand=factor(csv[["strand"]], levels=.STRAND_LEVELS),
                 alignQuality=IntegerQuality(csv[["alignQuality"]]),

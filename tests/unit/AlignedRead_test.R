@@ -46,6 +46,9 @@ test_AlignedRead_readAligned_MAQMapview <- function() {
     checkIdentical(varLabels(alignData(obj)),
                    c("nMismatchBestHit", "mismatchQuality",
                    "nExactMatch24", "nOneMismatch24"))
+    checkIdentical(levels(chromosome(obj)), "ChrA")
+    checkTrue(!any(is.na(chromosome(obj))) &&
+              !any(is.null(chromosome(obj))))
 }
 
 readAligned_maq_consistent <- function() {
