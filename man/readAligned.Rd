@@ -31,9 +31,12 @@ readAligned(dirPath, pattern=character(0), ...)
     names to be read. The default (\code{character(0)}) results in
     (attempted) input of all files in the directory.}
 
-  \item{...}{Additional arguments, used by methods. Most methods
-    implement \code{filter=srFilter()}, allowing objects of
-    \code{\linkS4class{SRFilter}} to selectively returns aligned reads.}
+  \item{...}{Additional arguments, used by methods. When \code{dirPath}
+    is a character vector, the argument \code{type} must be
+    provided. Possible values for \code{type} and their meaning are
+    described below. Most methods implement \code{filter=srFilter()},
+    allowing objects of \code{\linkS4class{SRFilter}} to selectively
+    returns aligned reads.}
 
 }
 
@@ -165,6 +168,41 @@ readAligned(dirPath, pattern=character(0), ...)
       Remaining fields are currently ignored.
 
     }
+
+    \item{\code{type="Bowtie"}}{
+
+      Parse alignment files created with the Bowtie alignment
+      algorithm. Parsed columns can be retrieved from
+      \code{\linkS4class{AlignedRead}} as follows:
+
+      \describe{
+        \item{Identifier}{ignored}
+        \item{Strand}{\code{strand}}
+        \item{Chromosome}{\code{chromosome}}
+        \item{Position}{\code{position}; see comment below}
+        \item{Read}{\code{sread}; see comment below}
+        \item{Read quality}{\code{quality}; see comments below}
+        \item{Bowtie reserved}{ignored}
+        \item{Alignment mismatch locations}{\code{alignData}}
+      }
+
+      This method includes the argument \code{qualityType} to specify
+      how quality scores are encoded.  Bowtie quality scores are
+      \sQuote{Solexa}-like by default, with
+      \code{qualityType='SFastqQuality'}, but can be specified as
+      \sQuote{Phred}-like, with \code{qualityType='FastqQuality'}.
+
+      Bowtie outputs positions that are 0-offset from the left-most end
+      of the \code{+} strand. \code{ShortRead} parses position
+      information to be 1-offset from the left-most end of the \code{+}
+      strand.
+
+      Bowtie outputs reads aligned to the \code{-} strand as their
+      reverse complement, and reverses the quality score string of these
+      reads. \code{ShortRead} parses these to their original sequence
+      and orientation.
+
+    }
   }
 }
 
@@ -183,6 +221,9 @@ readAligned(dirPath, pattern=character(0), ...)
 
   The MAQ reference manual,
   \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, 3 May, 2008
+
+  The Bowtie reference manual, \url{http://bowtie-bio.sourceforge.net},
+  28 October, 2008
 
 }
 

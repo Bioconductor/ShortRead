@@ -15,6 +15,26 @@ aln <- readAligned(sp, "s_2_export.txt")
     checkIdentical(alignData(obs), alignData(exp))
 }
 
+test_AlignedRead_Bowtie <- function() {
+    src <- system.file("extdata", "bowtie", package="ShortRead")
+    df <- read.table(file.path(src, "s_1_aligned_bowtie.txt"),
+                     fill=TRUE, quote="", sep="\t")
+    aln <- readAligned(src, "^s_1_aligned_bowtie.txt$", "Bowtie")
+    checkIdentical(nrow(df), length(aln))
+    checkIdentical(as.character(df[[2]]), as.character(strand(aln)))
+    checkIdentical(as.character(df[[3]]), as.character(chromosome(aln)))
+    checkIdentical(df[[4]]+1L, position(aln))
+    idx <- strand(aln)=="-"
+    s1 <- as.character(df[[5]])
+    s1[idx] <- as.character(reverseComplement(DNAStringSet(s1[idx])))
+    checkIdentical(s1, as.character(sread(aln)))
+    q1 <- as.character(df[[6]])
+    q1[idx] <- as.character(reverse(BStringSet(q1[idx])))
+    checkIdentical(q1, as.character(quality(quality(aln))))
+    checkIdentical(as.character(df[[8]]),
+                   as.character(alignData(aln)[["mismatch"]]))
+}
+
 test_AlignedRead_readAligned_SolexaExport <- function() {
     obj <- readAligned(analysisPath(sp),
                        pattern="s_2_export.txt", type="SolexaExport")

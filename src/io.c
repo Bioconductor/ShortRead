@@ -2,42 +2,8 @@
 #include <stdlib.h>             /* atoi */
 #include "ShortRead.h"
 
-static const int LINEBUF_SIZE = 20001;
 static const int LINES_PER_FASTQ_REC = 4;
 static const int LINES_PER_FASTA_REC = 2;
-
-/* utilities */
-
-/*
- * open and check file; signal error
- */
-FILE *
-_fopen(const char *fname, const char *mode)
-{
-    FILE *file = fopen(fname, mode);
-    if (file == NULL)
-        error("cannot open file %s", fname);
-    return file;
-}
-
-/*
- * trim & check linebuf, return 0 if processing should continue
- */
-int
-_linebuf_skip_p(char *linebuf, FILE *file,
-                const char *fname, int lineno, const char *commentChar)
-{
-    int nchar_in_buf;
-    nchar_in_buf = _rtrim(linebuf);
-    if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
-        fclose(file);
-        error("line too long %s:%d", fname, lineno);
-    } else if (nchar_in_buf == 0) {
-        fclose(file);
-        error("unexpected empty line %s:%d", fname, lineno);
-    }
-    return *linebuf == *commentChar;
-}              
 
 /*
  * Solexa 'fastq' files consist of records, each 4 lines long. Here is
@@ -405,7 +371,7 @@ _solexa_export_rec_set_offset(SOLEXA_EXPORT_REC *rec, int offset)
     UNPROTECT(1)
 
 SEXP
-_AlignedRead_make(SOLEXA_EXPORT_REC *rec)
+_AlignedRead_Solexa_make(SOLEXA_EXPORT_REC *rec)
 {
     const char *FILTER_LEVELS[] = { "Y", "N" };
     SEXP ref = rec->ref;
@@ -579,7 +545,7 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
             CHAR(STRING_ELT(commentChar, 0)),
             sep_func, rec);
     }
-    SEXP aln = _AlignedRead_make(rec);
+    SEXP aln = _AlignedRead_Solexa_make(rec);
     UNPROTECT(1);
     return aln;
 }

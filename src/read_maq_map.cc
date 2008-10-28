@@ -74,7 +74,7 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
         SET_STRING_ELT( seqnames, i, mkChar( mapheader->ref_name[i] ) );
     }
     if( INTEGER(maxreads)[0] < 0 || 
-        INTEGER(maxreads)[0] >= mapheader->n_mapped_reads )
+        INTEGER(maxreads)[0] >= (int) mapheader->n_mapped_reads )
         actnreads = mapheader->n_mapped_reads;
     else
         actnreads = INTEGER(maxreads)[0];

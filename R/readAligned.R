@@ -156,12 +156,29 @@
                 alignData=.readAligned_Maq_ADF(csv))
 }
 
+.Bowtie_AlignedDataFrame <- function(mismatch)
+{
+    df <- data.frame(mismatch=mismatch, stringsAsFactors=FALSE)
+    meta <- data.frame(labelDescription=c(
+                         "Comma-separated mismatch positions"))
+    AlignedDataFrame(df, meta)
+}
+
+.readAligned_Bowtie <-
+  function(dirPath, pattern=character(0), ...,
+           qualityType="SFastqQuality", sep="\t", commentChar="#")
+{
+    files <- .file_names(dirPath, pattern)
+    .Call(.read_bowtie, files, qualityType, sep, commentChar)
+}
+
 .readAligned_character <-
     function(dirPath, pattern=character(0),
              type=c(
                "SolexaExport", "SolexaAlign",
                "SolexaPrealign", "SolexaRealign",
-               "MAQMap", "MAQMapShort", "MAQMapview"),
+               "MAQMap", "MAQMapShort", "MAQMapview",
+               "Bowtie"),
              ..., filter=srFilter())
 {
     if (missing(type))
@@ -186,7 +203,8 @@
                    MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
                    MAQMapShort=.readAligned_MaqMapOld(dirPath, pattern, ...),
                    MAQMapview=.readAligned_MaqMapview(
-                     dirPath, pattern=pattern, ...))
+                     dirPath, pattern=pattern, ...),
+                   Bowtie=.readAligned_Bowtie(dirPath, pattern, ...))
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {

@@ -15,12 +15,19 @@ extern "C" {
 typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
 DECODE_FUNC decoder(const char*);
 
+void _reverse(char *);
+void _reverseComplement(char *);
+
 SEXP _get_namespace(const char *pkg);
 SEXP _get_strand_levels();
 
 typedef char * (MARK_FIELD_FUNC)(char *, const char *);
 MARK_FIELD_FUNC _mark_field_1;	/* nchar(delim) == 1 */
 MARK_FIELD_FUNC _mark_field_n;	/* nchar(delim) != 1 */
+
+extern const int LINEBUF_SIZE;
+FILE *_fopen(const char*, const char*);
+int _linebuf_skip_p(char*, FILE*, const char*, int, const char*);
 
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
@@ -39,6 +46,11 @@ SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
                              SEXP colClasses, SEXP delim,
                              SEXP header, SEXP commentChar);
 SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar);
+
+/* io_bowtie.c */
+
+SEXP read_bowtie(SEXP files, SEXP qualityType, SEXP sep,
+                 SEXP commentChar);
 
 /* alphabet.c */
 

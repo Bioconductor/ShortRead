@@ -61,7 +61,7 @@ template< int max_readlen > struct maqmap_T
 
 template< int max_readlen > 
 inline int maqmap_read1( gzFile fp, maqmap1_T<max_readlen> * m1 ) {
-   gzread( fp, m1, sizeof( maqmap1_T<max_readlen> ) );
+   return gzread( fp, m1, sizeof( maqmap1_T<max_readlen> ) );
 }
 
 template< int max_readlen > maqmap_T<max_readlen> *maq_new_maqmap()

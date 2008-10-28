@@ -161,6 +161,39 @@ _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
     return ans;
 }
 
+const int LINEBUF_SIZE = 20001;
+
+/*
+ * open and check file; signal error
+ */
+FILE *
+_fopen(const char *fname, const char *mode)
+{
+    FILE *file = fopen(fname, mode);
+    if (file == NULL)
+        error("cannot open file %s", fname);
+    return file;
+}
+
+/*
+ * trim & check linebuf, return 0 if processing should continue
+ */
+int
+_linebuf_skip_p(char *linebuf, FILE *file,
+                const char *fname, int lineno, const char *commentChar)
+{
+    int nchar_in_buf;
+    nchar_in_buf = _rtrim(linebuf);
+    if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+        fclose(file);
+        error("line too long %s:%d", fname, lineno);
+    } else if (nchar_in_buf == 0) {
+        fclose(file);
+        error("unexpected empty line %s:%d", fname, lineno);
+    }
+    return *linebuf == *commentChar;
+}              
+
 /*
  * Return the number of chars that remain in the buffer after we've removed
  * the right spaces ('\n', '\r', '\t', ' ', etc...)
@@ -189,6 +222,37 @@ _solexa_to_IUPAC(char *linebuf)
         *p = '-';
 }
 
+void
+_reverse(char *linebuf)
+{
+    size_t len = strlen(linebuf);
+    int i;
+    char tmp;
+    for (i = 0; i < floor(len / 2); ++i) {
+        tmp = linebuf[len-i-1];
+        linebuf[len-i-1] = linebuf[i];
+        linebuf[i] = tmp;
+    }
+}
+
+void
+_reverseComplement(char *linebuf)
+{
+    static const int MAX_MAP = 256;
+    static char map[256];
+    static int init = 0;
+    if (init == 0) {
+        init = 1;
+        for (int i = 0; i < MAX_MAP; ++i)
+            map[i] = (char) i;
+        map['A'] = 'T'; map['C'] = 'G'; map['G'] = 'C'; map['T'] = 'A';
+        map['a'] = 't'; map['c'] = 'g'; map['g'] = 'c'; map['t'] = 'a';
+    }
+    _reverse(linebuf);
+    for (int i = 0; i < strlen(linebuf); ++i)
+        linebuf[i] = map[(int) linebuf[i]];
+}
+
 /*
  * Convert roSeq to named XStringSet
  */
@@ -200,7 +264,7 @@ _CharAEAE_to_XStringSet(CharAEAE* aeae, const char *clsName)
 }
 
 /*
- * chenge vector class and attribute to represent 'strand' factor
+ * Chenge vector class and attribute to represent factor
  */
 void
 _as_factor_SEXP(SEXP vec, SEXP lvls)
