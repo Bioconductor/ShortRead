@@ -16,7 +16,7 @@
 {
     csvClasses <- xstringClasses <-
         list(sequence="DNAString", alignQuality="integer",
-             nMatch="integer", position="integer", strand="factor",
+             nMatch="integer", position="character", strand="factor",
              refSequence=NULL, nextBestAlignQuality="integer")
     xstringNames <- "sequence"
     csvClasses[xstringNames] <- list(NULL)
@@ -27,6 +27,12 @@
     lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
                              sep=sep, comment.char=comment.char,
                              header=header)
+    idx <- regexpr(":", lst[["position"]], fixed=TRUE)
+    chromosome <- substr(lst[["position"]], 1, idx-1)
+    chromosome[idx==-1] <- NA
+    chromosome <- factor(chromosome)
+    position <- as.integer(substr(lst[["position"]], idx+1,
+                                  nchar(lst[["position"]])))
     df <- data.frame(nMatch=lst$nMatch,
                      nextBestAlignQuality=lst$nextBestAlignQuality)
     meta <- data.frame(labelDescription=c(
@@ -44,9 +50,9 @@
     AlignedRead(sread=sets[["sequence"]],
                 id=BStringSet(character(len)),
                 quality=SFastqQuality(quality),
-                chromosome=factor(rep(NA, len)),
-                position=lst[["position"]],
-                strand=factor(lst[["strand"]], levels=.STRAND_LEVELS),
+                chromosome=chromosome,
+                position=position,
+                strand=.toStrand_Solexa(lst[["strand"]]),
                 alignQuality=NumericQuality(lst[["alignQuality"]]),
                 alignData=alignData)
 }
@@ -105,18 +111,31 @@
                 alignData=.readAligned_Maq_ADF(lst))
 }
 
+.maqmap_warning_seen <- local({
+    seen <- FALSE
+    function() {
+        if (!seen) {
+            seen <<- TRUE
+            FALSE
+        } else seen
+    }
+})
+        
 .readAligned_MaqMap <-
     function(dirPath, pattern=character(0), records=-1L, ...)
 {
     files <- .file_names(dirPath, pattern)
     if (length(files) > 1)
         .arg_mismatch_type_err("dirPath', 'pattern", "character(1)")
-    warning( paste( "API change: The type 'MAQMap' now reads map files produced",
-       "with at least version 0.7.0 of Maq. Before version 0.99.3 of the",
-       "ShortRead package, this type was for reading map files produced by",
-       "Maq up to version 0.6.x. If you still use the old Maq version, change",
-       "the type argument to 'MAQMapShort'. [This warning will disappear in a",
-       "future version of ShortRead.]" ) )
+    if (!.maqmap_warning_seen()) {
+        msg <- paste("API change: The type 'MAQMap' now reads map files produced",
+                     "with at least version 0.7.0 of Maq. Before version 0.99.3 of the",
+                     "ShortRead package, this type was for reading map files produced by",
+                     "Maq up to version 0.6.x. If you still use the old Maq version, change",
+                     "the type argument to 'MAQMapShort'. [This warning will disappear in a",
+                     "future version of ShortRead.]")
+        warning( paste(strwrap(msg, indent=2, exdent=2), collapse="\n") )
+    }
     lst <- .Call(.read_maq_map, files, as.integer(records), TRUE)
     AlignedRead(sread=lst[["readSequence"]],
                 id=lst[["readId"]],

@@ -2,6 +2,9 @@
 ## prototypes. C-level code retrieves this value. pileup and
 ## readAligned,type=MAQMap depend on this ordering
 .STRAND_LEVELS <- c("-", "+", "*")
+.toStrand_Solexa <- function(x)
+    factor(.STRAND_LEVELS[match(x, c("R", "F"))],
+           levels=.STRAND_LEVELS)
 
 .srValidity <- function(object) TRUE
 

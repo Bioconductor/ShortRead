@@ -111,3 +111,20 @@ test_AlignedRead_readAligned_run_as_factor <- function()
     checkIdentical(alignData(aln)[["run"]],
                    factor(rep("genome", length(aln))))
 }
+
+test_AlignedRead_readAligned_realign_targetpos <- function()
+{
+    ## column 4 can be target:pos
+    fl <- "s_2_0001_realign_head.txt"
+    tbl <- read.table(file.path("./cases", fl), fill=TRUE)
+    aln <- readAligned("./cases", fl, "SolexaRealign")
+    checkIdentical(as.character(tbl[[1]]), as.character(sread(aln)))
+    checkIdentical(tbl[[2]], quality(alignQuality(aln)))
+    checkIdentical(tbl[[3]], alignData(aln)[["nMatch"]])
+    chr <- sub(":.*", "", tbl[[4]])
+    chr[nchar(chr)==0] <- NA
+    checkIdentical(factor(chr), chromosome(aln))
+    checkIdentical(as.integer(sub(".*:", "", tbl[[4]])), position(aln))
+    checkIdentical(ShortRead:::.toStrand_Solexa(tbl[[5]]), strand(aln))
+    checkIdentical(tbl[[7]], alignData(aln)[["nextBestAlignQuality"]])
+}
