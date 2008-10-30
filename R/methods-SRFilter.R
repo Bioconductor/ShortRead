@@ -47,6 +47,30 @@ chromosomeFilter <-
     }, name=.name)
 }
 
+positionFilter <- function(min=-Inf, max=Inf,
+                           .name="PositionFilter")
+{
+    .check_type_and_length(min, "numeric", 1)
+    .check_type_and_length(max, "numeric", 1)
+    srFilter(function(x) {
+        position(x) >= min & position(x) <= max
+    }, name=.name)
+}
+
+uniqueFilter <- function(withSread=TRUE,
+                         .name="UniqueFilter")
+{
+    .check_type_and_length(withSread, "logical", 1)
+    srFilter(function(x) {
+        if (withSread)
+            !srduplicated(x)
+        else {
+            !(duplicated(position(x)) & duplicated(strand(x)) &
+              duplicated(chromosome(x)))
+        }
+    }, name=.name)
+}
+
 strandFilter <- function(strandLevels=character(0),
                          .name="StrandFilter")
 {

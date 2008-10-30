@@ -1,5 +1,31 @@
         **************************************************
         *                                                *
+        *              2.9 SERIES NEWS                   *
+        *                                                *
+        **************************************************
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+NEW FEATURES
+
+    o New built-in SRFilters positionFilter, uniqueFilter to select
+    reads aligning to particular positions, or to select only unique
+    instances of reads aligning to each position.
+
+    o readAligned gains a Bowtie output parser
+
+    o readAligned gains ability to parse MAQ 0.7 version binary files
+
+BUG FIXES
+
+    o readAligned SolexaAlign, etc., updated to parse 'chromsome' and
+    'position', and 'strand' information correctly
+
+    o readAligned MAQMapview failed for most chromosome labels
+
+
+        **************************************************
+        *                                                *
         *              2.8 SERIES NEWS                   *
         *                                                *
         **************************************************

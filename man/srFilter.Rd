@@ -3,7 +3,9 @@
 \alias{srFilter,missing-method}
 \alias{srFilter,function-method}
 \alias{chromosomeFilter}
+\alias{positionFilter}
 \alias{strandFilter}
+\alias{uniqueFilter}
 \alias{nFilter}
 \alias{polynFilter}
 \alias{srdistanceFilter}
@@ -30,7 +32,9 @@ srFilter(fun, name = NA_character_, ...)
 compose(filt, ..., .name)
 
 chromosomeFilter(regex=character(0), .name="ChromosomeFilter")
+positionFilter(min=-Inf, max=Inf, .name="PositionFilter")
 strandFilter(strandLevels=character(0), .name="StrandFilter")
+uniqueFilter(withSread=TRUE, .name="UniqueFilter")
 nFilter(threshold=0L, .name="CleanNFilter")
 polynFilter(threshold=0L, nuc=c("A", "C", "T", "G", "other"),
            .name="PolyNFilter")
@@ -63,11 +67,21 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
     filter based on chromosome. The default (\code{character(0)})
     performs no filtering}
 
+  \item{min}{}
+
+  \item{max}{\code{numeric(1)} value defining the closed interval in
+    which position must be found,
+    \code{min <= position <= max}}
+
   \item{strandLevels}{Either \code{character(0)} or \code{character(1)}
     containing strand levels to be selected. \code{ShortRead} objects
     have standard strand levels \code{NA, "+", "-", "*"}, with \code{NA}
     meaning strand information not available and \code{"*"} meaning
     strand information not relevant.}
+
+  \item{withSread}{A \code{logical(1)} indicating whether uniqueness
+    includes the read sequence (\code{withSread=TRUE}) or is based only
+    on chromosome, position, and strand (\code{withSread=FALSE}).}
 
   \item{threshold}{A \code{numeric(1)} value representing a minimum
     (\code{srdistanceFilter}, \code{alignQualityFilter}) or maximum
@@ -116,8 +130,16 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   \code{chromosomeFilter} selects elements satisfying
   \code{grep(regex, chromosome(x))}.
 
+  \code{positionFilter} selects elements satisfying
+  \code{min <= position(x) <= max}.
+
   \code{strandFilter} selects elemenst satisfying
   \code{match(strand(x), strand, nomatch=0) > 0}.
+
+  \code{uniqueFilter} selects elements satisfying
+  \code{!srduplicated(x)} when \code{withSread=TRUE}, and
+  \code{!(duplicated(chromosome(x)) & duplicated(position(x)) & duplicated(strand(x)))}
+  when \code{withSread=FALSE}.
 
   \code{nFilter} selects elements with fewer than \code{threshold}
   \code{'N'} symbols in each element of \code{sread(x)}.

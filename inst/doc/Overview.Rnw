@@ -91,16 +91,16 @@ is a convention in \ShortRead{}.
 
 \subsection{\Rfunction{readAligned}: reading aligned data into \R{}}
 
-Solexa \texttt{s\_N\_export.txt} files (\texttt{\_N\_} is a placeholder
-for the lane identifier) represent one place to start working the
-short read data in \R{}. These files result from running ANALYSIS
-eland\_extended in the Solexa Genome Analyzer. The files contain
-information on all reads, including alignment information for those
-reads successfully aligned to the genome.
-
-\ShortRead{} parses additional alignment files, including MAQ binary
-and text (\texttt{mapview}) files. \ShortRead{} flexibly parses many
-other Solexa files; aligned reads represent just one entry point.
+Solexa \texttt{s\_N\_export.txt} files (\texttt{\_N\_} is a
+placeholder for the lane identifier) represent one place to start
+working the short read data in \R{}. These files result from running
+ANALYSIS eland\_extended in the Solexa Genome Analyzer. The files
+contain information on all reads, including alignment information for
+those reads successfully aligned to the genome.  \ShortRead{} parses
+additional alignment files, including MAQ binary and text
+(\texttt{mapview}) files and Bowtie text files; consult the help page
+for \Rfunction{readAligned} for details. \ShortRead{} flexibly parses
+many other Solexa files; aligned reads represent just one entry point.
 
 To read a single \texttt{s\_N\_export.txt} file into \R{}, for instance
 from lane 2, use the command
@@ -108,47 +108,72 @@ from lane 2, use the command
 aln <- readAligned(sp, "s_2_export.txt")
 aln
 @ 
+%% 
+This illustrates the convention used for identifying files for input
+into \R{} and used by \ShortRead{}. The function takes a directory
+path and a pattern (as a regular expression, similar to the \R{}
+function \Rfunction{list.files}) of file names to match in the
+directory. Usually, all files matching the pattern are read into a
+\emph{single} \R{} object; this behavior is desirable for several of
+the input functions in \ShortRead{}. In the present case the usual
+expectation is that a single \texttt{s\_N\_export.txt} file will be
+read into a single \R{} object, so the \Rfunarg{pattern} argument will
+identify a single file.
 
-\Rfunction{readAligned} illustrates the convention used for
-identifying files for input into \R{} and used by \ShortRead{}. The
-function takes a directory path and a pattern (as a regular
-expression, similar to the \R{} function \Rfunction{list.files}) of
-file names to match in the directory. Usually, all files matching the
-pattern are read into a \emph{single} \R{} object; this behavior is
-desirable for several of the input functions in \ShortRead{}. In the
-present case the usual expectation is that a single
-\texttt{s\_N\_export.txt} file will be read into a single \R{} object,
-so the \Rfunarg{pattern} argument will identify a single file.
-
-Currently supported alignment files include:
-\begin{description}
-\item[SolexaExport] the Solexa `export' file format described in the
-  Solexa pipeline version 0.3 documentation.
-\item[MAQMapview] the MAQ `mapview' format described at
-  \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, as viewed 3
-  May, 2008.
-\item[MAQMap] the MAQ binary `map' format described at
-  \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, as viewed 3
-  May, 2008.
-\end{description}
-Other parser contributions are welcome. Paired end read support is
-not yet available.
+Downstream analysis may often want to use a well-defined subset of
+reads. These can be selected with the \Rfunarg{filter} argument of
+\Rfunction{readAligned}. There are built-in filters, for instance to
+remove all reads containing an \texttt{N} nucleotide, to select just
+those reads that map to the genome file \texttt{chr5.fa}, to select
+reads on the \texttt{+} strand, or to `level the playing field' by
+selecting only a single read for any chromosome, position and strand:
+<<filter-egs>>=
+nfilt <- nFilter()
+cfilt <- chromosomeFilter('chr5.fa')
+sfilt <- strandFilter("+")
+ufilt <- uniqueFilter(withSread=FALSE)    
+@
+%% 
+Here we select only those reads that map to \texttt{chr5.fa}:
+<<readAligned-filter>>=
+chr5 <- readAligned(sp, "s_2_export.txt", filter=cfilt)
+@ 
+%% 
+Filters can be `composed' to act in unison, e.g., selecting only reads
+mapping to \texttt{chr5.fa} and on the \texttt{+} strand:
+<<readAligned-compose-filter>>=
+filt <- compose(cfilt, sfilt)
+chr5plus <- readAligned(sp, "s_2_export.txt", filter=filt)
+@ 
+%% 
+Filters can subset aligned reads at other stages in the work flow,
+using a paradigm like the following:
+<<AlignedRead-filter>>=
+chr5 <- aln[cfilt(aln)]
+@ 
+%% 
+Users can easily create their own filter by writing a function that
+accepts an object of class \Rcode{AlignedRead}, and returns a logical
+vector indicating which reads in the object pass the filter. See the
+example on the \Rcode{srFilter} help page for details, and for
+information about additional built-in filters.
 
 \subsection{Exploring \ShortRead{} objects}
 
-\Robject{aln} is an object of \Sexpr{class(aln)} class. It contains
-short reads and their (calibrated) qualities:
+\Robject{aln} is an object of \Rclass{\Sexpr{class(aln)}} class. It
+contains short reads and their (calibrated) qualities:
 <<aln-sread-quality>>=
 sread(aln)
 quality(aln)
 @ 
 
 The short reads are stored as a \Rclass{DNAStringSet} class.  This
-class is defined in \Rpackage{Biostrings}. It represents DNA sequence
-data relatively efficiently.  There are a a number of very useful
+class is defined in \Rpackage{IRanges}. It represents DNA sequence
+data relatively efficiently.  There are a number of very useful
 methods defined for \Rclass{DNAStringSet}. Some of these methods are
 illustrated in this vignette. Other methods are described in the help
-pages and vignettes of the \Rpackage{Biostrings} package.
+pages and vignettes of the \Rpackage{Biostrings} and
+\Rpackage{IRanges} packages.
 
 Qualities are represented as \Sexpr{class(quality(aln))}-class
 objects. The qualities in the \Robject{aln} object returned by
@@ -164,18 +189,25 @@ target (e.g., chromosomes in a genome assembly), the position (e.g.,
 base pair coordinate), and strand to which the alignment was made, and
 the quality of the alignment. The display of \Robject{aln} suggests
 how to access this information. For instance, the strand to which
-alignments are made can be extracted (as a factor with three levels;
-the level \Rcode{""} corresponds to unaligned reads) and tabulated
+alignments are made can be extracted (as a factor with three levels
+and possibly \Rcode{NA}; the level \Rcode{"*"} corresponds to reads
+for which strand alignment is intrinsically not meaningful, whereas
+\Rcode{NA} represents the traditional concept of information not
+available, e.g., because the read did not align at all) and tabulated
 using familiar \R{} functions.
 <<chromosomes>>=
 whichStrand <- strand(aln)
 class(whichStrand)
 levels(whichStrand)
-table(whichStrand)
+table(whichStrand, useNA="ifany")
 @ 
 %% 
-This shows that about \Sexpr{format(100*sum(whichStrand=="")/ length(whichStrand))}
-percent of reads were not aligned (level \Rcode{""}).
+This shows that about 
+%% 
+\Sexpr{format(100*sum(is.na(whichStrand))/ length(whichStrand))}
+%% 
+percent of reads were not aligned (level
+\Rcode{NA}).
 
 The \Robject{aln} object contains information in addition to that
 expected of all alignments. This information is accessible using

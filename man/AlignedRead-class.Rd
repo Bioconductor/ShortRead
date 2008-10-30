@@ -109,10 +109,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
     }
     
 
-    \item{srorder}{\code{\signature{x = "AlignedRead"}}:}
-    \item{srrank}{\code{\signature{x = "AlignedRead"}}:}
-    \item{srsort}{\code{\signature{x = "AlignedRead"}}:}
-    \item{srduplicated}{\code{\signature{x = "AlignedRead"}}:
+    \item{srorder}{\code{signature{x = "AlignedRead"}}:}
+    \item{srrank}{\code{signature{x = "AlignedRead"}}:}
+    \item{srsort}{\code{signature{x = "AlignedRead"}}:}
+    \item{srduplicated}{\code{signature{x = "AlignedRead"}}:
       Order, rank, sort, and find duplicates in \code{AlignedRead}
       objects. Reads are sorted by \code{chromosome}, \code{strand},
       \code{position}, and then \code{sread}; less fine-grained sorting
