@@ -12,7 +12,7 @@
 
 .readAligned_SolexaAlign <-
     function(dirPath, pattern=character(0), ...,
-             sep=" ", comment.char="#", header=FALSE)
+             quote="", sep="", comment.char="#", header=FALSE)
 {
     csvClasses <- xstringClasses <-
         list(sequence="DNAString", alignQuality="integer",
@@ -25,8 +25,8 @@
 
     ## CSV portion
     lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
-                             sep=sep, comment.char=comment.char,
-                             header=header)
+                             quote=quote, sep=sep,
+                             comment.char=comment.char, header=header)
     idx <- regexpr(":", lst[["position"]], fixed=TRUE)
     chromosome <- substr(lst[["position"]], 1, idx-1)
     chromosome[idx==-1] <- NA
@@ -42,7 +42,7 @@
 
     ## XStringSet classes
     sets <- readXStringColumns(dirPath, pattern, xstringClasses,
-                               ..., sep=sep)
+                               ..., sep=" \t")
     len <- length(sets[["sequence"]])
     wd <- width(sets[["sequence"]])
     q <- paste(rep(" ", max(wd)), collapse="")
@@ -54,6 +54,60 @@
                 position=position,
                 strand=.toStrand_Solexa(lst[["strand"]]),
                 alignQuality=NumericQuality(lst[["alignQuality"]]),
+                alignData=alignData)
+}
+
+.readAligned_SolexaResult <-
+    function(dirPath, pattern=character(0), ...,
+             sep="\t", comment.char="#", quote="", header=FALSE)
+{
+    csvClasses <- xstringClasses <-
+        list(id=NULL, sequence="DNAString", matchCode="factor",
+             nExactMatch="integer", nOneMismatch="integer",
+             nTwoMismatch="integer", chromosome="factor",
+             position="integer", strand="factor",
+             NCharacterTreatment="factor", mismatchDetailOne="character",
+             mismatchDetailTwo="character")
+    xstringNames <- "sequence"
+    csvClasses[xstringNames] <- list(NULL)
+    xstringClasses[!names(xstringClasses) %in% xstringNames] <-
+        list(NULL)
+
+    ## CSV portion
+    lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
+                             col.names=names(csvClasses),
+                             quote=quote, sep=sep,
+                             comment.char=comment.char, header=header)
+    df <- data.frame(matchCode=lst[["matchCode"]],
+                     nExactMatch=lst[["nExactMatch"]],
+                     nOneMismatch=lst[["nOneMismatch"]],
+                     nTwoMismatch=lst[["nTwoMismatch"]],
+                     NCharacterTreatment=lst[["NCharacterTreatment"]],
+                     mismatchDetailOne=lst[["mismatchDetailOne"]],
+                     mismatchDetailTwo=lst[["mismatchDetailTwo"]])
+    meta <- data.frame(labelDescription=c(
+                         "Type of match; see ?'readAligned,character-method'",
+                         "Number of exact matches",
+                         "Number of 1-error mismatches",
+                         "Number of 2-error mismatches",
+                         "Treatment of 'N'; .: NA; D: deletion; |: insertion",
+                         "Mismatch error 1 detail; see ?'readAligned,character-method",
+                         "Mismatch error 2 detail; see ?'readAligned,character-method"))
+    alignData <- AlignedDataFrame(df, meta)
+    ## XStringSet classes
+    sets <- readXStringColumns(dirPath, pattern, xstringClasses,
+                               ..., sep=sep)
+    len <- length(sets[["sequence"]])
+    wd <- width(sets[["sequence"]])
+    q <- paste(rep(" ", max(wd)), collapse="")
+    sfq <- BStringSet(Views(BString(q), start=rep(1, len), end=wd))
+    AlignedRead(sread=sets[["sequence"]],
+                quality=SFastqQuality(sfq),
+                chromosome=lst[["chromosome"]],
+                position=lst[["position"]],
+                strand=.toStrand_Solexa(lst[["strand"]]),
+                alignQuality=NumericQuality(rep(NA_integer_,
+                  length(sfq))),
                 alignData=alignData)
 }
 
@@ -196,6 +250,7 @@
              type=c(
                "SolexaExport", "SolexaAlign",
                "SolexaPrealign", "SolexaRealign",
+               "SolexaResult",
                "MAQMap", "MAQMapShort", "MAQMapview",
                "Bowtie"),
              ..., filter=srFilter())
@@ -218,6 +273,8 @@
                    SolexaPrealign=,
                    SolexaAlign=,
                    SolexaRealign=.readAligned_SolexaAlign(dirPath,
+                     pattern=pattern, ...),
+                   SolexaResult=.readAligned_SolexaResult(dirPath,
                      pattern=pattern, ...),
                    MAQMap=.readAligned_MaqMap(dirPath, pattern, ...),
                    MAQMapShort=.readAligned_MaqMapOld(dirPath, pattern, ...),

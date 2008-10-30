@@ -124,15 +124,68 @@ readAligned(dirPath, pattern=character(0), ...)
       }
     }
 
+    \item{\code{type="SolexaResult"}}{
+
+      This parses \code{s_L_eland_results.txt} files, an intermediate
+      format that does not contain read or alignment quality
+      scores.
+
+      Because base quality scores are not stored with alignments, the
+      object returned by \code{readAligned} scores all base qualities as
+      \code{-32}.
+
+      Columns of this file type can be retrieved from
+      \code{\linkS4class{AlignedRead}} as follows (description of
+      columns is from Table 19, Genome Analyzer Pipeline Software User
+      Guide, Revision A, January 2008):
+
+      \describe{
+	\item{Id}{Not parsed}
+	\item{Sequence}{stored in \code{sread}}
+	\item{Type of match code}{Stored in \code{alignData} as
+	  \code{matchCode}. Codes are (from the Eland manual): NM (no
+	  match); QC (no match due to quality control failure); RM (no
+	  match due to repeat masking); U0 (best match was unique and
+	  exact); U1 (best match was unique, with 1 mismatch); U2 (best
+	  match was unique, with 2 mismatches); R0 (multiple exact
+	  matches found); R1 (multiple 1 mismatch matches found, no
+	  exact matches); R2 (multiple 2 mismatch matches found, no
+	  exact or 1-mismatch matches).}
+	\item{Number of exact matches}{stored in \code{alignData} as
+	  \code{nExactMatch}}
+	\item{Number of 1-error mismatches}{stored in \code{alignData}
+	  as \code{nOneMismatch}}
+	\item{Number of 2-error mismatches}{stored in \code{alignData}
+	  as \code{nTwoMismatch}}
+	\item{Genome file of match}{stored in \code{chromosome}}
+	\item{Position}{stored in \code{position}}
+	\item{Strand}{(direction of match) stored in \code{strand}}
+	\item{\sQuote{N} treatment}{stored in \code{alignData}, as
+	  \code{NCharacterTreatment}. \sQuote{.} indicates treatment of
+	  \sQuote{N} was not applicable; \sQuote{D} indicates treatment
+	  as deletion; \sQuote{|} indicates treatment as insertion}
+	\item{Substitution error}{stored in \code{alignData} as
+	  \code{mismatchDetailOne} and \code{mismatchDetailTwo}. Present
+	  only for unique inexact matches at one or two
+	  positions. Position and type of first substituation error,
+	  e.g., 11A represents 11 matches with 12th base an A in
+	  reference but not read. The reference manual cited below lists
+	  only one field (\code{mismatchDetailOne}), but two are present
+	  in files seen in the wild.}
+
+      }
+    }
+
     \item{\code{type="MAQMap", records=-1L}}{Parse binary \code{map}
       files produced by MAQ. See details in the next section. The
       \code{records} option determines how many lines are read;
       \code{-1L} (the default) means that all records are input.}
 
-    \item{\code{type="MAQMapShort", records=-1L}}{The same as \code{type="MAQMap"}
-      but for map files made with Maq prior to version 0.7.0. (These files
-      use a different maximum read length [64 instead of 128], and are hence
-      incompatible with newer Maq map files.)}
+    \item{\code{type="MAQMapShort", records=-1L}}{The same as
+      \code{type="MAQMap"} but for map files made with Maq prior to
+      version 0.7.0. (These files use a different maximum read length
+      [64 instead of 128], and are hence incompatible with newer Maq map
+      files.)}
 
 
     \item{\code{type="MAQMapview"}}{
@@ -219,11 +272,14 @@ readAligned(dirPath, pattern=character(0), ...)
 
   A \code{\linkS4class{AlignedRead}} object.
 
+  Genome Analyzer Pipeline Software User Guide, Revision A, January
+  2008.
+
   The MAQ reference manual,
-  \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, 3 May, 2008
+  \url{http://maq.sourceforge.net/maq-manpage.shtml#5}, 3 May, 2008.
 
   The Bowtie reference manual, \url{http://bowtie-bio.sourceforge.net},
-  28 October, 2008
+  28 October, 2008.
 
 }
 
