@@ -11,6 +11,10 @@ NEW FEATURES
     o New built-in SRFilters positionFilter, uniqueFilter to select
     reads aligning to particular positions, or to select only unique
     instances of reads aligning to each position.
+    
+    o readAligned gains a Solexa _results parser (_results files are
+    liested as 'intermediate' in the Solexa manual, and not a good
+    end-point for analysis)
 
     o readAligned gains a Bowtie output parser
 
