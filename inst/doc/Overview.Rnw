@@ -21,6 +21,8 @@
 \title{An Introduction to \Rpackage{ShortRead}}
 \author{Martin Morgan}
 \date{25 July, 2008}
+% FIXME: according to SVN log, your last change was 30 Oct
+%   may use \today instead?
 
 \begin{document}
 
@@ -31,7 +33,7 @@ options(width=60)
 @ 
 
 <<preliminaries>>=
-library(ShortRead)
+library("ShortRead")
 @ 
 
 The \Rpackage{ShortRead} package aims to provide key functionality for
@@ -81,7 +83,7 @@ content. \Rfunction{SolexaPath} accepts additional arguments that
 allow individual file paths to be specified.
  
 Many functions for Solexa data input `know' where appropriate files
-are located,. Specifying \Rcode{sp} is often sufficient for identifying
+are located. Specifying \Rcode{sp} is often sufficient for identifying
 the desired directory path. Examples of this are illustrated below,
 with for instance \Rfunction{readAligned} and \Rfunction{readFastq}.
 
@@ -168,7 +170,9 @@ quality(aln)
 @ 
 
 The short reads are stored as a \Rclass{DNAStringSet} class.  This
-class is defined in \Rpackage{IRanges}. It represents DNA sequence
+class is defined in \Rpackage{IRanges}. 
+% FIXME shouldn't this be 'Biostrings'?
+It represents DNA sequence
 data relatively efficiently.  There are a number of very useful
 methods defined for \Rclass{DNAStringSet}. Some of these methods are
 illustrated in this vignette. Other methods are described in the help
@@ -281,7 +285,7 @@ A feature of \ShortRead{} is the use of \Rpackage{Rmpi} and
 coarse-grained parallel processing when available. Thus commands such
 as
 <<eval=FALSE>>=
-library(Rmpi)
+library("Rmpi")
 mpi.spawn.Rslaves(nsl=8)
 qaSummary <- qa(sp)
 mpi.close.Rslaves()
@@ -374,17 +378,19 @@ names(colClasses)[9:10] <- c("read", "quality")
 % 
 We use the class of the underlying object, \Rclass{DNAString} or
 \Rclass{BString}, rather than the class of the object we will create,
-e.g., \Rclass{DNAStringSet}. Applying names to \Robject{colClasses} is
-not required but makes subsequent manipulation easy. We are now ready
+e.g., \Rclass{DNAStringSet}. 
+% FIXME it is not easy to understand what you mean by 'underlying' here
+Applying names to \Robject{colClasses} is
+not required, but makes subsequent manipulation easier. We are now ready
 to read our file
 <<readXStringColumns>>=
 cols <- readXStringColumns(analysisPath(sp), pattern, colClasses)
 cols
 @ 
 % 
-The file is parsed and appropriate data objects created.
+The file has been parsed, and appropriate data objects were created.
 
-A feature of \Rfunction{readXStringColumns}, and other input functions
+A feature of \Rfunction{readXStringColumns} and other input functions
 in the \Rpackage{ShortRead} package is that all files matching
 \Rfunarg{pattern} in the specified \Rfunarg{dirPath} will be read into
 a single object. This provides a convenient way to, for instance,
@@ -399,7 +405,7 @@ object.size(cols$read)
 object.size(as.character(cols$read))
 @ 
 % 
-They are read in much more quickly. And the \Rclass{DNAStringSet} and
+They are also created much more quickly. And the \Rclass{DNAStringSet} and
 related classes are used extensively in \Rpackage{ShortRead},
 \Rpackage{Biostrings}, \Rpackage{BSgenome} and other packages relevant
 to short read technology.
@@ -479,18 +485,19 @@ print(splom(c2, pch=".", cex=3))
 
 \subsection{Sorting}
 
-Short reads can be sorted, or the permutation required to bring the
-short read into lexicographic order, using \Rfunction{srsort} and
+Short reads can be sorted using \Rfunction{srsort}, 
+or the permutation required to bring the short read into 
+lexicographic order can be determined using
 \Rfunction{srorder}. These functions are different from
 \Rfunction{sort} and \Rfunction{order} because the result is
-independent of the locale, and operate quickly on
+independent of the locale, and they operate quickly on
 \Rclass{DNAStringSet} and \Rclass{BStringSet} objects.
 
 The function \Rfunction{srduplicated} identifies duplicate reads. This
-function returns a logical vector much like \Rfunction{duplicated}.
+function returns a logical vector, similar to \Rfunction{duplicated}.
 The negation of the result from \Rfunction{srduplicated} is useful to
 create a collection of unique reads. An experimental scenario where
-This might be useful is when sample preparation involves PCR. In this
+this might be useful is when the sample preparation involved PCR. In this
 case, replicate reads may be due to artifacts of sample preparation,
 rather than differential representation of sequence in the sample
 prior to PCR.
@@ -519,8 +526,10 @@ are represented exactly \Sexpr{tbls[["distribution"]][1,"nOccurrences"]} times.
 Facilities exist for finding reads that are near matches to specific
 sequences, e.g., manufacturer adapter or primer
 sequences. \Rfunction{srdistance} reports the edit distance between
-each read and a (short!) reference sequence. To find reads close to
-the most common read in the example above, one might
+each read and a (short!) % FIXME not clear what the 'short!' means here - 
+% does it not work for long reference sequences (and how long?), or does it just become inefficient
+reference sequence. To find reads close to
+the most common read in the example above, one might say
 <<srdistance>>=
 dist <- srdistance(sread(aln), names(tbls$top)[1])[[1]]
 table(dist)[1:10]
@@ -531,11 +540,11 @@ table(dist)[1:10]
 alnSubset <- aln[dist>4]
 @
 
-A different strategy can be used to tally or eliminate reads that are
+A different strategy can be used to tally or eliminate reads that consist
 predominantly of a single nucleotide. \Rfunction{alphabetFrequency}
 calculates the frequency of each nucleotide (in DNA strings) or letter
 (for other string sets) in each read. Thus one could identify and
-eliminate reads with more than 30 A nucleotides with
+eliminate reads with more than 30 adenine nucleotides with
 <<polya>>=
 countA <- alphabetFrequency(sread(aln))[,"A"] 
 alnNoPolyA <- aln[countA < 30]
@@ -543,21 +552,21 @@ alnNoPolyA <- aln[countA < 30]
 %% 
 \Rfunction{alphabetFrequency}, which simply counts nucleotides, is
 much faster than \Rfunction{srdistance}, which performs full pairwise
-alignemnt of each read to the subject.
+alignment of each read to the subject.
 
 Users wanting to use \R{} for whole-genome alignments or more flexible
 pairwise aligment are encouraged to investigate the
 \Rpackage{Biostrings} package, especially the \Rclass{PDict} class and
 \Rfunction{matchPDict} and \Rfunction{pairwiseAlignment} functions.
 
-\subsection{\Rfunction{pileup}}
+\subsection{The \Rfunction{pileup} function}
 
-\Rfunction{pileup} provides a convenient way to summarize where reads
+The \Rfunction{pileup} function provides a convenient way to summarize where reads
 align on reference sequences. \Rfunction{pileup} uses alignments
-obtained from other sources, e.g., \Rfunction{readAligned} or the
+obtained from, e.\,g., \Rfunction{readAligned} or the
 \Robject{PDict} family of functions in \Rpackage{Biostrings}.
 
-\section{Advance features}
+\section{Advanced features}
 
 \subsection{The \Rfunarg{pattern} argument to input functions}
 
@@ -568,7 +577,7 @@ input functions are implemented so that all files matching the pattern
 are read into a single large input object. Thus the
 \texttt{s\_N\_LLLL\_seq.txt} files consist of four numeric columns and a
 fifth column corresponding to the short read. The following code
-illustrates the file structure and inputs the final column as a
+illustrates the file structure and inputs the final column into a
 \Rclass{DNAStringSet}:
 <<readSeq>>=
 seqFls <- list.files(baseCallPath(sp), "_seq.txt", full=TRUE)
@@ -589,7 +598,7 @@ inputs all lane 1 tile files into a single \Rclass{DNAStringSet} object.
 \subsection{\Rfunction{srapply}}
 
 Solexa and other short read technologies often include many files,
-e.g., 1 \texttt{s\_L\_NNNN\_int.txt} file per tile, 300 tiles per
+e.g., one \texttt{s\_L\_NNNN\_int.txt} file per tile, 300 tiles per
 lane, 8 lanes per flow cell for 2400 \texttt{s\_L\_NNNN\_int.txt} files
 per flow cell. A natural way to extract information from these is to
 write short functions, e.g., to find the average intensity per base at
@@ -604,6 +613,8 @@ calcInt <- function(filename, cycle, verbose=FALSE)
     colMeans(c12)
 }
 @ 
+% FIXME wouldn't it be more efficient to first do 'colMeans' and then 
+% set the (col)names?
 %% 
 One way to apply this function to all intensity files in a Solexa run
 is
@@ -624,7 +635,7 @@ identical(lres, srres)
 %% 
 evaluates the function as \Rfunction{lapply}, whereas
 <<srapply-mpi, eval=FALSE>>=
-library(Rmpi)
+library("Rmpi")
 mpi.spawn.Rslaves(nsl=16)
 srres <- srapply(intFls, calcInt, cycle=12)
 mpi.close.Rslaves()
@@ -644,5 +655,19 @@ Development priorities in the near term include expanded facilities
 for importing key file types from additional manufactures, more
 extensive quality assessment methodologies, and development of
 infrastructure for paired-end reads.
+
+%---------------------------------------------------------
+% SessionInfo
+%---------------------------------------------------------
+\begin{table*}[tbp]
+\begin{minipage}{\textwidth}
+<<sessionInfo, results=tex, print=TRUE>>=
+toLatex(sessionInfo())
+@ 
+\end{minipage}
+\caption{\label{tab:sessioninfo}%
+The output of \Rfunction{sessionInfo} on the build system 
+after running this vignette.}
+\end{table*}
 
 \end{document}
