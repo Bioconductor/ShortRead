@@ -20,9 +20,7 @@
 
 \title{An Introduction to \Rpackage{ShortRead}}
 \author{Martin Morgan}
-\date{25 July, 2008}
-% FIXME: according to SVN log, your last change was 30 Oct
-%   may use \today instead?
+\date{2 November 2008}
 
 \begin{document}
 
@@ -170,9 +168,7 @@ quality(aln)
 @ 
 
 The short reads are stored as a \Rclass{DNAStringSet} class.  This
-class is defined in \Rpackage{IRanges}. 
-% FIXME shouldn't this be 'Biostrings'?
-It represents DNA sequence
+class is defined in \Rpackage{Biostrings}. It represents DNA sequence
 data relatively efficiently.  There are a number of very useful
 methods defined for \Rclass{DNAStringSet}. Some of these methods are
 illustrated in this vignette. Other methods are described in the help
@@ -376,13 +372,11 @@ colClasses[9:10] <- c("DNAString", "BString")
 names(colClasses)[9:10] <- c("read", "quality")
 @ 
 % 
-We use the class of the underlying object, \Rclass{DNAString} or
-\Rclass{BString}, rather than the class of the object we will create,
-e.g., \Rclass{DNAStringSet}. 
-% FIXME it is not easy to understand what you mean by 'underlying' here
-Applying names to \Robject{colClasses} is
-not required, but makes subsequent manipulation easier. We are now ready
-to read our file
+We use the class of the type of sequence (e.g., \Rclass{DNAString} or
+\Rclass{BString}), rather than the class of the set that we will
+create ( e.g., \Rclass{DNAStringSet} or \Rclass{BStringSet}).
+Applying names to \Robject{colClasses} is not required, but makes
+subsequent manipulation easier. We are now ready to read our file
 <<readXStringColumns>>=
 cols <- readXStringColumns(analysisPath(sp), pattern, colClasses)
 cols
@@ -526,10 +520,11 @@ are represented exactly \Sexpr{tbls[["distribution"]][1,"nOccurrences"]} times.
 Facilities exist for finding reads that are near matches to specific
 sequences, e.g., manufacturer adapter or primer
 sequences. \Rfunction{srdistance} reports the edit distance between
-each read and a (short!) % FIXME not clear what the 'short!' means here - 
-% does it not work for long reference sequences (and how long?), or does it just become inefficient
-reference sequence. To find reads close to
-the most common read in the example above, one might say
+each read and a reference sequence. \Rfunction{srdistance} is
+implemented to work efficiently for reference sequences whose length
+is of the same order as the reads themselves (10's to 100's of bases).
+To find reads close to the most common read in the example above, one
+might say
 <<srdistance>>=
 dist <- srdistance(sread(aln), names(tbls$top)[1])[[1]]
 table(dist)[1:10]
@@ -609,13 +604,11 @@ calcInt <- function(filename, cycle, verbose=FALSE)
     if (verbose)
         cat("calcInt", filename, cycle, "\n")
     c12 <- read.table(filename)[,cycle*4 + 1:4]
-    colnames(c12) <- c("A", "C", "G", "T")
-    colMeans(c12)
+    means <- colMeans(c12)
+    names(means) <- c("A", "C", "G", "T")
+    means
 }
 @ 
-% FIXME wouldn't it be more efficient to first do 'colMeans' and then 
-% set the (col)names?
-%% 
 One way to apply this function to all intensity files in a Solexa run
 is
 <<calcInt-sapply>>=
