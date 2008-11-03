@@ -25,6 +25,7 @@
 
     ## CSV portion
     lst <- .read_csv_portion(dirPath, pattern, csvClasses, ...,
+                             col.names=names(csvClasses),
                              quote=quote, sep=sep,
                              comment.char=comment.char, header=header)
     idx <- regexpr(":", lst[["position"]], fixed=TRUE)
