@@ -32,12 +32,18 @@ plotReadQuality <- function(df) {
 }
 plotReadOccurrences <- function(df, ...) {
     df$lane <- .laneLbl(df$lane)
-    df$cumulative <- 
-        with(df, unlist(tapply(nOccurrences * nReads, lane, function(elt) {
-           cs <- cumsum(elt)
-           (cs-cs[1] + 1)/ diff(range(cs))
-        })))
-    xyplot(cumulative~log10(nOccurrences)|lane, df,
+    df <- with(df, {
+        nOccur <- tapply(nOccurrences, lane, c)
+        cumulative <- tapply(nOccurrences*nReads, lane, function(elt) {
+            cs <- cumsum(elt)
+            (cs-cs[1] + 1) / diff(range(cs))
+        })
+        lane <- tapply(lane, lane, c)
+        data.frame(nOccurrences=unlist(nOccur),
+                   cumulative=unlist(cumulative),
+                   lane=unlist(lane))
+    })
+    xyplot(cumulative~log10(nOccurrences)|factor(lane), df,
            xlab=expression(paste(
                "Number of occurrences of each read (",
                log[10], ")", sep="")),
