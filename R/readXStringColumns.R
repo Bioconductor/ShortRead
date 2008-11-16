@@ -1,6 +1,8 @@
-readXStringColumns <- function(dirPath, pattern=character(0),
-                               colClasses=list(NULL), sep="\t",
-                               header=FALSE, comment.char="#") {
+readXStringColumns <-
+    function(dirPath, pattern=character(0), 
+             colClasses=list(NULL), nrows=-1L, skip=0L,
+             sep="\t", header=FALSE, comment.char="#")
+{
     if (!is.list(colClasses))
         .arg_mismatch_type_err("colClasses", "list()")
     colIndex <- which(!sapply(colClasses, is.null))
@@ -16,8 +18,11 @@ readXStringColumns <- function(dirPath, pattern=character(0),
     }
     files <- .file_names(dirPath, pattern)
     res <- tryCatch({
-        .Call(.read_XStringSet_columns, files,
-              colIndex, colClasses, sep, header, comment.char)
+
+        .Call(.read_XStringSet_columns, files, header, sep, colIndex,
+              colClasses, as.integer(nrows), as.integer(skip),
+              comment.char)
+
     }, error=function(err) {
         .throw(SRError("Input/Output",
                        "while reading files '%s':\n    %s",
@@ -25,7 +30,8 @@ readXStringColumns <- function(dirPath, pattern=character(0),
                        conditionMessage(err)))
     })
     if (header) {
-        nms <- strsplit(readLines(files[[1]], 1), sep)[[1]]
+        ln <- readLines(files[[1]], skip+1)[skip+1]
+        nms <- strsplit(ln, sep)[[1]]
         names(res) <- nms[colIndex]
     } else {
         names(res) <- names(colIndex)

@@ -42,9 +42,9 @@ SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
 SEXP read_prb_as_character(SEXP file, SEXP cycles);
 SEXP read_solexa_fastq(SEXP files);
-SEXP read_XStringSet_columns(SEXP file, SEXP colIndex,
-                             SEXP colClasses, SEXP delim,
-                             SEXP header, SEXP commentChar);
+SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
+			     SEXP colIndex, SEXP colClasses, 
+			     SEXP nrows, SEXP skip, SEXP commentChar);
 SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar);
 
 /* io_bowtie.c */

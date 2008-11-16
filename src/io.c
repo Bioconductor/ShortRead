@@ -161,23 +161,27 @@ read_solexa_fastq(SEXP files)
 }
 
 int
-_io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
+_io_XStringSet_columns(const char *fname, 
+		       int header,
                        const char *sep, MARK_FIELD_FUNC *mark_field,
-                       int header, const char *commentChar, 
+		       const int *colidx, int ncol,
+		       int nrow, int skip, const char *commentChar,
                        CharAEAE *sets, const int *toIUPAC)
 {
     FILE *file;
     char *linebuf;
-    int lineno;
+    int lineno = 0, recno = 0;
 
     file = _fopen(fname, "r");
     linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
 
-    /* header: first line ignored, errors ignored */
+    while (skip-- > 0)
+	fgets(linebuf, LINEBUF_SIZE, file);
     if (header == TRUE)
         fgets(linebuf, LINEBUF_SIZE, file);
-    lineno = 0;
-    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+
+    while (recno < nrow &&
+	   fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
         if (_linebuf_skip_p(linebuf, file, fname,
                             lineno, commentChar)) {
             lineno++;
@@ -197,46 +201,54 @@ _io_XStringSet_columns(const char *fname, const int *colidx, int ncol,
             curr = next;
         } 
         lineno++;
+	recno++;
     }
     fclose(file);
-    return lineno;
+    return recno;
 }
 
 SEXP
-read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
-                        SEXP sep, SEXP header, SEXP commentChar)
+read_XStringSet_columns(SEXP files, SEXP header, SEXP sep, 
+			SEXP colIndex, SEXP colClasses,
+			SEXP nrows, SEXP skip, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character(1)'");
+    if (!IS_LOGICAL(header) || LENGTH(header) != 1)
+        Rf_error("'header' must be logical(1)");
+    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
+        Rf_error("'sep' must be character(1)"); 
+    /* FIXME: !nzchar(sep[1]) */
     if (!IS_INTEGER(colIndex) || LENGTH(colIndex) == 0)
         Rf_error("'colIndex' must be 'integer' with length > 0");
     if (!IS_CHARACTER(colClasses) || LENGTH(colClasses) != LENGTH(colIndex))
         Rf_error("'colClasses' must be 'character' with length(colClasses) == length(colIndex)");
-    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'sep' must be character(1)"); 
-    /* FIXME: !nzchar(sep[1]) */
-    if (!IS_LOGICAL(header) || LENGTH(header) != 1)
-        Rf_error("'header' must be logical(1)");
+    if (!IS_INTEGER(nrows) || LENGTH(nrows) != 1)
+	Rf_error("'nrows' msut be 'integer(1)'");
+    if (!IS_INTEGER(skip) || LENGTH(skip) != 1)
+	Rf_error("'skip' must be 'integer(1)'");
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
         Rf_error("'commentChar' must be character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));
 
+    int i, j;
     /* Count lines and pre-allocate space */
     const char *csep = translateChar(STRING_ELT(sep, 0));
     const int nfiles = LENGTH(files);
-    const int *nlines = INTEGER(count_lines(files));
     MARK_FIELD_FUNC *sep_func;  /* how to parse fields; minor efficiency */
     if (csep[0] != '\0' && csep[1] == '\0')
         sep_func = _mark_field_1;
     else
         sep_func = _mark_field_n;
-    int nrow = 0;
-    int i, j;
-    for (i = 0; i < nfiles; ++i)
-        nrow += nlines[i];
-    nrow -= nfiles * LOGICAL(header)[0];
+
+    int nrow = INTEGER(nrows)[0];
+    if (nrow < 0) {
+	nrow = _count_lines_sum(files);
+	nrow -= nfiles * (LOGICAL(header)[0] + INTEGER(skip)[0]);
+    }
+
     int ncol = LENGTH(colIndex);
     CharAEAE *sets = (CharAEAE*) R_alloc(sizeof(CharAEAE), ncol);
     int *colidx = (int *) R_alloc(sizeof(int), ncol);
@@ -250,16 +262,18 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
     /* read columns */
     int nreads = 0;
     for (i = 0; i < nfiles; ++i) {
-        const char *fname = translateChar(STRING_ELT(files, i));
         R_CheckUserInterrupt();
-        nreads += _io_XStringSet_columns(fname, colidx, ncol,
-                                         csep, sep_func,
-                                         LOGICAL(header)[0],
-                                         CHAR(STRING_ELT(commentChar, 0)),
-                                         sets, toIUPAC);
+	if (nreads >= nrow) 
+	    break;
+        const char *fname = translateChar(STRING_ELT(files, i));
+        nreads += 
+	    _io_XStringSet_columns(fname, 
+				   LOGICAL(header)[0], csep, sep_func,
+				   colidx, ncol,
+				   nrow - nreads, INTEGER(skip)[0],
+				   CHAR(STRING_ELT(commentChar, 0)),
+				   sets, toIUPAC);
     }
-    if (nreads != nrow)
-        Rf_error("found %d reads, expected %d", nreads, nrow);
 
     /* formulate return value */
     SEXP ans, elt;

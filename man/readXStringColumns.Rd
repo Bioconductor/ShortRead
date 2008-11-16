@@ -15,8 +15,9 @@
 }
 \usage{
 readXStringColumns(dirPath, pattern=character(0),
-                   colClasses=list(NULL), sep = "\t",
-                   header = FALSE, comment.char="#")
+                   colClasses=list(NULL),
+                   nrows=-1L, skip=0L,
+                   sep = "\t", header = FALSE, comment.char="#")
 }
 \arguments{
 
@@ -35,6 +36,15 @@ readXStringColumns(dirPath, pattern=character(0),
     \code{XStringSet}. For instance a column of DNA sequences would be
     specified as \code{"DNAString"}. The column would be parsed into a
     \code{DNAStringSet} object.}
+
+  \item{nrows}{A length 1 integer vector describing the maximum number
+    of \code{XString} objects to read into the set. Reads may come from
+    more than one file when \code{dirPath} and \code{pattern} parse
+    several files and \code{nrow} is greater than the number of reads
+    in the first file.}
+
+  \item{skip}{A length 1 integer vector describing how many lines to skip
+    at the start of each file.}
 
   \item{sep}{A length 1 character vector describing the column
     separator.}

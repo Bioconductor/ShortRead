@@ -8,6 +8,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
+    o readXStringSet gets arguments skip, nrows; argument order
+    changed slightly
+
     o New built-in SRFilters positionFilter, uniqueFilter to select
     reads aligning to particular positions, or to select only unique
     instances of reads aligning to each position.

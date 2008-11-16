@@ -6,7 +6,7 @@ static const R_CallMethodDef callMethods[] = {
     /* io.c */
     {".read_prb_as_character", (DL_FUNC) &read_prb_as_character, 2},
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 1},
-    {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 6},
+    {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 8},
     {".read_solexa_export", (DL_FUNC) &read_solexa_export, 3},
     /* io_bowtie.c */
     {".read_bowtie", (DL_FUNC) &read_bowtie, 4},
