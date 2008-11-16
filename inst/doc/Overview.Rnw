@@ -15,12 +15,17 @@
 \newcommand{\Rclass}[1]{{\textit{#1}}}
 \newcommand{\Rcode}[1]{{\texttt{#1}}}
 
-\newcommand{\R}{\textsf{R}}
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
 \newcommand{\ShortRead}{\Rpackage{ShortRead}}
+
+\newcommand{\ELAND}{\software{ELAND}}
+\newcommand{\MAQ}{\software{MAQ}}
+\newcommand{\Bowtie}{\software{Bowtie}}
 
 \title{An Introduction to \Rpackage{ShortRead}}
 \author{Martin Morgan}
-\date{2 November 2008}
+\date{8 November 2008}
 
 \begin{document}
 
@@ -39,8 +44,8 @@ input, quality assurance, and basic manipulation of `short read' DNA
 sequences such as those produced by Solexa, 454, Helicos, SOLiD, and
 related technologies. This vignette introduces key functionality.
 
-The package is still very much in development. Support is most fully
-developed for Solexa; contributions from the community are welcome.
+Support is most fully developed for Solexa; contributions from the
+community are welcome.
 
 \section{A first workflow}
 
@@ -97,8 +102,8 @@ working the short read data in \R{}. These files result from running
 ANALYSIS eland\_extended in the Solexa Genome Analyzer. The files
 contain information on all reads, including alignment information for
 those reads successfully aligned to the genome.  \ShortRead{} parses
-additional alignment files, including MAQ binary and text
-(\texttt{mapview}) files and Bowtie text files; consult the help page
+additional alignment files, including \MAQ{} binary and text
+(\texttt{mapview}) files and \Bowtie{} text files; consult the help page
 for \Rfunction{readAligned} for details. \ShortRead{} flexibly parses
 many other Solexa files; aligned reads represent just one entry point.
 
@@ -119,6 +124,88 @@ the input functions in \ShortRead{}. In the present case the usual
 expectation is that a single \texttt{s\_N\_export.txt} file will be
 read into a single \R{} object, so the \Rfunarg{pattern} argument will
 identify a single file.
+
+\subsubsection{Input of other aligned read files}
+
+\ELAND{} software provides access to much interesting data, in
+addition to alignments, but if the interest is in aligned reads then
+input may come from any of a number of different software
+packages. Many of these alignments can be input with
+\Rpackage{ShortRead}.
+
+\Bowtie{} is a very fast aligner, taking a few tens of minutes to
+align entire lanes of reads to reference genomes. Use
+\Rfunction{readAligned} with the \Rfunarg{type="Bowtie"} argument to
+input alignments.  Reading \Bowtie{} output using
+\Rfunction{readAligned} produces the same class of object as reading
+\ELAND{} output.  Like \ELAND{}, \Bowtie{} provides information on
+short read, quality, chromosome, position, and strand; there is no
+information on alignment quality avaiable from \Bowtie{}. \ELAND{} and
+\Bowtie{} provide very different auxiliary information.  Consult the
+\Rfunction{readAligned} and help page \Bowtie{} manual for additional
+detail.
+
+\MAQ{} is another poplar aligner. \Rpackage{ShortRead} can input
+\MAQ{} binary or text formats (see the arguments
+\Rfunarg{type="MAQMapShort"}, \Rfunarg{"MAQMap"}, and
+\Rfunarg{"MAQMapview"}). As with \Bowtie{}, \MAQ{} provides essential
+information about reads and their aligments, plus additional
+information that differs somewhat from the additional information
+provided by \ELAND{}.
+
+Alignment information may come in a variety of different text-based
+formats. Not all of these will be supported by
+\Rpackage{ShortRead}. There are a number of tools available to input
+this into \R{}. 
+
+A basic strategy is involves two passes over the data, followed by
+synthesis of results into an \Rclass{AlignedRead} object.  First,
+input alignment data using functions such as
+\Rfunction{read.table}. Use the \Rfunarg{colClasses} argument to
+`mask-out' (i.e., avoid importing) DNA and quality sequences. Next,
+use \Rfunction{readXStringColumns} or \Rfunction{readFastq} to import
+the short read and quality information. Finally, use the alignment
+data and reads as arugments to the \Rfunction{AlignedRead} function to
+synthesize the input. The following illustrates use of
+\Rfunction{readXStringColumns} and \Rfunction{readFastq}. These
+functions receive further attention below.
+
+\subsubsection{Cautions}
+
+There are several confusing areas of input. (1) Some alignment
+programs and genome resources start numbering nucleotides of the
+subject sequence at 0, whereas others start at 1. (2) Some alignment
+programs report matches on the minus strand in terms of the
+`left-most' position of the read (i.e., the location of the 3' end of
+the aligned read), whereas other report `five-prime''matches (i.e., in
+terms of the 5' end of the read), regardless of whether the alignment
+is on the plus or minus strand. (3) Some alignment programs reverse
+complement the sequence of reads aligned to the minus strand. (4) Base
+qualities are sometimes encoded as character strings, but the encoding
+differs between `fastq' and `solexa fastq'. It seems that all
+combinations of these choices are common `in the wild'.
+
+The help page for \Rfunction{readAligned} attempts to be explicit
+about how reads are formatted. Briefly:
+\begin{itemize}
+\item Subject sequence nucleotides are numbered starting at 1, rather
+  than zero. \Rfunction{readAligned} adjusts the coordinate system of
+  input reads if necessary (e.g., reading \MAQ{} alignments).
+\item Alignments on the minus strand are reported in `left-most'
+  coordinates systems.
+\item \ELAND{} and \Bowtie{} alignments on the minus strand are not reverse
+  complemented.
+\item Character-encoded base quality scores are intrepreted as the
+  default for the software package being parsed, e.g., as `Solexa
+  fastq' for \ELAND{}. The object returned by \Rfunction{quality}
+  applied to an \Rclass{AlignedRead} object is either
+  \Rclass{FastqQuality} or \Rclass{SFastqQuality}.
+\end{itemize}
+Alignment programs sometimes offer the opportunity to custommize
+output; such customization needs to be accomodated when reads are
+input using \Rpackage{ShortRead}.
+
+\subsubsection{Filtering input}
 
 Downstream analysis may often want to use a well-defined subset of
 reads. These can be selected with the \Rfunarg{filter} argument of
@@ -204,10 +291,9 @@ table(whichStrand, useNA="ifany")
 %% 
 This shows that about 
 %% 
-\Sexpr{format(100*sum(is.na(whichStrand))/ length(whichStrand))}
+\Sexpr{format(100*sum(is.na(whichStrand))/ length(whichStrand))}\%{}
 %% 
-percent of reads were not aligned (level
-\Rcode{NA}).
+of reads were not aligned (level \Rcode{NA}).
 
 The \Robject{aln} object contains information in addition to that
 expected of all alignments. This information is accessible using
