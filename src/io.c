@@ -278,85 +278,6 @@ read_XStringSet_columns(SEXP files, SEXP colIndex, SEXP colClasses,
  * _export parser
  */
 
-typedef struct {
-    SEXP ref;
-    int offset;
-    SEXP run;
-    int *lane,
-        *tile,
-        *x,
-        *y;
-    CharAEAE read, quality;
-    SEXP chromosome;
-    int *position,
-        *strand,
-        *alignQuality,
-        *filtering;
-} SOLEXA_EXPORT_REC;
-
-static const char *ELT_NMS[] = {
-    "run", "lane", "tile", "x", "y", "sread", "quality",
-    "chromosome", "position", "strand", "alignQuality",
-    "filtering"
-};
-static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
-
-void 
-_solexa_export_rec_set_offset(SOLEXA_EXPORT_REC *rec, int offset);
-
-SOLEXA_EXPORT_REC *
-_solexa_export_rec_new(SEXP ref, int nrec)
-{
-    if (LENGTH(ref) != N_ELTS)
-        Rf_error("_solexa_export_rec_set_offset internal error: LENGTH(ref) != N_ELTS)");
-
-    SEXP names = PROTECT(NEW_CHARACTER(N_ELTS));
-    SET_VECTOR_ELT(ref, 0, NEW_STRING(nrec)); /* run */
-    SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec)); /* lane */
-    SET_VECTOR_ELT(ref, 2, NEW_INTEGER(nrec)); /* tile */
-    SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* x */
-    SET_VECTOR_ELT(ref, 4, NEW_INTEGER(nrec)); /* y */
-    SET_VECTOR_ELT(ref, 7, NEW_STRING(nrec));  /* chromosome */
-    SET_VECTOR_ELT(ref, 8, NEW_INTEGER(nrec)); /* position */
-    SET_VECTOR_ELT(ref, 9, NEW_INTEGER(nrec)); /* strand: factor */
-    SET_VECTOR_ELT(ref, 10, NEW_INTEGER(nrec)); /* alignQuality */
-    SET_VECTOR_ELT(ref, 11, NEW_INTEGER(nrec)); /* filtering: factor */
-    for (int i = 0; i < N_ELTS; ++i)
-        SET_STRING_ELT(names, i, mkChar(ELT_NMS[i]));
-    SET_ATTR(ref, R_NamesSymbol, names);
-
-    SOLEXA_EXPORT_REC *rec = 
-        (SOLEXA_EXPORT_REC *) R_alloc(1, sizeof(SOLEXA_EXPORT_REC));
-    rec->ref = ref;
-    rec->read = new_CharAEAE(nrec, 0);
-    rec->quality = new_CharAEAE(nrec, 0);
-
-    _solexa_export_rec_set_offset(rec, 0);
-
-    UNPROTECT(1);
-    return rec;
-}
-
-/*
- * view-like; no allocation
- */
-void
-_solexa_export_rec_set_offset(SOLEXA_EXPORT_REC *rec, int offset)
-{
-    SEXP ref = rec->ref;
-    rec->offset = offset;
-    rec->run = VECTOR_ELT(ref, 0);
-    rec->lane = INTEGER(VECTOR_ELT(ref, 1)) + offset;
-    rec->tile = INTEGER(VECTOR_ELT(ref, 2)) + offset;
-    rec->x = INTEGER(VECTOR_ELT(ref, 3)) + offset;
-    rec->y = INTEGER(VECTOR_ELT(ref, 4)) + offset;
-    rec->chromosome = VECTOR_ELT(ref, 7);
-    rec->position = INTEGER(VECTOR_ELT(ref, 8)) + offset;
-    rec->strand = INTEGER(VECTOR_ELT(ref, 9)) + offset;
-    rec->alignQuality = INTEGER(VECTOR_ELT(ref, 10)) + offset;
-    rec->filtering = INTEGER(VECTOR_ELT(ref, 11)) + offset;
-}
-
 #define NEW_CALL(S, T, NAME, ENV, N) \
     PROTECT(S = T = allocList(N)); \
     SET_TYPEOF(T, LANGSXP); \
@@ -371,57 +292,50 @@ _solexa_export_rec_set_offset(SOLEXA_EXPORT_REC *rec, int offset)
     UNPROTECT(1)
 
 SEXP
-_AlignedRead_Solexa_make(SOLEXA_EXPORT_REC *rec)
+_AlignedRead_Solexa_make(SEXP fields)
 {
     const char *FILTER_LEVELS[] = { "Y", "N" };
-    SEXP ref = rec->ref;
     SEXP s, t, nmspc = PROTECT(_get_namespace("ShortRead"));
 
-    SEXP sfq;                   /* SFastqQuality(rec->quality]) */
-    SEXP quality;
-    PROTECT(quality = _CharAEAE_to_XStringSet(&(rec->quality), 
-                                              "BString"));
+    SEXP sfq;			/* SFastqQuality */
     NEW_CALL(s, t, "SFastqQuality", nmspc, 2);
-    CSET_CDR(t, "quality", quality);
+    CSET_CDR(t, "quality", VECTOR_ELT(fields, 6));
     CEVAL_TO(s, nmspc, sfq);
     PROTECT(sfq);
 
     SEXP alnq;                  /* NumericQuality() */
     NEW_CALL(s, t, "NumericQuality", nmspc, 2);
-    CSET_CDR(t, "quality", VECTOR_ELT(ref, 10));
+    CSET_CDR(t, "quality", VECTOR_ELT(fields, 10));
     CEVAL_TO(s, nmspc, alnq);
     PROTECT(alnq);
 
     SEXP adf;    /* .readAligned_SolexaExport_AlignedDataFrame(...) */
-    _as_factor(VECTOR_ELT(ref, 11), FILTER_LEVELS,
+    _as_factor(VECTOR_ELT(fields, 11), FILTER_LEVELS,
                sizeof(FILTER_LEVELS) / sizeof(const char *));
     NEW_CALL(s, t, ".SolexaExport_AlignedDataFrame", nmspc, 7);
-    CSET_CDR(t, "run", VECTOR_ELT(ref, 0)); 
-    CSET_CDR(t, "lane", VECTOR_ELT(ref, 1)); 
-    CSET_CDR(t, "tile", VECTOR_ELT(ref, 2)); 
-    CSET_CDR(t, "x", VECTOR_ELT(ref, 3));
-    CSET_CDR(t, "y", VECTOR_ELT(ref, 4));
-    CSET_CDR(t, "filtering", VECTOR_ELT(ref, 11));
+    CSET_CDR(t, "run", VECTOR_ELT(fields, 0)); 
+    CSET_CDR(t, "lane", VECTOR_ELT(fields, 1)); 
+    CSET_CDR(t, "tile", VECTOR_ELT(fields, 2)); 
+    CSET_CDR(t, "x", VECTOR_ELT(fields, 3));
+    CSET_CDR(t, "y", VECTOR_ELT(fields, 4));
+    CSET_CDR(t, "filtering", VECTOR_ELT(fields, 11));
     CEVAL_TO(s, nmspc, adf);
     PROTECT(adf);
 
     SEXP aln;
-    SEXP sread;
-    PROTECT(sread = _CharAEAE_to_XStringSet(&(rec->read), 
-                                            "DNAString"));
     SEXP strand_lvls = PROTECT(_get_strand_levels());
-    _as_factor_SEXP(VECTOR_ELT(ref, 9), strand_lvls);
+    _as_factor_SEXP(VECTOR_ELT(fields, 9), strand_lvls);
     NEW_CALL(s, t, "AlignedRead", nmspc, 8);
-    CSET_CDR(t, "sread", sread);
+    CSET_CDR(t, "sread", VECTOR_ELT(fields, 5));
     CSET_CDR(t, "quality", sfq); 
-    CSET_CDR(t, "chromosome", VECTOR_ELT(ref, 7));
-    CSET_CDR(t, "position", VECTOR_ELT(ref, 8));
-    CSET_CDR(t, "strand", VECTOR_ELT(ref, 9)); 
+    CSET_CDR(t, "chromosome", VECTOR_ELT(fields, 7));
+    CSET_CDR(t, "position", VECTOR_ELT(fields, 8));
+    CSET_CDR(t, "strand", VECTOR_ELT(fields, 9)); 
     CSET_CDR(t, "alignQuality", alnq);
     CSET_CDR(t, "alignData", adf);
     CEVAL_TO(s, nmspc, aln);
 
-    UNPROTECT(7);
+    UNPROTECT(5);
     return aln;
 }
 
@@ -432,13 +346,26 @@ _AlignedRead_Solexa_make(SOLEXA_EXPORT_REC *rec)
 int
 _read_solexa_export_file(const char *fname, const char *csep,
                          const char *commentChar,
-                         MARK_FIELD_FUNC *mark_func,
-                         SOLEXA_EXPORT_REC *rec)
+                         MARK_FIELD_FUNC *mark_func, int offset,
+			 CharAEAE *sread, CharAEAE *quality,
+			 SEXP result)
 {
     const int N_FIELDS = 22;
     FILE *file;
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
-    int lineno = 0, nrec = 0, i;
+    int lineno = 0, irec = offset, i;
+
+    SEXP run = VECTOR_ELT(result, 0);
+    int *lane = INTEGER(VECTOR_ELT(result, 1)),
+	*tile = INTEGER(VECTOR_ELT(result, 2)),
+	*x = INTEGER(VECTOR_ELT(result, 3)),
+	*y = INTEGER(VECTOR_ELT(result, 4));
+    /* sread, quality */
+    SEXP chromosome = VECTOR_ELT(result, 7);
+    int *position = INTEGER(VECTOR_ELT(result, 8)),
+	*strand = INTEGER(VECTOR_ELT(result, 9)),
+	*alignQuality = INTEGER(VECTOR_ELT(result, 10)),
+	*filtering = INTEGER(VECTOR_ELT(result, 11));
 
     file = _fopen(fname, "r");
     while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
@@ -456,31 +383,30 @@ _read_solexa_export_file(const char *fname, const char *csep,
                 error("too few fields, %s:%d", fname, lineno);
         }
             
-        SET_STRING_ELT(rec->run,
-                       rec->offset + nrec, mkChar(elt[1]));
-        rec->lane[lineno] = atoi(elt[2]);
-        rec->tile[lineno] = atoi(elt[3]);
-        rec->x[lineno] = atoi(elt[4]);
-        rec->y[lineno] = atoi(elt[5]);
+        SET_STRING_ELT(run, irec, mkChar(elt[1]));
+	lane[irec] = atoi(elt[2]);
+	tile[irec] = atoi(elt[3]);
+	x[irec] = atoi(elt[4]);
+	y[irec] = atoi(elt[5]);
+	
         /* 6: indexString, 7: pairedReadNumber */
-        append_string_to_CharAEAE(&(rec->read), elt[8]);
-        append_string_to_CharAEAE(&(rec->quality), elt[9]);
-        SET_STRING_ELT(rec->chromosome,
-                       rec->offset + nrec, mkChar(elt[10]));
+        append_string_to_CharAEAE(sread, elt[8]);
+        append_string_to_CharAEAE(quality, elt[9]);
+        SET_STRING_ELT(chromosome, irec, mkChar(elt[10]));
         /* 11: contig */
         if (*elt[12] == '\0')
-            rec->position[lineno] = NA_INTEGER;
+            position[irec] = NA_INTEGER;
         else
-            rec->position[lineno] = atoi(elt[12]);
+            position[irec] = atoi(elt[12]);
         if (*elt[13] == '\0')
-            rec->strand[lineno] = NA_INTEGER;
+            strand[irec] = NA_INTEGER;
         else {
             switch(*elt[13]) {
             case 'R':
-                rec->strand[lineno] = 1;
+                strand[irec] = 1;
                 break;
             case 'F':
-                rec->strand[lineno] = 2;
+                strand[irec] = 2;
                 break;
             default:
                 error("invalid 'strand' field '%s', %s:%d",
@@ -489,15 +415,15 @@ _read_solexa_export_file(const char *fname, const char *csep,
             }
         }
         /* 14: descriptor */
-        rec->alignQuality[lineno] = atoi(elt[15]);
+        alignQuality[irec] = atoi(elt[15]);
         /* 16: pairedScore, 17: partnerCzome, 18: partnerContig
            19: partnerOffset, 20: partnerStrand */
         switch (*elt[21]) {
         case 'Y':
-            rec->filtering[lineno] = 1;
+            filtering[irec] = 1;
             break;
         case 'N':
-            rec->filtering[lineno] = 2;
+            filtering[irec] = 2;
             break;
         default:
             error("invalid 'filtering' field '%s', %s:%d",
@@ -505,15 +431,17 @@ _read_solexa_export_file(const char *fname, const char *csep,
             break;
         }
         lineno++;
-        nrec++;
+        irec++;
     }
     
-    return nrec;
+    return irec - offset;
 }
 
 SEXP
 read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
 {
+    static const int N_ELTS = 12;
+
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character()'");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
@@ -525,10 +453,6 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));
 
-    int nrec = _count_lines_sum(files);
-    SEXP ref = PROTECT(NEW_LIST(N_ELTS));;
-    SOLEXA_EXPORT_REC *rec = _solexa_export_rec_new(ref, nrec);
-
     const char *csep = translateChar(STRING_ELT(sep, 0));
     MARK_FIELD_FUNC *sep_func;/* how to parse fields; minor efficiency */
     if (csep[0] != '\0' && csep[1] == '\0')
@@ -536,16 +460,39 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
     else
         sep_func = _mark_field_n;
 
+    int nrec = _count_lines_sum(files);
+
+    CharAEAE sread, quality;
+    SEXP result = PROTECT(NEW_LIST(N_ELTS));;
+    SET_VECTOR_ELT(result, 0, NEW_STRING(nrec)); /* run */
+    SET_VECTOR_ELT(result, 1, NEW_INTEGER(nrec)); /* lane */
+    SET_VECTOR_ELT(result, 2, NEW_INTEGER(nrec)); /* tile */
+    SET_VECTOR_ELT(result, 3, NEW_INTEGER(nrec)); /* x */
+    SET_VECTOR_ELT(result, 4, NEW_INTEGER(nrec)); /* y */
+    /* 5, 6: sread, quality */
+    SET_VECTOR_ELT(result, 7, NEW_STRING(nrec));  /* chromosome */
+    SET_VECTOR_ELT(result, 8, NEW_INTEGER(nrec)); /* position */
+    SET_VECTOR_ELT(result, 9, NEW_INTEGER(nrec)); /* strand: factor */
+    SET_VECTOR_ELT(result, 10, NEW_INTEGER(nrec)); /* alignQuality */
+    SET_VECTOR_ELT(result, 11, NEW_INTEGER(nrec)); /* filtering: factor */
+
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
-        _solexa_export_rec_set_offset(rec, nrec);
         nrec += _read_solexa_export_file(
             CHAR(STRING_ELT(files, i)), csep,
             CHAR(STRING_ELT(commentChar, 0)),
-            sep_func, rec);
+            sep_func, nrec,
+	    &sread, &quality, result);
     }
-    SEXP aln = _AlignedRead_Solexa_make(rec);
-    UNPROTECT(1);
+
+    SEXP tmp;
+    PROTECT(tmp = _CharAEAE_to_XStringSet(&sread, "DNAString"));
+    SET_VECTOR_ELT(result, 5, tmp);
+    PROTECT(tmp = _CharAEAE_to_XStringSet(&quality, "BString"));
+    SET_VECTOR_ELT(result, 6, tmp);
+
+    SEXP aln = _AlignedRead_Solexa_make(result);
+    UNPROTECT(3);
     return aln;
 }
