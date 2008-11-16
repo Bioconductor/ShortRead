@@ -57,7 +57,7 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
     filter.  The \code{name} is useful for debugging and reference.}
 
   \item{filt}{A \code{\linkS4class{SRFilter}} object, to be used with
-    additional arugments to create a composite filter.}
+    additional arguments to create a composite filter.}
 
   \item{.name}{An optional \code{character(1)} object used to over-ride
     the name applied to default filters.}
@@ -118,7 +118,7 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
 
   \code{compose} constructs a new filter from one or more existing
   filter. The result is a filter that returns a logical vector with
-  indicies corresponding to components of \code{x} that pass all
+  indices corresponding to components of \code{x} that pass all
   filters. If not provided, the name of the filter consists of the names
   of all component filters, each separated by \code{" o "}.
 
@@ -133,7 +133,7 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   \code{positionFilter} selects elements satisfying
   \code{min <= position(x) <= max}.
 
-  \code{strandFilter} selects elemenst satisfying
+  \code{strandFilter} selects elements satisfying
   \code{match(strand(x), strand, nomatch=0) > 0}.
 
   \code{uniqueFilter} selects elements satisfying

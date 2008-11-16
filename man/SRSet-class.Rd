@@ -38,7 +38,7 @@
     \item{\code{readIndex}:}{Object of class \code{"integer"} indicating
     specific sequences included in the experiment.}
 
-    \item{\code{readCount}:}{Object of class \code{"integer"} conaining
+    \item{\code{readCount}:}{Object of class \code{"integer"} containing
       the number of reads in each sample included in the experiment. The
       sum of this vector is the total number of reads.}
 
@@ -66,7 +66,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       corresponding slot from \code{object}.}
     
 
-    \item{show}{\code{signature(object = "SRSet")}: dispaly the contents
+    \item{show}{\code{signature(object = "SRSet")}: display the contents
       of this object.}
 
     \item{detail}{\code{signature(object = "SRSet")}: provide more

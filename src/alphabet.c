@@ -43,14 +43,14 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     for (i = 0; i < LENGTH(alphabet); ++i) {
         unsigned char c = (unsigned char) *CHAR(STRING_ELT(alphabet, i));
         map[c] = i;
-    }    
+    }
 
     /* The main loop. Cache the string set for fast access, then
      * iterate over all strings, and over all characters in the
      * string. For each character, decode and map into the answer
      * matrix.
      *
-     * FIXME: 
+     * FIXME:
      */
     CachedXStringSet cache = new_CachedXStringSet(stringSet);
     const int len = get_XStringSet_length(stringSet);
@@ -124,7 +124,7 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
      * string. For each character, decode and map into the answer
      * matrix.
      *
-     * FIXME: 
+     * FIXME:
      */
     CachedXStringSet cache1 = new_CachedXStringSet(stringSet1);
     CachedXStringSet cache2 = new_CachedXStringSet(stringSet2);
@@ -186,10 +186,10 @@ alphabet_as_int(SEXP stringSet, SEXP score)
         Rf_error("'%s' must be '%s'", "score", "integer(256)");
     DECODE_FUNC decode = decoder(base);
     const int len = get_XStringSet_length(stringSet);
-    
+
     CachedXStringSet cache = new_CachedXStringSet(stringSet);
     int i;
-    
+
     RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, 0);
     int width = seq.nelt;
     int *ians;
@@ -298,7 +298,7 @@ alphabet_duplicated(SEXP stringSet)
 SEXP
 alphabet_rank(SEXP stringSet)
 {
-    /* integer vector of unique indicies into sorted set */
+    /* integer vector of unique indices into sorted set */
     const int len = get_XStringSet_length(stringSet);
     CachedXStringSet cache = new_CachedXStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));

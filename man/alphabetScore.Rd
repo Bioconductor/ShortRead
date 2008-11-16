@@ -1,7 +1,7 @@
 \name{alphabetScore}
 \alias{alphabetScore}
 
-\title{Efficiently calculate the sum of quality scoares across bases}
+\title{Efficiently calculate the sum of quality scores across bases}
 \description{
 
   This generic takes a \code{\linkS4class{QualityScore}} object and

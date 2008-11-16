@@ -27,7 +27,7 @@ clean(object, ...)
   \describe{
 
     \item{clean}{\code{signature(x = "DNAStringSet")}:
-      Remove all sequences containin non-base (A, C, G, T) IUPAC
+      Remove all sequences containing non-base (A, C, G, T) IUPAC
       symbols.}
 
   }
