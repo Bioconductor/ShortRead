@@ -40,7 +40,7 @@ SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
 /* io.c */
 
-SEXP read_prb_as_character(SEXP file, SEXP cycles);
+SEXP read_prb_as_character(SEXP file, SEXP cycles, SEXP asSolexa);
 SEXP read_solexa_fastq(SEXP files);
 SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 			     SEXP colIndex, SEXP colClasses, 

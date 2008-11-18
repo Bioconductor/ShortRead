@@ -85,7 +85,13 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \code{pattern=character(0)} as the pattern for discovering Solexa
       \sQuote{prb} files, retuning a \code{\linkS4class{SFastqQuality}}
       object containing the maximum qualities found for each base of
-      each cycle.}
+      each cycle.
+
+      The \code{...} argument may include the named argument
+      \code{as}. This influences the return value, as explained on the
+      \code{\link{readPrb,character-method}} page.
+
+    }
 
     \item{readFastq}{
 

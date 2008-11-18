@@ -2,6 +2,9 @@
 #include <stdlib.h>             /* atoi */
 #include "ShortRead.h"
 
+static const int SOLEXA_QBASE = 64;
+static const int PHRED_QBASE = 33;
+
 static const int LINES_PER_FASTQ_REC = 4;
 static const int LINES_PER_FASTA_REC = 2;
 
@@ -22,18 +25,20 @@ static const int LINES_PER_FASTA_REC = 2;
  */
 
 SEXP
-read_prb_as_character(SEXP fname, SEXP cycles)
+read_prb_as_character(SEXP fname, SEXP cycles, SEXP asSolexa)
 {
     const int MIN_SCORE = -40;
     const int NUC_PER_CYCLE = 4;
-    const int SOLEXA_QBASE = 64;
 
     if (!IS_CHARACTER(fname) || LENGTH(fname)!=1)
         error("'fname' must be 'character(1)'");
     if (!IS_INTEGER(cycles) || LENGTH(cycles) != 1)
         error("'cycles' must be 'integer(1)'");
+    if (!IS_LOGICAL(asSolexa) || LENGTH(asSolexa) != 1)
+	error("'asSolexa' must be 'logical(1)'");
     const int n_reads = INTEGER(count_lines(fname))[0];
     const int n_cycles = INTEGER(cycles)[0];
+    const int qbase = LOGICAL(asSolexa)[0] ? SOLEXA_QBASE : PHRED_QBASE;
     SEXP ans = PROTECT(NEW_CHARACTER(n_reads));
 
     FILE *file = _fopen(CHAR(STRING_ELT(fname, 0)), "r");
@@ -44,7 +49,7 @@ read_prb_as_character(SEXP fname, SEXP cycles)
     while (fscanf(file, "%d", &val)==1) {
         if (val > curr_max) curr_max = val;
         if (++nuc == NUC_PER_CYCLE) {
-            score[cycle] = (char) curr_max + SOLEXA_QBASE;
+            score[cycle] = (char) curr_max + qbase;
             nuc = 0;
             curr_max=MIN_SCORE;
             if (++cycle == n_cycles) {
@@ -323,16 +328,27 @@ _AlignedRead_Solexa_make(SEXP fields)
     CEVAL_TO(s, nmspc, alnq);
     PROTECT(alnq);
 
-    SEXP adf;    /* .readAligned_SolexaExport_AlignedDataFrame(...) */
+    /* .SolexaExport_AlignedDataFrame(...) */
     _as_factor(VECTOR_ELT(fields, 11), FILTER_LEVELS,
                sizeof(FILTER_LEVELS) / sizeof(const char *));
-    NEW_CALL(s, t, ".SolexaExport_AlignedDataFrame", nmspc, 7);
-    CSET_CDR(t, "run", VECTOR_ELT(fields, 0)); 
+    SEXP run;
+    NEW_CALL(s, t, "factor", nmspc, 2);
+    CSET_CDR(t, "x", VECTOR_ELT(fields, 0));
+    CEVAL_TO(s, nmspc, run);
+    PROTECT(run);
+    SEXP dataframe;
+    NEW_CALL(s, t, "data.frame", nmspc, 7);
+    CSET_CDR(t, "run", run);
     CSET_CDR(t, "lane", VECTOR_ELT(fields, 1)); 
     CSET_CDR(t, "tile", VECTOR_ELT(fields, 2)); 
     CSET_CDR(t, "x", VECTOR_ELT(fields, 3));
     CSET_CDR(t, "y", VECTOR_ELT(fields, 4));
     CSET_CDR(t, "filtering", VECTOR_ELT(fields, 11));
+    CEVAL_TO(s, nmspc, dataframe);
+    PROTECT(dataframe);
+    SEXP adf;
+    NEW_CALL(s, t, ".SolexaExport_AlignedDataFrame", nmspc, 2);
+    CSET_CDR(t, "data", dataframe);
     CEVAL_TO(s, nmspc, adf);
     PROTECT(adf);
 
@@ -349,7 +365,7 @@ _AlignedRead_Solexa_make(SEXP fields)
     CSET_CDR(t, "alignData", adf);
     CEVAL_TO(s, nmspc, aln);
 
-    UNPROTECT(5);
+    UNPROTECT(7);
     return aln;
 }
 

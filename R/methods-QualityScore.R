@@ -132,7 +132,7 @@ setAs("FastqQuality", "matrix", function(from) {
     if (!length(unique(width(from)))==1)
         .throw(SRError("UserArgumentMismatch",
                        "matrix requires identical quality score widths"))
-    .Call(.alphabet_as_int, quality(from), 0:255-32L)
+    .Call(.alphabet_as_int, quality(from), 0:255-33L)
 })
 
 setAs("SFastqQuality", "matrix", function(from) {

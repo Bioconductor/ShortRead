@@ -8,10 +8,9 @@
 \description{
 
   \code{readPrb} reads all \code{_prb.txt} files in a directory into a
-  single object of class \code{\linkS4class{SFastqQuality}}. Methods do
-  this by identifying the maximum base call quality for each cycle and
-  read, and representing this as an ASCII-encoded character string
-  following Solexa conventions.
+  single object. Most methods (see details) do this by identifying the
+  maximum base call quality for each cycle and read, and representing
+  this as an ASCII-encoded character string.
 
 }
 \usage{
@@ -31,8 +30,52 @@ readPrb(dirPath, pattern = character(0), ...)
 
 }
 
+\details{
+
+  The \code{readPrb,character-method} contains an arugment \code{as}
+  that determines the value of the returned object, as follows.
+
+  \itemize{
+
+    \item{\code{as="SolexaEncoding"}}{
+
+      The ASCII encoding of the maximum per cycle and read quality score
+      is encoded using Solexa conventions.
+
+    }
+
+    \item{\code{as="FastqEncoding"}}{
+
+      The ASCII encoding of the maximum per cycle and read quality score
+      is encoded using Fastq conventions, i.e., \code{!} has value 0.
+
+    }
+
+    \item{\code{as="IntgerEncoding"}}{
+
+      The maximum per cycle and read quality score is returned as a in
+      integer value. Values are collated into a matrix with number of
+      rows equal to number of reads, and number of columns equal to
+      number of cycles.
+
+    }
+
+    \item{\code{as="matrix"}}{
+
+      The quality scores are \emph{not} summarized; the return value is
+      an integer matrix with number of rows equal to number of reads,
+      and number of columns equal to four times the number of
+      cycles. The first four columns represent nucleotides A, C, G, and
+      T qualities of cycle 1; subsequent columns represent nucleotide
+      frequencies at successive cycles.
+
+    }
+
+  }
+}
+
 \value{
-  An object of class \code{\linkS4class{SFastqQuality}}
+  An object of class \code{\linkS4class{QualityScore}}, or an integer matrix.
 }
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}

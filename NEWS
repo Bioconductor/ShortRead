@@ -8,6 +8,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
+    o readPrb returns different types of objects, depending on the
+    'as' argument of the readPrb,character-method.
+
     o readXStringSet gets arguments skip, nrows; argument order
     changed slightly
 
@@ -24,6 +27,9 @@ NEW FEATURES
     o readAligned gains ability to parse MAQ 0.7 version binary files
 
 BUG FIXES
+
+    o FastqQuality got the quality encoding off by one in as(x,
+    "matrix")
 
     o qa_solexa.Rnw incorrectly displayed read occurences when lanes
     were presented out-of-order (an unusual occurence)

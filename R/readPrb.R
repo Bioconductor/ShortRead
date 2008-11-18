@@ -1,11 +1,11 @@
-.readPrb <- function(file, ..., verbose=FALSE)
+.readPrb <- function(file, ..., asSolexa, verbose)
 {
     if (verbose)
-        cat(".prbScore", file, "\n")
+        cat(".readPrb", file, "\n")
     ln <- readLines(file, 1)
     cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L
     tryCatch({
-        .Call(.read_prb_as_character, file, cycles)
+        .Call(.read_prb_as_character, file, cycles, asSolexa)
     }, error=function(err) {
         .throw(SRError("Input/Output",
                        sprintf("parsing 'prb'\n  file: %s\n  error: %s",
@@ -14,10 +14,100 @@
     })
 }
 
-.readPrb_character <- function(dirPath, pattern, ...)
+.readPrb_quality <-
+    function(dirPath, pattern, qclass, ..., asSolexa, verbose)
 {
     fls <- .file_names(dirPath, pattern)
-    SFastqQuality(unlist(srapply(fls, .readPrb)))
+    qclass(unlist(srapply(fls, .readPrb, ...,
+                          asSolexa=asSolexa, verbose=verbose)))
+}
+
+.readPrb_IntegerEncoding <-
+    function(dirPath, pattern, ..., verbose)
+{
+    res <- .readPrb_quality(dirPath, pattern, SFastqQuality, ...,
+                            asSolexa=TRUE, verbose=verbose)
+    if (length(unique(width(res)))!=1)
+        .throw(SRError("Input/Output", "reads have different widths") )
+    as(res, "matrix")
+}
+
+.readPrb_matrix <-
+    function(dirPath, pattern, ..., verbose=FALSE)
+{
+    .read <- function(fl, ..., ncol, verbose)
+    {
+        if (verbose)
+            cat(".readPrb_matrix", file, "\n")
+        matrix(scan(fl, integer(), ..., quiet=!verbose),
+               ncol=ncol, byrow=TRUE)
+    }
+    nrec <- countLines(dirPath, pattern)
+    crec <- c(0, cumsum(nrec))
+    fls <- list.files(dirPath, pattern, full=TRUE)
+    ln <- readLines(fls[[1]], 1)
+    cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L    
+    nms<- paste(c("A", "C", "G", "T"), rep(seq_len(cycles), each=4),
+                sep="")
+    ncol <- length(nms)
+    m <- matrix(integer(), nrow=sum(nrec), ncol=ncol,
+                dimnames=list(NULL, nms))
+    for (i in seq_along(fls))
+        tryCatch({
+            m[(crec[i]+1):crec[i+1],] <-
+                .read(fls[[i]], ..., ncol=ncol, verbose=verbose)
+        }, error=function(err) {
+            .throw(SRError("Input/Output",
+                           sprintf("parsing 'prb'\n  file: %s\n  error: %s",
+                                   fls[[i]],
+                                   conditionMessage(err))))
+        })
+    m
+}
+
+.readPrb_character <-
+    function(dirPath, pattern=character(0),
+             as=c(
+               "SolexaEncoding", "FastqEncoding", "IntegerEncoding",
+               "matrix"),
+             ..., verbose=FALSE)
+{
+    if (missing(as)) {
+        as <- "SolexaEncoding"
+    } else if (!is.character(as) || length(as) != 1) {
+        .arg_mismatch_type_err("as", "character(1)")
+    } else {
+        vals <- eval(formals(.readPrb_character)$as)
+        if (!as %in% vals)
+            .arg_mismatch_value_err("as", as, vals)
+    }
+    tryCatch({
+        switch(as,
+               SolexaEncoding=.readPrb_quality(
+                 dirPath, pattern, SFastqQuality, ..., asSolexa=TRUE,
+                 verbose=verbose),
+               FastqEncoding=.readPrb_quality(
+                 dirPath, pattern, FastqQuality, ..., asSolexa=FALSE,
+                 verbose=verbose),
+               IntegerEncoding=.readPrb_IntegerEncoding(
+                 dirPath, pattern, ..., verbose=verbose),
+               matrix=.readPrb_matrix(
+                 dirPath, pattern, ..., verbose=verbose))
+    }, error=function(err) {
+        if (is(err, "SRError")) stop(err)
+        else {
+            pat <- paste(pattern, collapse=" ")
+            txt <- paste("'%s' failed to parse files",
+                         "dirPath: '%s'",
+                         "pattern: '%s'",
+                         "as: '%s'",
+                         "error: %s", sep="\n  ")
+            msg <- sprintf(txt, "readAligned",
+                           paste(dirPath, collapse="'\n    '"),
+                           pat, as, conditionMessage(err))
+            .throw(SRError("Input/Output", msg))
+        }
+    })
 }
 
 setMethod("readPrb", "character", .readPrb_character)
