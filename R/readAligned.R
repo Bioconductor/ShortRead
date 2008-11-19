@@ -112,20 +112,17 @@
                 alignData=alignData)
 }
 
-.SolexaExport_AlignedDataFrame <-
-    function(run, lane, tile, x, y, filtering)
+.SolexaExport_AlignedDataFrame <- function(data)
 {
-    df <- data.frame(run=factor(run),
-                     lane=lane, tile=tile, x=x, y=y,
-                     filtering=filtering)
-    meta <- data.frame(labelDescription=c(
+    AlignedDataFrame(data=data,
+                     metadata=data.frame(
+                       labelDescription=c(
                          "Analysis pipeline run",
                          "Flow cell lane",
                          "Flow cell tile",
                          "Cluster x-coordinate",
                          "Cluster y-coordinate",
-                         "Read successfully passed filtering?"))
-    AlignedDataFrame(df, meta)
+                         "Read successfully passed filtering?")))
 }
 
 .readAligned_SolexaExport <-
