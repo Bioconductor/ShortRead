@@ -35,7 +35,7 @@ read_prb_as_character(SEXP fname, SEXP cycles, SEXP asSolexa)
     if (!IS_INTEGER(cycles) || LENGTH(cycles) != 1)
         error("'cycles' must be 'integer(1)'");
     if (!IS_LOGICAL(asSolexa) || LENGTH(asSolexa) != 1)
-	error("'asSolexa' must be 'logical(1)'");
+        error("'asSolexa' must be 'logical(1)'");
     const int n_reads = INTEGER(count_lines(fname))[0];
     const int n_cycles = INTEGER(cycles)[0];
     const int qbase = LOGICAL(asSolexa)[0] ? SOLEXA_QBASE : PHRED_QBASE;
@@ -167,10 +167,10 @@ read_solexa_fastq(SEXP files)
 
 int
 _io_XStringSet_columns(const char *fname, 
-		       int header,
+                       int header,
                        const char *sep, MARK_FIELD_FUNC *mark_field,
-		       const int *colidx, int ncol,
-		       int nrow, int skip, const char *commentChar,
+                       const int *colidx, int ncol,
+                       int nrow, int skip, const char *commentChar,
                        CharAEAE *sets, const int *toIUPAC)
 {
     FILE *file;
@@ -181,12 +181,12 @@ _io_XStringSet_columns(const char *fname,
     linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
 
     while (skip-- > 0)
-	fgets(linebuf, LINEBUF_SIZE, file);
+        fgets(linebuf, LINEBUF_SIZE, file);
     if (header == TRUE)
         fgets(linebuf, LINEBUF_SIZE, file);
 
     while (recno < nrow &&
-	   fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+           fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
         if (_linebuf_skip_p(linebuf, file, fname,
                             lineno, commentChar)) {
             lineno++;
@@ -206,7 +206,7 @@ _io_XStringSet_columns(const char *fname,
             curr = next;
         } 
         lineno++;
-	recno++;
+        recno++;
     }
     fclose(file);
     return recno;
@@ -214,8 +214,8 @@ _io_XStringSet_columns(const char *fname,
 
 SEXP
 read_XStringSet_columns(SEXP files, SEXP header, SEXP sep, 
-			SEXP colIndex, SEXP colClasses,
-			SEXP nrows, SEXP skip, SEXP commentChar)
+                        SEXP colIndex, SEXP colClasses,
+                        SEXP nrows, SEXP skip, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character(1)'");
@@ -229,9 +229,9 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
     if (!IS_CHARACTER(colClasses) || LENGTH(colClasses) != LENGTH(colIndex))
         Rf_error("'colClasses' must be 'character' with length(colClasses) == length(colIndex)");
     if (!IS_INTEGER(nrows) || LENGTH(nrows) != 1)
-	Rf_error("'nrows' msut be 'integer(1)'");
+        Rf_error("'nrows' msut be 'integer(1)'");
     if (!IS_INTEGER(skip) || LENGTH(skip) != 1)
-	Rf_error("'skip' must be 'integer(1)'");
+        Rf_error("'skip' must be 'integer(1)'");
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
         Rf_error("'commentChar' must be character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
@@ -250,8 +250,8 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 
     int nrow = INTEGER(nrows)[0];
     if (nrow < 0) {
-	nrow = _count_lines_sum(files);
-	nrow -= nfiles * (LOGICAL(header)[0] + INTEGER(skip)[0]);
+        nrow = _count_lines_sum(files);
+        nrow -= nfiles * (LOGICAL(header)[0] + INTEGER(skip)[0]);
     }
 
     int ncol = LENGTH(colIndex);
@@ -268,16 +268,16 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
     int nreads = 0;
     for (i = 0; i < nfiles; ++i) {
         R_CheckUserInterrupt();
-	if (nreads >= nrow) 
-	    break;
+        if (nreads >= nrow) 
+            break;
         const char *fname = translateChar(STRING_ELT(files, i));
         nreads += 
-	    _io_XStringSet_columns(fname, 
-				   LOGICAL(header)[0], csep, sep_func,
-				   colidx, ncol,
-				   nrow - nreads, INTEGER(skip)[0],
-				   CHAR(STRING_ELT(commentChar, 0)),
-				   sets, toIUPAC);
+            _io_XStringSet_columns(fname, 
+                                   LOGICAL(header)[0], csep, sep_func,
+                                   colidx, ncol,
+                                   nrow - nreads, INTEGER(skip)[0],
+                                   CHAR(STRING_ELT(commentChar, 0)),
+                                   sets, toIUPAC);
     }
 
     /* formulate return value */
@@ -297,17 +297,17 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
  * _export parser
  */
 
-#define NEW_CALL(S, T, NAME, ENV, N) \
-    PROTECT(S = T = allocList(N)); \
-    SET_TYPEOF(T, LANGSXP); \
-    SETCAR(T, findFun(install(NAME), ENV)); \
+#define NEW_CALL(S, T, NAME, ENV, N)            \
+    PROTECT(S = T = allocList(N));              \
+    SET_TYPEOF(T, LANGSXP);                     \
+    SETCAR(T, findFun(install(NAME), ENV));     \
     T = CDR(T)
-#define CSET_CDR(T, NAME, VALUE) \
-    SETCAR(T, VALUE); \
-    SET_TAG(T, install(NAME)); \
+#define CSET_CDR(T, NAME, VALUE)                \
+    SETCAR(T, VALUE);                           \
+    SET_TAG(T, install(NAME));                  \
     T = CDR(T)
-#define CEVAL_TO(S, ENV, GETS) \
-    GETS = eval(S, ENV); \
+#define CEVAL_TO(S, ENV, GETS)                  \
+    GETS = eval(S, ENV);                        \
     UNPROTECT(1)
 
 SEXP
@@ -316,7 +316,7 @@ _AlignedRead_Solexa_make(SEXP fields)
     const char *FILTER_LEVELS[] = { "Y", "N" };
     SEXP s, t, nmspc = PROTECT(_get_namespace("ShortRead"));
 
-    SEXP sfq;			/* SFastqQuality */
+    SEXP sfq;                   /* SFastqQuality */
     NEW_CALL(s, t, "SFastqQuality", nmspc, 2);
     CSET_CDR(t, "quality", VECTOR_ELT(fields, 6));
     CEVAL_TO(s, nmspc, sfq);
@@ -377,8 +377,8 @@ int
 _read_solexa_export_file(const char *fname, const char *csep,
                          const char *commentChar,
                          MARK_FIELD_FUNC *mark_func, int offset,
-			 CharAEAE *sread, CharAEAE *quality,
-			 SEXP result)
+                         CharAEAE *sread, CharAEAE *quality,
+                         SEXP result)
 {
     const int N_FIELDS = 22;
     FILE *file;
@@ -387,15 +387,15 @@ _read_solexa_export_file(const char *fname, const char *csep,
 
     SEXP run = VECTOR_ELT(result, 0);
     int *lane = INTEGER(VECTOR_ELT(result, 1)),
-	*tile = INTEGER(VECTOR_ELT(result, 2)),
-	*x = INTEGER(VECTOR_ELT(result, 3)),
-	*y = INTEGER(VECTOR_ELT(result, 4));
+        *tile = INTEGER(VECTOR_ELT(result, 2)),
+        *x = INTEGER(VECTOR_ELT(result, 3)),
+        *y = INTEGER(VECTOR_ELT(result, 4));
     /* sread, quality */
     SEXP chromosome = VECTOR_ELT(result, 7);
     int *position = INTEGER(VECTOR_ELT(result, 8)),
-	*strand = INTEGER(VECTOR_ELT(result, 9)),
-	*alignQuality = INTEGER(VECTOR_ELT(result, 10)),
-	*filtering = INTEGER(VECTOR_ELT(result, 11));
+        *strand = INTEGER(VECTOR_ELT(result, 9)),
+        *alignQuality = INTEGER(VECTOR_ELT(result, 10)),
+        *filtering = INTEGER(VECTOR_ELT(result, 11));
 
     file = _fopen(fname, "r");
     while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
@@ -414,11 +414,11 @@ _read_solexa_export_file(const char *fname, const char *csep,
         }
             
         SET_STRING_ELT(run, irec, mkChar(elt[1]));
-	lane[irec] = atoi(elt[2]);
-	tile[irec] = atoi(elt[3]);
-	x[irec] = atoi(elt[4]);
-	y[irec] = atoi(elt[5]);
-	
+        lane[irec] = atoi(elt[2]);
+        tile[irec] = atoi(elt[3]);
+        x[irec] = atoi(elt[4]);
+        y[irec] = atoi(elt[5]);
+    
         /* 6: indexString, 7: pairedReadNumber */
         append_string_to_CharAEAE(sread, elt[8]);
         append_string_to_CharAEAE(quality, elt[9]);
@@ -492,7 +492,9 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
 
-    CharAEAE sread, quality;
+    CharAEAE
+        sread = new_CharAEAE(nrec, 0),
+        quality = new_CharAEAE(nrec, 0);
     SEXP result = PROTECT(NEW_LIST(N_ELTS));;
     SET_VECTOR_ELT(result, 0, NEW_STRING(nrec)); /* run */
     SET_VECTOR_ELT(result, 1, NEW_INTEGER(nrec)); /* lane */
@@ -513,7 +515,7 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
             CHAR(STRING_ELT(files, i)), csep,
             CHAR(STRING_ELT(commentChar, 0)),
             sep_func, nrec,
-	    &sread, &quality, result);
+            &sread, &quality, result);
     }
 
     SEXP tmp;
