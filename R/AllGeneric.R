@@ -47,6 +47,16 @@ setGeneric("tables", function(x, n=50, ...)
            standardGeneric("tables"),
            signature=c("x"))
 
+## Intensities
+
+setGeneric("readIntensities",
+           function(dirPath, pattern=character(0), ...,
+                    intExtension="_int.txt",
+                    nseExtension="_nse.txt",
+                    withNse=TRUE, verbose=FALSE)
+           standardGeneric("readIntensities"),
+           signature="dirPath")
+
 ## QualityScore
 
 setGeneric("FastqQuality", function(quality, ...)

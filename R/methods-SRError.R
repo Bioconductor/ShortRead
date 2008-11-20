@@ -7,6 +7,7 @@
                     "InternalError",
                     "RemoteError",
                     "InvalidReadFilter",
+                    "ValueUnavailable",
                     .SRErrorWarning_types)
 
 .SRWarn_types <- c("UnspecifiedWarning",

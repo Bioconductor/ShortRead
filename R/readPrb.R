@@ -44,11 +44,11 @@
     }
     nrec <- countLines(dirPath, pattern)
     crec <- c(0, cumsum(nrec))
-    fls <- list.files(dirPath, pattern, full=TRUE)
+    fls <- .file_names(dirPath, pattern)
     ln <- readLines(fls[[1]], 1)
     cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L    
-    nms<- paste(c("A", "C", "G", "T"), rep(seq_len(cycles), each=4),
-                sep="")
+    nms <- paste(c("A", "C", "G", "T"), rep(seq_len(cycles), each=4),
+                 sep="")
     ncol <- length(nms)
     m <- matrix(integer(), nrow=sum(nrec), ncol=ncol,
                 dimnames=list(NULL, nms))

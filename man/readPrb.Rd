@@ -80,8 +80,6 @@ readPrb(dirPath, pattern = character(0), ...)
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
-\seealso{ ~~objects to See Also as \code{\link{help}}, ~~~ }
-
 \examples{
 fl <- system.file("extdata", package="ShortRead")
 sp <- SolexaPath(fl)

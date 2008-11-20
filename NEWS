@@ -8,6 +8,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
+    o readIntensity reads Solexa image intensity files into R,
+    including information about lane, tile, x, and y coordinates of
+    each read.
+
     o readPrb returns different types of objects, depending on the
     'as' argument of the readPrb,character-method.
 

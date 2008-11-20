@@ -56,6 +56,36 @@ setClass("SRFilter",
            name="ScalarCharacter"),
          validity=.srValidity)
 
+## Intensity
+
+ShortReadIntensityInfo <-
+  function(lane=integer(0), tile=integer(length(lane)),
+           x=integer(length(lane)), y=integer(length(lane)))
+{
+    new("AnnotatedDataFrame",
+        data=data.frame(
+          lane=lane, tile=tile, x=x, y=y),
+        varMetadata=data.frame(
+          labelDescription=c(
+            "Solexa lane nubmer",
+            "Solexa tile nubmer",
+            "Tile x coordinate",
+            "Tile y coordinate")))
+}
+
+setClass("ShortReadIntensity", contains=".ShortReadBase",
+         representation=representation(
+           .hasStandardErrors="ScalarLogical",
+           readInfo="AnnotatedDataFrame",
+           intensity="matrix",
+           nse="matrix"),
+         prototype=prototype(
+           .hasStandardErrors=mkScalar(FALSE),
+           readInfo=ShortReadIntensityInfo(),
+           intensity=matrix(0L, 0, 0),
+           nse=matrix(0L, 0, 0)),
+         validity=.srValidity)
+
 ## QualityScore
 
 setClass("QualityScore", contains=".ShortReadBase",

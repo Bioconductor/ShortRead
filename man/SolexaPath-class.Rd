@@ -10,6 +10,7 @@
 \alias{show,SolexaPath-method}
 \alias{detail,SolexaPath-method}
 % transforming methods
+\alias{readIntensities,SolexaPath-method}
 \alias{readPrb,SolexaPath-method}
 \alias{readFastq,SolexaPath-method}
 \alias{readBaseQuality,SolexaPath-method}
@@ -77,6 +78,21 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
   Transforming methods include:
   \describe{
 
+    \item{readIntensities}{
+
+      \code{signature(dirPath = "SolexaPath", pattern=character(0), run,
+        ..., intExtension = "_int.txt", nseExtension = "_nse.txt",
+        withNse = TRUE, verbose = TRUE)}:
+
+      Use \code{imageAnalysisPath(sp)[run]} as the directory path(s) and
+      \code{pattern=character(0)} as the pattern for discovering Soelxa
+      \code{intExtension} and \code{nseExtension} files, returning a
+      \code{\linkS4class{ShortReadIntensity}} object containing
+      intensities, (optionally) standard errors, and read (lane, tile,
+      x, y coordinates of cluster) information.
+
+    }
+    
     \item{readPrb}{
 
       \code{signature(dirPath = "SolexaPath", pattern=character(0), run, ...)}:
