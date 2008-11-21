@@ -102,7 +102,7 @@
                          "pattern: '%s'",
                          "as: '%s'",
                          "error: %s", sep="\n  ")
-            msg <- sprintf(txt, "readAligned",
+            msg <- sprintf(txt, "readPrb",
                            paste(dirPath, collapse="'\n    '"),
                            pat, as, conditionMessage(err))
             .throw(SRError("Input/Output", msg))

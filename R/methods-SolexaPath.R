@@ -32,13 +32,14 @@ SolexaPath <- function(experimentPath=NA_character_,
 .readIntensities_SolexaPath <-
     function(dirPath, pattern=character(0), run, ...,
              intExtension="_int.txt", nseExtension="_nse.txt",
-             withNse=TRUE, verbose=FALSE)
+             withVariability=TRUE, verbose=FALSE)
 {
     callGeneric(imageAnalysisPath(dirPath)[run],
                 pattern=pattern, ...,
+                type="SolexaIntensity",
                 intExtension=intExtension,
                 nseExtension=nseExtension,
-                withNse=withNse, verbose=verbose)
+                withVariability=withVariability, verbose=verbose)
 }
 
 setMethod(readIntensities, "SolexaPath", .readIntensities_SolexaPath)

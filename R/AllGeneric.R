@@ -50,10 +50,7 @@ setGeneric("tables", function(x, n=50, ...)
 ## Intensities
 
 setGeneric("readIntensities",
-           function(dirPath, pattern=character(0), ...,
-                    intExtension="_int.txt",
-                    nseExtension="_nse.txt",
-                    withNse=TRUE, verbose=FALSE)
+           function(dirPath, pattern=character(0), ...)
            standardGeneric("readIntensities"),
            signature="dirPath")
 

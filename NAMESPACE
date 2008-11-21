@@ -15,6 +15,9 @@ importFrom(Biostrings, BStringSet, DNAStringSet,
            quality, pairwiseAlignment)
 
 exportClasses(SRError, SRWarn, SRList, SRVector, SRFilter,
+              IntensityMeasure, ArrayIntensity,
+              IntensityInfo, SolexaIntensityInfo,
+              Intensity, SolexaIntensity,
               QualityScore, IntegerQuality, NumericQuality, MatrixQuality,
               FastqQuality, SFastqQuality,
               ShortRead, ShortReadQ,

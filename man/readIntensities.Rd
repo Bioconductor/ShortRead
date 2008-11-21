@@ -7,18 +7,13 @@
 
 \description{
 
-  \code{readIntensities} reads \code{_int.txt} and (optionally)
-  \code{_nse.txt} files in a directory into a single object. Intensities
-  and their standard errors are stored as matricies; information about
-  reads (lane, tile, x, and y coordinate) are recorded in an
-  \code{AnnotatedDataFrame}.
+  \code{readIntensities} reads image `intensity' files (such as Solexa's
+  \code{_int.txt} and (optionally) \code{_nse.txt}) in a directory into
+  a single object.
 
 }
 \usage{
-readIntensities(dirPath, pattern=character(0), ...,
-                intExtension="_int.txt",
-                nseExtension="_nse.txt",
-                withNse=TRUE, verbose=FALSE)
+readIntensities(dirPath, pattern=character(0), ...)
 }
 
 \arguments{
@@ -31,25 +26,34 @@ readIntensities(dirPath, pattern=character(0), ...,
     intExtension, sep="")} with \code{intExtension} or
     \code{nseExtension} to match files to be summarized.}
 
-  \item{\dots}{Additional arguments, e.g., to \code{\link{srapply}},
-    used during evaluation.}
-
-  \item{intExtension}{A length 1 character vector appended to
-    \code{pattern} to select intensity files.}
-
-  \item{nseExtension}{A length 1 character vector appended to
-    \code{pattern} to select standard error (nse) files.}
-
-  \item{withNse}{A length 1 logical vector indicating whether 'nse'
-    values are to be parsed.}
-
-  \item{verbose}{A length 1 logical vector controling information,
-    useful for debuging, presented during parsing.}
+  \item{\dots}{Additional arguments used by methods.}
 
 }
 
+\details{
+
+  Additional methods are defined on specific classes, see, e.g.,
+  \code{\linkS4class{SolexaPath}}.
+
+  The \code{readIntensities,character-method} contains an arugment
+  \code{type} that determines how intensities are parsed. Use the
+  \code{type} argument to \code{readIntensities,character-method}, as
+  follows:
+
+  \itemize{
+
+    \item{\code{type="SolexaIntensity"}}{
+
+      Intensities are read from Solexa \code{_int.txt} and
+      \code{_nse.txt}-style files; see \code{\linkS4class{SolexaPath}}
+      for details.
+
+    }
+  }
+}
+
 \value{
-  An object of class \code{\linkS4class{ShortReadIntensity}}.
+  An object derived from class \code{\linkS4class{Intensity}}.
 }
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
@@ -59,7 +63,9 @@ fl <- system.file("extdata", package="ShortRead")
 sp <- SolexaPath(fl)
 int <- readIntensities(sp)
 int
-intensity(int)[1:5,1:5]
+intensity(int)[1,,] 		# one read
+head(rowMeans(intensity(int)))	# treat as 'matrix'
+head(pData(readInfo(int)))
 }
 
 \keyword{manip}

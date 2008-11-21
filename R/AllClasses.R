@@ -58,11 +58,49 @@ setClass("SRFilter",
 
 ## Intensity
 
-ShortReadIntensityInfo <-
+setClass("IntensityMeasure", contains=".ShortReadBase",
+         representation=representation("VIRTUAL"))
+
+setClass("IntensityInfo", contains=".ShortReadBase",
+         representation=representation("VIRTUAL"))
+
+setClass("Intensity", contains=".ShortReadBase",
+         representation=representation(
+           .hasMeasurementError="ScalarLogical",
+           readInfo="IntensityInfo",
+           intensity="IntensityMeasure",
+           measurementError="IntensityMeasure",
+           "VIRTUAL"),
+         prototype=prototype(
+           .hasMeasurementError=mkScalar(FALSE)),
+         validity=.srValidity)
+
+## Intensity, implementation
+
+setClass("ArrayIntensity",
+         contains=c("array", "IntensityMeasure"),
+         prototype=prototype(array(0, c(0, 0, 0))))
+
+ArrayIntensity <-
+    function(intensity=array(0, c(0, 0, 0)), ...)
+{
+    new("ArrayIntensity", intensity, ...)
+}
+
+setClass("SolexaIntensityInfo",
+         ## AnnotatedDataFrame as prototype does not work, r46984.
+         ## .init is a work-around to identify user-constructed
+         ## objects that should be valid; used in .srValidity-method
+         contains=c("AnnotatedDataFrame", "IntensityInfo"),
+         representation=representation(.init="ScalarLogical"),
+         prototype=prototype(.init=mkScalar(FALSE)),
+         validity=.srValidity)
+
+SolexaIntensityInfo <-
   function(lane=integer(0), tile=integer(length(lane)),
            x=integer(length(lane)), y=integer(length(lane)))
 {
-    new("AnnotatedDataFrame",
+    new("SolexaIntensityInfo",
         data=data.frame(
           lane=lane, tile=tile, x=x, y=y),
         varMetadata=data.frame(
@@ -70,20 +108,15 @@ ShortReadIntensityInfo <-
             "Solexa lane nubmer",
             "Solexa tile nubmer",
             "Tile x coordinate",
-            "Tile y coordinate")))
+            "Tile y coordinate")),
+        .init=mkScalar(TRUE))
 }
 
-setClass("ShortReadIntensity", contains=".ShortReadBase",
-         representation=representation(
-           .hasStandardErrors="ScalarLogical",
-           readInfo="AnnotatedDataFrame",
-           intensity="matrix",
-           nse="matrix"),
+setClass("SolexaIntensity", contains="Intensity",
          prototype=prototype(
-           .hasStandardErrors=mkScalar(FALSE),
-           readInfo=ShortReadIntensityInfo(),
-           intensity=matrix(0L, 0, 0),
-           nse=matrix(0L, 0, 0)),
+           readInfo=SolexaIntensityInfo(),
+           intensity=ArrayIntensity(),
+           measurementError=ArrayIntensity()),
          validity=.srValidity)
 
 ## QualityScore

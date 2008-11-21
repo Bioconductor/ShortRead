@@ -82,12 +82,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 
       \code{signature(dirPath = "SolexaPath", pattern=character(0), run,
         ..., intExtension = "_int.txt", nseExtension = "_nse.txt",
-        withNse = TRUE, verbose = TRUE)}:
+        withVariability = TRUE, verbose = FALSE)}:
 
       Use \code{imageAnalysisPath(sp)[run]} as the directory path(s) and
       \code{pattern=character(0)} as the pattern for discovering Soelxa
       \code{intExtension} and \code{nseExtension} files, returning a
-      \code{\linkS4class{ShortReadIntensity}} object containing
+      \code{\linkS4class{SolexaIntensity}} object containing
       intensities, (optionally) standard errors, and read (lane, tile,
       x, y coordinates of cluster) information.
 
