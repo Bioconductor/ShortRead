@@ -12,10 +12,15 @@ test_readPrb_input <- function()
         checkIdentical("integer", typeof(obj))
         checkIdentical(c(256L, width), dim(obj))
     }
+    acheck <- function(obj, width) {
+        checkIdentical("array", class(obj))
+        checkIdentical("integer", typeof(obj))
+        checkIdentical(c(256L, 4L, width), dim(obj))
+    }
     check(readPrb(sp, ".*prb.txt", as="SolexaEncoding"))
     check(readPrb(sp, ".*prb.txt", as="FastqEncoding"))
     mcheck(readPrb(sp, ".*prb.txt", as="IntegerEncoding"), 36L)
-    mcheck(readPrb(sp, ".*prb.txt", as="matrix"), 144L)
+    mcheck(readPrb(sp, ".*prb.txt", as="array"), 36L)
 }
 
 test_readPrb_consistent <- function()

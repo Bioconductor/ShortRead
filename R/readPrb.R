@@ -30,18 +30,9 @@
     as(res, "matrix")
 }
 
-.readPrb_matrix <-
+.readPrb_array <-
     function(dirPath, pattern, ..., verbose=FALSE)
 {
-    .read <- function(fl, ..., ncol, verbose)
-    {
-        if (verbose)
-            cat(".readPrb_matrix", file, "\n")
-        gz <- gzfile(fl, "rb")
-        on.exit(close(gz))
-        matrix(scan(gz, integer(), ..., quiet=!verbose),
-               ncol=ncol, byrow=TRUE)
-    }
     nrec <- countLines(dirPath, pattern)
     crec <- c(0, cumsum(nrec))
     fls <- .file_names(dirPath, pattern)
@@ -50,29 +41,29 @@
         ln <- readLines(gz, 1)
     }, finally=close(gz))
     cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L    
-    nms <- paste(c("A", "C", "G", "T"), rep(seq_len(cycles), each=4),
-                 sep="")
-    ncol <- length(nms)
-    m <- matrix(integer(), nrow=sum(nrec), ncol=ncol,
-                dimnames=list(NULL, nms))
+    a <- array(integer(), c(sum(nrec), 4L, cycles),
+               dimnames=list(NULL, c("A", "C", "G", "T"), NULL))
+    what <- rep(list(integer()), 4L * cycles)
     for (i in seq_along(fls))
         tryCatch({
-            m[(crec[i]+1):crec[i+1],] <-
-                .read(fls[[i]], ..., ncol=ncol, verbose=verbose)
+            gz <- gzfile(fls[[i]], "rb")
+            data <- unlist(scan(gz, what, sum(nrec), ..., quiet=!verbose))
+            a[(crec[i]+1):crec[i+1],,] <-
+                array(data, c(nrec[[i]], 4L, cycles))
         }, error=function(err) {
             .throw(SRError("Input/Output",
                            sprintf("parsing 'prb'\n  file: %s\n  error: %s",
                                    fls[[i]],
                                    conditionMessage(err))))
-        })
-    m
+        }, finally=close(gz))
+    a
 }
 
 .readPrb_character <-
     function(dirPath, pattern=character(0),
              as=c(
                "SolexaEncoding", "FastqEncoding", "IntegerEncoding",
-               "matrix"),
+               "array"),
              ..., verbose=FALSE)
 {
     if (missing(as)) {
@@ -94,7 +85,7 @@
                  verbose=verbose),
                IntegerEncoding=.readPrb_IntegerEncoding(
                  dirPath, pattern, ..., verbose=verbose),
-               matrix=.readPrb_matrix(
+               array=.readPrb_array(
                  dirPath, pattern, ..., verbose=verbose))
     }, error=function(err) {
         if (is(err, "SRError")) stop(err)

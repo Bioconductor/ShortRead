@@ -60,14 +60,11 @@ readPrb(dirPath, pattern = character(0), ...)
 
     }
 
-    \item{\code{as="matrix"}}{
+    \item{\code{as="array"}}{
 
       The quality scores are \emph{not} summarized; the return value is
-      an integer matrix with number of rows equal to number of reads,
-      and number of columns equal to four times the number of
-      cycles. The first four columns represent nucleotides A, C, G, and
-      T qualities of cycle 1; subsequent columns represent nucleotide
-      frequencies at successive cycles.
+      an integer array with dimensions corresponding to reads,
+      nucleotids, and cycles.
 
     }
 

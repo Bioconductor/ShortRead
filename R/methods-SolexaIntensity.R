@@ -77,10 +77,10 @@ SolexaIntensity <-
     for (i in seq_along(fls)) {
         tryCatch({
             gz <- gzfile(fls[[i]], "rb")
-            data <- scan(gz, what, reads,..., quiet=!verbose)
+            data <- scan(gz, what, nrec[[i]],..., quiet=!verbose)
             idx <- (crec[i]+1):crec[i+1]
             int[idx,,] <- array(unlist(data[-(1:4)]),
-                                c(length(idx), 4L, cycles))
+                                c(nrec[[i]], 4L, cycles))
             df[idx,] <- data[1:4]
         }, error=function(err) {
             msg <- sprintf("parsing '%s'\n  file: %s\n  error: %s",
@@ -97,10 +97,10 @@ SolexaIntensity <-
         for (i in seq_along(fls)) {
             tryCatch({
                 gz <- gzfile(fls[[i]], "rb")
-                data <- scan(gz, what, reads, ..., quiet=!verbose)
+                data <- scan(gz, what, nrec[[i]], ..., quiet=!verbose)
                 idx <- (crec[i]+1):crec[i+1]
                 nse[idx,,] <- array(unlist(data[-(1:4)]),
-                                    c(length(idx), 4L, cycles))
+                                    c(nrec[[i]], 4L, cycles))
             }, error=function(err) {
                 msg <- sprintf("parsing '%s'\n  file: %s\n  error: %s",
                                "nsePattern", fls[[i]],
