@@ -25,41 +25,63 @@ static const int LINES_PER_FASTA_REC = 2;
  */
 
 SEXP
-read_prb_as_character(SEXP fname, SEXP cycles, SEXP asSolexa)
+read_prb_as_character(SEXP fname, SEXP asSolexa)
 {
-    const int MIN_SCORE = -40;
     const int NUC_PER_CYCLE = 4;
 
     if (!IS_CHARACTER(fname) || LENGTH(fname)!=1)
         error("'fname' must be 'character(1)'");
-    if (!IS_INTEGER(cycles) || LENGTH(cycles) != 1)
-        error("'cycles' must be 'integer(1)'");
     if (!IS_LOGICAL(asSolexa) || LENGTH(asSolexa) != 1)
         error("'asSolexa' must be 'logical(1)'");
     const int n_reads = INTEGER(count_lines(fname))[0];
-    const int n_cycles = INTEGER(cycles)[0];
     const int qbase = LOGICAL(asSolexa)[0] ? SOLEXA_QBASE : PHRED_QBASE;
     SEXP ans = PROTECT(NEW_CHARACTER(n_reads));
 
-    FILE *file = _fopen(CHAR(STRING_ELT(fname, 0)), "r");
+    gzFile *file = _fopen(translateChar(STRING_ELT(fname, 0)), "rb");
+    char buf[LINEBUF_SIZE + 1];
+    int read=0;
+    if (gzgets(file, buf, LINEBUF_SIZE) == Z_NULL) {
+        gzclose(file);
+        error("could not open file '%f'",
+              translateChar(STRING_ELT(fname, 0)));
+    }
+    int n_cycles = 0;
+    char *quad = strtok(buf, "\t");
+    while (quad != NULL) {
+        n_cycles++;
+        quad = strtok(NULL, "\t");
+    }
+    gzrewind(file);
 
-    int read=0, cycle=0, nuc=0, curr_max=MIN_SCORE, val;
     char *score = R_alloc(sizeof(char), n_cycles + 1);
     score[n_cycles] = '\0';
-    while (fscanf(file, "%d", &val)==1) {
-        if (val > curr_max) curr_max = val;
-        if (++nuc == NUC_PER_CYCLE) {
-            score[cycle] = (char) curr_max + qbase;
-            nuc = 0;
-            curr_max=MIN_SCORE;
-            if (++cycle == n_cycles) {
-                if (read >= n_reads)
-                    error("unexpected number of reads: %d instead of %d",
-                          read, n_reads);
-                SET_STRING_ELT(ans, read++, mkChar(score));
-                cycle = 0;
-            }
+
+    while (gzgets(file, buf, LINEBUF_SIZE) != Z_NULL) {
+        if (read >= n_reads) {
+            gzclose(file);
+            error("too many reads, %d expected", n_reads);
         }
+        quad = strtok(buf, "\t");
+        int cycle = 0;
+        while (quad != NULL && cycle < n_cycles) {
+            int v[4];
+            int bases = sscanf(quad, " %d %d %d %d", 
+                               &v[0], &v[1], &v[2], &v[3]);
+            if (bases != NUC_PER_CYCLE) {
+                gzclose(file);
+                error("%d bases observed, %d expected", bases, 
+                      NUC_PER_CYCLE);
+            }
+            v[0] = v[0] > v[1] ? v[0] : v[1];
+            v[2] = v[2] > v[3] ? v[2] : v[3];
+            score[cycle++] = qbase + ((char) v[0] > v[2] ? v[0] : v[2]);
+            quad = strtok(NULL, "\t");
+        }
+        if (cycle != n_cycles) {
+            gzclose(file);
+            error("%d cycles observed, %d expected", cycle, n_cycles);
+        }
+        SET_STRING_ELT(ans, read++, mkChar(score));
     }
     UNPROTECT(1);
     return ans;
@@ -72,13 +94,13 @@ static void
 _read_solexa_fastq_file(const char *fname,
                         CharAEAE *seq, CharAEAE *name, CharAEAE *qualities)
 {
-    FILE *file;
+    gzFile *file;
     char linebuf[LINEBUF_SIZE];
     int lineno, reclineno, nchar_in_buf;
 
-    file = _fopen(fname, "r");
+    file = _fopen(fname, "rb");
     lineno = 0;
-    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+    while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
         if ((reclineno = lineno % LINES_PER_FASTQ_REC) == 2) {
             lineno++;
             continue;
@@ -86,10 +108,10 @@ _read_solexa_fastq_file(const char *fname,
 
         nchar_in_buf = _rtrim(linebuf);
         if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
-            fclose(file);
+            gzclose(file);
             error("line too long %s:%d", fname, lineno);
         } else if (nchar_in_buf == 0) {
-            fclose(file);
+            gzclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
         }
         switch(reclineno) {
@@ -111,7 +133,7 @@ _read_solexa_fastq_file(const char *fname,
         }
         lineno++;
     }
-    fclose(file);
+    gzclose(file);
     if ((lineno % LINES_PER_FASTQ_REC) != 0)
         error("unexpected number of lines in file '%s'", fname);
 }
@@ -173,20 +195,20 @@ _io_XStringSet_columns(const char *fname,
                        int nrow, int skip, const char *commentChar,
                        CharAEAE *sets, const int *toIUPAC)
 {
-    FILE *file;
+    gzFile *file;
     char *linebuf;
     int lineno = 0, recno = 0;
 
-    file = _fopen(fname, "r");
+    file = _fopen(fname, "rb");
     linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
 
     while (skip-- > 0)
-        fgets(linebuf, LINEBUF_SIZE, file);
+        gzgets(file, linebuf, LINEBUF_SIZE);
     if (header == TRUE)
-        fgets(linebuf, LINEBUF_SIZE, file);
+        gzgets(file, linebuf, LINEBUF_SIZE);
 
     while (recno < nrow &&
-           fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+           gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
         if (_linebuf_skip_p(linebuf, file, fname,
                             lineno, commentChar)) {
             lineno++;
@@ -208,7 +230,7 @@ _io_XStringSet_columns(const char *fname,
         lineno++;
         recno++;
     }
-    fclose(file);
+    gzclose(file);
     return recno;
 }
 
@@ -381,7 +403,7 @@ _read_solexa_export_file(const char *fname, const char *csep,
                          SEXP result)
 {
     const int N_FIELDS = 22;
-    FILE *file;
+    gzFile *file;
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
     int lineno = 0, irec = offset, i;
 
@@ -397,8 +419,8 @@ _read_solexa_export_file(const char *fname, const char *csep,
         *alignQuality = INTEGER(VECTOR_ELT(result, 10)),
         *filtering = INTEGER(VECTOR_ELT(result, 11));
 
-    file = _fopen(fname, "r");
-    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+    file = _fopen(fname, "rb");
+    while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
         if (_linebuf_skip_p(linebuf, file,
                             fname, lineno, commentChar)) {
             lineno++;
@@ -409,8 +431,10 @@ _read_solexa_export_file(const char *fname, const char *csep,
         elt[0] = linebuf;
         for (i = 1; i < N_FIELDS; ++i) {
             elt[i] = (*mark_func)(elt[i-1], csep);
-            if (elt[i] == elt[i-1])
+            if (elt[i] == elt[i-1]) {
+                gzclose(file);
                 error("too few fields, %s:%d", fname, lineno);
+            }
         }
             
         SET_STRING_ELT(run, irec, mkChar(elt[1]));
@@ -439,6 +463,7 @@ _read_solexa_export_file(const char *fname, const char *csep,
                 strand[irec] = 2;
                 break;
             default:
+                gzclose(file);
                 error("invalid 'strand' field '%s', %s:%d",
                       *elt[13], fname, lineno);
                 break;
@@ -456,6 +481,7 @@ _read_solexa_export_file(const char *fname, const char *csep,
             filtering[irec] = 2;
             break;
         default:
+            gzclose(file);
             error("invalid 'filtering' field '%s', %s:%d",
                   *elt[21], fname, lineno);
             break;
@@ -466,7 +492,7 @@ _read_solexa_export_file(const char *fname, const char *csep,
     
     return irec - offset;
 }
-
+    
 SEXP
 read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
 {

@@ -64,7 +64,8 @@ sp <- SolexaPath(fl)
 int <- readIntensities(sp)
 int
 intensity(int)[1,,] 		# one read
-head(rowMeans(intensity(int)))	# treat as 'matrix'
+intensity(int)[[1:2,,]]         # two reads, as 'array'
+head(rowMeans(intensity(int)))	# treated as 'array'
 head(pData(readInfo(int)))
 }
 

@@ -35,8 +35,9 @@ SolexaIntensity <-
 
 .readIntensities_SolexaIntensity <-
     function(dirPath, pattern=character(0), ...,
-             intExtension, nseExtension,
-             withVariability, verbose)
+             intExtension="_int.txt",
+             nseExtension="_nse.txt",
+             withVariability=TRUE, verbose=FALSE)
 {
     .check_type_and_length(withVariability, "logical", 1)
     .check_type_and_length(pattern, "character", NA)
@@ -62,8 +63,11 @@ SolexaIntensity <-
     }
 
     fls <- .file_names(dirPath, intPattern)
-    ln <- readLines(fls[[1]], 1)
-    cycles <- (length(gregexpr("\t", ln, fixed=TRUE)[[1]]) - 3L)
+    gz <- gzfile(fls[[1]], "rb")
+    tryCatch({
+        ln <- readLines(gz, 1)
+    }, finally=close(gz))
+    cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) - 3L
     reads <- sum(nrec)
     what <- c(rep(list(integer()), 4), rep(list(numeric()), cycles * 4L))
     int <- array(numeric(), c(reads, 4L, cycles),
@@ -71,39 +75,38 @@ SolexaIntensity <-
     df <- data.frame(lane=integer(reads), tile=integer(reads),
                      x=integer(reads), y=integer(reads))
     for (i in seq_along(fls)) {
-        if (verbose)
-            cat(".readIntensities_character (intPattern)\n ", fls[i],
-                "\n")
         tryCatch({
-            data <- scan(fls[i], what, ..., quiet=!verbose)
+            gz <- gzfile(fls[[i]], "rb")
+            data <- scan(gz, what, reads,..., quiet=!verbose)
             idx <- (crec[i]+1):crec[i+1]
-            int[idx,,] <- array(unlist(data[-(1:4)]), c(length(idx), 4L, cycles))
+            int[idx,,] <- array(unlist(data[-(1:4)]),
+                                c(length(idx), 4L, cycles))
             df[idx,] <- data[1:4]
         }, error=function(err) {
-            .throw(SRError("Input/Output",
-                           sprintf("parsing 'intPattern'\n  file: %s\n  error: %s",
-                                   fls[[i]], conditionMessage(err))))
-        })
+            msg <- sprintf("parsing '%s'\n  file: %s\n  error: %s",
+                           "intPattern", fls[[i]],
+                           conditionMessage(err))
+            .throw(SRError("Input/Output", msg))
+        }, finally=close(gz))
     }
     if (withVariability) {
         fls <- .file_names(dirPath, nsePattern)
         nse <- array(numeric(), c(reads, 4L, cycles),
                      dimnames=list(NULL, c("A", "C", "G", "T"), NULL))
+        what <- c(rep(list(NULL), 4), what[-(1:4)])
         for (i in seq_along(fls)) {
-            if (verbose)
-                cat(".readIntensities_character (nsePattern)\n ",
-                    fls[i], "\n")
             tryCatch({
-                what <- c(rep(list(NULL), 4), what[-(1:4)])
-                data <- scan(fls[i], what, ..., quiet=!verbose)
+                gz <- gzfile(fls[[i]], "rb")
+                data <- scan(gz, what, reads, ..., quiet=!verbose)
                 idx <- (crec[i]+1):crec[i+1]
                 nse[idx,,] <- array(unlist(data[-(1:4)]),
                                     c(length(idx), 4L, cycles))
             }, error=function(err) {
-                .throw(SRError("Input/Output",
-                               sprintf("parsing 'nsePattern'\n  file: %s\n  error: %s",
-                                       fls[[i]], conditionMessage(err))))
-            })
+                msg <- sprintf("parsing '%s'\n  file: %s\n  error: %s",
+                               "nsePattern", fls[[i]],
+                               conditionMessage(err))
+                .throw(SRError("Input/Output", msg))
+            }, finally=close(gz))
         }
     }
     readInfo <- SolexaIntensityInfo(df[[1]], df[[2]], df[[3]], df[[4]])
@@ -113,68 +116,17 @@ SolexaIntensity <-
         SolexaIntensity(int, readInfo=readInfo)
 }
 
-setMethod(get("["), c("SolexaIntensity", "missing", "missing", "ANY"),
-          function(x, i, j, k, ..., drop=TRUE)
-{
-    if (missing(k))
-        return(x)
-    if (.hasMeasurementError(x))
-        initialize(x, intensity=intensity(x)[,,k],
-                   measurementError=measurementError(x)[,,k])
-    else 
-        initialize(x, intensity=intensity(x)[,,k])
-})
-
-setMethod(get("["), c("SolexaIntensity", "ANY", "missing", "ANY"),
-          function(x, i, j, k, ..., drop=TRUE)
-{
-    intensity <- 
-        if (missing(k)) intensity(x)[i,,]
-        else intensity(x)[i,,k]
-    if (.hasMeasurementError(x)) {
-        measurementError <-
-            if (missing(k)) measurementError(x)[i,,]
-            else measurementError(x)[i,,k]
-        initialize(x, intensity=intensity,
-                   measurementError=measurementError,
-                   readInfo=readInfo(x)[i,])
-    } else {
-        initialize(x, intensity=intensity, readInfo=readInfo(x)[i,])
-    }
-})
-
-setMethod(get("["), c("SolexaIntensity", "missing", "ANY", "ANY"),
-          function(x, i, j, k, ..., drop=TRUE)
-{
-    intensity <-
-        if (missing(k)) intensity(x)[,j,]
-        else intensity(x)[,j,k]
-    if (.hasMeasurementError(x)) {
-        measurementError <-
-            if (missing(k)) measurementError(x)[,j,]
-            else measurementError(x)[,j,k]
-        initialize(x,
-                   intensity=intensity,
-                   measurementError=measurementError)
-    } else {
-        initialize(x, intensity=intensity)
-    }
-})
-
 setMethod(get("["), c("SolexaIntensity", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=TRUE)
 {
-    intensity <- 
-        if (missing(k)) intensity(x)[i,j,]
-        else intensity(x)[i,j,k]
-    if (.hasMeasurementError(x)) {
-        measurementError <-
-            if (missing(k)) measurementError(x)[i,j,]
-            else measurementError(x)[i,j,k]
-        initialize(x, intensity=intensity,
-                   measurementError=measurementError,
+    if (missing(i)) i <- TRUE
+    if (missing(j)) j <- TRUE
+    if (missing(k)) k <- TRUE
+    if (.hasMeasurementError(x))
+        initialize(x, intensity=intensity(x)[i,j,k],
+                   measurementError=measurementError(x)[i,j,k],
                    readInfo=readInfo(x)[i,])
-    } else {
-        initialize(x, intensity=intensity, readInfo=readInfo(x)[i,])
-    }
+    else
+        initialize(x, intensity=intensity(x)[i,j,k],
+                   readInfo=readInfo(x)[i,])
 })

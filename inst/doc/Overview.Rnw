@@ -539,29 +539,26 @@ files. These files contain base-specific quality information, and
 representing the fastq-encoded base-specific quality scores of all
 reads.
 
-Additional files can be parsed using standard \R{} input methods. For
-instance, the \texttt{s\_N\_LLLL\_int.txt} files in the
+As a second example, the \texttt{s\_N\_LLLL\_int.txt} files in the
 \Rfunction{imageAnalysisPath} directory contain lines, one line per
 read, of nucleotide intensities. Each line contain lane, tile, X and Y
 coordinate information, followed by quadruplets of intensity values.
 There are as many quadruplets as there are cycles. Each quadruplet
 represents the intensity of the \texttt{A}, \texttt{C}, \texttt{G},
-and \texttt{T} nucleotide at the corresponding cycle. Thus
+and \texttt{T} nucleotide at the corresponding cycle. These (and their
+error estimates, if available), are input with
 <<intensity-files>>=
-intFile <- list.files(imageAnalysisPath(sp), "s_1_0001_int.txt", full=TRUE)
-strsplit(readLines(intFile, 1), "\t")[[1]][1:6]
-intDf <- read.table(intFile)
-dim(intDf)
+int <- readIntensities(sp, withVariability=FALSE)
+int
 @ 
 %% 
 An interesting exercise is to display the intensities at cycle 2
 (below) and to compare these to cycle, e.g., 30.
 <<intensities-cycle-2, fig=TRUE>>=
-c2 <- intDf[,2*4 + 1:4]
-colnames(c2) <- c("A", "C", "G", "T")
-print(splom(c2, pch=".", cex=3))
+print(splom(intensity(int)[[,,2]], pch=".", cex=3))
 @ 
  
+Additional files can be parsed using standard \R{} input methods. 
 
 \subsection{Sorting}
 
@@ -685,20 +682,19 @@ per flow cell. A natural way to extract information from these is to
 write short functions, e.g., to find the average intensity per base at
 cycle 12.
 <<calcInt-demo>>=
-calcInt <- function(filename, cycle, verbose=FALSE)
+calcInt <- function(file, cycle, verbose=FALSE)
 {
     if (verbose)
-        cat("calcInt", filename, cycle, "\n")
-    c12 <- read.table(filename)[,cycle*4 + 1:4]
-    means <- colMeans(c12)
-    names(means) <- c("A", "C", "G", "T")
-    means
+        cat("calcInt", file, cycle, "\n")
+    int <- readIntensities(dirname(file), basename(file),
+                           intExtension="", withVariability=FALSE)
+    apply(intensity(int)[,,12], 2, mean)
 }
 @ 
 One way to apply this function to all intensity files in a Solexa run
 is
 <<calcInt-sapply>>=
-intFls <- list.files(imageAnalysisPath(sp), ".*_int.txt", full=TRUE)
+intFls <- list.files(imageAnalysisPath(sp), ".*_int.txt$", full=TRUE)
 lres <- lapply(intFls, calcInt, cycle=12)
 @ 
 %% 

@@ -14,6 +14,7 @@
 \alias{[,IntensityMeasure,ANY,missing,ANY-method}
 \alias{[,IntensityMeasure,missing,ANY,ANY-method}
 \alias{[,IntensityMeasure,missing,missing,ANY-method}
+\alias{[[,ArrayIntensity,ANY,ANY-method}
 % etc.
 \alias{dim,Intensity-method}
 \alias{show,Intensity-method}
@@ -24,7 +25,7 @@
 
 \description{
 
-  The \code{Intensity}, \code{IntensityMeasure}, and \code{IntsnityInfo}
+  The \code{Intensity}, \code{IntensityMeasure}, and \code{IntensityInfo}
   classes represent and manipulate image intensity measures. Instances
   from the class may also contain information about measurement errors,
   and additional information about the reads from which the intensities
@@ -77,7 +78,7 @@
 
 }
 \section{Extends}{
-Thes classes extend \code{"\linkS4class{.ShortReadBase}"}, directly.
+These classes extend \code{"\linkS4class{.ShortReadBase}"}, directly.
 }
 \section{Methods}{
 
@@ -107,6 +108,11 @@ Thes classes extend \code{"\linkS4class{.ShortReadBase}"}, directly.
   Subsetting \code{"["} is available for the \code{IntensityMeasure}
   class; the \code{drop} argument to \code{"["} is ignored.
 
+  Subsetting with \code{"[["} is available for the \code{ArrayIntensity}
+  class. The method accepts three arguments, corresponding to the read,
+  base, and cycle(s) to be selected. The return value is the array
+  (i.e., underlying data values) corresponding to the selected indices.
+
 }
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
@@ -116,5 +122,6 @@ Thes classes extend \code{"\linkS4class{.ShortReadBase}"}, directly.
 }
 \examples{
 showMethods(class="Intensity", where=getNamespace("ShortRead"))
+example(readIntensities)
 }
 \keyword{classes}

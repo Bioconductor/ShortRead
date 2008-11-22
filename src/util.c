@@ -93,9 +93,9 @@ _mark_field_1(char *curr, const char *delim)
 {
     char *c = curr;
     while (*c != '\0' && *c != *delim)
-	c++;
-    if (*c != '\0')		/* i.e., delim */
-	*c++ = '\0';
+        c++;
+    if (*c != '\0')             /* i.e., delim */
+        *c++ = '\0';
     return c;
 }
 
@@ -137,7 +137,7 @@ _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
 #define LINEBUF_SIZE 1024
     FILE *file;
     char linebuf[LINEBUF_SIZE];
-    if ((file = fopen(CHAR(STRING_ELT(filename, 0)), "r")) == NULL)
+    if ((file = fopen(CHAR(STRING_ELT(filename, 0)), "rb")) == NULL)
         error("cannot open file '%s'", CHAR(STRING_ELT(filename, 0)));
     const char *delim = CHAR(STRING_ELT(delimiters, 0));
 
@@ -166,10 +166,10 @@ const int LINEBUF_SIZE = 20001;
 /*
  * open and check file; signal error
  */
-FILE *
+gzFile *
 _fopen(const char *fname, const char *mode)
 {
-    FILE *file = fopen(fname, mode);
+    gzFile *file = gzopen(fname, mode);
     if (file == NULL)
         error("cannot open file %s", fname);
     return file;
@@ -179,16 +179,16 @@ _fopen(const char *fname, const char *mode)
  * trim & check linebuf, return 0 if processing should continue
  */
 int
-_linebuf_skip_p(char *linebuf, FILE *file,
+_linebuf_skip_p(char *linebuf, gzFile *file,
                 const char *fname, int lineno, const char *commentChar)
 {
     int nchar_in_buf;
     nchar_in_buf = _rtrim(linebuf);
     if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
-        fclose(file);
+        gzclose(file);
         error("line too long %s:%d", fname, lineno);
     } else if (nchar_in_buf == 0) {
-        fclose(file);
+        gzclose(file);
         error("unexpected empty line %s:%d", fname, lineno);
     }
     return *linebuf == *commentChar;
@@ -201,12 +201,12 @@ _linebuf_skip_p(char *linebuf, FILE *file,
 int
 _rtrim(char *linebuf)
 {
-	int i;
+    int i;
 
-	i = strlen(linebuf) - 1;
-	while (i >= 0 && isspace(linebuf[i])) i--;
-	linebuf[++i] = 0;
-	return i;
+    i = strlen(linebuf) - 1;
+    while (i >= 0 && isspace(linebuf[i])) i--;
+    linebuf[++i] = 0;
+    return i;
 }
 
 /*
@@ -294,15 +294,14 @@ _as_factor(SEXP vec, const char **levels, const int n_lvls)
  *
  */
 static int
-_count_lines(FILE *file)
+_count_lines(gzFile *file)
 {
     const int LINEBUF_SIZE=20001;
     size_t bytes_read;
     char buf[LINEBUF_SIZE + 1];
     int lines = 0;
 
-    while ((bytes_read = fread(buf, sizeof(char),
-                               LINEBUF_SIZE, file)) != 0) {
+    while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
         char *p = buf;
         while ((p = memchr(p, '\n', (buf + bytes_read) - p))) {
             ++p;
@@ -328,7 +327,7 @@ count_lines(SEXP files)
 {
     int i, nfile;
     const char *filepath;
-    FILE *file;
+    gzFile *file;
     SEXP ans = R_NilValue;
     
     if (!IS_CHARACTER(files))
@@ -339,10 +338,9 @@ count_lines(SEXP files)
     for (i = 0; i < nfile; ++i) {
         R_CheckUserInterrupt();
         filepath = translateChar(STRING_ELT(files, i));
-        if ((file = fopen(filepath, "r")) == NULL)
-            error("cannot open file '%s'", filepath);
+        file = _fopen(filepath, "rb");
         INTEGER(ans)[i] = _count_lines(file);
-        fclose(file);
+        gzclose(file);
     }
 
     UNPROTECT(1);

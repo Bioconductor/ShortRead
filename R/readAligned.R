@@ -290,7 +290,8 @@
                              "error: %s", sep="\n  ")
                 msg <- sprintf(txt, "readAligned",
                                paste(dirPath, collapse="'\n    '"),
-                               pat, type, conditionMessage(err))
+                               paste(pat, collapse="'\n    '"),
+                               type, conditionMessage(err))
                 .throw(SRError("Input/Output", msg))
             }
         })

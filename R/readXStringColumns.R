@@ -30,7 +30,10 @@ readXStringColumns <-
                        conditionMessage(err)))
     })
     if (header) {
-        ln <- readLines(files[[1]], skip+1)[skip+1]
+        gz <- gzfile(files[[1]], "rb")
+        tryCatch({
+            ln <- readLines(gz, skip+1)[skip+1]
+        }, finally=close(gz))
         nms <- strsplit(ln, sep)[[1]]
         names(res) <- nms[colIndex]
     } else {

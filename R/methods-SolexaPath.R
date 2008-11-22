@@ -31,7 +31,7 @@ SolexaPath <- function(experimentPath=NA_character_,
 
 .readIntensities_SolexaPath <-
     function(dirPath, pattern=character(0), run, ...,
-             intExtension="_int.txt", nseExtension="_nse.txt",
+             intExtension="_int.txt.*", nseExtension="_nse.txt.*",
              withVariability=TRUE, verbose=FALSE)
 {
     callGeneric(imageAnalysisPath(dirPath)[run],
@@ -44,8 +44,10 @@ SolexaPath <- function(experimentPath=NA_character_,
 
 setMethod(readIntensities, "SolexaPath", .readIntensities_SolexaPath)
 
-.readPrb_SolexaPath <- function(dirPath, pattern, run, ...)
+.readPrb_SolexaPath <- function(dirPath, pattern=".*_prb.txt.*", run, ...)
 {
+    if (missing(pattern))
+        pattern <- ".*_prb.txt.*"
     callGeneric(baseCallPath(dirPath)[run], pattern, ...)
 }
 
@@ -57,15 +59,15 @@ setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
     dirPath <- analysisPath(dirPath)[run]
     if (is.na(dirPath))
         .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
-                      "analysisPath", "dirPath"))
+                       "analysisPath", "dirPath"))
     callGeneric(dirPath, ..., pattern=pattern)
 }
 
 setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 
 .readBaseQuality_SolexaPath <- function(dirPath,
-                                        seqPattern=".*_seq.txt$",
-                                        prbPattern=".*_prb.txt$",
+                                        seqPattern=".*_seq.txt.*",
+                                        prbPattern=".*_prb.txt.*",
                                         run, ...)
 {
     dirPath <- baseCallPath(dirPath)[run]
@@ -76,7 +78,7 @@ setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
 setMethod("readBaseQuality", "SolexaPath", .readBaseQuality_SolexaPath)
 
 .readAligned_SolexaPath <- function(dirPath,
-                                    pattern=".*_export.txt$",
+                                    pattern=".*_export.txt.*",
                                     run, ...)
 {
     dirPath <- analysisPath(dirPath)[run]

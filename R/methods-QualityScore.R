@@ -53,7 +53,10 @@ IntegerQuality <- function(quality=integer(0)) {
     nums <- scan(file, integer(0), n = sum(width(reads)), comment.char = ">")
     scores <- split(nums, rep(seq_len(length(reads)), width(reads)))
   } else {
-    lines <- readLines(file)
+    gz <- gzfile(file, "rb")
+    tryCatch({
+        lines <- readLines(gz)
+    }, finally=close(gz))
     headerLines <- grep("^>", lines)
     ids <- sub("^(.*?) .*", "\\1", lines[headerLines])
     scores <- lapply(strsplit(lines[headerLines+1], " "), as.integer)

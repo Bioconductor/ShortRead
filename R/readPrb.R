@@ -2,10 +2,8 @@
 {
     if (verbose)
         cat(".readPrb", file, "\n")
-    ln <- readLines(file, 1)
-    cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L
     tryCatch({
-        .Call(.read_prb_as_character, file, cycles, asSolexa)
+        .Call(.read_prb_as_character, file, asSolexa)
     }, error=function(err) {
         .throw(SRError("Input/Output",
                        sprintf("parsing 'prb'\n  file: %s\n  error: %s",
@@ -39,13 +37,18 @@
     {
         if (verbose)
             cat(".readPrb_matrix", file, "\n")
-        matrix(scan(fl, integer(), ..., quiet=!verbose),
+        gz <- gzfile(fl, "rb")
+        on.exit(close(gz))
+        matrix(scan(gz, integer(), ..., quiet=!verbose),
                ncol=ncol, byrow=TRUE)
     }
     nrec <- countLines(dirPath, pattern)
     crec <- c(0, cumsum(nrec))
     fls <- .file_names(dirPath, pattern)
-    ln <- readLines(fls[[1]], 1)
+    gz <- gzfile(fls[[1]], "rb")
+    tryCatch({
+        ln <- readLines(gz, 1)
+    }, finally=close(gz))
     cycles <- length(gregexpr("\t", ln, fixed=TRUE)[[1]]) + 1L    
     nms <- paste(c("A", "C", "G", "T"), rep(seq_len(cycles), each=4),
                  sep="")

@@ -2,7 +2,7 @@
 #include "ShortRead.h"
 
 /*
-HWI-EAS88_1:1:1:83:277 	-	chr1	163068612	AGAAGAATCCTTAAGGCTTGCTAGGCAGCAGTCTA	77777::::::::::::::::::::::::::::::	0	23
+HWI-EAS88_1:1:1:83:277  -       chr1    163068612       AGAAGAATCCTTAAGGCTTGCTAGGCAGCAGTCTA     77777::::::::::::::::::::::::::::::     0       23
 */
 
 static const char *ELT_NMS[] = {
@@ -19,18 +19,18 @@ _read_bowtie(const char *fname, const char *csep,
              CharAEAE *sread, CharAEAE *quality)
 {
     const int N_FIELDS = 8;
-    FILE *file;
+    gzFile *file;
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
     int lineno = 0;
 
-    file = _fopen(fname, "r");
+    file = _fopen(fname, "rb");
 
     SEXP chromosome = VECTOR_ELT(ref, 2),
         mismatch = VECTOR_ELT(ref, 6);
     int *strand = INTEGER(VECTOR_ELT(ref, 1)),
         *position = INTEGER(VECTOR_ELT(ref, 3));
 
-    while (fgets(linebuf, LINEBUF_SIZE, file) != NULL) {
+    while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
 
         if (_linebuf_skip_p(linebuf, file, fname, lineno,
                             commentChar)) {

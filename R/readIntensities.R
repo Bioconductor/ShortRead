@@ -25,7 +25,7 @@
                          "error: %s", sep="\n  ")
             msg <- sprintf(txt, "readIntensities",
                            paste(dirPath, collapse="'\n    '"),
-                           pat, as, conditionMessage(err))
+                           pat, type, conditionMessage(err))
             .throw(SRError("Input/Output", msg))
         }
     })

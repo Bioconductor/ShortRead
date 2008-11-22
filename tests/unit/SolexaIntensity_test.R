@@ -1,5 +1,3 @@
-sp <- SolexaPath(system.file("extdata", package="ShortRead"))
-
 test_SolexaIntensity_construction <- function()
 {
     checkTrue(validObject(SolexaIntensityInfo()))
@@ -25,6 +23,7 @@ test_SolexaIntensity_access <- function()
 
 test_SolexaIntensity_io <- function() 
 {
+    sp <- SolexaPath(system.file("extdata", package="ShortRead"))
     int <- readIntensities(sp)
     checkIdentical(c(256L, 4L, 36L), dim(intensity(int)))
     checkIdentical(c(256L, 4L, 36L), dim(measurementError(int)))

@@ -81,7 +81,8 @@ polyn <- function(nucleotides, n)
         if (length(pattern)==0) pattern <- "character(0)"
         .throw(SRError("Input/Output",
                        "no input files found\n  dirPath: %s\n  pattern: %s\n",
-                       dirPath, pattern))
+                       paste(dirPath, collapse="\n          "),
+                       paste(pattern, collapse="\n          ")))
     }
     files
 }

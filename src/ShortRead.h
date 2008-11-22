@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-
+#include <zlib.h>
 #include <Rdefines.h>
 #include "IRanges_interface.h"
 #include "Biostrings_interface.h"
@@ -26,8 +26,8 @@ MARK_FIELD_FUNC _mark_field_1;	/* nchar(delim) == 1 */
 MARK_FIELD_FUNC _mark_field_n;	/* nchar(delim) != 1 */
 
 extern const int LINEBUF_SIZE;
-FILE *_fopen(const char*, const char*);
-int _linebuf_skip_p(char*, FILE*, const char*, int, const char*);
+gzFile *_fopen(const char*, const char*);
+int _linebuf_skip_p(char*, gzFile*, const char*, int, const char*);
 
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
@@ -40,7 +40,7 @@ SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
 /* io.c */
 
-SEXP read_prb_as_character(SEXP file, SEXP cycles, SEXP asSolexa);
+SEXP read_prb_as_character(SEXP file, SEXP asSolexa);
 SEXP read_solexa_fastq(SEXP files);
 SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 			     SEXP colIndex, SEXP colClasses, 

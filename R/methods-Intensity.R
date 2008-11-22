@@ -6,28 +6,21 @@ setMethod(show, "IntensityMeasure", function(object)
     cat("  dim: ", dim(object), "\n")
 })
 
-setMethod(get("["), c("IntensityMeasure", "missing", "missing", "ANY"),
-          function(x, i, j, ..., drop=FALSE)
-{
-    initialize(x, x@.Data[, , ..., drop=FALSE])
-})
-
-setMethod(get("["), c("IntensityMeasure", "ANY", "missing", "ANY"),
-          function(x, i, j, ..., drop=FALSE)
-{
-    initialize(x, x@.Data[i, , ..., drop=FALSE])
-})
-
-setMethod(get("["), c("IntensityMeasure", "missing", "ANY", "ANY"),
-          function(x, i, j, ..., drop=FALSE)
-{
-    initialize(x, x@.Data[, j, ..., drop=FALSE])
-})
-
 setMethod(get("["), c("IntensityMeasure", "ANY", "ANY", "ANY"),
           function(x, i, j, ..., drop=FALSE)
 {
-    initialize(x, x@.Data[i, j, ..., drop=FALSE])
+    if (missing(i)) i <- TRUE
+    if (missing(j)) j <- TRUE
+    initialize(x, x@.Data[i,j,...,drop=FALSE])
+})
+
+setMethod(get("[["), c("ArrayIntensity", "ANY", "ANY"),
+          function(x, i, j, k, ...) 
+{
+    if (missing(i)) i <- TRUE
+    if (missing(j)) j <- TRUE
+    if (missing(k)) k <- TRUE
+    x@.Data[i,j,k]
 })
 
 ## IntensityInfo
