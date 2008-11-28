@@ -7,10 +7,9 @@ test_readPrb_input <- function()
         checkIdentical(256L, length(obj))
         checkIdentical(36L, unique(width(obj)))
     }
-    mcheck <- function(obj, width) {
-        checkIdentical("matrix", class(obj))
-        checkIdentical("integer", typeof(obj))
-        checkIdentical(c(256L, width), dim(obj))
+    icheck <- function(obj) {
+        checkTrue(validObject(obj))
+        checkIdentical(c(256L, 36L), dim(obj))
     }
     acheck <- function(obj, width) {
         checkIdentical("array", class(obj))
@@ -19,8 +18,8 @@ test_readPrb_input <- function()
     }
     check(readPrb(sp, ".*prb.txt", as="SolexaEncoding"))
     check(readPrb(sp, ".*prb.txt", as="FastqEncoding"))
-    mcheck(readPrb(sp, ".*prb.txt", as="IntegerEncoding"), 36L)
-    mcheck(readPrb(sp, ".*prb.txt", as="array"), 36L)
+    icheck(readPrb(sp, ".*prb.txt", as="IntegerEncoding"))
+    acheck(readPrb(sp, ".*prb.txt", as="array"), 36L)
 }
 
 test_readPrb_consistent <- function()

@@ -2,6 +2,7 @@
 \alias{srFilter}
 \alias{srFilter,missing-method}
 \alias{srFilter,function-method}
+\alias{idFilter}
 \alias{chromosomeFilter}
 \alias{positionFilter}
 \alias{strandFilter}
@@ -31,7 +32,10 @@ srFilter(fun, name = NA_character_, ...)
 
 compose(filt, ..., .name)
 
-chromosomeFilter(regex=character(0), .name="ChromosomeFilter")
+idFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
+         .name="idFilter")
+chromosomeFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
+                 .name="ChromosomeFilter")
 positionFilter(min=-Inf, max=Inf, .name="PositionFilter")
 strandFilter(strandLevels=character(0), .name="StrandFilter")
 uniqueFilter(withSread=TRUE, .name="UniqueFilter")
@@ -66,6 +70,12 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
     regular expression used as \code{grep(regex, chromosome(x))} to
     filter based on chromosome. The default (\code{character(0)})
     performs no filtering}
+
+  \item{fixed}{\code{logical(1)} passed to \code{\link{grep}},
+    influencing how pattern matching occurs.}
+
+  \item{exclude}{\code{logical(1)} which, when \code{TRUE}, uses
+    \code{regex} to exclude, rather than include, reads.}
 
   \item{min}{}
 
@@ -127,8 +137,11 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   \code{length(x)} indicating which components of \code{x} satisfy the
   filter.
 
+  \code{idFilter} selects elements satisfying
+  \code{grep(regex, id(x), fixed=fixed)}.
+
   \code{chromosomeFilter} selects elements satisfying
-  \code{grep(regex, chromosome(x))}.
+  \code{grep(regex, chromosome(x), fixed=fixed)}.
 
   \code{positionFilter} selects elements satisfying
   \code{min <= position(x) <= max}.

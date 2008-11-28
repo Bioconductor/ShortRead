@@ -36,13 +36,28 @@ setMethod(name, "SRFilter", function(x, ...) {
         alphabetFrequency(x, ...)
 }
 
-chromosomeFilter <-
-    function(regex=character(0), .name="ChromosomeFilter")
+idFilter <-
+    function(regex=character(0), fixed=FALSE, exclude=FALSE,
+             .name="idFilter")
 {
     .check_type_and_length(regex, "character", 0:1)
     srFilter(function(x) {
         .idx <- logical(length(x))
-        .idx[grep(regex, chromosome(x))] <- TRUE
+        .idx[grep(regex, as.character(id(x)), fixed=fixed)] <- TRUE
+        if (exclude) .idx <- !.idx
+        .idx
+    }, name = .name)
+}
+
+chromosomeFilter <-
+    function(regex=character(0), fixed=FALSE, exclude=FALSE,
+             .name="ChromosomeFilter")
+{
+    .check_type_and_length(regex, "character", 0:1)
+    srFilter(function(x) {
+        .idx <- logical(length(x))
+        .idx[grep(regex, chromosome(x), fixed=fixed)] <- TRUE
+        if (exclude) .idx <- !.idx
         .idx
     }, name=.name)
 }
