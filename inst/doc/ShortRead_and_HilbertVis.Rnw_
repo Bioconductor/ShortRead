@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Processing and Visualisation of High-Throughput Sequencing  with ShortRead and HilbertVis}
-%\VignettePackage{HilbertCurveDisplay}
+%\VignettePackage{ShortRead}
 
 \documentclass{article}
 
@@ -16,7 +16,7 @@
 \texttt{sanders@fs.tum.de}}
 
 \title{\textbf{Processing and Visualisation of High-Throughput Sequencing Data
-with \texttt{ShortRead} and \texttt{HilbertCurveDisplay}}}
+with \texttt{ShortRead} and \texttt{HilbertVis}}}
 
 \date{2008-07-21}
 
