@@ -36,8 +36,10 @@ setMethod("readFasta", "character", function(dirPath, pattern=character(),
   src <- .file_names(dirPath, pattern)[sample]
   FASTAlist <- lapply(src, readFASTA, strip.desc = TRUE)
   FASTArecs <- do.call("c", FASTAlist)
-  strings <- FASTArecordsToXStringViews(FASTArecs, "BStringSet")
-  new("ShortRead", ..., sread=strings, id=names(strings))
+  strings <- FASTArecordsToCharacter(FASTArecs)
+  new("ShortRead", ...,
+      sread=DNAStringSet(strings, use.names=FALSE),
+      id=BStringSet(names(strings)))
 })
 
 ## subset
