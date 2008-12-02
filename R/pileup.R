@@ -1,11 +1,11 @@
 pileup <- function (
    start, fraglength, chrlength, 
-   dir = factor( "+", levels=c("-","+") ), 
+   dir = factor( "+", levels=c("-","+","*") ), 
    readlength = fraglength,
    offset = 1 )
 {
    stopifnot( is.factor(dir) )
-   stopifnot( length(levels(dir)) == 2 && all( levels(dir) == c("-", "+") ) )
+   stopifnot( length(levels(dir)) == 3 && all( levels(dir) == c("-", "+", "*") ) )
    stopifnot( is.numeric(start) && is.numeric(fraglength) && is.numeric(chrlength) 
       && is.numeric(readlength) )
    stopifnot( length(fraglength) == length(start) || length(fraglength) == 1 )

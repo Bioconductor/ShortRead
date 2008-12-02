@@ -58,12 +58,12 @@ Assume that the current working directory contains two sub-directories, names \t
 <<>>=
 library("ShortRead")
 maps.me1 <- sapply( list.files( "H3K4me1", "run.*lane.\\.map" ), 
-   function(filename) readAligned( "H3K4me1", filename, type="MAQMap" ) )
+   function(filename) readAligned( "H3K4me1", filename, type="MAQMapShort" ) )
 maps.me3 <- sapply( list.files( "H3K4me3", "run.*lane.\\.map" ), 
-   function(filename) readAligned( "H3K4me3", filename, type="MAQMap" ) )
+   function(filename) readAligned( "H3K4me3", filename, type="MAQMapShort" ) )
 @
 
-Here, \texttt{readAligned} takes three arguments: the directory that contains the map file, the name of the map file, and the type of data to be read, \texttt{MAQMap}. You may also use the type \texttt{SolexaExport} to read in mappings produced by Eland (see help page for \texttt{readAligned} for details). In any case, the function \texttt{readAligned} returns an S4 object of class \texttt{AlignedRead}.
+Here, \texttt{readAligned} takes three arguments: the directory that contains the map file, the name of the map file, and the type of data to be read, for Maq alignment data \texttt{MAQMap}. (Our example data has been aligned with an older version of Maq, prior to the recent change in binary format in Maq version 0.7. Using the type \texttt{MAQMapShort} allows to read the old format.) You may also use the type \texttt{SolexaExport} to read in mappings produced by Eland (see help page for \texttt{readAligned} for details). In any case, the function \texttt{readAligned} returns an S4 object of class \texttt{AlignedRead}.
 
 \section{The class \texttt{AlignedRead}}
 
