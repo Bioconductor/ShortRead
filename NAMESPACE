@@ -8,7 +8,9 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet)
 importFrom(Biobase, selectSome, phenoData, featureData, sampleNames,
            mkScalar)
 
-importFrom(IRanges, coverage, width, strand)
+importFrom(IRanges, coverage, width)
+
+importFrom(BSgenome, strand)
 
 importFrom(Biostrings, BStringSet, DNAStringSet,
            alphabetFrequency, alphabet,
