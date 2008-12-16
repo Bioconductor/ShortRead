@@ -32,7 +32,7 @@ setMethod("pairwiseAlignment", "ShortReadQ",
             mc <- as.list(match.call())
             if (is.null(mc$patternQuality))
               mc$patternQuality <- quality(quality(pattern))
-            do.call("callNextMethod", c(list(pattern, subject), mc))
+            do.call(callNextMethod, c(list(pattern, subject), mc))
           })
 
 ## subset

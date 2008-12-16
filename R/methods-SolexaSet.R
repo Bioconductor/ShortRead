@@ -54,7 +54,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
         subListExtract(lst, nm, simplify=TRUE)
     })
     names(sublst) <- nms
-    do.call("data.frame", sublst)
+    do.call(data.frame, sublst)
 }
 
 .qa_Solexa_tileStats <- function(dirPath, pattern, ...)
@@ -228,7 +228,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 
     ## collapse into data frames
     bind <- function(lst, elt)
-        do.call("rbind",
+        do.call(rbind,
                 subListExtract(lst, elt, keep.names=FALSE))
     lst <-
         list(readCounts=bind(lst, "readCounts"),

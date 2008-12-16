@@ -69,7 +69,7 @@ setMethod("readQual", "character", function(dirPath, reads = NULL,
                                             pattern=character(), sample = 1,
                                             ...) {
   src <- .file_names(dirPath, pattern)[sample]
-  scores <- do.call("c", lapply(src, .readQual, reads))
+  scores <- do.call(c, lapply(src, .readQual, reads))
   IntegerQuality(scores)
 })
 

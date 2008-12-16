@@ -35,7 +35,7 @@ setMethod("readFasta", "character", function(dirPath, pattern=character(),
                                              sample = 1, ...) {
   src <- .file_names(dirPath, pattern)[sample]
   FASTAlist <- lapply(src, readFASTA, strip.desc = TRUE)
-  FASTArecs <- do.call("c", FASTAlist)
+  FASTArecs <- do.call(c, FASTAlist)
   strings <- FASTArecordsToCharacter(FASTArecs)
   new("ShortRead", ...,
       sread=DNAStringSet(strings, use.names=FALSE),
