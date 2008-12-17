@@ -59,28 +59,28 @@ readAligned(dirPath, pattern=character(0), ...)
       follows:
 
       \describe{
-	    \item{Machine}{Ignored}
-	    \item{Run number}{stored in \code{alignData}}
-	    \item{Lane}{stored in \code{alignData}}
-	    \item{Tile}{stored in \code{alignData}}
-	    \item{X}{stored in \code{alignData}}
-	    \item{Y}{stored in \code{alignData}}
-	    \item{Index string}{Ignored}
-	    \item{Read number}{Ignored}
-	    \item{Read}{\code{sread}}
-	    \item{Quality}{\code{quality}}
-	    \item{Match chromosome}{\code{chromosome}}
-	    \item{Match contig}{Ignored}
-	    \item{Match position}{\code{position}}
-	    \item{Match strand}{\code{strand}}
-	    \item{Match description}{Ignored}
-	    \item{Single-read alignment score}{\code{alignQuality}}
-	    \item{Paired-read alignment score}{Ignored}
-	    \item{Partner chromosome}{Ignored}
-	    \item{Partner contig}{Ignored}
-	    \item{Partner offset}{Ignored}
-	    \item{Partner strand}{Ignored}
-	    \item{Filtering}{\code{alignData}}
+            \item{Machine}{Ignored}
+            \item{Run number}{stored in \code{alignData}}
+            \item{Lane}{stored in \code{alignData}}
+            \item{Tile}{stored in \code{alignData}}
+            \item{X}{stored in \code{alignData}}
+            \item{Y}{stored in \code{alignData}}
+            \item{Index string}{Ignored}
+            \item{Read number}{Ignored}
+            \item{Read}{\code{sread}}
+            \item{Quality}{\code{quality}}
+            \item{Match chromosome}{\code{chromosome}}
+            \item{Match contig}{Ignored}
+            \item{Match position}{\code{position}}
+            \item{Match strand}{\code{strand}}
+            \item{Match description}{Ignored}
+            \item{Single-read alignment score}{\code{alignQuality}}
+            \item{Paired-read alignment score}{Ignored}
+            \item{Partner chromosome}{Ignored}
+            \item{Partner contig}{Ignored}
+            \item{Partner offset}{Ignored}
+            \item{Partner strand}{Ignored}
+            \item{Filtering}{\code{alignData}}
       }
 
       Paired read columns are not interpreted.  The resulting
@@ -140,38 +140,38 @@ readAligned(dirPath, pattern=character(0), ...)
       Guide, Revision A, January 2008):
 
       \describe{
-	\item{Id}{Not parsed}
-	\item{Sequence}{stored in \code{sread}}
-	\item{Type of match code}{Stored in \code{alignData} as
-	  \code{matchCode}. Codes are (from the Eland manual): NM (no
-	  match); QC (no match due to quality control failure); RM (no
-	  match due to repeat masking); U0 (best match was unique and
-	  exact); U1 (best match was unique, with 1 mismatch); U2 (best
-	  match was unique, with 2 mismatches); R0 (multiple exact
-	  matches found); R1 (multiple 1 mismatch matches found, no
-	  exact matches); R2 (multiple 2 mismatch matches found, no
-	  exact or 1-mismatch matches).}
-	\item{Number of exact matches}{stored in \code{alignData} as
-	  \code{nExactMatch}}
-	\item{Number of 1-error mismatches}{stored in \code{alignData}
-	  as \code{nOneMismatch}}
-	\item{Number of 2-error mismatches}{stored in \code{alignData}
-	  as \code{nTwoMismatch}}
-	\item{Genome file of match}{stored in \code{chromosome}}
-	\item{Position}{stored in \code{position}}
-	\item{Strand}{(direction of match) stored in \code{strand}}
-	\item{\sQuote{N} treatment}{stored in \code{alignData}, as
-	  \code{NCharacterTreatment}. \sQuote{.} indicates treatment of
-	  \sQuote{N} was not applicable; \sQuote{D} indicates treatment
-	  as deletion; \sQuote{|} indicates treatment as insertion}
-	\item{Substitution error}{stored in \code{alignData} as
-	  \code{mismatchDetailOne} and \code{mismatchDetailTwo}. Present
-	  only for unique inexact matches at one or two
-	  positions. Position and type of first substituation error,
-	  e.g., 11A represents 11 matches with 12th base an A in
-	  reference but not read. The reference manual cited below lists
-	  only one field (\code{mismatchDetailOne}), but two are present
-	  in files seen in the wild.}
+        \item{Id}{Not parsed}
+        \item{Sequence}{stored in \code{sread}}
+        \item{Type of match code}{Stored in \code{alignData} as
+          \code{matchCode}. Codes are (from the Eland manual): NM (no
+          match); QC (no match due to quality control failure); RM (no
+          match due to repeat masking); U0 (best match was unique and
+          exact); U1 (best match was unique, with 1 mismatch); U2 (best
+          match was unique, with 2 mismatches); R0 (multiple exact
+          matches found); R1 (multiple 1 mismatch matches found, no
+          exact matches); R2 (multiple 2 mismatch matches found, no
+          exact or 1-mismatch matches).}
+        \item{Number of exact matches}{stored in \code{alignData} as
+          \code{nExactMatch}}
+        \item{Number of 1-error mismatches}{stored in \code{alignData}
+          as \code{nOneMismatch}}
+        \item{Number of 2-error mismatches}{stored in \code{alignData}
+          as \code{nTwoMismatch}}
+        \item{Genome file of match}{stored in \code{chromosome}}
+        \item{Position}{stored in \code{position}}
+        \item{Strand}{(direction of match) stored in \code{strand}}
+        \item{\sQuote{N} treatment}{stored in \code{alignData}, as
+          \code{NCharacterTreatment}. \sQuote{.} indicates treatment of
+          \sQuote{N} was not applicable; \sQuote{D} indicates treatment
+          as deletion; \sQuote{|} indicates treatment as insertion}
+        \item{Substitution error}{stored in \code{alignData} as
+          \code{mismatchDetailOne} and \code{mismatchDetailTwo}. Present
+          only for unique inexact matches at one or two
+          positions. Position and type of first substituation error,
+          e.g., 11A represents 11 matches with 12th base an A in
+          reference but not read. The reference manual cited below lists
+          only one field (\code{mismatchDetailOne}), but two are present
+          in files seen in the wild.}
 
       }
     }
@@ -256,6 +256,44 @@ readAligned(dirPath, pattern=character(0), ...)
       and orientation.
 
     }
+
+    \item{\code{type="SOAP"}}{
+
+      Parse alignment files created with the SOAP alignment
+      algorithm. Parsed columns can be retrieved from
+      \code{\linkS4class{AlignedRead}} as follows:
+
+      \describe{
+        \item{id}{id}
+        \item{seq}{\code{sread}; see comment below}
+        \item{qual}{\code{quality}; see comment below}
+        \item{number of hits}{\code{alignData}}
+        \item{a/b}{\code{alignData} (\code{pairedEnd})}
+        \item{length}{\code{alignData} (\code{alignedLength})}
+        \item{+/-}{\code{strand}}
+        \item{chr}{\code{chromosome}}
+        \item{location}{\code{position}; see comment below}
+        \item{types}{\code{alignData} (\code{typeOfHit}: integer
+          portion; \code{hitDetail}: text portion)}
+      }
+
+      This method includes the argument \code{qualityType} to specify
+      how quality scores are encoded.  It is unclear from SOAP
+      documentation what the quality score is; the default is
+      \sQuote{Solexa}-like, with \code{qualityType='SFastqQuality'}, but
+      can be specified as \sQuote{Phred}-like, with
+      \code{qualityType='FastqQuality'}.
+
+      SOAP outputs positions that are 1-offset from the left-most end of
+      the \code{+} strand. \code{ShortRead} preserves this
+      representation.
+
+      SOAP reads aligned to the \code{-} strand are reported by SOAP as
+      their reverse complement, with the quality string of these reads
+      reversed. \code{ShortRead} parses these to their original sequence
+      and orientation.
+
+    }
   }
 }
 
@@ -280,6 +318,9 @@ readAligned(dirPath, pattern=character(0), ...)
 
   The Bowtie reference manual, \url{http://bowtie-bio.sourceforge.net},
   28 October, 2008.
+
+  The SOAP reference manual, \url{http://soap.genomics.org.cn/soap1},
+  16 December, 2008.
 
 }
 

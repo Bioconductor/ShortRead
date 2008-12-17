@@ -2,7 +2,7 @@
     ## visit several files, then collapse
     files <- .file_names(dirPath, pattern)
     lsts <- lapply(files, read.csv,
-                   ..., colClasses=colClasses)
+                   ..., colClasses=colClasses, stringsAsFactors=FALSE)
     cclasses <- colClasses[!sapply(colClasses, is.null)]
     lst <- lapply(seq_along(names(cclasses)),
                   function(idx) unlist(lapply(lsts, "[[", idx)))
@@ -243,6 +243,33 @@
     .Call(.read_bowtie, files, qualityType, sep, commentChar)
 }
 
+.SOAP_AlignedDataFrame <-
+    function(nEquallyBestHits, pairedEnd, alignedLength,
+             typeOfHit, hitDetail)
+{
+    df <- data.frame(nEquallyBestHits=nEquallyBestHits,
+                     pairedEnd=factor(pairedEnd),
+                     alignedLength=alignedLength,
+                     typeOfHit=typeOfHit,
+                     hitDetail=hitDetail,
+                     stringsAsFactors=FALSE)
+    meta <- data.frame(labelDescription=c(
+                         "Number of equally-best hits",
+                         "Paired end, a or b",
+                         "Length of read used in alignment",
+                         "Integer indicator of match type; 0: exact; 1-100: mismatch; 100+n: n-base insertion; 200+n: n-base deletion", 
+                         "Detailed description of match"))
+    AlignedDataFrame(df, meta)
+}
+
+.readAligned_SOAP <-
+    function(dirPath, pattern=character(0), ...,
+             qualityType="SFastqQuality", sep="\t", commentChar="#")
+{
+    files <- .file_names(dirPath, pattern)
+    .Call(.read_soap, files, qualityType, sep, commentChar)
+}
+
 .readAligned_character <-
     function(dirPath, pattern=character(0),
              type=c(
@@ -250,7 +277,7 @@
                "SolexaPrealign", "SolexaRealign",
                "SolexaResult",
                "MAQMap", "MAQMapShort", "MAQMapview",
-               "Bowtie"),
+               "Bowtie", "SOAP"),
              ..., filter=srFilter())
 {
     if (missing(type))
@@ -278,7 +305,8 @@
                    MAQMapShort=.readAligned_MaqMapOld(dirPath, pattern, ...),
                    MAQMapview=.readAligned_MaqMapview(
                      dirPath, pattern=pattern, ...),
-                   Bowtie=.readAligned_Bowtie(dirPath, pattern, ...))
+                   Bowtie=.readAligned_Bowtie(dirPath, pattern, ...),
+                   SOAP=.readAligned_SOAP(dirPath, pattern, ...))
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {

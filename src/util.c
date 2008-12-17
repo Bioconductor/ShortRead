@@ -63,6 +63,29 @@ _get_strand_levels()
     return ans;
 }
 
+int
+_char_as_strand_int(const char c, const char *fname, const int lineno)
+{
+    int strand;
+    if (c == '\0')
+        strand = NA_INTEGER;
+    else {
+        switch (c) {
+        case '-':
+            strand = 1;
+            break;
+        case '+':
+            strand = 2;
+            break;
+        default:
+            error("invalid 'strand' field '%s', %s:%d",
+                  c, fname, lineno);
+            break;
+        }
+    }
+    return strand;
+}
+
 /*
  * apply function 'with' to object 'from' in environment 'rho', e.g.,
  * becuase 'from' is an object and 'with' an accessor.

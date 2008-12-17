@@ -20,6 +20,7 @@ void _reverseComplement(char *);
 
 SEXP _get_namespace(const char *pkg);
 SEXP _get_strand_levels();
+int _char_as_strand_int(const char c, const char *fname, const int lineno);
 
 typedef char * (MARK_FIELD_FUNC)(char *, const char *);
 MARK_FIELD_FUNC _mark_field_1;	/* nchar(delim) == 1 */
@@ -47,10 +48,12 @@ SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 			     SEXP nrows, SEXP skip, SEXP commentChar);
 SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar);
 
-/* io_bowtie.c */
+/* io_bowtie.c, io_soap.c */
 
 SEXP read_bowtie(SEXP files, SEXP qualityType, SEXP sep,
                  SEXP commentChar);
+SEXP read_soap(SEXP files, SEXP qualityType, SEXP sep,
+               SEXP commentChar);
 
 /* alphabet.c */
 

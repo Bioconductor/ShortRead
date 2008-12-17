@@ -8,8 +8,9 @@ static const R_CallMethodDef callMethods[] = {
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 1},
     {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 8},
     {".read_solexa_export", (DL_FUNC) &read_solexa_export, 3},
-    /* io_bowtie.c */
+    /* io_bowtie.c, io_soap.c */
     {".read_bowtie", (DL_FUNC) &read_bowtie, 4},
+    {".read_soap", (DL_FUNC) &read_soap, 4},
     /* alphabet */
     {".alphabet_by_cycle", (DL_FUNC) &alphabet_by_cycle, 3},
     {".alphabet_pair_by_cycle", (DL_FUNC) &alphabet_pair_by_cycle, 5},

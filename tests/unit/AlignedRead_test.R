@@ -35,6 +35,40 @@ test_AlignedRead_Bowtie <- function() {
                    as.character(alignData(aln)[["mismatch"]]))
 }
 
+test_AlignedRead_SOAP <- function() {
+    fl <- "soap.txt"
+    tbl <- read.table(file.path("./cases", fl), fill=TRUE)
+    aln <- readAligned("./cases", fl, "SOAP")
+    checkTrue(validObject(aln))
+    checkIdentical(as.character(tbl[[1]]), as.character(id(aln)))
+    strand <- as.character(strand(aln))
+    checkIdentical(as.character(tbl[[7]]), strand)
+    sread <- as.character(sread(aln))
+    sread[strand=="-"] <-
+        as.character(reverseComplement(sread(aln)))[strand=="-"]
+    checkIdentical(as.character(tbl[[2]]), sread)
+    qual <- as.character(quality(quality(aln)))
+    qual[strand=="-"] <-
+        as.character(reverse(quality(quality(aln)))[strand=="-"])
+    checkIdentical(as.character(tbl[[3]]), qual)
+    checkIdentical(as.character(tbl[[8]]),
+                   as.character(chromosome(aln)))
+    checkIdentical(tbl[[9]], position(aln))
+    checkTrue(all(is.na(quality(alignQuality(aln)))))
+    with(pData(alignData(aln)), {
+        checkIdentical(tbl[[4]], nEquallyBestHits)
+        checkIdentical(as.character(tbl[[5]]),
+                       as.character(pairedEnd))
+        checkIdentical(tbl[[6]], alignedLength)
+        checkIdentical(tbl[[10]], typeOfHit)
+        checkIdentical(c("", "G->15A40", "C->2A40\tC->9G40", "", "",
+                         "", "", "A->3G40", "", "A->6C40", "T->7A40",
+                         "", "", "", "G->9A40", "G->21C40\tA->19T40",
+                         "", "A->7G40", "", "", "C->34T40"),
+                         hitDetail)
+    })
+}
+
 test_AlignedRead_readAligned_SolexaExport <- function() {
     obj <- readAligned(analysisPath(sp),
                        pattern="s_2_export.txt", type="SolexaExport")

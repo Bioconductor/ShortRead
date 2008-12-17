@@ -46,24 +46,9 @@ _read_bowtie(const char *fname, const char *csep,
                 error("too few fields, %s:%d", fname, lineno);
         }
         /* elt[0] (id) ignored */
-        if (*elt[1] == '\0')
-            strand[offset] = NA_INTEGER;
-        else {
-            switch (*elt[1]) {
-            case '-':
-                strand[offset] = 1;
-                break;
-            case '+':
-                strand[offset] = 2;
-                break;
-            default:
-                error("invalid 'strand' field '%s', %s:%d",
-                      *elt[1], fname, lineno);
-                break;
-            }
-        }
+        strand[offset] = _char_as_strand_int(*elt[1], fname, lineno);
         SET_STRING_ELT(chromosome, offset, mkChar(elt[2]));
-        position[offset] = atoi(elt[3]) + 1; /* input is leftmost-aligned, 0-based */
+        position[offset] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
         if (strand[offset] == 1) {
             _reverseComplement(elt[4]);
             _reverse(elt[5]);
