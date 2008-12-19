@@ -3,7 +3,8 @@ useDynLib(ShortRead, .registration=TRUE)
 importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
                   ScalarCharacter)
 
-importClassesFrom(Biostrings, BStringSet, DNAStringSet)
+importClassesFrom(Biostrings, BStringSet, DNAStringSet,
+                  PairwiseAlignedXStringSet)
 
 importFrom(Biobase, selectSome, phenoData, featureData, sampleNames,
            mkScalar)
@@ -14,18 +15,9 @@ importFrom(BSgenome, strand)
 
 importFrom(Biostrings, BStringSet, DNAStringSet,
            alphabetFrequency, alphabet,
-           quality, pairwiseAlignment)
+           quality, pairwiseAlignment, pattern, unaligned)
 
-exportClasses(SRError, SRWarn, SRList, SRVector, SRFilter,
-              IntensityMeasure, ArrayIntensity,
-              IntensityInfo, SolexaIntensityInfo,
-              Intensity, SolexaIntensity,
-              QualityScore, IntegerQuality, NumericQuality, MatrixQuality,
-              FastqQuality, SFastqQuality,
-              ShortRead, ShortReadQ,
-              AlignedDataFrame, AlignedRead,
-              SolexaPath, SolexaSet, SolexaExportQA,
-              SRSet, RochePath, RocheSet)
+exportClassPattern("^[^\\.]")
 
 exportMethods(show, length, "[", "[[",
               alphabetFrequency, alphabet, coverage,
