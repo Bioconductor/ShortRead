@@ -64,15 +64,17 @@ actual 'end' of the fragment. If you are confused now, look at the examples belo
 
 \examples{\dontrun{ 
 
-Example 1: Assuming that 'lane' is a \link[=AlignedRead-class]{AlignedRead} object containing aligned reads froma
-Solexa lane, you may get a pile-up representation of chromosome 13 as follows
+Example 1: Assuming that 'lane' is an 'AlignedRead' object containing
+aligned reads froma Solexa lane, you may get a pile-up representation of
+chromosome 13 as follows
 
 chr13length <- 114142980   # the length of human chromosme 13
 pu <- pileup( position(lane)[chromosome(lane)=="13"], width(lane), chr13length )
 
-Example 2: Even though the width of the reads (as repored by \code{width(lane)}) is only 24,
-these 24 bp are just one end of a longer fragment. Assuming that all fragments have been
-sonicated to about the same length, say 150 bp, we may get a better pile-up representation by:
+Example 2: Even though the width of the reads (as repored by
+'width(lane)') is only 24, these 24 bp are just one end of a longer
+fragment. Assuming that all fragments have been sonicated to about the
+same length, say 150 bp, we may get a better pile-up representation by:
 
 pu2 <- pileup( position(lane)[chromosome(lane)=="13"], 150, chr13length,
 strand(lane)[chromosome(lane)=="13"], width(lane) )
