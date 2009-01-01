@@ -141,7 +141,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 
     perCycleBaseCall <- local({
         abc <- apply(abc, c(1, 3), sum)
-        df <- data.frame(Cycle=factor(colnames(abc)[col(abc)]),
+        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
                          Base=factor(rownames(abc)[row(abc)]),
                          Count=as.vector(abc),
                          lane=pattern)
@@ -151,7 +151,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
         abc <- apply(abc, 2:3, sum)
         q <- factor(rownames(abc)[row(abc)])
         q0 <- 1 + 32 * is(quality(rpt), "SFastqQuality")
-        df <- data.frame(Cycle=factor(colnames(abc)[col(abc)]),
+        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
                          Quality=q,
                          Score=as.numeric(q)-q0,
                          Count=as.vector(abc),

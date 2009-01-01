@@ -93,7 +93,9 @@ plotAlignQuality <- function(df) {
     paste(names(at), " (", sprintf(fmt, at), ")", sep="")
 }
 
-plotTileCounts <- function(df, nrow=100) {
+plotTileCounts <- 
+    function(df, nrow=if (max(df$tile==100)) 50 else 100)
+{
     df <- df[!is.na(df$count),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
@@ -108,7 +110,9 @@ plotTileCounts <- function(df, nrow=100) {
                 labels=.colorkeyNames(at, "%d")),
               aspect=2)
 }
-plotTileQualityScore <- function(df, nrow=100) {
+plotTileQualityScore <- 
+    function(df, nrow=if (max(df$tile==100)) 50 else 100)
+{
     df <- df[!is.na(df$score),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
@@ -129,7 +133,8 @@ plotCycleBaseCall <- function(df) {
     df <- df[df$Base != "N",]
     df$lane <- .laneLbl(df$lane)
     xyplot(log10(Count)~as.integer(Cycle)|lane, 
-           group=factor(Base), df, 
+           group=factor(Base), 
+           df[with(df, order(lane, Base, Cycle)),], 
            type="l", col=col, lty=lty,
            key=list(space="top", 
              lines=list(col=col, lty=lty),
