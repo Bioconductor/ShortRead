@@ -1,9 +1,10 @@
 \name{readFastq}
 
 \alias{readFastq}
+\alias{writeFastq}
 \alias{readFastq,character-method}
 
-\title{Read FASTQ-formatted files into compact R representations}
+\title{Read and write FASTQ-formatted files}
 
 \description{
 
@@ -13,11 +14,15 @@
   quality scores in the files. Methods read all files into a single R
   object; a typical use is to restrict input to a single FASTQ file.
 
+  \code{writeFastq} writes an object to a single \code{file}, using
+  \code{mode="w"} (the default) to create a new file or \code{mode="a"}
+  append to an existing file. Attemptint to write to an existing file
+  with \code{mode="w"} results in an error.
+
 }
 \usage{
-
 readFastq(dirPath, pattern=character(0), ...)
-
+writeFastq(object, file, mode="w", ...)
 }
 
 \arguments{
@@ -29,6 +34,16 @@ readFastq(dirPath, pattern=character(0), ...)
   \item{pattern}{The (\code{\link{grep}}-style) pattern describing file
     names to be read. The default (\code{character(0)}) results in line
     (attempted) input of all files in the directory.}
+
+  \item{object}{An object to be output in \code{fastq} format. For
+    methods, use \code{showMethods(object, where=getNamespace("ShortRead"))}.}
+
+  \item{file}{A length 1 character vector providing a path to a file to
+    the object is to be written to.}
+
+  \item{mode}{A length 1 character vector equal to either \sQuote{w} or
+    \sQuote{a} to write to a new file or append to an existing file,
+    respectively.}
 
   \item{...}{Additional arguments, perhaps used by methods.}
 
@@ -65,15 +80,24 @@ readFastq(dirPath, pattern=character(0), ...)
   The BioPerl description of fastq asserts that the first character of
   line 4 is a \code{!}, but the current parser does not support this
   convention.
-  
+
+  \code{writeFastq} creates files following the specification outlined
+  above, using the IUPAC-standard alphabet (hence, sequences containing
+  \sQuote{-} when read will be represented by \sQuote{N} when written).
+
 }
 
 \value{
 
-  A single R object (e.g., \code{\linkS4class{ShortReadQ}}) containing
-  sequences and qualities contained in all files in \code{dirPath}
-  matching \code{pattern}. There is no guarantee of order in which files
-  are read.
+  \code{readFastq} returns a single R object (e.g.,
+  \code{\linkS4class{ShortReadQ}}) containing sequences and qualities
+  contained in all files in \code{dirPath} matching
+  \code{pattern}. There is no guarantee of order in which files are
+  read.
+
+  \code{writeFastq} is invoked primarily for its side effect, creating
+  or appending to file \code{file}. The function returns, invisibly, the
+  length of \code{object}, and hence the number of records written.
 
 }
 
@@ -103,5 +127,9 @@ quality(rfq)
 ## SolexaPath method 'knows' where FASTQ files are placed
 rfq1 <- readFastq(sp, pattern="s_1_sequence.txt")
 rfq1
+
+file <- tempfile()
+writeFastq(rfq, file)
+readLines(file, 8)
 }
 \keyword{manip}

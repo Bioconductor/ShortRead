@@ -70,6 +70,9 @@ setGeneric("readPrb", function(dirPath, pattern=character(0), ...)
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)
            standardGeneric("readFastq"), signature="dirPath")
 
+setGeneric("writeFastq", function(object, file, mode="w", ...)
+           standardGeneric("writeFastq"), signature="object")
+
 setGeneric("readFasta",
            function(dirPath, pattern=character(0), ...)
            standardGeneric("readFasta"))

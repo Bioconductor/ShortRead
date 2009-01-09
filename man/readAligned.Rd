@@ -264,7 +264,7 @@ readAligned(dirPath, pattern=character(0), ...)
       \code{\linkS4class{AlignedRead}} as follows:
 
       \describe{
-        \item{id}{id}
+        \item{id}{\code{id}}
         \item{seq}{\code{sread}; see comment below}
         \item{qual}{\code{quality}; see comment below}
         \item{number of hits}{\code{alignData}}

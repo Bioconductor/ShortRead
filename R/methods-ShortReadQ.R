@@ -24,6 +24,23 @@ setMethod("readFastq", "character", function(dirPath, pattern=character(),
         quality=SFastqQuality(elts[["quality"]]))
 })
 
+setMethod("writeFastq", "ShortReadQ", function(object, file, mode="w", ...) {
+    if (length(file) != 1)
+        .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
+                       "file", "character(1)"))
+    if (file.exists(file) && mode != "a")
+        .throw(SRError("UserArgumentMismatch",
+                       "file '%s' exists, but mode is not 'a'",
+                       file))
+    ## FIXME: different quality types
+    max_width <- max(c(unique(width(id(object))),
+                       unique(width(sread(object))),
+                       unique(width(quality(object)))))
+    .Call(.write_fastq, id(object), sread(object),
+          quality(quality(object)), file, mode, max_width)
+    invisible(length(object))
+})
+
 ## coerce
 
 setMethod("pairwiseAlignment", "ShortReadQ",
