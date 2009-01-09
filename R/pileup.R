@@ -1,6 +1,5 @@
 pileup <- function (
-   start, fraglength, chrlength, 
-   dir = factor( "+", levels=c("-","+","*") ), 
+   start, fraglength, chrlength, dir = strand( "+" ),
    readlength = fraglength,
    offset = 1 )
 {

@@ -12,7 +12,7 @@ is the number of reads (or fragments, see below) mapped to the corresponding bas
 
 \usage{
 pileup( start, fraglength, chrlength, 
-   dir = factor( "+", levels=c("-","+") ), 
+   dir = strand( "+" ),
    readlength = fraglength,
    offset = 1 )
 }
