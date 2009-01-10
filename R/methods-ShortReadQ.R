@@ -32,6 +32,7 @@ setMethod("writeFastq", "ShortReadQ", function(object, file, mode="w", ...) {
         .throw(SRError("UserArgumentMismatch",
                        "file '%s' exists, but mode is not 'a'",
                        file))
+    file <- path.expand(file)
     ## FIXME: different quality types
     max_width <- max(c(unique(width(id(object))),
                        unique(width(sread(object))),

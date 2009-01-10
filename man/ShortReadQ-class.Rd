@@ -53,7 +53,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       Write \code{object} to \code{file} in fastq format. \code{mode}
       defaults to \sQuote{w}. This creates a new file, or fails if
       \code{file} already exists. Use \code{mode="a"} to append to an
-      existing file.}
+      existing file. \code{file} is expanded using \code{path.expand}.}
 
     \item{[}{\code{signature(x = "ShortReadQ", i = "ANY", j = "missing")}: 
       This method creates a new \code{ShortReadQ} object containing only

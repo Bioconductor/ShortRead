@@ -20,72 +20,86 @@ static const int LINES_PER_FASTA_REC = 2;
  * inst/extdata/s_1_sequences.txt contains 256 records
  */
 
+void
+_write_err(FILE *file, int i)
+{
+    fclose(file);
+    Rf_error("failed to write record %d", i);
+}
+
+
 char *
 _cache_to_char(CachedXStringSet *cache, const int i,
-	       char *buf, const int width, 
-	       DECODE_FUNC decode)
+               char *buf, const int width, 
+               DECODE_FUNC decode)
 {
     RoSeq roSeq = get_CachedXStringSet_elt_asRoSeq(cache, i);
     if (roSeq.nelt > width)
-	Rf_error("failed to write record %d", i);
+	return NULL;
     if (decode != NULL) {
-	int j;
-	for (j = 0; j < roSeq.nelt; ++j)
-	    buf[j] = decode(roSeq.elts[j]);
+        int j;
+        for (j = 0; j < roSeq.nelt; ++j)
+            buf[j] = decode(roSeq.elts[j]);
     } else 
-	strncpy(buf, roSeq.elts, roSeq.nelt);
+        strncpy(buf, roSeq.elts, roSeq.nelt);
     buf[roSeq.nelt] = '\0';
     return buf;
 }
 
 SEXP
 write_fastq(SEXP id, SEXP sread, SEXP quality, 
-	    SEXP fname, SEXP fmode, SEXP max_width)
+            SEXP fname, SEXP fmode, SEXP max_width)
 {
     if (!(IS_S4_OBJECT(id) && 
-	  strcmp(get_classname(id), "BStringSet") == 0))
-	Rf_error("'%s' must be '%s'", "id", "BStringSet");
+          strcmp(get_classname(id), "BStringSet") == 0))
+        Rf_error("'%s' must be '%s'", "id", "BStringSet");
     if (!(IS_S4_OBJECT(sread) && 
-	  strcmp(get_classname(sread), "DNAStringSet") == 0))
-	Rf_error("'%s' must be '%s'", "sread", "DNAStringSet");
+          strcmp(get_classname(sread), "DNAStringSet") == 0))
+        Rf_error("'%s' must be '%s'", "sread", "DNAStringSet");
     if (!(IS_S4_OBJECT(quality) && 
-	  strcmp(get_classname(quality), "BStringSet") == 0))
-	Rf_error("'%s' must be '%s'", "quality", "BStringSet");
+          strcmp(get_classname(quality), "BStringSet") == 0))
+        Rf_error("'%s' must be '%s'", "quality", "BStringSet");
     const int len = get_XStringSet_length(id);
     if ((len != get_XStringSet_length(sread)) ||
-	(len != get_XStringSet_length(quality)))
-	Rf_error("length() of %s must all be equal",
-		 "'id', 'sread', 'quality'");
+        (len != get_XStringSet_length(quality)))
+        Rf_error("length() of %s must all be equal",
+                 "'id', 'sread', 'quality'");
     if (!(IS_CHARACTER(fname) && LENGTH(fname) == 1)) /* FIXME: nzchar */
-	Rf_error("'%s' must be '%s'", "file", "character(1)");
+        Rf_error("'%s' must be '%s'", "file", "character(1)");
     if (!(IS_CHARACTER(fmode) && LENGTH(fmode) == 1)) /* FIXME nchar()<3 */
-	Rf_error("'%s' must be '%s'", "mode", "character(1)");
+        Rf_error("'%s' must be '%s'", "mode", "character(1)");
     if (!(IS_INTEGER(max_width) && LENGTH(max_width) == 1 &&
-	  INTEGER(max_width)[0] >= 0))
-	Rf_error("'%s' must be %s", "max_width", "'integer(1)', >=0");
+          INTEGER(max_width)[0] >= 0))
+        Rf_error("'%s' must be %s", "max_width", "'integer(1)', >=0");
     const int width = INTEGER(max_width)[0];
 
     DECODE_FUNC dnaDecoder = decoder(get_XStringSet_baseClass(sread));
     CachedXStringSet xid = new_CachedXStringSet(id),
-	xsread = new_CachedXStringSet(sread),
-	xquality = new_CachedXStringSet(quality);
+        xsread = new_CachedXStringSet(sread),
+        xquality = new_CachedXStringSet(quality);
 
     FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)), 
-		       CHAR(STRING_ELT(fmode, 0)));
+                       CHAR(STRING_ELT(fmode, 0)));
     if (fout == NULL)
-	Rf_error("failed to open file '%s'", 
-		 CHAR(STRING_ELT(fname, 0)));
+        Rf_error("failed to open file '%s'", 
+                 CHAR(STRING_ELT(fname, 0)));
     char *idbuf = (char *) R_alloc(sizeof(char), width + 1),
-	*readbuf = (char *) R_alloc(sizeof(char), width + 1),
-	*qualbuf = (char *) R_alloc(sizeof(char), width + 1);
+        *readbuf = (char *) R_alloc(sizeof(char), width + 1),
+        *qualbuf = (char *) R_alloc(sizeof(char), width + 1);
     int i;
     for (i = 0; i < len; ++i) {
-	idbuf = _cache_to_char(&xid, i, idbuf, width, NULL);
-	readbuf = _cache_to_char(&xsread, i, readbuf, width, 
-				 dnaDecoder);
-	qualbuf = _cache_to_char(&xquality, i, qualbuf, width, NULL);
-	fprintf(fout, "@%s\n%s\n+%s\n%s\n",
-		idbuf, readbuf, idbuf, qualbuf);
+        idbuf = _cache_to_char(&xid, i, idbuf, width, NULL);
+	if (idbuf == NULL)
+	    _write_err(fout, i);
+        readbuf = 
+	    _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
+	if (readbuf == NULL)
+	    _write_err(fout, i);
+        qualbuf = _cache_to_char(&xquality, i, qualbuf, width, NULL);
+	if (qualbuf == NULL)
+	    _write_err(fout, i);
+        fprintf(fout, "@%s\n%s\n+%s\n%s\n",
+                idbuf, readbuf, idbuf, qualbuf);
     }
     fclose(fout);
     return R_NilValue;
