@@ -24,7 +24,7 @@ void
 _write_err(FILE *file, int i)
 {
     fclose(file);
-    Rf_error("failed to write record %d", i);
+    Rf_error("failed to write record %d", i + 1);
 }
 
 
