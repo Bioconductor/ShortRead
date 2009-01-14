@@ -6,6 +6,7 @@
 \alias{[,AlignedRead,ANY,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{append,AlignedRead,AlignedRead,missing-method}
+\alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
 \alias{strand,AlignedRead-method}
 \alias{coverage,AlignedRead-method}
 \alias{srrank,AlignedRead-method}
@@ -86,6 +87,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       \code{strand} must be factors with the same levels. See methods
       for \code{ShortReadQ}, \code{AlignedDataFrame} for details of how
       these components of \code{x} and \code{y} are appended.}
+
+    \item{coerce}{\code{signature(from = "PairwiseAlignedXStringSet", to = "AlignedRead")}:
+      
+      (Invoke this method with, \code{as(from, "AlignedRead")}) coerce
+      objects of class \code{from} to class \code{to}.}
 
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}

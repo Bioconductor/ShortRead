@@ -28,12 +28,15 @@
 \alias{alphabetFrequency,FastqQuality-method}
 \alias{alphabetByCycle,FastqQuality-method}
 \alias{alphabetScore,FastqQuality-method}
+\alias{coerce,FastqQuality,numeric-method}
+\alias{coerce,FastqQuality,matrix-method}
 \alias{srsort,FastqQuality-method}
 \alias{srorder,FastqQuality-method}
 \alias{srrank,FastqQuality-method}
 \alias{srduplicated,FastqQuality-method}
 % SFastqQuality
 \alias{alphabetScore,SFastqQuality-method}
+\alias{coerce,SFastqQuality,matrix-method}
 
 \title{Quality scores for short reads and their alignments}
 \description{
@@ -138,6 +141,16 @@
 
       Apply \code{\link{alphabetScore}} (i.e., summed base quality, per
       read) to \code{object}.}
+
+    \item{coerce}{\code{signature(from = "FastqQuality", to = "numeric")}:}
+    \item{coerce}{\code{signature(from = "FastqQuality", to = "matrix")}:}
+    \item{coerce}{\code{signature(from = "SFastqQuality", to = "matrix")}:
+      
+      (Use these as, for instance, \code{as(from, "matrix")}) coerce
+      objects of class \code{from} to class \code{to}, using the quality
+      encoding implied by the class. WHen \code{to} is \dQuote{matrix},
+      the result is a matrix of type \code{integer}. In addition,
+      methods require that all quality scores are of the same width.}
 
     \item{srsort}{\code{signature(x = "FastqQuality")}:}
     \item{srorder}{\code{signature(x = "FastqQuality")}:}

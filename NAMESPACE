@@ -19,7 +19,7 @@ importFrom(Biostrings, BStringSet, DNAStringSet,
 
 exportClassPattern("^[^\\.]")
 
-exportMethods(show, length, "[", "[[",
+exportMethods(show, coerce, length, "[", "[[",
               alphabetFrequency, alphabet, coverage,
               strand, width, append)
 
