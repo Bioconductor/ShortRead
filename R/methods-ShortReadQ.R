@@ -72,6 +72,14 @@ setMethod("[", c("ShortReadQ", "ANY", "ANY"),
 
 setMethod("[", c("ShortReadQ", "ANY", "missing"), .ShortReadQ_subset)
 
+setMethod(append, c("ShortReadQ", "ShortReadQ", "missing"),
+    function(x, values, after=length(x))
+{
+    initialize(x, id=append(id(x), id(values)),
+               sread=append(sread(x), sread(values)),
+               quality=append(quality(x), quality(values)))
+})
+
 ## manip
 
 .abc_ShortReadQ <- function(stringSet, alphabet, ...) {

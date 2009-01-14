@@ -78,6 +78,22 @@ setMethod("[", c("AlignedRead", "ANY", "ANY"),
 
 setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
+setMethod(append, c("AlignedRead", "AlignedRead", "missing"),
+    function(x, values, after=length(x))
+{
+    initialize(x,
+               chromosome=.append.factor(chromosome(x),
+                 chromosome(values)),
+               position=append(position(x), position(values)),
+               strand=.append.factor(strand(x), strand(values)),
+               alignQuality=append(alignQuality(x),
+                 alignQuality(values)),
+               alignData=append(alignData(x), alignData(values)),
+               quality=append(quality(x), quality(values)),
+               sread=append(sread(x), sread(values)),
+               id=append(id(x), id(values)))
+})
+
 ## srorder, etc; srsort picked up by generic
 
 setMethod("srorder", "AlignedRead", function(x, ...) {

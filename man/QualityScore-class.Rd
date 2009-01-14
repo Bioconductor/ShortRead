@@ -9,6 +9,7 @@
 % QualityScore
 \alias{[,QualityScore,ANY,missing,ANY-method}
 \alias{[[,QualityScore,ANY,missing-method}
+\alias{append,QualityScore,QualityScore,missing-method}
 \alias{length,QualityScore-method}
 \alias{width,QualityScore-method}
 \alias{detail,QualityScore-method}
@@ -83,6 +84,9 @@
       quality score.
 
     }
+
+    \item{append}{\code{signature(x = "QualityScore", values = "QualityScore", length = "missing")}:
+      append \code{values} after \code{x}.}
 
     \item{width}{\code{signature(x = "QualityScore")}:}
     \item{width}{\code{signature(x = "NumericQuality")}:}

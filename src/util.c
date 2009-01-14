@@ -238,9 +238,8 @@ _rtrim(char *linebuf)
  * string in-place.
  */
 void
-_solexa_to_IUPAC(char *linebuf)
+_solexa_to_IUPAC(char *p)
 {
-    char *p = linebuf;
     while ((p = strchr(p, '.')) != NULL)
         *p = '-';
 }
@@ -330,7 +329,6 @@ _count_lines(gzFile *file)
             ++p;
             ++lines;
         }
-        bytes_read += bytes_read;
     }
     return lines;
 }

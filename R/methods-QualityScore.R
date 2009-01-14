@@ -1,6 +1,6 @@
 ## interface
 
-## constructors, [, [[, length, width, show, detail
+## constructors, [, [[, length, width, append, show, detail
 
 ## QualityScore
 
@@ -20,10 +20,16 @@ setMethod("[", c("QualityScore", "ANY", "missing"),
 setMethod("[[", c("QualityScore", "ANY", "missing"),
           .QualityScore_subset2)
 
-setMethod("length", "QualityScore", function(x) length(quality(x)))
+setMethod(length, "QualityScore", function(x) length(quality(x)))
 
-setMethod("width", "QualityScore", function(x)
+setMethod(width, "QualityScore", function(x)
           .undefined_method_err(class(x), "width"))
+
+setMethod(append, c("QualityScore", "QualityScore", "missing"),
+    function(x, values, after=length(x))
+{
+    initialize(x, quality=append(quality(x), quality(values)))
+})
 
 setMethod("detail", "QualityScore", function(object) {
     callNextMethod()

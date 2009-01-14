@@ -136,3 +136,16 @@ polyn <- function(nucleotides, n)
         assign(nms[i], func, where)
     }
 }
+
+## Misc
+
+.append.factor <-
+    function(x, values)
+{
+    if (!identical(levels(x), levels(values)))
+        .throw(SRError("IncompatibleTypes",
+                       "'%s' and '%s' must have same '%s'",
+                       "x", "values", "levels()"))
+    factor(append(as.character(x), as.character(values)),
+           levels=levels(x))
+}

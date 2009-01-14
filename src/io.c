@@ -35,7 +35,7 @@ _cache_to_char(CachedXStringSet *cache, const int i,
 {
     RoSeq roSeq = get_CachedXStringSet_elt_asRoSeq(cache, i);
     if (roSeq.nelt > width)
-	return NULL;
+        return NULL;
     if (decode != NULL) {
         int j;
         for (j = 0; j < roSeq.nelt; ++j)
@@ -89,15 +89,15 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
     int i;
     for (i = 0; i < len; ++i) {
         idbuf = _cache_to_char(&xid, i, idbuf, width, NULL);
-	if (idbuf == NULL)
-	    _write_err(fout, i);
+        if (idbuf == NULL)
+            _write_err(fout, i);
         readbuf = 
-	    _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
-	if (readbuf == NULL)
-	    _write_err(fout, i);
+            _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
+        if (readbuf == NULL)
+            _write_err(fout, i);
         qualbuf = _cache_to_char(&xquality, i, qualbuf, width, NULL);
-	if (qualbuf == NULL)
-	    _write_err(fout, i);
+        if (qualbuf == NULL)
+            _write_err(fout, i);
         fprintf(fout, "@%s\n%s\n+%s\n%s\n",
                 idbuf, readbuf, idbuf, qualbuf);
     }
@@ -127,7 +127,7 @@ read_prb_as_character(SEXP fname, SEXP asSolexa)
     int read=0;
     if (gzgets(file, buf, LINEBUF_SIZE) == Z_NULL) {
         gzclose(file);
-        error("could not open file '%f'",
+        error("could not read file '%f'",
               translateChar(STRING_ELT(fname, 0)));
     }
     int n_cycles = 0;
@@ -169,6 +169,7 @@ read_prb_as_character(SEXP fname, SEXP asSolexa)
         SET_STRING_ELT(ans, read++, mkChar(score));
     }
     UNPROTECT(1);
+    gzclose(file);
     return ans;
 }
 
@@ -260,7 +261,7 @@ read_solexa_fastq(SEXP files)
     PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
     SET_VECTOR_ELT(ans, 1, elt);
     SET_STRING_ELT(nms, 1, mkChar("id"));
-    
+
     roSeqs = new_RoSeqs_from_CharAEAE(&qualities);
     PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
     SET_VECTOR_ELT(ans, 2, elt);

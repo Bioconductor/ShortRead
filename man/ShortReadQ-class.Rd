@@ -9,6 +9,7 @@
 \alias{[,ShortReadQ,missing,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
+\alias{append,ShortReadQ,ShortReadQ,missing-method}
 \alias{detail,ShortReadQ-method}
 
 \title{"ShortReadQ" class for short reads and their quality scores}
@@ -60,6 +61,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       those reads indexed by \code{i}. Additional methods on
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
+
+    \item{append}{\code{signature(x = "ShortRead", values = "ShortRead", length = "missing")}:
+      append the \code{sread}, \code{quality} and \code{id} slots of
+      \code{values} after the corresponding fields of \code{x}.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component,

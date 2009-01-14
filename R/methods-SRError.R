@@ -7,6 +7,7 @@
                     "InternalError",
                     "RemoteError",
                     "InvalidReadFilter",
+                    "IncompatibleTypes",
                     "ValueUnavailable",
                     .SRErrorWarning_types)
 
@@ -21,7 +22,8 @@ setMethod(".srValidity", "SRError", function(object) {
     type <- .type(object)
     if (!type %in% .SRError_types)
         msg <- c(msg, sprintf("'%s' must be one of '%s'",
-                              '.type', .SRError_types))
+                              '.type',
+                              paste(.SRError_types, collapse="' '")))
     if (is.null(msg)) TRUE else msg
 })
 

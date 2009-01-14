@@ -9,7 +9,7 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet,
 importFrom(Biobase, selectSome, phenoData, featureData, sampleNames,
            mkScalar)
 
-importFrom(IRanges, coverage, width, score, start, Views)
+importFrom(IRanges, coverage, width, score, start, Views, append)
 
 importFrom(BSgenome, strand)
 
@@ -21,6 +21,6 @@ exportClassPattern("^[^\\.]")
 
 exportMethods(show, length, "[", "[[",
               alphabetFrequency, alphabet, coverage,
-              strand, width)
+              strand, width, append)
 
 exportPattern("^[^\\.]")

@@ -83,7 +83,7 @@ writeFastq(object, file, mode="w", ...)
 
   \code{writeFastq} creates files following the specification outlined
   above, using the IUPAC-standard alphabet (hence, sequences containing
-  \sQuote{-} when read will be represented by \sQuote{N} when written).
+  \sQuote{.} when read will be represented by \sQuote{-} when written).
 
 }
 

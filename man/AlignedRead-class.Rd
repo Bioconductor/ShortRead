@@ -5,6 +5,7 @@
 \alias{[,AlignedRead,missing,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,missing,ANY-method}
+\alias{append,AlignedRead,AlignedRead,missing-method}
 \alias{strand,AlignedRead-method}
 \alias{coverage,AlignedRead-method}
 \alias{srrank,AlignedRead-method}
@@ -79,6 +80,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       This method creates a new \code{AlignedRead} object containing only
       those reads indexed by \code{i}. \code{chromosome} is recoded to
       contain only those levels in the new subset.}
+
+    \item{append}{\code{signature(x = "AlignedRead", values = "AlignedRead", length = "missing")}:
+      append \code{values} after \code{x}. \code{chromosome} and
+      \code{strand} must be factors with the same levels. See methods
+      for \code{ShortReadQ}, \code{AlignedDataFrame} for details of how
+      these components of \code{x} and \code{y} are appended.}
 
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}

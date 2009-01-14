@@ -1,6 +1,7 @@
 \name{AlignedDataFrame-class}
 \docType{class}
 \alias{AlignedDataFrame-class}
+\alias{append,AlignedDataFrame,AlignedDataFrame,missing-method}
 
 \title{
   "AlignedDataFrame" representing alignment annotations as a data frame
@@ -30,15 +31,18 @@
 
     \item{\code{varMetadata}:}{Object of class \code{"data.frame"}
       describing columns of \code{data}.  See
-      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      for details.}
 
     \item{\code{dimLabels}:}{Object of class \code{character} describing
       the dimensions of the AnnotatedDataFrame. Used internally; see
-      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      for details.}
 
     \item{\code{.__classVersion__}:}{Object of class \code{"Versions"}
       describing the version of this object. Used internally; see
-      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}} for details.}
+      \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
+      for details.}
 
   }
 }
@@ -52,6 +56,15 @@ Class \code{"\link[Biobase:class.Versioned]{Versioned}"}, by class "AnnotatedDat
   data frame) and \code{varMetadata} (to retrieve the metadata) from
   \code{AnnotatedDataFrame}.
 
+  Additional methods include:
+  \describe{
+
+    \item{append}{\code{signature(x = "AlignedDataFrame", values = "AlignedDataFrame", length = "missing")}:
+      append \code{values} after \code{x}. \code{varMetadata} of
+      \code{x} and \code{y} must be identical; \code{pData} and
+      \code{varMetadata} are appended using \code{rbind}.}
+
+    }
 }
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}

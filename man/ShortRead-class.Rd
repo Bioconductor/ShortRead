@@ -13,6 +13,7 @@
 \alias{[,ShortRead,missing,ANY,ANY-method}
 \alias{[,ShortRead,ANY,ANY,ANY-method}
 \alias{[,ShortRead,ANY,missing,ANY-method}
+\alias{append,ShortRead,ShortRead,missing-method}
 \alias{detail,ShortRead-method}
 \alias{length,ShortRead-method}
 \alias{show,ShortRead-method}
@@ -54,6 +55,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       those reads indexed by \code{i}. Additional methods on
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
+
+    \item{append}{\code{signature(x = "ShortRead", values = "ShortRead", length = "missing")}:
+      append the \code{sread} and \code{id} slots of \code{values} after
+      the corresponding fields of \code{x}.}
 
     \item{length}{\code{signature(x = "ShortRead")}: returns a
       \code{integer(1)} vector describing the number of reads in this
