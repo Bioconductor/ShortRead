@@ -1,6 +1,10 @@
 \name{ShortRead-class}
 \docType{class}
 \alias{ShortRead-class}
+\alias{ShortRead,DNAStringSet,BStringSet-method}
+\alias{ShortRead,DNAStringSet,missing-method}
+\alias{ShortRead,ShortRead,missing-method}
+\alias{ShortRead,missing,missing-method}
 \alias{srrank,ShortRead-method}
 \alias{srorder,ShortRead-method}
 \alias{srsort,ShortRead-method}
@@ -30,7 +34,8 @@
 
 \section{Objects from the Class}{
 
-  Objects from this class are not normally created directly by the user.
+  Objects from this class are created by \code{readFasta}, or by calls
+  to the constructor \code{\link{ShortRead}}, as outlined below.
 
 }
 \section{Slots}{
@@ -46,6 +51,30 @@
 Class \code{"\linkS4class{.ShortReadBase}"}, directly.
 }
 \section{Methods}{
+
+  Constructors include:
+
+  \describe{
+
+    \item{ShortRead}{\code{signature(sread = "DNAStringSet", id = "BStringSet")}:
+      Create a \code{ShortRead} object from reads and their
+      identifiers. The length of \code{id} must match that of \code{sread}.}
+
+    \item{ShortRead}{\code{signature(sread = "DNAStringSet", id = "missing")}:
+      Create a \code{ShortRead} object from reads, creating empty identifiers.}
+
+    \item{ShortRead}{\code{signature(sread = "ShortRead", id = "missing", ..., start=NA, end=NA)}:
+      Create a \code{ShortRead} object from a previously existing
+      \code{ShortRead} object, using the vectors \code{start},
+      \code{end} (typically of length 1 or the length of \code{sread})
+      to select the start and end of each read; \code{start} and
+      \code{end} follow the semanitics of corresponding arguments to
+      \code{DNAStringSet}.}
+
+    \item{ShortRead}{\code{signature(sread = "missing", id = "missing", ...)}:
+      Create an empty \code{ShortRead} object.}
+
+  }
 
   See \code{\link{accessors}} for slot accessor functions.
 

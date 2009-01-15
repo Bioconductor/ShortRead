@@ -67,6 +67,12 @@ setGeneric("readPrb", function(dirPath, pattern=character(0), ...)
 
 ## ShortRead / ShortReadQ
 
+setGeneric("ShortRead", function(sread, id, ...)
+           standardGeneric("ShortRead"))
+
+setGeneric("ShortReadQ", function(sread, quality, id, ...)
+           standardGeneric("ShortReadQ"))
+
 setGeneric("readFastq", function(dirPath, pattern=character(0), ...)
            standardGeneric("readFastq"), signature="dirPath")
 

@@ -2,6 +2,10 @@
 \docType{class}
 
 \alias{ShortReadQ-class}
+\alias{ShortReadQ,DNAStringSet,QualityScore,BStringSet-method}
+\alias{ShortReadQ,DNAStringSet,QualityScore,missing-method}
+\alias{ShortReadQ,ShortReadQ,missing,missing-method}
+\alias{ShortReadQ,missing,missing,missing-method}
 \alias{writeFastq,ShortReadQ-method}
 \alias{alphabetByCycle,ShortReadQ-method}
 \alias{alphabetScore,ShortReadQ-method}
@@ -24,8 +28,9 @@
 
 \section{Objects from the Class}{
 
-  Objects from this class are not normally created directly by the user,
-  but are instead the result of \code{\link{readFastq}}.
+  Objects from this class are the result of \code{\link{readFastq}}, or
+  can be constructed from \code{DNAStringSet}, \code{QualityScore}, and
+  \code{BStringSet} objects, as described below.
 
 }
 \section{Slots}{
@@ -44,6 +49,33 @@ Class \code{"\linkS4class{ShortRead}"}, directly.
 Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 }
 \section{Methods}{
+
+  Constructors include:
+
+  \describe{
+
+    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "QualityScore", id = "BStringSet")}:
+      Create a \code{ShortReadQ} object from reads, their quality
+      scores, and identifiers. The length of \code{id} and
+      \code{quality}must match that of \code{sread}.}
+
+    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "QualityScore", id = "missing")}:
+      Create a \code{ShortReadQ} object from reads and their quality
+      scores, creating empty identifiers.}
+
+    \item{ShortReadQ}{\code{signature(sread = "ShortReadQ", quality = "missing", id = "missing", ..., start=NA, end=NA)}:
+      Create a \code{ShortReadQ} object from a previously existing
+      \code{ShortReadQ} object, using the vectors \code{start},
+      \code{end} (typically of length 1 or the length of \code{sread})
+      to select the start and end of each read and quality
+      score. \code{start} and \code{end} follow the semanitics of
+      corresponding arguments to \code{DNAStringSet}}
+
+    \item{ShortReadQ}{\code{signature(sread = "missing", quality = "missing", id = "missing", ...)}:
+      Create an empty \code{ShortReadQ} object.}
+
+  }
+
   See \code{\link{accessors}} for additional functions to access slot
   content, and \code{\linkS4class{ShortRead}} for inherited
   methods. Additional methods include:

@@ -16,6 +16,35 @@ setMethod(".srValidity", "ShortReadQ", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
+setMethod("ShortReadQ", c("DNAStringSet", "QualityScore", "BStringSet"),
+          function(sread, quality, id, ...)
+{
+    new("ShortReadQ", sread=sread, quality=quality, id=id, ...)
+})
+
+setMethod("ShortReadQ", c("DNAStringSet", "QualityScore", "missing"),
+          function(sread, quality, id, ...)
+{
+    new("ShortReadQ", sread=sread, quality=quality,
+        id=BStringSet(rep("", length(sread))), ...)
+})
+
+setMethod("ShortReadQ", c("missing", "missing", "missing"),
+          function(sread, quality, id, ...)
+{
+    new("ShortReadQ")
+})
+
+setMethod("ShortReadQ", c("ShortReadQ", "missing", "missing"),
+          function(sread, quality, id, ..., start=NA, end=NA)
+{
+    quality <- Biostrings::quality(sread)
+    qnew <- BStringSet(Biostrings::quality(quality), start, end)
+    initialize(sread,
+               sread=DNAStringSet(sread(sread), start, end),
+               quality=do.call(class(quality), list(quality=qnew)))
+})
+
 setMethod("readFastq", "character", function(dirPath, pattern=character(),
                                              ...) {
     src <- .file_names(dirPath, pattern)

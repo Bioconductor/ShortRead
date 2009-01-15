@@ -11,6 +11,31 @@ setMethod(".srValidity", "ShortRead", .ShortRead_validity)
 
 .make_getter(c("id", "sread"))
 
+setMethod("ShortRead", c("DNAStringSet", "BStringSet"),
+          function(sread, id, ...)
+{
+    new("ShortRead", sread=sread, id=id, ...)
+})
+
+setMethod("ShortRead", c("DNAStringSet", "missing"),
+          function(sread, id, ...)
+{
+    new("ShortRead", sread=sread, id=BStringSet(rep("", length(sread))), ...)
+})
+
+setMethod("ShortRead", c("missing", "missing"),
+          function(sread, id, ...)
+{
+    new("ShortRead")
+})
+
+setMethod("ShortRead", c("ShortRead", "missing"),
+          function(sread, id, ..., start=NA, end=NA)
+{
+    initialize(sread,
+               sread=DNAStringSet(sread(sread), start, end))
+})
+
 setMethod("length", "ShortRead", function(x) length(sread(x)))
 
 setMethod("width", "ShortRead", function(x) {
