@@ -7,38 +7,31 @@
     if (is.null(msg)) TRUE else msg
 }
 
-setMethod(".srValidity", "ShortRead", .ShortRead_validity)
+setMethod(.srValidity, "ShortRead", .ShortRead_validity)
 
 .make_getter(c("id", "sread"))
 
-setMethod("ShortRead", c("DNAStringSet", "BStringSet"),
+setMethod(ShortRead, c("DNAStringSet", "BStringSet"),
           function(sread, id, ...)
 {
     new("ShortRead", sread=sread, id=id, ...)
 })
 
-setMethod("ShortRead", c("DNAStringSet", "missing"),
+setMethod(ShortRead, c("DNAStringSet", "missing"),
           function(sread, id, ...)
 {
     new("ShortRead", sread=sread, id=BStringSet(rep("", length(sread))), ...)
 })
 
-setMethod("ShortRead", c("missing", "missing"),
+setMethod(ShortRead, c("missing", "missing"),
           function(sread, id, ...)
 {
     new("ShortRead")
 })
 
-setMethod("ShortRead", c("ShortRead", "missing"),
-          function(sread, id, ..., start=NA, end=NA)
-{
-    initialize(sread,
-               sread=DNAStringSet(sread(sread), start, end))
-})
+setMethod(length, "ShortRead", function(x) length(sread(x)))
 
-setMethod("length", "ShortRead", function(x) length(sread(x)))
-
-setMethod("width", "ShortRead", function(x) {
+setMethod(width, "ShortRead", function(x) {
     if (length(sread(x)) > 0) {
         unique(width(sread(x)))
     } else {
@@ -48,7 +41,7 @@ setMethod("width", "ShortRead", function(x) {
 
 ## coerce
 
-setMethod("pairwiseAlignment", "ShortRead",
+setMethod(pairwiseAlignment, "ShortRead",
           function(pattern, subject, ...)
           {
             pairwiseAlignment(sread(pattern), subject, ...)
@@ -56,7 +49,7 @@ setMethod("pairwiseAlignment", "ShortRead",
 
 ## import
 
-setMethod("readFasta", "character", function(dirPath, pattern=character(),
+setMethod(readFasta, "character", function(dirPath, pattern=character(),
                                              sample = 1, ...) {
   src <- .file_names(dirPath, pattern)[sample]
   FASTAlist <- lapply(src, readFASTA, strip.desc = TRUE)
@@ -101,24 +94,24 @@ setMethod(append, c("ShortRead", "ShortRead", "missing"),
     alphabetByCycle(sread(stringSet), ...)
 }
 
-setMethod("alphabetByCycle", "ShortRead", .abc_ShortRead)
+setMethod(alphabetByCycle, "ShortRead", .abc_ShortRead)
 
-setMethod("clean", "ShortRead", function(object, ...) {
+setMethod(clean, "ShortRead", function(object, ...) {
     alf <- alphabetFrequency(sread(object), baseOnly=TRUE)
     object[alf[,'other'] == 0]
 })
 
-setMethod("srorder", "ShortRead", .forward_x)
+setMethod(srorder, "ShortRead", .forward_x)
 
-setMethod("srrank", "ShortRead", .forward_x)
+setMethod(srrank, "ShortRead", .forward_x)
 
-setMethod("srsort", "ShortRead", function(x, ...) {
+setMethod(srsort, "ShortRead", function(x, ...) {
     x[srorder(x)]
 })
 
-setMethod("srduplicated", "ShortRead", .forward_x)
+setMethod(srduplicated, "ShortRead", .forward_x)
 
-setMethod("tables", "ShortRead", function(x, n=50, ...) {
+setMethod(tables, "ShortRead", function(x, n=50, ...) {
     callGeneric(sread(x), n=n, ...)
 })
 
@@ -127,19 +120,38 @@ setMethod("tables", "ShortRead", function(x, n=50, ...) {
     callGeneric(sread(pattern), subject, ...)
 }
 
-setMethod("srdistance", c("ShortRead", "ANY"),
+setMethod(srdistance, c("ShortRead", "ANY"),
           .srdistance_ShortRead_ANY)
+
+setMethod(narrow, "ShortRead",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+{
+    initialize(x,
+               sread=narrow(sread(x), start, end, width, use.names))
+})
+
+setMethod(trimLRPatterns, c(subject="ShortRead"),
+    function (Lpattern = "", Rpattern = "", subject, max.Lmismatch =
+              0, max.Rmismatch = 0, with.Lindels = FALSE, with.Rindels
+              = FALSE, Lfixed = TRUE, Rfixed = TRUE, ranges = FALSE)
+{
+    ranges <-
+        callGeneric(Lpattern, Rpattern, sread(subject), max.Lmismatch,
+                    max.Rmismatch, with.Lindels, with.Rindels, Lfixed,
+                    Rfixed, ranges=TRUE)
+    narrow(subject, start(ranges), end(ranges))
+})
 
 ## show
 
-setMethod("show", "ShortRead", function(object) {
+setMethod(show, "ShortRead", function(object) {
     callNextMethod()
     wd <- width(object)
     if (length(wd)>2) wd <- paste(range(wd), collapse="..")
     cat("length:", length(object), "reads; width:", wd, "cycles\n")
 })
 
-setMethod("detail", "ShortRead", function(object, ...) {
+setMethod(detail, "ShortRead", function(object, ...) {
     cat("class: ", class(object), "\n")
     cat("\nsread:\n")
     show(sread(object))

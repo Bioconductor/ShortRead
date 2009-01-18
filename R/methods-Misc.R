@@ -4,13 +4,13 @@
     callNextMethod(stringSet, alphabet=alphabet)
 }
 
-setMethod("clean", "DNAStringSet", function(object, ...) {
+setMethod(clean, "DNAStringSet", function(object, ...) {
     object[alphabetFrequency(object, baseOnly=TRUE)[,'other']==0]
 })
 
-setMethod("alphabetByCycle", "BStringSet", .abc_BStringSet)
+setMethod(alphabetByCycle, "BStringSet", .abc_BStringSet)
 
-setMethod("srorder", "XStringSet", function(x, ...) {
+setMethod(srorder, "XStringSet", function(x, ...) {
     if (length(list(...))!=0)
         .throw(SRError("UserArgumentMismatch",
                        "argument '%s' not supported",
@@ -18,7 +18,7 @@ setMethod("srorder", "XStringSet", function(x, ...) {
     .Call(.alphabet_order, x)
 })
 
-setMethod("srrank", "XStringSet", function(x, ...) {
+setMethod(srrank, "XStringSet", function(x, ...) {
     if (length(list(...))!=0)
         .throw(SRError("UserArgumentMismatch",
                        "argument '%s' not supported",
@@ -26,9 +26,9 @@ setMethod("srrank", "XStringSet", function(x, ...) {
     .Call(.alphabet_rank, x)
 })
 
-setMethod("srsort", "XStringSet", function(x, ...) x[srorder(x, ...)])
+setMethod(srsort, "XStringSet", function(x, ...) x[srorder(x, ...)])
 
-setMethod("srduplicated", "XStringSet", function(x, ...) {
+setMethod(srduplicated, "XStringSet", function(x, ...) {
     if (length(list(...))!=0)
         .throw(SRError("UserArgumentMismatch",
                        "argument '%s' not supported",
@@ -74,7 +74,7 @@ setMethod("srduplicated", "XStringSet", function(x, ...) {
     res
 }
 
-setMethod("srdistance", c("DNAStringSet", "character"),
+setMethod(srdistance, c("DNAStringSet", "character"),
           .srdistance_DNAStringSet_character)
 
 .srdistance_DNAStringSet_DNAString <- function(pattern, subject, ...)
@@ -84,7 +84,7 @@ setMethod("srdistance", c("DNAStringSet", "character"),
     res
 }
 
-setMethod("srdistance", c("DNAStringSet", "DNAString"),
+setMethod(srdistance, c("DNAStringSet", "DNAString"),
           .srdistance_DNAStringSet_DNAString)
 
 .srdistance_DNAStringSet_DNAStringSet <- function(pattern, subject,
@@ -93,7 +93,7 @@ setMethod("srdistance", c("DNAStringSet", "DNAString"),
     callGeneric(pattern, as.character(subject), ...)
 }
 
-setMethod("srdistance", c("DNAStringSet", "DNAStringSet"),
+setMethod(srdistance, c("DNAStringSet", "DNAStringSet"),
           .srdistance_DNAStringSet_DNAStringSet)
 
 ## tables
@@ -119,4 +119,4 @@ setMethod("srdistance", c("DNAStringSet", "DNAStringSet"),
            nReads=nReads))
 }
 
-setMethod("tables", "XStringSet", .stringset_tables)
+setMethod(tables, "XStringSet", .stringset_tables)

@@ -1,4 +1,4 @@
-setMethod(".srValidity", "SolexaSet", function(object) {
+setMethod(.srValidity, "SolexaSet", function(object) {
     msg <- NULL
     nr <- nrow(laneDescription(object))
     if (nr!=8)
@@ -29,19 +29,19 @@ setMethod(".srValidity", "SolexaSet", function(object) {
         laneDescription=laneDescription)
 }
 
-setMethod("SolexaSet", "SolexaPath", .SolexaSet_SolexaPath)
+setMethod(SolexaSet, "SolexaPath", .SolexaSet_SolexaPath)
 
-setMethod("SolexaSet", "character", function(path, ...) {
+setMethod(SolexaSet, "character", function(path, ...) {
     .SolexaSet_SolexaPath(SolexaPath(path), ...)
 })
 
 .make_getter(slotNames("SolexaSet"))
 
-setMethod("laneNames", "SolexaSet", function(object, ...) {
+setMethod(laneNames, "SolexaSet", function(object, ...) {
     laneNames(laneDescription(object))
 })
 
-setMethod("laneNames", "AnnotatedDataFrame", function(object) {
+setMethod(laneNames, "AnnotatedDataFrame", function(object) {
     sampleNames(object)
 })
 
@@ -260,7 +260,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 ##     callGeneric(dirPath, pattern, type="SolexaExport", ...)
 ## }
 
-## setMethod("qa", "SolexaSet", .qa_solexa_export)
+## setMethod(qa, "SolexaSet", .qa_solexa_export)
 
 ## .report_SolexaSet <- function(x, run=1, ..., qaFile=tempfile(),
 ##                               dest=tempfile(), type="pdf" )
@@ -268,7 +268,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 ##     report(qa(x, run=run))
 ## }
 
-## setMethod("report", "SolexaSet", .report_SolexaSet)
+## setMethod(report, "SolexaSet", .report_SolexaSet)
 
 
 ## alignment
@@ -283,7 +283,7 @@ setMethod("laneNames", "AnnotatedDataFrame", function(object) {
 
 setMethod(readAligned, "SolexaSet", .readAligned_SolexaSet)
 
-setMethod("show", "SolexaSet", function(object) {
+setMethod(show, "SolexaSet", function(object) {
     callNextMethod()
     cat("experimentPath(solexaPath(object)):\n  ",
         experimentPath(solexaPath(object)), "\n", sep="")
@@ -291,7 +291,7 @@ setMethod("show", "SolexaSet", function(object) {
     print(laneDescription(object))
 })
 
-setMethod("detail", "SolexaSet", function(object, ...) {
+setMethod(detail, "SolexaSet", function(object, ...) {
     callNextMethod()
     cat("\n")
     detail(solexaPath(object), ...)

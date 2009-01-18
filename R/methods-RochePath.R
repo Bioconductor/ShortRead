@@ -24,7 +24,7 @@ RochePath <- function(experimentPath=NA_character_,
   callGeneric(dirPath, ..., pattern = pattern, sample = sample)
 }
 
-setMethod("readFasta", "RochePath", .readFasta_RochePath)
+setMethod(readFasta, "RochePath", .readFasta_RochePath)
 
 .readQual_RochePath <- function(dirPath,
                                 pattern = "\\.qual$",
@@ -38,7 +38,7 @@ setMethod("readFasta", "RochePath", .readFasta_RochePath)
   callGeneric(dirPath, ..., reads = reads, pattern = pattern, sample = sample)
 }
 
-setMethod("readQual", "RochePath", .readQual_RochePath)
+setMethod(readQual, "RochePath", .readQual_RochePath)
 
 .read454_RochePath <- function(dirPath, sample = 1, run = 1) {
   reads <- readFasta(dirPath, sample = sample, run = run)
@@ -47,7 +47,7 @@ setMethod("readQual", "RochePath", .readQual_RochePath)
   new("ShortReadQ", reads, quality=quals)
 }
 
-setMethod("read454", "RochePath", .read454_RochePath)
+setMethod(read454, "RochePath", .read454_RochePath)
 
 .sampleNames_RochePath <- function(object) {
     path <- readPath(object)
@@ -57,20 +57,20 @@ setMethod("read454", "RochePath", .read454_RochePath)
         callNextMethod()
 }
 
-setMethod("sampleNames", "RochePath", .sampleNames_RochePath)
+setMethod(sampleNames, "RochePath", .sampleNames_RochePath)
 
 .runNames_RochePath <- function(object) {
   basename(readPath(object))
 }
 
-setMethod("runNames", "RochePath", .runNames_RochePath)
+setMethod(runNames, "RochePath", .runNames_RochePath)
 
-setMethod("show", "RochePath", function(object) {
+setMethod(show, "RochePath", function(object) {
     callNextMethod()
     .show_additionalPathSlots(object)
 })
 
-setMethod("detail", "RochePath", function(object, ...) {
+setMethod(detail, "RochePath", function(object, ...) {
     callNextMethod()
     .detail_additionalPathSlots(object)
 })

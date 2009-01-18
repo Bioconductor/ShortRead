@@ -22,8 +22,8 @@
   new("RocheSet", ..., sourcePath=path, phenoData=phenoData)
 }
 
-setMethod("RocheSet", "RochePath", .RocheSet_RochePath)
+setMethod(RocheSet, "RochePath", .RocheSet_RochePath)
 
-setMethod("RocheSet", "character", function(path, ...) {
+setMethod(RocheSet, "character", function(path, ...) {
   .RocheSet_RochePath(RochePath(path), ...)
 })

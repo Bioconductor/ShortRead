@@ -1,4 +1,4 @@
-setMethod(".srValidity", "SRVector", function(object) {
+setMethod(.srValidity, "SRVector", function(object) {
     msg <- NULL
     cls <- vclass(object)
     if (length(cls)!=1)
@@ -27,12 +27,12 @@ SRVector <- function(..., vclass) {
 
 .make_getter("vclass")
 
-setMethod("show", "SRVector", function(object) {
+setMethod(show, "SRVector", function(object) {
     callNextMethod()
     cat("vclass: ", vclass(object), "\n", sep="")
 })
 
-setMethod("detail", "SRVector", function(object) {
+setMethod(detail, "SRVector", function(object) {
     .SRList_show_class(object)
     show(unlist(.srlist(object)))
 })

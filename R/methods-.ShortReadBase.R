@@ -1,4 +1,4 @@
-setMethod("append",
+setMethod(append,
           c(".ShortReadBase", ".ShortReadBase", "ANY"),
           function(x, values, after=length(x))
 {
@@ -7,13 +7,13 @@ setMethod("append",
                    "append", class(x), class(values)))
 })
 
-setMethod("show",
+setMethod(show,
           signature=signature(object=".ShortReadBase"),
           function(object) {
               cat("class: ", class(object), "\n", sep="")
           })
 
-setMethod("detail",
+setMethod(detail,
           signature=signature(object=".ShortReadBase"),
           function(object, ...) {
               cat("class: ", class(object), "\n", sep="")

@@ -49,4 +49,4 @@
     .report(type, src, dest, symbolValues)
 }
 
-setMethod("report", "character", .report_character)
+setMethod(report, "character", .report_character)

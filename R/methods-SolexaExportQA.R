@@ -13,9 +13,9 @@
     res
 }
 
-setMethod("report", "SolexaExportQA", .report_SolexaExportQA)
+setMethod(report, "SolexaExportQA", .report_SolexaExportQA)
 
-setMethod("show", "SolexaExportQA", function(object) {
+setMethod(show, "SolexaExportQA", function(object) {
     callNextMethod()
     .dims <- function(elt) {
         switch(class(elt),

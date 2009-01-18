@@ -17,7 +17,7 @@
 
 ## Error
 
-setMethod(".srValidity", "SRError", function(object) {
+setMethod(.srValidity, "SRError", function(object) {
     msg <- NULL
     type <- .type(object)
     if (!type %in% .SRError_types)
@@ -33,7 +33,7 @@ SRError <- function(type, fmt, ...) {
 
 .make_getter(slotNames("SRError"))
 
-setMethod(".throw", "SRError", function(object, call=NULL, ...) {
+setMethod(.throw, "SRError", function(object, call=NULL, ...) {
     class <- c(.type(object), "SRError", "error", "condition")
     msg <- paste(.type(object), .message(object), sep="\n  ")
     cond <- structure(list(message=msg, call=call), class=class)
@@ -42,7 +42,7 @@ setMethod(".throw", "SRError", function(object, call=NULL, ...) {
 
 ## Warning
 
-setMethod(".srValidity", "SRWarn", function(object) {
+setMethod(.srValidity, "SRWarn", function(object) {
     msg <- NULL
     type <- .type(object)
     if (!type %in% .SRWarn_types)
@@ -55,7 +55,7 @@ SRWarn <- function(type, fmt, ...) {
     new("SRWarn", .type=type, .message=sprintf(fmt, ...))
 }
 
-setMethod(".throw", "SRWarn", function(object, call=NULL, ...) {
+setMethod(.throw, "SRWarn", function(object, call=NULL, ...) {
     class <- c(.type(object), "SRWarn", "warning", "condition")
     msg <- paste(.type(object), .message(object), sep="\n  ")
     cond <- structure(list(message=msg, call=call), class=class)

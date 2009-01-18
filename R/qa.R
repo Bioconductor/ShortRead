@@ -10,4 +10,4 @@
              type="SolexaExport", ...))
 }
 
-setMethod("qa", "character", .qa_character)
+setMethod(qa, "character", .qa_character)

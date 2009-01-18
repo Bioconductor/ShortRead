@@ -1,6 +1,6 @@
 ## validity / accessors / constructors
 
-setMethod(".srValidity", "ShortReadQ", function(object) {
+setMethod(.srValidity, "ShortReadQ", function(object) {
     msg <- NULL
     lenq <- length(quality(object))
     lens <- length(sread(object))
@@ -16,36 +16,26 @@ setMethod(".srValidity", "ShortReadQ", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-setMethod("ShortReadQ", c("DNAStringSet", "QualityScore", "BStringSet"),
+setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "BStringSet"),
           function(sread, quality, id, ...)
 {
     new("ShortReadQ", sread=sread, quality=quality, id=id, ...)
 })
 
-setMethod("ShortReadQ", c("DNAStringSet", "QualityScore", "missing"),
+setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "missing"),
           function(sread, quality, id, ...)
 {
     new("ShortReadQ", sread=sread, quality=quality,
         id=BStringSet(rep("", length(sread))), ...)
 })
 
-setMethod("ShortReadQ", c("missing", "missing", "missing"),
+setMethod(ShortReadQ, c("missing", "missing", "missing"),
           function(sread, quality, id, ...)
 {
     new("ShortReadQ")
 })
 
-setMethod("ShortReadQ", c("ShortReadQ", "missing", "missing"),
-          function(sread, quality, id, ..., start=NA, end=NA)
-{
-    quality <- Biostrings::quality(sread)
-    qnew <- BStringSet(Biostrings::quality(quality), start, end)
-    initialize(sread,
-               sread=DNAStringSet(sread(sread), start, end),
-               quality=do.call(class(quality), list(quality=qnew)))
-})
-
-setMethod("readFastq", "character", function(dirPath, pattern=character(),
+setMethod(readFastq, "character", function(dirPath, pattern=character(),
                                              ...) {
     src <- .file_names(dirPath, pattern)
     elts <- .Call(.read_solexa_fastq, src)
@@ -53,7 +43,7 @@ setMethod("readFastq", "character", function(dirPath, pattern=character(),
         quality=SFastqQuality(elts[["quality"]]))
 })
 
-setMethod("writeFastq", "ShortReadQ", function(object, file, mode="w", ...) {
+setMethod(writeFastq, "ShortReadQ", function(object, file, mode="w", ...) {
     if (length(file) != 1)
         .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
                        "file", "character(1)"))
@@ -73,7 +63,7 @@ setMethod("writeFastq", "ShortReadQ", function(object, file, mode="w", ...) {
 
 ## coerce
 
-setMethod("pairwiseAlignment", "ShortReadQ",
+setMethod(pairwiseAlignment, "ShortReadQ",
           function(pattern, subject, ...)
           {
             mc <- as.list(match.call())
@@ -109,6 +99,14 @@ setMethod(append, c("ShortReadQ", "ShortReadQ", "missing"),
                quality=append(quality(x), quality(values)))
 })
 
+setMethod(narrow, "ShortReadQ",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+{
+    initialize(x,
+               sread=narrow(sread(x), start, end, width, use.names),
+               quality=narrow(quality(x), start, end, width, use.names))
+})
+
 ## manip
 
 .abc_ShortReadQ <- function(stringSet, alphabet, ...) {
@@ -139,13 +137,13 @@ setMethod(append, c("ShortReadQ", "ShortReadQ", "missing"),
     res
 }
 
-setMethod("alphabetByCycle", "ShortReadQ", .abc_ShortReadQ)
+setMethod(alphabetByCycle, "ShortReadQ", .abc_ShortReadQ)
 
-setMethod("alphabetScore", "ShortReadQ", .forward_objq)
+setMethod(alphabetScore, "ShortReadQ", .forward_objq)
 
 ## show
 
-setMethod("detail", "ShortReadQ", function(object, ...) {
+setMethod(detail, "ShortReadQ", function(object, ...) {
     callNextMethod()
     detail(quality(object))
 })

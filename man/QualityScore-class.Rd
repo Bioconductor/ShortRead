@@ -20,6 +20,7 @@
 \alias{[,MatrixQuality,ANY,missing,ANY-method}
 \alias{[[,MatrixQuality,ANY,missing-method}
 \alias{length,MatrixQuality-method}
+\alias{narrow,MatrixQuality-method}
 \alias{width,MatrixQuality-method}
 % FastqQuality
 \alias{width,FastqQuality-method}
@@ -30,6 +31,7 @@
 \alias{alphabetScore,FastqQuality-method}
 \alias{coerce,FastqQuality,numeric-method}
 \alias{coerce,FastqQuality,matrix-method}
+\alias{narrow,FastqQuality-method}
 \alias{srsort,FastqQuality-method}
 \alias{srorder,FastqQuality-method}
 \alias{srrank,FastqQuality-method}
@@ -152,7 +154,12 @@
       the result is a matrix of type \code{integer}. In addition,
       methods require that all quality scores are of the same width.}
 
-    \item{srsort}{\code{signature(x = "FastqQuality")}:}
+    \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
+      \sQuote{narrow} \code{qualilty} so that scores are between
+      \code{start} and \code{end} bases, according to
+      \code{\link[IRanges:IRanges-utils]{narrow}} in the \code{IRanges}
+      package.}
+
     \item{srorder}{\code{signature(x = "FastqQuality")}:}
     \item{srrank}{\code{signature(x = "FastqQuality")}:}
     \item{srduplicated}{\code{signature(x = "FastqQuality")}:

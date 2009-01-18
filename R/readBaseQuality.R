@@ -46,4 +46,4 @@
     })
 }
 
-setMethod("readBaseQuality", "character", .readBaseQuality_character)
+setMethod(readBaseQuality, "character", .readBaseQuality_character)

@@ -1,4 +1,4 @@
-setMethod(".srValidity", "ExperimentPath", function(object) {
+setMethod(.srValidity, "ExperimentPath", function(object) {
     msg <- NULL
     if (length(experimentPath(object))!=1)
         msg <- c(msg, "ExperimentPath 'experimentPath' must be character(1)")
@@ -34,7 +34,7 @@ basePath <- function(object, ...) {
     experimentPath(object, ...)
 }
 
-setMethod("sampleNames", "ExperimentPath", function(object) {
+setMethod(sampleNames, "ExperimentPath", function(object) {
     character(0)
 })
 
@@ -50,7 +50,7 @@ setMethod("sampleNames", "ExperimentPath", function(object) {
     for (slt in slts[slts!="basePath"]) catPath(slt)
 }
 
-setMethod("show", "ExperimentPath", function(object) {
+setMethod(show, "ExperimentPath", function(object) {
     callNextMethod()
     cat("experimentPath: ", experimentPath(object), "\n", sep="")
 })
@@ -65,7 +65,7 @@ setMethod("show", "ExperimentPath", function(object) {
     for (slt in slts[slts!="basePath"]) catPath(slt)
 }
 
-setMethod("detail", "ExperimentPath", function(object, ...) {
+setMethod(detail, "ExperimentPath", function(object, ...) {
     callNextMethod()
     cat("experimentPath:\n  ", experimentPath(object), "\n", sep="")
 })

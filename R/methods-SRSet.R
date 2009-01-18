@@ -40,25 +40,25 @@
     if (is.null(msg)) TRUE else msg
 }
 
-setMethod(".srValidity", "SRSet", .SRSet_validity)
+setMethod(.srValidity, "SRSet", .SRSet_validity)
 
 .make_getter(c("readData", "sourcePath", "readIndex", "readCount"))
 
-setMethod("experimentPath", "SRSet", function(object, ...) {
+setMethod(experimentPath, "SRSet", function(object, ...) {
     callGeneric(sourcePath(object), ...)
 })
 
-setMethod("sampleNames", "SRSet", function(object) {
+setMethod(sampleNames, "SRSet", function(object) {
     sampleNames(phenoData(object))
 })
           
-setMethod("show", "SRSet", function(object) {
+setMethod(show, "SRSet", function(object) {
     callNextMethod()
     cat("experimentPath(object): ", experimentPath(object), "\n",
         sep="")
 })
 
-setMethod("detail", "SRSet", function(object, ...) {
+setMethod(detail, "SRSet", function(object, ...) {
     callNextMethod()
     cat("\nsourcePath\n")
     detail(sourcePath(object), ...)
@@ -70,8 +70,8 @@ setMethod("detail", "SRSet", function(object, ...) {
     print(varMetadata(pd))
 })
 
-setMethod("phenoData", "SRSet", function(object) object@phenoData)
+setMethod(phenoData, "SRSet", function(object) object@phenoData)
 
 
 ## proposed
-##setMethod("readSRQ", "SRSet", function(object) readSRQ(sourcePath(object)))
+##setMethod(readSRQ, "SRSet", function(object) readSRQ(sourcePath(object)))

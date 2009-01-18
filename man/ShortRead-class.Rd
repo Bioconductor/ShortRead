@@ -1,15 +1,16 @@
 \name{ShortRead-class}
 \docType{class}
 \alias{ShortRead-class}
+\alias{ShortRead}
 \alias{ShortRead,DNAStringSet,BStringSet-method}
 \alias{ShortRead,DNAStringSet,missing-method}
-\alias{ShortRead,ShortRead,missing-method}
 \alias{ShortRead,missing,missing-method}
 \alias{srrank,ShortRead-method}
 \alias{srorder,ShortRead-method}
 \alias{srsort,ShortRead-method}
 \alias{srduplicated,ShortRead-method}
 \alias{srdistance,ShortRead,ANY-method}
+\alias{trimLRPatterns,ShortRead-method}
 \alias{alphabetByCycle,ShortRead-method}
 \alias{tables,ShortRead-method}
 \alias{clean,ShortRead-method}
@@ -18,6 +19,7 @@
 \alias{[,ShortRead,ANY,ANY,ANY-method}
 \alias{[,ShortRead,ANY,missing,ANY-method}
 \alias{append,ShortRead,ShortRead,missing-method}
+\alias{narrow,ShortRead-method}
 \alias{detail,ShortRead-method}
 \alias{length,ShortRead-method}
 \alias{show,ShortRead-method}
@@ -35,7 +37,7 @@
 \section{Objects from the Class}{
 
   Objects from this class are created by \code{readFasta}, or by calls
-  to the constructor \code{\link{ShortRead}}, as outlined below.
+  to the constructor \code{ShortRead}, as outlined below.
 
 }
 \section{Slots}{
@@ -63,14 +65,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{ShortRead}{\code{signature(sread = "DNAStringSet", id = "missing")}:
       Create a \code{ShortRead} object from reads, creating empty identifiers.}
 
-    \item{ShortRead}{\code{signature(sread = "ShortRead", id = "missing", ..., start=NA, end=NA)}:
-      Create a \code{ShortRead} object from a previously existing
-      \code{ShortRead} object, using the vectors \code{start},
-      \code{end} (typically of length 1 or the length of \code{sread})
-      to select the start and end of each read; \code{start} and
-      \code{end} follow the semanitics of corresponding arguments to
-      \code{DNAStringSet}.}
-
     \item{ShortRead}{\code{signature(sread = "missing", id = "missing", ...)}:
       Create an empty \code{ShortRead} object.}
 
@@ -89,6 +83,13 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       append the \code{sread} and \code{id} slots of \code{values} after
       the corresponding fields of \code{x}.}
 
+    \item{narrow}{\code{signature(x = "ShortRead", start = NA, end = NA, width = NA, use.names = TRUE)}:
+      \sQuote{narrow} \code{sread} so that sequences are between
+      \code{start} and \code{end} bases, according to
+      \code{\link[IRanges:IRanges-utils]{narrow}} in the \code{IRanges}
+      package.
+    }
+
     \item{length}{\code{signature(x = "ShortRead")}: returns a
       \code{integer(1)} vector describing the number of reads in this
       object.}
@@ -97,20 +98,31 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       \code{integer(1)} vector describing the number of characters in
       each read in this object.}
 
-    \item{srorder}{\code{\signature{x = "ShortRead"}}:}
-    \item{srrank}{\code{\signature{x = "ShortRead"}}:}
-    \item{srsort}{\code{\signature{x = "ShortRead"}}:}
-    \item{srduplicated}{\code{\signature{x = "ShortRead"}}:
+    \item{srorder}{\code{signature(x = "ShortRead")}:}
+    \item{srrank}{\code{signature(x = "ShortRead")}:}
+    \item{srsort}{\code{signature(x = "ShortRead")}:}
+    \item{srduplicated}{\code{signature(x = "ShortRead")}:
       Order, rank, sort, and find duplicates in \code{ShortRead} objects
       based on \code{sread(x)}, analogous to the corresponding functions
       \code{order}, \code{rank}, \code{sort}, and \code{duplicated},
       ordering nucleotides in the order \code{ACGT}.}
 
-    \item{srdistance}{\code{\signature{pattern="ShortRead", subject="ANY"}}:
+    \item{srdistance}{\code{signature(pattern="ShortRead", subject="ANY")}:
       Find the edit distance between each read in \code{pattern} and the
       (short) sequences in \code{subject}. See \code{\link{srdistance}}
       for allowable values for \code{subject}, and for additional
       details.}
+
+    \item{trimLRPatterns}{\code{signature(Lpattern = "", Rpattern = "", subject = "ShortRead", max.Lmismatch = 0, max.Rmismatch = 0, with.Lindels = FALSE, with.Rindels = FALSE, Lfixed = TRUE, Rfixed = TRUE, ranges = FALSE)}:
+
+      Remove left and / or right flanking patterns from
+      \code{sread(subject)}, as described in
+      \code{\link[Biostrings:trimLRPatterns]{trimLRPatterns}}. Classes
+      derived from \code{ShortRead} (e.g., \code{\link{ShortReadQ}},
+      \code{\link{AlignedRead}}) have corresponding base quality scores
+      trimmed, too. A user-supplied argument \code{ranges} is ignored by
+      this method; the class of the return object is the same as the
+      class of \code{subject}.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortRead")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component

@@ -22,13 +22,15 @@ test_ShortRead_construction <- function() {
     checkTrue(class(obj) == "ShortRead")
     checkTrue(validObject(obj))
     .equals(sr, obj)
+}
 
-    obj <- ShortRead(sr, start=1, end=10)
+test_ShortRead_narrow <- function() {
+    obj <- narrow(sr, start=1, end=10)
     checkTrue(class(obj) == "ShortRead")
     checkTrue(length(obj) == length(sr))
     checkTrue(width(obj) == 10)
     checkIdentical(as.character(sread(obj)),
                    substr(as.character(sread(sr)), 1, 10))
-    checkIdentical(ShortRead(sr), sr)
-    checkIdentical(ShortRead(sr, start=start(sread(sr))), sr)
+
+    checkIdentical(narrow(sr, start=start(sread(sr))), sr)
 }

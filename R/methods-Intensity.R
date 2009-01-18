@@ -56,7 +56,7 @@ local({
     .make_getter(slts[slts!="measurementError"], verbose=TRUE)
 })
 
-setMethod("dim", "Intensity", function(x) 
+setMethod(dim, "Intensity", function(x) 
 {
     dim(intensity(x))
 })

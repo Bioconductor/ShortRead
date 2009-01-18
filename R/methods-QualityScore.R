@@ -31,7 +31,7 @@ setMethod(append, c("QualityScore", "QualityScore", "missing"),
     initialize(x, quality=append(quality(x), quality(values)))
 })
 
-setMethod("detail", "QualityScore", function(object) {
+setMethod(detail, "QualityScore", function(object) {
     callNextMethod()
     cat("quality:\n")
     print(quality(object))
@@ -39,10 +39,10 @@ setMethod("detail", "QualityScore", function(object) {
 
 ## NumericQuality
 
-setMethod("width", "NumericQuality",
+setMethod(width, "NumericQuality",
           function(x) rep(1, length(x)))
 
-setMethod("show", "NumericQuality", function(object) {
+setMethod(show, "NumericQuality", function(object) {
     callNextMethod()
     .show_some("quality", quality(object))
 })
@@ -71,7 +71,7 @@ IntegerQuality <- function(quality=integer(0)) {
   scores
 }
 
-setMethod("readQual", "character", function(dirPath, reads = NULL,
+setMethod(readQual, "character", function(dirPath, reads = NULL,
                                             pattern=character(), sample = 1,
                                             ...) {
   src <- .file_names(dirPath, pattern)[sample]
@@ -101,11 +101,19 @@ setMethod("[", c("MatrixQuality", "ANY", "missing"),
 setMethod("[[", c("MatrixQuality", "ANY", "missing"),
           .MatrixQuality_subset2)
 
-setMethod("length", "MatrixQuality",
+setMethod(length, "MatrixQuality",
           function(x) nrow(x))
 
-setMethod("width", "MatrixQuality",
+setMethod(width, "MatrixQuality",
           function(x) rep(ncol(x), nrow(x)))
+
+## FIXME: implement this, when widths are all equal
+setMethod(narrow, "MatrixQuality",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+{
+    .throw(SRError("InternalError", "%s not (yet) implemented",
+                   "narrow,MatrixQuality-method'"))
+})
 
 ## FastqQuality, SFastqQuality
 
@@ -117,19 +125,19 @@ setMethod("width", "MatrixQuality",
     callGeneric(BStringSet(quality), ...)
 }
 
-setMethod("FastqQuality", "missing", .FastqQuality_missing)
+setMethod(FastqQuality, "missing", .FastqQuality_missing)
 
-setMethod("FastqQuality", "character", .FastqQuality_character)
+setMethod(FastqQuality, "character", .FastqQuality_character)
 
-setMethod("FastqQuality", "BStringSet", function(quality, ...) {
+setMethod(FastqQuality, "BStringSet", function(quality, ...) {
     new("FastqQuality", quality=quality)
 })
 
-setMethod("SFastqQuality", "missing", .FastqQuality_missing)
+setMethod(SFastqQuality, "missing", .FastqQuality_missing)
 
-setMethod("SFastqQuality", "character", .FastqQuality_character)
+setMethod(SFastqQuality, "character", .FastqQuality_character)
 
-setMethod("SFastqQuality", "BStringSet", function(quality, ...) {
+setMethod(SFastqQuality, "BStringSet", function(quality, ...) {
     new("SFastqQuality", quality=quality)
 })
 
@@ -151,13 +159,20 @@ setAs("SFastqQuality", "matrix", function(from) {
     .Call(.alphabet_as_int, quality(from), 0:255-64L)
 })
 
-setMethod("width", "FastqQuality",
-          function(x) width(quality(x)))
+setMethod(width, "FastqQuality",
+    function(x) width(quality(x)))
 
-setMethod("alphabet", "FastqQuality",
+setMethod(narrow, "FastqQuality",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+{
+    initialize(x, quality=narrow(quality(x), start, end, width,
+                    use.names))
+})
+
+setMethod(alphabet, "FastqQuality",
           function(x) rawToChar(as.raw(32:125), TRUE))
 
-setMethod("show", "FastqQuality", function(object) {
+setMethod(show, "FastqQuality", function(object) {
     callNextMethod()
     cat("quality:\n")
     show(quality(object))
@@ -175,7 +190,7 @@ setMethod("show", "FastqQuality", function(object) {
     res
 }
 
-setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
+setMethod(alphabetFrequency, "FastqQuality", .FastqQuality_af)
 
 .FastqQuality_abc <- function(stringSet, alphabet, ...) {
     if (missing(alphabet))
@@ -183,7 +198,7 @@ setMethod("alphabetFrequency", "FastqQuality", .FastqQuality_af)
    .abc_BStringSet(quality(stringSet), alphabet=alphabet, ...)
 }
 
-setMethod("alphabetByCycle", "FastqQuality", .FastqQuality_abc)
+setMethod(alphabetByCycle, "FastqQuality", .FastqQuality_abc)
 
 .SFastqQuality_ascore <- function(object, score=0:255-64L, ...) {
     .Call(.alphabet_score, quality(object), as.numeric(score))
@@ -197,16 +212,16 @@ setMethod(alphabetScore, "SFastqQuality", .SFastqQuality_ascore)
 
 setMethod(alphabetScore, "FastqQuality", .FastqQuality_ascore)
 
-setMethod("srrank", "FastqQuality", .forward_xq)
+setMethod(srrank, "FastqQuality", .forward_xq)
 
-setMethod("srorder", "FastqQuality", .forward_xq)
+setMethod(srorder, "FastqQuality", .forward_xq)
 
-setMethod("srsort", "FastqQuality", .forward_xq)
+setMethod(srsort, "FastqQuality", .forward_xq)
 
-setMethod("srduplicated", "FastqQuality", .forward_xq)
+setMethod(srduplicated, "FastqQuality", .forward_xq)
 
 .FastqQuality_srduplicated<- function(x, incomparables=FALSE, ...) {
     callGeneric(x=quality(x), ...)
 }
 
-setMethod("srduplicated", "FastqQuality", .FastqQuality_srduplicated)
+setMethod(srduplicated, "FastqQuality", .FastqQuality_srduplicated)

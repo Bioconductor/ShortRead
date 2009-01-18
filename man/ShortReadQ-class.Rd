@@ -2,9 +2,9 @@
 \docType{class}
 
 \alias{ShortReadQ-class}
+\alias{ShortReadQ}
 \alias{ShortReadQ,DNAStringSet,QualityScore,BStringSet-method}
 \alias{ShortReadQ,DNAStringSet,QualityScore,missing-method}
-\alias{ShortReadQ,ShortReadQ,missing,missing-method}
 \alias{ShortReadQ,missing,missing,missing-method}
 \alias{writeFastq,ShortReadQ-method}
 \alias{alphabetByCycle,ShortReadQ-method}
@@ -14,6 +14,7 @@
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
 \alias{append,ShortReadQ,ShortReadQ,missing-method}
+\alias{narrow,ShortReadQ-method}
 \alias{detail,ShortReadQ-method}
 
 \title{"ShortReadQ" class for short reads and their quality scores}
@@ -63,14 +64,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       Create a \code{ShortReadQ} object from reads and their quality
       scores, creating empty identifiers.}
 
-    \item{ShortReadQ}{\code{signature(sread = "ShortReadQ", quality = "missing", id = "missing", ..., start=NA, end=NA)}:
-      Create a \code{ShortReadQ} object from a previously existing
-      \code{ShortReadQ} object, using the vectors \code{start},
-      \code{end} (typically of length 1 or the length of \code{sread})
-      to select the start and end of each read and quality
-      score. \code{start} and \code{end} follow the semanitics of
-      corresponding arguments to \code{DNAStringSet}}
-
     \item{ShortReadQ}{\code{signature(sread = "missing", quality = "missing", id = "missing", ...)}:
       Create an empty \code{ShortReadQ} object.}
 
@@ -94,9 +87,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
 
-    \item{append}{\code{signature(x = "ShortRead", values = "ShortRead", length = "missing")}:
+    \item{append}{\code{signature(x = "ShortReadQ", values = "ShortRead", length = "missing")}:
       append the \code{sread}, \code{quality} and \code{id} slots of
       \code{values} after the corresponding fields of \code{x}.}
+
+    \item{narrow}{\code{signature(x = "ShortReadQ", start = NA, end = NA, width = NA, use.names = TRUE)}:
+      \sQuote{narrow} \code{sread} and \code{qualilty} so that sequences
+      are between \code{start} and \code{end} bases, according to
+      \code{\link[IRanges:IRanges-utils]{narrow}} in the \code{IRanges}
+      package.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component,

@@ -328,4 +328,4 @@
     aln
 }
 
-setMethod("readAligned", "character", .readAligned_character)
+setMethod(readAligned, "character", .readAligned_character)

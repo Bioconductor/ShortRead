@@ -1,4 +1,4 @@
-setMethod(".srValidity", "SolexaPath", function(object) {
+setMethod(.srValidity, "SolexaPath", function(object) {
     msg <- NULL
     if (length(experimentPath(object))!=1)
         msg <- c(msg, "SolexaPath 'experimentPath' must be character(1)")
@@ -51,7 +51,7 @@ setMethod(readIntensities, "SolexaPath", .readIntensities_SolexaPath)
     callGeneric(baseCallPath(dirPath)[run], pattern, ...)
 }
 
-setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
+setMethod(readPrb, "SolexaPath", .readPrb_SolexaPath)
 
 .readFastq_SolexaPath <- function(dirPath, 
                                   pattern=".*_sequence.txt$",
@@ -63,7 +63,7 @@ setMethod("readPrb", "SolexaPath", .readPrb_SolexaPath)
     callGeneric(dirPath, ..., pattern=pattern)
 }
 
-setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
+setMethod(readFastq, "SolexaPath", .readFastq_SolexaPath)
 
 .readBaseQuality_SolexaPath <- function(dirPath,
                                         seqPattern=".*_seq.txt.*",
@@ -75,7 +75,7 @@ setMethod("readFastq", "SolexaPath", .readFastq_SolexaPath)
                             prbPattern=prbPattern, ...)
 }
 
-setMethod("readBaseQuality", "SolexaPath", .readBaseQuality_SolexaPath)
+setMethod(readBaseQuality, "SolexaPath", .readBaseQuality_SolexaPath)
 
 .readAligned_SolexaPath <- function(dirPath,
                                     pattern=".*_export.txt.*",
@@ -96,21 +96,21 @@ setMethod(readAligned, "SolexaPath", .readAligned_SolexaPath)
     callGeneric(dirPath, pattern, type="SolexaExport", ...)
 }
 
-setMethod("qa", "SolexaPath", .qa_SolexaPath)
+setMethod(qa, "SolexaPath", .qa_SolexaPath)
 
 .report_SolexaPath <- function(x, ..., dest=tempfile(), type="pdf" )
 {
     report(qa(x, ...), dest=dest, type=type)
 }
 
-setMethod("report", "SolexaPath", .report_SolexaPath)
+setMethod(report, "SolexaPath", .report_SolexaPath)
 
-setMethod("show", "SolexaPath", function(object) {
+setMethod(show, "SolexaPath", function(object) {
     callNextMethod()
     .show_additionalPathSlots(object)
 })
 
-setMethod("detail", "SolexaPath", function(object, ...) {
+setMethod(detail, "SolexaPath", function(object, ...) {
     callNextMethod()
     .detail_additionalPathSlots(object)
 })

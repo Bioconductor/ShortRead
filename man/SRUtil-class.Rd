@@ -16,7 +16,7 @@
 \alias{length,SRList-method}
 \alias{names,SRList-method}
 \alias{names<-,SRList,character-method}
-\alias{lapply,SRList-method}
+\alias{lapply,SRList,ANY-method}
 \alias{sapply,SRList-method}
 \alias{[,SRList,ANY,missing,ANY-method}
 \alias{[[,SRList,ANY,missing-method}
@@ -166,7 +166,7 @@
       select element \sQuote{i} from the list, using standard R list
       selection paradigms.}
 
-    \item{lapply}{\code{signature(X = "SRList")}: apply a function to
+    \item{lapply}{\code{signature(X = "SRList", FUN="ANY")}: apply a function to
       all elements of \code{X}, with additional arguments interpreted
       as with \code{\link{lapply}}.}
 

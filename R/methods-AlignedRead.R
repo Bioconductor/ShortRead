@@ -15,7 +15,7 @@
     if (is.null(msg)) TRUE else msg
 }
 
-setMethod(".srValidity", "AlignedRead", .AlignedRead_validity)
+setMethod(.srValidity, "AlignedRead", .AlignedRead_validity)
 
 AlignedRead <- function(sread = DNAStringSet(character(0)),
                         id = BStringSet(character(length(sread))),
@@ -37,7 +37,7 @@ AlignedRead <- function(sread = DNAStringSet(character(0)),
 .make_getter(c("chromosome", "position", "alignQuality",
                "alignData"))
 
-setMethod("strand", "AlignedRead", function(x, ...) 
+setMethod(strand, "AlignedRead", function(x, ...) 
 {
     slot(x, "strand")
 })
@@ -96,22 +96,22 @@ setMethod(append, c("AlignedRead", "AlignedRead", "missing"),
 
 ## srorder, etc; srsort picked up by generic
 
-setMethod("srorder", "AlignedRead", function(x, ...) {
+setMethod(srorder, "AlignedRead", function(x, ...) {
     order(chromosome(x), strand(x), position(x), srorder(sread(x)))
 })
 
-setMethod("srrank", "AlignedRead", function(x, ...) {
+setMethod(srrank, "AlignedRead", function(x, ...) {
     o <- srorder(x)
     .Call(.aligned_read_rank, x, o, environment())
 })
 
-setMethod("srduplicated", "AlignedRead", function(x, ...) {
+setMethod(srduplicated, "AlignedRead", function(x, ...) {
     duplicated(srrank(x, ...))
 })
 
 ## coverage
 
-setMethod("coverage", "AlignedRead",
+setMethod(coverage, "AlignedRead",
     function(x, start=NA, end=NA, ...,
              coords=c("leftmost", "fiveprime"),
              extend=0L)
@@ -174,7 +174,7 @@ setMethod("coverage", "AlignedRead",
 
 ## show
 
-setMethod("show", "AlignedRead", function(object) {
+setMethod(show, "AlignedRead", function(object) {
     callNextMethod()
     cat("chromosome:", selectSome(chromosome(object)), "\n")
     cat("position:", selectSome(position(object)), "\n")
@@ -184,7 +184,7 @@ setMethod("show", "AlignedRead", function(object) {
         selectSome(varLabels(alignData(object))), "\n")
 })
 
-setMethod("detail", "AlignedRead", function(object, ...) {
+setMethod(detail, "AlignedRead", function(object, ...) {
     callNextMethod()
     cat("\nchromosome:", selectSome(chromosome(object)), "\n")
     cat("position:", selectSome(position(object)), "\n")

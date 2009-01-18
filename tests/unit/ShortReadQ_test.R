@@ -39,19 +39,6 @@ test_ShortReadQ_constructors <- function() {
     checkTrue(class(obj) == "ShortReadQ")
     checkTrue(validObject(obj))
     .equals(sr, obj)
-
-    obj <- ShortReadQ(sr, start=1, end=10)
-    checkTrue(class(obj) == "ShortReadQ")
-    checkTrue(length(obj) == length(sr))
-    checkTrue(width(obj) == 10)
-    checkIdentical(as.character(sread(obj)),
-                   substr(as.character(sread(sr)), 1, 10))
-    checkIdentical(as.character(quality(quality(obj))),
-                   substr(as.character(quality(quality(sr))), 1, 10))
-    checkIdentical(as.character(id(obj)), as.character(id(sr)))
-
-    checkIdentical(ShortRead(sr), sr)
-    checkIdentical(ShortRead(sr, start=start(sread(sr))), sr)
 }
 
 test_ShortReadQ_subset <- function() {
@@ -65,6 +52,23 @@ test_ShortReadQ_subset <- function() {
     checkException(obj[1,1], silent=TRUE)
     checkException(obj[1,], silent=TRUE)
     checkException(obj[1,], silent=TRUE)
+}
+
+test_ShortReadQ_narrow <- function() {
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    sr <- readFastq(sp)
+
+    obj <- narrow(sr, start=1, end=10)
+    checkTrue(class(obj) == "ShortReadQ")
+    checkTrue(length(obj) == length(sr))
+    checkTrue(width(obj) == 10)
+    checkIdentical(as.character(sread(obj)),
+                   substr(as.character(sread(sr)), 1, 10))
+    checkIdentical(as.character(quality(quality(obj))),
+                   substr(as.character(quality(quality(sr))), 1, 10))
+    checkIdentical(as.character(id(obj)), as.character(id(sr)))
+
+    checkIdentical(narrow(sr, start=start(sread(sr))), sr)
 }
 
 test_ShortReadQ_clean <- function() {

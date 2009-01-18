@@ -1,4 +1,10 @@
-## SRUtil
+## promote to generic
+
+setGeneric("sapply")
+
+setGeneric("lapply")
+
+## new generics
 
 setGeneric(".throw",
            function(object, call=NULL, ...) standardGeneric(".throw"),

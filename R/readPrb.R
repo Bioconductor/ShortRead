@@ -104,4 +104,4 @@
     })
 }
 
-setMethod("readPrb", "character", .readPrb_character)
+setMethod(readPrb, "character", .readPrb_character)

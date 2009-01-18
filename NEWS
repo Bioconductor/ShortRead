@@ -8,6 +8,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
+    o add trimLRPatterns() for ShortRead and derived classes
+    (ShortReadQ, AlignedRead).
+
+    o add narrow() for ShortRead, QualityScore, and derived classes.
+
     o Use append() to append two objects of the same ShortReadQ or
     QualityScore and derived classes together
 
