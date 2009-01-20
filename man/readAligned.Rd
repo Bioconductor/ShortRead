@@ -229,7 +229,7 @@ readAligned(dirPath, pattern=character(0), ...)
       \code{\linkS4class{AlignedRead}} as follows:
 
       \describe{
-        \item{Identifier}{ignored}
+        \item{Identifier}{\code{id}}
         \item{Strand}{\code{strand}}
         \item{Chromosome}{\code{chromosome}}
         \item{Position}{\code{position}; see comment below}

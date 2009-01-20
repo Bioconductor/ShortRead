@@ -16,7 +16,7 @@ _read_bowtie(const char *fname, const char *csep,
              const char *commentChar,
              MARK_FIELD_FUNC *mark_func,
              SEXP ref, int offset,
-             CharAEAE *sread, CharAEAE *quality)
+             CharAEAE *id, CharAEAE *sread, CharAEAE *quality)
 {
     const int N_FIELDS = 8;
     gzFile *file;
@@ -45,7 +45,7 @@ _read_bowtie(const char *fname, const char *csep,
             if (elt[i] == elt[i-1])
                 error("too few fields, %s:%d", fname, lineno);
         }
-        /* elt[0] (id) ignored */
+        append_string_to_CharAEAE(id, elt[0]);
         strand[offset] = _char_as_strand_int(*elt[1], fname, lineno);
         SET_STRING_ELT(chromosome, offset, mkChar(elt[2]));
         position[offset] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
@@ -96,7 +96,8 @@ _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
     SEXP aln;
     SEXP strand_lvls = PROTECT(_get_strand_levels());
     _as_factor_SEXP(VECTOR_ELT(ref, 1), strand_lvls);
-    NEW_CALL(s, t, "AlignedRead", nmspc, 7);
+    NEW_CALL(s, t, "AlignedRead", nmspc, 8);
+    CSET_CDR(t, "id", VECTOR_ELT(ref, 0));
     CSET_CDR(t, "sread", VECTOR_ELT(ref, 4));
     CSET_CDR(t, "quality", sfq);
     CSET_CDR(t, "chromosome", VECTOR_ELT(ref, 2));
@@ -137,7 +138,7 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
-    /* SET_VECTOR_ELT(ref, 0, NEW_STRING(nrec)); id, ignored */
+    CharAEAE id = new_CharAEAE(nrec, 0);
     SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec)); /* strand */
     SET_VECTOR_ELT(ref, 2, NEW_STRING(nrec)); /* chromosome */
     SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* position */
@@ -166,8 +167,9 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
         nrec += _read_bowtie(
             CHAR(STRING_ELT(files, i)), csep,
             CHAR(STRING_ELT(commentChar, 0)),
-            sep_func, ref, nrec, &sread, &quality);
+            sep_func, ref, nrec, &id, &sread, &quality);
     }
+    SET_VECTOR_ELT(ref, 0, _CharAEAE_to_XStringSet(&id, "BString"));
     SET_VECTOR_ELT(ref, 4, _CharAEAE_to_XStringSet(&sread, "DNAString"));
     SET_VECTOR_ELT(ref, 5, _CharAEAE_to_XStringSet(&quality, "BString"));
     SEXP aln = _AlignedRead_Bowtie_make(ref, qtype);
