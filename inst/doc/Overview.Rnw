@@ -41,8 +41,9 @@ library("ShortRead")
 
 The \Rpackage{ShortRead} package aims to provide key functionality for
 input, quality assurance, and basic manipulation of `short read' DNA
-sequences such as those produced by Solexa, 454, Helicos, SOLiD, and
-related technologies. This vignette introduces key functionality.
+sequences such as those produced by Solexa, 454, and related
+technologies, including flexible import of common short read data
+formats. This vignette introduces key functionality.
 
 Support is most fully developed for Solexa; contributions from the
 community are welcome.
