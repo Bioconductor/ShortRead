@@ -31,10 +31,18 @@ qa(dirPath, ...)
   The following methods are defined:
   \itemize{
     \item{
-      \code{dirPath="character", pattern="character", type="SolexaExport", ...}}{
+      \code{dirPath="character", pattern="character",
+		type=c("SolexaExport", "MAQMapShort", "fastq"), ...}}{
+
       Quality assessment is performed on all files in directory
       \code{dirPath} whose file name matches \code{pattern}. The type of
-      analysis performed is based on the \code{type} argument.
+      analysis performed is based on the \code{type} argument. Use
+      \code{SolexaExport} when all files matching \code{pattern} are
+      Solexa \code{_export.txt} files. Use \code{MAQMapShort} for MAQ
+      \code{map} files produced by MAQ versions below 0.70, and
+      \code{fastq} for collections of fastq-format files. Quality
+      assessment details vary depending on data source.
+
     }
   }
 }
@@ -46,7 +54,10 @@ qa(dirPath, ...)
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
 \seealso{
-  \code{\linkS4class{.QA}}, \code{\linkS4class{SolexaExportQA}}
+  \code{\linkS4class{.QA}},
+  \code{\linkS4class{SolexaExportQA}}
+  \code{\linkS4class{MAQMapQA}}
+  \code{\linkS4class{FastqQA}}
 }
 
 \examples{

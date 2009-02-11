@@ -266,7 +266,11 @@ setClass("RocheSet", contains=c("SRSet", ".Roche"),
 
 ## QA
 
-setClass(".QA", contains=".ShortReadBase",
+setClass(".QA", contains=c("SRList", ".ShortReadBase"),
          representation=representation("VIRTUAL"))
 
-setClass("SolexaExportQA", contains=c("SRList", ".QA"))
+setClass("SolexaExportQA", contains=".QA")
+
+setClass("MAQMapQA", contains=".QA")
+
+setClass("FastqQA", contains=".QA")

@@ -1,6 +1,10 @@
 \name{AlignedRead-class}
 \docType{class}
 \alias{AlignedRead-class}
+\alias{[,AlignedRead,ANY,ANY-method}
+\alias{[,AlignedRead,ANY,missing-method}
+\alias{[,AlignedRead,missing,ANY-method}
+\alias{[,AlignedRead,missing,missing-method}
 \alias{[,AlignedRead,missing,missing,ANY-method}
 \alias{[,AlignedRead,missing,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,ANY,ANY-method}

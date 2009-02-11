@@ -10,6 +10,7 @@
 \alias{intensity}
 \alias{measurementError}
 % subset
+\alias{[,IntensityMeasure,ANY,ANY-method}
 \alias{[,IntensityMeasure,ANY,ANY,ANY-method}
 \alias{[,IntensityMeasure,ANY,missing,ANY-method}
 \alias{[,IntensityMeasure,missing,ANY,ANY-method}

@@ -3,6 +3,7 @@
 \alias{SolexaIntensity-class}
 \alias{SolexaIntensityInfo-class}
 % subset
+\alias{[,SolexaIntensity,ANY,ANY-method}
 \alias{[,SolexaIntensity,ANY,ANY,ANY-method}
 \alias{[,SolexaIntensity,ANY,missing,ANY-method}
 \alias{[,SolexaIntensity,missing,ANY,ANY-method}

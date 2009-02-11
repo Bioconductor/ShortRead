@@ -18,6 +18,7 @@
 \alias{names<-,SRList,character-method}
 \alias{lapply,SRList,ANY-method}
 \alias{sapply,SRList-method}
+\alias{[,SRList,ANY,missing-method}
 \alias{[,SRList,ANY,missing,ANY-method}
 \alias{[[,SRList,ANY,missing-method}
 \alias{detail,SRList-method}

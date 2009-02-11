@@ -13,7 +13,7 @@
 }
 
 \usage{
-report(x, ..., dest = tempfile(), type = "pdf")
+report(x, ..., dest = paste(tempfile(), "pdf", sep = "."), type = "pdf")
 }
 
 \arguments{

@@ -144,9 +144,17 @@ setGeneric("experimentPath")
 
 setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))
 
-setGeneric("report", function(x, ..., dest=tempfile(), type="pdf") {
-    standardGeneric("report")
-}, signature="x")
+
+report <- 
+    function(x, ..., dest=paste(tempfile(), "pdf", sep="."),
+             type="pdf")
+{
+    .throw("InternalError",
+           "'%s' for class '%s' not yet implemented",
+           "report", class(x))
+}
+
+setGeneric("report", signature="x")
 
 ## SolexaSet
 

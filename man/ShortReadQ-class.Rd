@@ -9,6 +9,10 @@
 \alias{writeFastq,ShortReadQ-method}
 \alias{alphabetByCycle,ShortReadQ-method}
 \alias{alphabetScore,ShortReadQ-method}
+\alias{[,ShortReadQ,ANY,ANY-method}
+\alias{[,ShortReadQ,ANY,missing-method}
+\alias{[,ShortReadQ,missing,ANY-method}
+\alias{[,ShortReadQ,missing,missing-method}
 \alias{[,ShortReadQ,missing,missing,ANY-method}
 \alias{[,ShortReadQ,missing,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}

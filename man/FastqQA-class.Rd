@@ -1,12 +1,9 @@
-\name{SolexaExportQA-class}
+\name{FastqQA-class}
 \docType{class}
-\alias{SolexaExportQA}
-\alias{SolexaExportQA-class}
-\alias{report,SolexaExportQA-method}
-\alias{show,.QA-method}
-\alias{show,SolexaExportQA-method}
+\alias{FastqQA}
+\alias{FastqQA-class}
 
-\title{Quality assessment summaries from Solexa export files}
+\title{Quality assessment summaries from MAQ map files}
 
 \description{
 
@@ -39,16 +36,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 \section{Methods}{
   Accessor methods are inheritted from the \code{\linkS4class{SRList}}
   class.
-
-  A additional methods defined on this class are:
-  \describe{
-    \item{report}{\code{signature(x="SolexaExportQA", ...,
-        dest=paste(tempfile(), "pdf", sep="."), type="pdf")}: produces a
-        pdf file summarizing the QA results.}
-
-    \item{show}{\code{signature(object = "SolexaExportQA")}: Display an
-      overview of the object contents.}
-  }
+%   \describe{
+%     \item{report}{\code{signature(x="FastqQA", ...,
+%         dest=paste(tempfile(), "pdf", sep="."), type="pdf")}: produces a
+%         pdf file summarizing the QA results.}
+%   }
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
@@ -56,6 +48,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
   \code{\link{qa}}.
 }
 \examples{
-showClass("SolexaExportQA")
+showClass("FastqQA")
 }
 \keyword{classes}
