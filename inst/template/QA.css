@@ -1,0 +1,35 @@
+body{ width: 350pt }
+table { font-family: monospace }
+td { padding: 0px 10px }
+th { text-align: right; font-family: auto }
+img { display: block; margin-left: auto; margin-right: auto }
+
+#header {
+    margin: 1px;
+    padding: 1px;
+    /* background: #3D4551; */
+    background: #E7E7E7;
+    line-height: 82px;
+}
+#logo {
+    float: left;
+    margin: 0px;
+    padding: 0;
+}
+#logo img {
+    vertical-align: middle;
+}
+#locationline {
+    clear: right;
+    padding: 0px;
+}
+#pagelocation {
+    display: inline;
+    margin: 0px 10px;
+    padding: 0px;
+    font-size: 1.5em;
+}
+#pagelocation li {
+    display: inline;
+    margin: 0;
+}

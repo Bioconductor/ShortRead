@@ -1,0 +1,65 @@
+<h2>Tile performance</h2>
+
+<p>
+  Counts per tile. Dashed red line indicates the 10\% of tiles with
+  fewest reads. An approximately uniform distribution suggests
+  consistent read representation in each tile. Distinct separation of
+  'good' versus poor quality tiles might suggest systematic failure,
+  e.g., of many tiles in a lane, or excessive variability (e.g., due
+  to unintended differences in sample DNA concentration) in read
+  number per lane.
+</p> 
+<pre>
+  perTile <- qa[["perTile"]]
+  readCnt <- perTile[["readCounts"]]
+  cnts <- readCnt[readCnt$type=="read", "count"]
+  histogram(cnts, breaks=40, xlab="Reads per tile",
+            panel=function(x, ...) {
+            panel.abline(v=quantile(x, .1),
+                col="red", lty=2)
+                panel.histogram(x, ...)
+            }, col="white"))
+</pre>
+@PER_TILE_HISTOGRAM@
+
+<p>
+  Spatial counts per tile. Divisions on the color scale are quantized,
+  so that the range of counts per tile is divided into 10 equal
+  increments. Parenthetic numbers on the scale represent the break
+  points of the quantized values. Because the scale is quantized, some
+  tiles will necessarily have `few' reads and other necessarily `many'
+  reads.
+</p>
+
+<p>
+  Consistent differences in read number per lane will result in some
+  lanes being primarily one color, other lanes primarily another
+  color.  Genome Analyzer data typically have greatest read counts in
+  the center column of each lane. There are usually consistent
+  gradients from `top' to `bottom' of each column.
+</p>
+
+<p>
+  Low count numbers in the same tile across runs of the same flow cell
+  may indicate instrumentation issues.
+</p>
+<pre>
+  ShortRead:::.plotTileCounts(readCnt[readCnt$type=="read",])
+</pre>
+@PER_TILE_COUNT_FIGURE@
+ 
+<p>
+Median read quality score per tile. Divisions on the color scale are
+quantized, so that the range of average quality scores per tile is
+divided into 10 equal increments. Parenthetic numbers on the scale
+represent the break points of the quantized values.
+</p>
+
+<p>
+Often, quality and count show an inverse relation.
+</p>
+<pre>
+  qscore <- perTile[["medianReadQualityScore"]]
+  ShortRead:::.plotTileQualityScore(qscore[qscore$type=="read",])
+</pre>
+@PER_TILE_QUALITY_FIGURE@

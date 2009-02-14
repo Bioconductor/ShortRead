@@ -1,0 +1,32 @@
+<h2>Run summary</h2>
+
+<p>
+  Read counts. Filtered and aligned read counts are reported relative to
+  the total number of reads (clusters). Consult Genome Analyzer
+  documentation for official guidelines. From experience, very good runs
+  of the Genome Analyzer 'control' lane result in 6-8 million reads,
+  with up to 80&#37; passing pre-defined filters.
+</p>
+<pre>
+  ShortRead:::.ppnCount(qa[["readCounts"]])
+</pre>
+@PPN_COUNT@
+
+<p>
+  Base call frequency over all reads. Base frequencies should accurately
+  reflect the frequencies of the regions sequenced.
+</p>
+<pre>
+  qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])
+</pre> 
+@BASE_CALL_COUNT@
+
+<p>
+  Overall read quality. Lanes with consistently good quality reads have
+  strong peaks at the right of the panel.
+</p>
+<pre>
+  df &lt;- qa[["readQualityScore"]]
+  ShortRead:::.plotReadQuality(df[df$type=="read",])
+</pre>
+@READ_QUALITY_FIGURE@

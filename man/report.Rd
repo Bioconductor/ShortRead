@@ -1,6 +1,6 @@
 \name{report}
 \alias{report}
-\alias{report,character-method}
+\alias{report,ANY-method}
 
 \title{Summarize quality assessment results into a report}
 
@@ -13,7 +13,7 @@
 }
 
 \usage{
-report(x, ..., dest = paste(tempfile(), "pdf", sep = "."), type = "pdf")
+report(x, ..., dest=tempfile(), type="html")
 }
 
 \arguments{
@@ -23,18 +23,48 @@ report(x, ..., dest = paste(tempfile(), "pdf", sep = "."), type = "pdf")
   \item{\dots}{Additional arguments used by specific methods. See
     specific methods for details.}
 
-  \item{dest}{The output destination for the final report; destination
-    files are overwritten if they already exist.}
+  \item{dest}{The output destination for the final report. For
+    \code{type="html"} this is a directory; for (deprecated)
+    \code{tyep="pdf"} this is a file.}
 
   \item{type}{A text string defining the type of report; available
-    report types depend on the type of object \code{x}.}
+    report types depend on the type of object \code{x}; usually this is
+    \dQuote{html}.}
 }
 
 \details{
   The following methods are defined:
   \itemize{
+
+    \item{\code{x="FastqQA", ..., dest=tempfile(), type="html"}}{
+	  Produce an HTML-based report from an object of class
+      \code{\linkS4class{FastqQA}}.
+	}
+
+    \item{\code{x="SolexaExportQA", ..., dest=tempfile(), type="html"}}{
+	  Produce an HTML-based report from an object of class
+      \code{\linkS4class{SolexaExportQA}}.
+	}
+
+    \item{\code{x="SolexaExportQA", ..., dest=tempfile(), type="pdf"}}{
+	  (Deprecated) Produce an PDF report from an object of class
+      \code{\linkS4class{SolexaExportQA}}.
+	}
+
+    \item{\code{x="SolexaPath", ..., dest=tempfile(), type="html"}}{
+	  Produce an HTML report by first visiting all \code{_export.txt}
+      files in the \code{analysisPath} directory of \code{x} to create a
+      \code{SolexaExportQA} instance.
+	}
+
+    \item{\code{x="SolexaPath", ..., dest=tempfile(), type="pdf"}}{
+	  (Deprecated) Produce an PDF report by first visiting all
+      \code{_export.txt} files in the \code{analysisPath} directory of
+      \code{x} to create a \code{SolexaExportQA} instance.
+	}
+
     \item{
-      \code{dirPath="character", ..., dest=tempfile(), type="pdf"}
+      \code{x="ANY", ..., dest=tempfile(), type="ANY"}
     }{This method is used internally}
   }
 }

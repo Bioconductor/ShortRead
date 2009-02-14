@@ -2,6 +2,7 @@
 \docType{class}
 \alias{FastqQA}
 \alias{FastqQA-class}
+\alias{report,FastqQA-method}
 
 \title{Quality assessment summaries from MAQ map files}
 
@@ -36,11 +37,14 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 \section{Methods}{
   Accessor methods are inheritted from the \code{\linkS4class{SRList}}
   class.
-%   \describe{
-%     \item{report}{\code{signature(x="FastqQA", ...,
-%         dest=paste(tempfile(), "pdf", sep="."), type="pdf")}: produces a
-%         pdf file summarizing the QA results.}
-%   }
+
+  Additional methods defined on this class are:
+  \describe{
+    \item{report}{\code{signature(x="FastqQA", ..., dest=tempfile(), type="html")}:
+	  produces HTML files summarizing QA results. \code{dest} should be
+	  a directory.}
+  }
+
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 

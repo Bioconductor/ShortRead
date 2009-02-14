@@ -1,4 +1,8 @@
-.report_pdf <- function(src, dest, symbolValues) {
+## PDF
+
+.report_pdf_do <-
+    function(src, dest, symbolValues) 
+{
     if (!file.exists(dirname(dest)))
         .throw(SRError("Input/Output",
                        "'dest' directory '%s'\n  does not exist",
@@ -28,25 +32,86 @@
     dest
 }
 
-.report <- function(type, src, dest, symbolValues) {
-    switch(type,
-           pdf=.report_pdf(src=src, dest=dest,
-             symbolValues=symbolValues),
-           .throw((SRError("UserArgumentMismatch",
-                           "report type '", type,
-                           "' not supported"))))
-}
-
-.report_character <- function(x, ...,
-                              dest=paste(tempfile(), "pdf", sep="."),
-                              type="pdf")
+setMethod(.report_pdf, "character",
+          function(x, dest, type, ...)
 {
     src <- system.file("template", "qa_solexa.Rnw",
                        package="ShortRead")
     if (.Platform$OS.type == "windows")
       x <- gsub("\\\\", .Platform$file.sep, x)
     symbolValues <- list(QA_SAVE_FILE=x)
-    .report(type, src, dest, symbolValues)
+    .report_pdf_do(src, dest, symbolValues)
+})
+
+## HTML
+
+.report_html_do <-
+    function(destDir, sections, values, ...)
+{
+    htmlFile <- file.path(destDir, "index.html")
+    cssFile <- "QA.css"
+    biocFile <- "bioclogo-small.jpg"
+    values <-
+        c(list(CSS=cssFile, DATE=date(),
+               VERSION=packageDescription("ShortRead")$Version),
+          values)
+    toConn <- file(htmlFile, "w")
+    for (sec in sections) {
+        fromConn <- file(sec, open="r")
+        copySubstitute(sec, toConn, values)
+        close(fromConn)
+    }
+    close(toConn)
+    file.copy(system.file("template", cssFile, package="ShortRead"),
+              file.path(destDir, cssFile))
+    file.copy(system.file("template", "image", biocFile,
+                          package="ShortRead"),
+              file.path(destDir, "image", biocFile))
+    htmlFile
 }
 
-setMethod(report, "character", .report_character)
+.df2a <- function(df, fmt="%.3g")
+{
+    a <- sapply(df, sprintf, fmt=fmt)
+    row.names(a) <- rownames(df)
+    a
+}
+
+.html_img <-
+    function(dir, file, fig, ...)
+{
+    jpegFile <- paste(file, "jpg", sep=".")
+    pdfFile <- paste(file, "pdf", sep=".")
+    imgDir <- file.path(dir, "image")
+    if (!file.exists(imgDir))
+        dir.create(imgDir)
+
+    jpeg(file.path(imgDir, jpegFile), ...)
+    print(fig)
+    dev.off()
+
+    pdf(file.path(imgDir, pdfFile), ...)
+    print(fig)
+    dev.off()
+
+    hwriteImage(file.path(".", "image", jpegFile),
+                link=file.path(".", "image", pdfFile))
+}
+
+.htmlReadQuality <-
+    function(dir, file, qa, ...)
+{
+    df <- qa[["readQualityScore"]]
+    .html_img(dir, file,
+              .plotReadQuality(df[df$type=="read",]),
+              ...)
+}
+
+.htmlReadOccur <-
+    function(dir, file, qa, ...)
+{
+    df <- qa[["sequenceDistribution"]]
+    .html_img(dir, file,
+              .plotReadOccurrences(df[df$type=="read",], cex=.5),
+              ...)
+}

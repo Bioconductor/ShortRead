@@ -98,12 +98,11 @@ setMethod(readAligned, "SolexaPath", .readAligned_SolexaPath)
 
 setMethod(qa, "SolexaPath", .qa_SolexaPath)
 
-.report_SolexaPath <- function(x, ..., dest=tempfile(), type="pdf" )
+setMethod(report, "SolexaPath",
+          function (x, ..., dest = tempfile(), type="html")
 {
-    report(qa(x, ...), dest=dest, type=type)
-}
-
-setMethod(report, "SolexaPath", .report_SolexaPath)
+    callGeneric(qa(x, ...), dest=dest, type=type)
+})
 
 setMethod(show, "SolexaPath", function(object) {
     callNextMethod()

@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: Base classes and methods for high-throughput short-read sequencing data.
-Version: 1.1.39
+Version: 1.1.40
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 Description: Base classes, functions, and methods for representation of
@@ -10,7 +10,7 @@ License: Artistic-2.0
 LazyLoad: yes
 Depends: methods, IRanges (>= 1.1.34), Biostrings (>= 2.11.25), 
 	Biobase (>= 2.3.3), BSgenome (>= 1.1.14), lattice
-Imports: IRanges, Biostrings, Biobase, BSgenome
+Imports: IRanges, Biostrings, Biobase, BSgenome, hwriter
 Enhances: Rmpi
 Suggests: biomaRt
 LinkingTo: IRanges, Biostrings

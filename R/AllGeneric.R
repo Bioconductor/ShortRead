@@ -144,17 +144,31 @@ setGeneric("experimentPath")
 
 setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))
 
-
-report <- 
-    function(x, ..., dest=paste(tempfile(), "pdf", sep="."),
-             type="pdf")
+report <-
+    function (x, ..., dest = tempfile(), type="html")
 {
-    .throw("InternalError",
-           "'%s' for class '%s' not yet implemented",
-           "report", class(x))
+    func <- switch(type, html=.report_html, pdf=.report_pdf,
+                   .report_any)
+    func(x, dest, type, ...)
 }
 
 setGeneric("report", signature="x")
+
+.report_any <-
+        function (x, dest, type, ...)
+{
+    .throw(SRError("UserArgumentMismatch",
+                   "'%s, type=\"%s\"' not implemented for class '%s'",
+                   "report", type, class(x)))
+}
+
+setGeneric(".report_html", function(x, dest, type, ...)
+           standardGeneric(".report_html"),
+           signature="x", useAsDefault=.report_any)
+
+setGeneric(".report_pdf", function(x, dest, type, ...)
+           standardGeneric(".report_pdf"),
+           signature="x", useAsDefault=.report_any)
 
 ## SolexaSet
 

@@ -40,11 +40,16 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
   Accessor methods are inheritted from the \code{\linkS4class{SRList}}
   class.
 
-  A additional methods defined on this class are:
+  Additional methods defined on this class are:
   \describe{
-    \item{report}{\code{signature(x="SolexaExportQA", ...,
-        dest=paste(tempfile(), "pdf", sep="."), type="pdf")}: produces a
-        pdf file summarizing the QA results.}
+
+    \item{report}{\code{signature(x="SolexaExportQA", ..., dest=tempfile(), type="html")}:
+	  produces HTML files summarizing QA results. \code{dest} should be
+	  a directory.}
+
+    \item{report}{\code{signature(x="SolexaExportQA", ..., dest=tempfile(), type="pdf")}:
+	  (deprecated; use \code{type="html"} instead) produces a pdf file
+	  summarizing QA results. \code{dest} should be a file.}
 
     \item{show}{\code{signature(object = "SolexaExportQA")}: Display an
       overview of the object contents.}

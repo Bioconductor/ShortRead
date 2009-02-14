@@ -1,0 +1,28 @@
+<h2>Cycle-specific base calls and read quality</h2>
+
+<p>
+Per-cycle base call should usually be approximately uniform across
+cycles. Genome Analyzer `control' lane results often show a deline in
+A and increase in T as cycles progress. This is likely an artifact of
+the underlying technology.
+</p>
+<pre>
+  perCycle &lt;- qa[["perCycle"]]
+  ShortRead:::.plotCycleBaseCall(perCycle$baseCall)
+</pre>
+@CYCLE_BASE_CALL_FIGURE@
+
+<p>
+Per-cycle quality score. Reported quality scores are `calibrated',
+i.e., incorporating phred-like adjustments following sequence
+alignment. These typically decline with cycle, in an accelerating
+manner. Abrupt transitions in quality between cycles toward the end of
+the read might result when only some of the cycles are used for
+alignment: the cycles included in the alignment are calibrated more
+effectively than the reads excluded from the alignment.
+</p>
+<pre>
+  perCycle &lt;- qa[["perCycle"]]
+  ShortRead:::.plotCycleQuality(perCycle$quality)
+</pre>
+@CYCLE_QUALITY_FIGURE@

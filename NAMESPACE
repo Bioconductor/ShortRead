@@ -19,6 +19,8 @@ importFrom(Biostrings, BStringSet, DNAStringSet,
            quality, pairwiseAlignment, pattern,
            trimLRPatterns, unaligned)
 
+importFrom(hwriter, hwrite, hwriteImage)
+
 exportClassPattern("^[^\\.]")
 
 exportMethods(show, coerce, length, "[", "[[", alphabetFrequency,
