@@ -77,9 +77,9 @@
 
   Class \code{SolexaIntensityInfo}:
 
-  Class \code{"\linkS4class{AnnotatedDataFrame}"}, directly
+  Class \code{"\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}"}, directly
   Class \code{"\linkS4class{IntensityInfo}"}, directly
-  Class \code{"\linkS4class{Versioned}"}, by class "AnnotatedDataFrame", distance 2
+  Class \code{"\link[Biobase:class.Versioned]{Versioned}"}, by class "AnnotatedDataFrame", distance 2
   Class \code{"\linkS4class{.ShortReadBase}"}, by class "IntensityInfo", distance 2  Class \code{"\linkS4class{IntensityInfo}"}, directly.
 }
 \section{Methods}{
@@ -99,7 +99,7 @@
 
   Class "SolexaIntensityInfo" inherits accessor, subsetting, and display
   methods from class \code{\linkS4class{IntensityInfo}} and
-  \code{\linkS4class{AnnotatedDataFrame}}.
+  \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}.
 
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
