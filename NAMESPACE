@@ -23,7 +23,7 @@ importFrom(hwriter, hwrite, hwriteImage)
 
 exportClassPattern("^[^\\.]")
 
-exportMethods(show, coerce, length, "[", "[[", alphabetFrequency,
+exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
               alphabet, coverage, narrow, strand, trimLRPatterns,
               width, append)
 

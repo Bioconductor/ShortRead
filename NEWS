@@ -8,10 +8,12 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
-    o add trimLRPatterns() for ShortRead and derived classes
+    o Create HTML-based quality assessment reports
+
+    o Add trimLRPatterns() for ShortRead and derived classes
     (ShortReadQ, AlignedRead).
 
-    o add narrow() for ShortRead, QualityScore, and derived classes.
+    o Add narrow() for ShortRead, QualityScore, and derived classes.
 
     o Use append() to append two objects of the same ShortReadQ or
     QualityScore and derived classes together
@@ -35,7 +37,7 @@ NEW FEATURES
     instances of reads aligning to each position.
     
     o readAligned gains a Solexa _results parser (_results files are
-    liested as 'intermediate' in the Solexa manual, and not a good
+    listed as 'intermediate' in the Solexa manual, and not a good
     end-point for analysis)
 
     o readAligned gains a Bowtie output parser

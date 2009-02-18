@@ -21,9 +21,11 @@
 \alias{[,MatrixQuality,ANY,missing-method}
 \alias{[,MatrixQuality,ANY,missing,ANY-method}
 \alias{[[,MatrixQuality,ANY,missing-method}
+\alias{dim,MatrixQuality-method}
 \alias{length,MatrixQuality-method}
 \alias{narrow,MatrixQuality-method}
 \alias{width,MatrixQuality-method}
+\alias{append,MatrixQuality,MatrixQuality,missing-method}
 % FastqQuality
 \alias{width,FastqQuality-method}
 \alias{show,FastqQuality-method}
@@ -84,13 +86,18 @@
       Returns the vector of quality scores associated with the
       \code{i}th read.}
 
+    \item{dim}{\code{signature(x = "MatrixQuality")}:
+
+      The integer(2) dimension (e.g., number of reads, read width)
+      represented by the quality score.}
+
     \item{length}{\code{signature(x = "QualityScore")}:}
     \item{length}{\code{signature(x = "MatrixQuality")}:
 
-      The numeric(1) length (e.g., number of reads) represented by the
-      quality score.
-
-    }
+      The integer(1) length (e.g., number of reads) represented by the
+      quality score. Note that \code{length} of \code{MatrixQuailty} is
+      the number of rows of the corresponding matrix, and not the length
+      of the corresponding numeric vector.}
 
     \item{append}{\code{signature(x = "QualityScore", values = "QualityScore", length = "missing")}:
       append \code{values} after \code{x}.}
@@ -171,11 +178,15 @@
       described on the appropriate help page.}
 
   }
+
+  Integer representations of \code{SFastqQuality} and
+  \code{FastqQuality} can be obtained with \code{as(x, "matrix")}.
+
 }
 \seealso{
   \code{\link{NumericQuality}} and other constructors.
 }
-\author{Martin Morgan <mtmmorgan@fhcrc.org>}
+\author{Martin Morgan <mtmorgan@fhcrc.org>}
 \examples{
 names(slot(getClass("QualityScore"), "subclasses"))
 }

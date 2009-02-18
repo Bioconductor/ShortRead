@@ -101,18 +101,39 @@ setMethod("[", c("MatrixQuality", "ANY", "missing"),
 setMethod("[[", c("MatrixQuality", "ANY", "missing"),
           .MatrixQuality_subset2)
 
+setMethod(dim, "MatrixQuality",
+          function(x) dim(quality(x)))
+
 setMethod(length, "MatrixQuality",
-          function(x) nrow(x))
+          function(x) nrow(quality(x)))
 
 setMethod(width, "MatrixQuality",
           function(x) rep(ncol(x), nrow(x)))
 
-## FIXME: implement this, when widths are all equal
+## FIXME: implement this, when starts are un-equal
 setMethod(narrow, "MatrixQuality",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
 {
-    .throw(SRError("InternalError", "%s not (yet) implemented",
-                   "narrow,MatrixQuality-method'"))
+    sew <- solveUserSEW(width(x), start = start, end = end, 
+                        width = width)
+    if (length(unique(width(sew))) != 1)
+        .throw(SRError("UserArgumentMismatch", "%s of %s must be 1",
+                       "'length(unique(width()))'",
+                       "solved SEW"))
+    if (length(unique(start(sew))) == 1) {
+        idx <- unique(start(sew)) + seq_len(unique(width(sew))) - 1
+        initialize(x, quality=quality(x)[,idx])
+    } else {
+        .throw(SRError("UserArgumentMismatch",
+                       "%s requires unequal 'start' positions",
+                       "'narrow,MatrixQuality-method'"))
+    }
+})
+
+setMethod(append, c("MatrixQuality", "MatrixQuality", "missing"),
+    function(x, values, after=length(x))
+{
+    initialize(x, quality=rbind(quality(x), quality(values)))
 })
 
 ## FastqQuality, SFastqQuality

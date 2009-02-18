@@ -18,6 +18,7 @@
 \alias{[,ShortRead,ANY,missing-method}
 \alias{[,ShortRead,missing,ANY-method}
 \alias{[,ShortRead,missing,missing-method}
+\alias{[,ShortRead,missing,missing,ANY-method}
 \alias{[,ShortRead,missing,ANY,ANY-method}
 \alias{[,ShortRead,ANY,ANY,ANY-method}
 \alias{[,ShortRead,ANY,missing,ANY-method}
