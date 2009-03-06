@@ -5,6 +5,7 @@
 \alias{readData}
 \alias{readIndex}
 \alias{sourcePath}
+\alias{phenoData,SRSet-method}
 \alias{experimentPath,SRSet-method}
 \alias{show,SRSet-method}
 \alias{detail,SRSet-method}
@@ -58,6 +59,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
   \describe{
     \item{experimentPath}{\code{signature(object = "SRSet")}: return the
       \code{\linkS4class{ExperimentPath}} associated with this object.}
+
+    \item{phenoData}{\code{signature(object = "SRSet")}: return the
+      \code{\linkS4class{phenoData}} associated with this object.}
 
     \item{readCount}{\code{signature(object="SRSet")}:}
     \item{readIndex}{\code{signature(object="SRSet")}:}

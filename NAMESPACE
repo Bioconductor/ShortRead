@@ -6,7 +6,9 @@ importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
 importClassesFrom(Biostrings, BStringSet, DNAStringSet,
                   PairwiseAlignedXStringSet)
 
-importFrom(Biobase, selectSome, phenoData, featureData, sampleNames,
+importFrom(Biobase, selectSome, subListExtract, copySubstitute,
+           "dimLabels<-",
+           pData, phenoData, varLabels, varMetadata, sampleNames,
            mkScalar)
 
 importFrom(IRanges, append, coverage, narrow, score, start, Views,
@@ -26,5 +28,6 @@ exportClassPattern("^[^\\.]")
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
               alphabet, coverage, narrow, strand, trimLRPatterns,
               width, append)
+export(pData, phenoData, varLabels, varMetadata)
 
 exportPattern("^[^\\.]")

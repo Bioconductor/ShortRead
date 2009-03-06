@@ -6,7 +6,7 @@ aln <- local({
 test_srFilter <- function() {
     checkTrue(validObject(srFilter()))
     checkTrue(validObject(srFilter(name="Filter")))
-    checkIdentical(name(srFilter(name="Filter")), mkScalar("Filter"))
+    checkIdentical(name(srFilter(name="Filter")), Biobase::mkScalar("Filter"))
     checkTrue(validObject(srFilter(function(x) {})))
     checkException(srFilter(function(){}), silent=TRUE)
     checkException(srFilter(function(x, ...) {}), silent=TRUE)
@@ -136,7 +136,7 @@ test_compose <- function() {
     obj <- compose(f1, f2)
     checkTrue(validObject(obj))
     checkIdentical(name(obj),
-                   mkScalar(paste(name(f1), name(f2), sep=" o ")))
+                   Biobase::mkScalar(paste(name(f1), name(f2), sep=" o ")))
 
     checkException(compose("foo"), silent=TRUE)
     checkException(compose(f1, "foo"), silent=TRUE)
