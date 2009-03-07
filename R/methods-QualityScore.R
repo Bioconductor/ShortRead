@@ -191,7 +191,7 @@ setMethod(narrow, "FastqQuality",
 })
 
 setMethod(alphabet, "FastqQuality",
-          function(x) rawToChar(as.raw(32:125), TRUE))
+          function(x, ...) rawToChar(as.raw(32:125), TRUE))
 
 setMethod(show, "FastqQuality", function(object) {
     callNextMethod()

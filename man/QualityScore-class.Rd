@@ -132,7 +132,7 @@
   The following methods are defined on specific classes:
 
   \describe{
-    \item{alphabet}{\code{signature(x = "FastqQuality")}:
+    \item{alphabet}{\code{signature(x = "FastqQuality", ...)}:
       Return a character vector of valid quality characters.
     }
 
