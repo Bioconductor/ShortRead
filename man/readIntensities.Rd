@@ -42,13 +42,49 @@ readIntensities(dirPath, pattern=character(0), ...)
 
   \itemize{
 
+    \item{\code{type="IparIntensity"}}{
+
+      Intensities are read from Solexa \code{_pos.txt},
+      \code{_int.txt.p}, \code{_nse.txt.p}-style file triplets. The
+      signature for this method is
+
+	  \code{dirPath, pattern=character(0), ...,
+		type="IparIntensity",
+        intExtension="_int.txt.p.gz",
+        nseExtension="_nse.txt.p.gz",
+        posExtension="_pos.txt",
+        withVariability=TRUE, verbose=FALSE}
+
+    }
+
     \item{\code{type="SolexaIntensity"}}{
 
       Intensities are read from Solexa \code{_int.txt} and
       \code{_nse.txt}-style files; see \code{\linkS4class{SolexaPath}}
-      for details.
+      for details.  The signature for this method is
+
+	  \code{dirPath, pattern=character(0), ...,
+		type="SolexaIntensity",
+        intExtension="_int.txt",
+        nseExtension="_nse.txt",
+        withVariability=TRUE, verbose=FALSE}
 
     }
+  }
+
+  Arugments to these methods are as follows:
+
+  \itemize{
+
+	\item{intExtension, nseExtension, posExtension}{\code{character(1)}
+	  values pasted (with \code{sep=""}) to \code{pattern} to
+	  identify different file sources.}
+
+	\item{withVariability}{Include estimates of variability (i.e., from
+	  parsing \code{_nse} files).}
+
+	\item{verbose}{Report on progress when starting to read each file.}
+
   }
 }
 

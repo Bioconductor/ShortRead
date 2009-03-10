@@ -9,6 +9,7 @@ static const R_CallMethodDef callMethods[] = {
     {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 8},
     {".read_solexa_export", (DL_FUNC) &read_solexa_export, 3},
     {".write_fastq", (DL_FUNC) &write_fastq, 6},
+    {".count_ipar_int_recs", (DL_FUNC) &count_ipar_int_recs, 1},
     /* io_bowtie.c, io_soap.c */
     {".read_bowtie", (DL_FUNC) &read_bowtie, 4},
     {".read_soap", (DL_FUNC) &read_soap, 4},

@@ -116,6 +116,90 @@ SolexaIntensity <-
         SolexaIntensity(int, readInfo=readInfo)
 }
 
+.read_ipar_int_array <-
+    function(fileNames, nrec, cycles, ..., verbose=FALSE)
+{
+    reads <- sum(nrec)
+    crec <- cumsum(c(0, nrec))
+    a <- array(numeric(), c(reads, 4L, cycles),
+               dimnames=list(NULL, c("A", "C", "G", "T"), NULL))
+    for (i in seq_along(fileNames)) {
+        tryCatch({
+            gz <- gzfile(fileNames[[i]], "rb")
+            data <- scan(gz, nmax=nrec[[i]] * 4 * cycles,
+                         comment.char="#", ..., quiet=!verbose)
+            idx <- (crec[i]+1):crec[i+1]
+            a[idx,,] <- aperm(array(data, c(4L, nrec[[i]], cycles)),
+                              c(2,1,3))
+        }, error=function(err) {
+            msg <- sprintf("parsing: %s\n  error: %s",
+                           fileNames[[i]], conditionMessage(err))
+            .throw(SRError("Input/Output", msg))
+        }, finally=close(gz))
+    }
+}
+
+
+.readIntensities_IparIntensity <-
+    function(dirPath, pattern=character(0), ...,
+             intExtension="_int.txt.p.gz",
+             nseExtension="_nse.txt.p.gz",
+             posExtension="_pos.txt",
+             withVariability=TRUE, verbose=FALSE)
+{
+    .check_type_and_length(withVariability, "logical", 1)
+    .check_type_and_length(pattern, "character", NA)
+    .check_type_and_length(intExtension, "character", 1)
+    .check_type_and_length(nseExtension, "character", 1)
+    .check_type_and_length(posExtension, "character", 1)
+    intPattern <- paste(pattern, intExtension, sep="")
+    intFiles <- .file_names(dirPath, intPattern)
+    posPattern <- paste(pattern, posExtension, sep="")
+    posFiles <- .file_names(dirPath, posPattern)
+
+    dims <- .Call(.count_ipar_int_recs, intFiles, PACKAGE="ShortRead") # reads, cycles
+    nrec <- dims$reads
+    crec <- cumsum(c(0, nrec))
+    cycles <- dims$cycles[[1]]
+
+    if (withVariability) {
+        nsePattern <- paste(pattern, nseExtension, sep="")
+        nseFiles <- .file_names(dirPath, nsePattern)
+        extrec <- .Call(.count_ipar_int_recs, nseFiles, PACKAGE="ShortRead")$reads
+        if (length(nrec) != length(extrec)) {
+            .throw(SRError("UserArgumentMismatch",
+                           "number of files found differs between 'int' (%d) and 'nse' (%d)\n  dirPath: '%s'\n  pattern: '%s'\n  intExtension: '%s'\n  nseExtension: '%s'",
+                           length(nrec), length(extrec),
+                           dirPath, pattern, intExtension, nseExtension))
+        }
+        if (!all(nrec == extrec)) {
+            .throw(SRError("UserArgumentMismatch",
+                           "read or cycle counts differ between 'intensity' and 'nse'\n  dirPath: '%s'\n  pattern: '%s'\n  intExtension: '%s'\n  nseExtension: '%s'",
+                           dirPath, pattern, intExtension, nseExtension))
+        }
+    }
+
+    int <- .read_ipar_int_array(intFiles, nrec, cycles, ...,
+                                verbose=verbose)
+    if (withVariability)
+        nse <- .read_ipar_int_array(nseFiles, nrec, cycles, ...,
+                                    verbose=verbose)
+
+    ## lane, tile, x, y
+    lanes <- sub("s_([0-9]+)_.*", "\\1", basename(posFiles))
+    tiles <- as.integer(sub("s_[0-9]+_([0-9]+)_.*", "\\1", basename(posFiles)))
+    pos <- do.call("cbind", mapply(function(fl, lane, tile) {
+        cbind(lane=lane, tile=tile, read.table(fl))
+    }, posFiles, lanes, tiles, SIMPLIFY=FALSE, USE.NAMES=FALSE))
+    readInfo <- SolexaIntensityInfo(pos[[1]], pos[[2]], pos[[3]], pos[[4]])
+
+    if (withVariability)
+        SolexaIntensity(int, nse, readInfo)
+    else
+        SolexaIntensity(int, readInfo=readInfo)
+
+}
+
 setMethod(get("["), c("SolexaIntensity", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=TRUE)
 {

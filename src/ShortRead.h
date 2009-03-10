@@ -37,6 +37,7 @@ void _as_factor_SEXP(SEXP vec, SEXP lvls);
 void _as_factor(SEXP vec, const char **levels, const int n_lvls);
 int _count_lines_sum(SEXP files);
 SEXP count_lines(SEXP files);
+SEXP count_ipar_int_recs(SEXP files);
 SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
 /* io.c */

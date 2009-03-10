@@ -1,5 +1,6 @@
 .readIntensities_character <-
-    function(dirPath, pattern=character(0), ..., type=c("SolexaIntensity"))
+    function(dirPath, pattern=character(0), ...,
+             type=c("SolexaIntensity", "IparIntensity"))
 {
     if (missing(type)) {
         type <- "SolexaIntensity"
@@ -13,6 +14,8 @@
     tryCatch({
         switch(type,
                SolexaIntensity=.readIntensities_SolexaIntensity(
+                 dirPath, pattern, ...),
+               IparIntensity=.readIntensities_IparIntensity(
                  dirPath, pattern, ...))
     }, error=function(err) {
         if (is(err, "SRError")) stop(err)

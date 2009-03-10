@@ -104,6 +104,8 @@
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
+\seealso{\code{\link{readIntensities}}}
+
 \examples{
 showClass("SolexaIntensity")
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))

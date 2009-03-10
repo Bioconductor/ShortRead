@@ -106,6 +106,80 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
 }
 
 /*
+ * solexa/IPAR .*_int.txt.p.gz file
+ */
+
+void
+_count_ipar_int_recs(gzFile *file, int *n_recs, int *n_cycles)
+{
+  const char CYCLE_END = '#';
+  const int LINEBUF_SIZE=200001;
+  size_t bytes_read;
+  char buf[LINEBUF_SIZE + 1];
+  *n_recs = *n_cycles = 0;
+  char *p = 0;
+  /* records and cycles */
+  while (*n_cycles == 0 &&
+		 (bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
+	p = buf;
+	while (p = memchr(p, '\n', (buf + bytes_read) - p)) {
+	  ++p;
+	  if (*p == CYCLE_END) {
+		++p;
+		*n_cycles += 1;
+		break;
+	  }
+	  else *n_recs += 1;
+	}
+  }
+  /* just cycles */
+  while (p = memchr(p, CYCLE_END, (buf + bytes_read) - p)) {
+	++p;
+	*n_cycles += 1;
+  }
+  while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
+	p = buf;
+	while (p = memchr(p, CYCLE_END, (buf + bytes_read) - p)) {
+	  ++p;
+	  *n_cycles += 1;
+	}
+  }
+}
+
+SEXP
+count_ipar_int_recs(SEXP fnames)
+{
+  int i, nfile;
+  const char *filepath;
+  gzFile *file;
+  SEXP ans = R_NilValue, nms = R_NilValue;
+    
+  if (!IS_CHARACTER(fnames))
+	error("'fnames' must be character()");
+
+  nfile = LENGTH(fnames);
+  PROTECT(ans = NEW_LIST(2));
+  SET_VECTOR_ELT(ans, 0, NEW_INTEGER(nfile));
+  SET_VECTOR_ELT(ans, 1, NEW_INTEGER(nfile));
+  PROTECT(nms = NEW_CHARACTER(2));
+  SET_STRING_ELT(nms, 0, mkChar("reads"));
+  SET_STRING_ELT(nms, 1, mkChar("cycles"));
+  setAttrib(ans, R_NamesSymbol, nms);
+  for (i = 0; i < nfile; ++i) {
+	R_CheckUserInterrupt();
+	filepath = translateChar(STRING_ELT(fnames, i));
+	file = _fopen(filepath, "rb");
+	_count_ipar_int_recs(file, 
+						 INTEGER(VECTOR_ELT(ans, 0)) + i,
+						 INTEGER(VECTOR_ELT(ans, 1)) + i);
+	gzclose(file);
+  }
+
+  UNPROTECT(2);
+  return ans;
+}
+
+/*
  * Read a solexa .*_prb.txt file into STRING_VEC
  */
 
