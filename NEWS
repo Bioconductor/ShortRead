@@ -8,6 +8,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
+    o Parse IPAR image intensity files _int.txt.p, _nse.txt.p, 
+    _pos.txt
+
     o Create HTML-based quality assessment reports
 
     o Add trimLRPatterns() for ShortRead and derived classes
