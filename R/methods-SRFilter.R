@@ -115,7 +115,7 @@ polynFilter <- function(threshold=0L,
                                 ok)
     srFilter(function(x) {
         alf <- .getAlphabetFrequency(x, baseOnly=TRUE)
-        apply(alf[,nuc], 1, max) <= threshold
+        apply(alf[,nuc,drop=FALSE], 1, max) <= threshold
     }, name=.name)
 }
 
