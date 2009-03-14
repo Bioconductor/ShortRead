@@ -149,13 +149,13 @@ setMethod(coverage, "AlignedRead",
         rstart <- ifelse(strand(x)=="+", position(x),
                          position(x) - extend)
         rend <- ifelse(strand(x) == "+",
-                       position(x) + width(x) + extend,
-                       position(x) + width(x))
+                       position(x) + width(x) + extend - 1L,
+                       position(x) + width(x) - 1L)
     } else {
         rstart <- ifelse(strand(x) == "+", position(x),
-                         position(x) - width(x) - extend)
+                         position(x) - width(x) - extend + 1L)
         rend <- ifelse(strand(x) == "+",
-                       position(x) + width(x) + extend,
+                       position(x) + width(x) + extend - 1L,
                        position(x))
     }
     cvg <- lapply(chrlvls, function(chr, aln, rstart, rend, start, end, ...) {

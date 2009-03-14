@@ -49,6 +49,8 @@ NEW FEATURES
 
 BUG FIXES
 
+    o coverage treated reads as 1 base longer than they were
+
     o FastqQuality got the quality encoding off by one in as(x,
     "matrix")
 

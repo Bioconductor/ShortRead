@@ -104,7 +104,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
       Calculate coverage across reads present in \code{x}. 
 
-      \code{start} and \code{end} are are regions (e.g., of chromosomes)
+      \code{start} and \code{end} are regions (e.g., of chromosomes)
       over which coverage is to be calculated. If provided, these are
       length 1 integers or \emph{named} integer vectors of length
       greater than 1. If named integer vectors, the names must match
@@ -148,7 +148,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
   \code{\link{readAligned}}
 }
 \examples{
-showMethods(class="AlignedRead")
+showMethods(class="AlignedRead", where=getNamespace("ShortRead"))
 dirPath <- system.file('extdata', 'maq', package='ShortRead')
 readAligned(dirPath, 'out.aln.1.txt', type="MAQMapview")
 }
