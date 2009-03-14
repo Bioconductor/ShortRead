@@ -17,9 +17,19 @@
 
 setMethod(.srValidity, "AlignedRead", .AlignedRead_validity)
 
+.AlignedRead_QualityConstructor <-
+    function(sread)
+{
+    if (length(sread) > 0)
+        unlist(lapply(width(sread), polyn, nucleotides="!"))
+    else
+        character(0)
+}
+
 AlignedRead <- function(sread = DNAStringSet(character(0)),
                         id = BStringSet(character(length(sread))),
-                        quality = FastqQuality(character(length(sread))),
+                        quality = FastqQuality(
+                          .AlignedRead_QualityConstructor(sread)),
                         chromosome = factor(rep(NA, length(sread))),
                         position = rep(NA_integer_, length(sread)),
                         strand = factor(rep(NA_integer_, length(sread)),

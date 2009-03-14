@@ -7,7 +7,7 @@ polyn <- function(nucleotides, n)
                        "nucleotides", "character(1) or longer"))
     if (!all(sapply(nucleotides, nchar) == 1))
         .throw(SRError("UserArgumentMismatch",
-                       "'%s' must all have %d charactecters",
+                       "'%s' must all have %d characters",
                        "nucleotides", 1))
     if (!is.numeric(n) || length(n) != 1)
         .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",

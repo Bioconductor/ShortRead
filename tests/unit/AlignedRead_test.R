@@ -204,3 +204,17 @@ test_AlignedRead_readAligned_SolexaResult <- function()
     checkIdentical(tbl[[11]], ad[[6]])
     checkIdentical(tbl[[12]], ad[[7]])
 }
+
+test_AlignedRead_constructor <- function()
+{
+    aln <- AlignedRead()
+    checkTrue(validObject(aln))
+
+    aln <- AlignedRead(sread=DNAStringSet(polyn("A", 5)))
+    checkTrue(validObject(aln))
+
+    aln <- AlignedRead(sread=DNAStringSet(
+                         c(polyn("A", 5), polyn("A", 10))))
+    checkTrue(validObject(aln))
+    checkIdentical(c(5L, 10L), width(aln))
+}
