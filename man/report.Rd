@@ -25,7 +25,7 @@ report(x, ..., dest=tempfile(), type="html")
 
   \item{dest}{The output destination for the final report. For
     \code{type="html"} this is a directory; for (deprecated)
-    \code{tyep="pdf"} this is a file.}
+    \code{type="pdf"} this is a file.}
 
   \item{type}{A text string defining the type of report; available
     report types depend on the type of object \code{x}; usually this is

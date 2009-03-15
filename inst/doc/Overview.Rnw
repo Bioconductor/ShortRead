@@ -404,11 +404,12 @@ Other elements of \Robject{qaSummary} are more complicated, and their
 interpretation is not directly obvious. Instead, a common use is to
 forward the results of \Rfunction{qa} to a report generator. 
 <<report, eval=FALSE>>=
-report(qaSummary, dest="/path/to/qa_report.pdf")
+report(qaSummary, dest="/path/to/report_directory")
 @ 
 %% 
 The report includes \R{} code that can be used to understand how
-\Sexpr{class(qaSummary)}-class objects can be processed.
+\Sexpr{class(qaSummary)}-class objects can be processed; reports are
+generated as HTML suitable for browser viewing.
 
 
 \section{Using \Rpackage{ShortRead} for data exploration}
