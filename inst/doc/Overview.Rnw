@@ -638,12 +638,71 @@ pairwise aligment are encouraged to investigate the
 \Rpackage{Biostrings} package, especially the \Rclass{PDict} class and
 \Rfunction{matchPDict} and \Rfunction{pairwiseAlignment} functions.
 
-\subsection{The \Rfunction{pileup} function}
+\subsection{The \Rfunction{coverage} and \Rfunction{pileup} and functions}
 
-The \Rfunction{pileup} function provides a convenient way to summarize where reads
-align on reference sequences. \Rfunction{pileup} uses alignments
-obtained from, e.\,g., \Rfunction{readAligned} or the
-\Robject{PDict} family of functions in \Rpackage{Biostrings}.
+The \Rfunction{coverage} and \Rfunction{pileup} functions provide ways
+to summarize where reads align on a reference sequence. The idea is
+that the aligned reads, or under some analyses the extension of those
+aligned reads by an amount meant to estimate the actual fragment size,
+`pile up' on top of nucleotide positions in the reference sequence. A
+convenient summary of the alignment of many reads is thus a vector
+describing the depth of the pile at each position in the reference
+sequence. A typical work flow invokes \Rfunction{coverage} on an
+instance of the \Rclass{AlignedRead} class obtained from
+\Rfunction{readAligned}; additional methods offering greater control
+operate on \Rclass{IRanges} directly.  The \Rfunction{coverage}
+methods returns a run-length encoding of the pile-up (or a list of
+such run length encodings), whereas \Rfunction{pileup} returns a
+(long!) integer vector. The run-length encoding returned by
+\Rfunction{coverage} is a space-efficient representation; the long
+integer vector can be recovered with \Rcode{as.integer}.
+
+There are complicated issues associated with use of
+\Rfunction{coverage} and \Rfunction{pileup}, relating to how software
+reports the `position' of an alignment, especially on the minus
+strand. These issues are illustrated in
+figure~\ref{fig:coverage}. 
+\begin{figure}
+\begin{verbatim}
+'leftmost':
+                             P
+                             +++++----------
+'+' strand: 5' ....|....|....|....|....|....|.. 3'
+'-' strand: 3' ....|....|....|....|....|....|.. 5'
+                   ----------+++++
+                             P
+
+'fiveprime':
+                             P
+                             +++++----------
+'+' strand: 5' ....|....|....|....|....|....|.. 3'
+'-' strand: 3' ....|....|....|....|....|....|.. 5'
+                   ----------+++++
+                                 P
+\end{verbatim}
+  \caption{Alignment schemes used by
+    \Rfunction{coverage}. \texttt{+++} represents the read and
+    \texttt{---} the extension. \texttt{P} is the alignment position
+    as recorded under the corresponding leftmost or fiveprime
+    schemes.}
+  \label{fig:coverage}
+\end{figure}
+In the figure, the two strands are represented by \verb"....|",
+aligned reads by \verb"+++", and extensions by \verb"---".  The idea
+is that 5-nucleotide reads have been aligned to a reference sequence,
+and the alignment extended by 10 nucleotides. In the `leftmost'
+notation (used by \ELAND{}) and assuming that the reference sequence
+is always numbered in relation to the plus strand and indexed starting
+at 1 (\Rfunction{readAligned} translates reported alignment positions
+so they are indexed from 1), the reported position is 15 for the
+alignments on either the plus or the minus strand. In contrast the
+`fiveprime' scheme the alignment to the plus strand is 15, and to the
+minus strand 19. This is the scheme used by \MAQ{}, for instance.
+
+The default behavior of \Rfunction{coverage} is to use the `leftmost'
+coordinate system; the \Rfunarg{start} argument of \Rfunction{pileup}
+can also be viewed as the leftmost position of the read. This is
+appropriate for data derived from \ELAND{}.
 
 \section{Advanced features}
 
