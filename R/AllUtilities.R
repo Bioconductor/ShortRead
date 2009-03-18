@@ -74,8 +74,13 @@ polyn <- function(nucleotides, n)
         .arg_mismatch_type_err("pattern", "character(0) or character(1)")
     if (!isTRUE(full.names))
         .arg_mismatch_type_err("full.names", "TRUE")
-    files <- list.files(path.expand(dirPath), pattern,
-                        ..., full.names=full.names)
+    dirPath <- path.expand(dirPath)
+    if (length(pattern) == 0 && all(file.exists(dirPath)) &&
+        all(!sapply(dirPath, function(elt) file.info(elt)$isdir)))
+    {
+        return(dirPath)
+    }
+    files <- list.files(dirPath, pattern, ..., full.names=full.names)
     files <- files[!file.info(files)$isdir]
     if (length(files)==0) {
         if (length(pattern)==0) pattern <- "character(0)"
@@ -142,10 +147,7 @@ polyn <- function(nucleotides, n)
 .append.factor <-
     function(x, values)
 {
-    if (!identical(levels(x), levels(values)))
-        .throw(SRError("IncompatibleTypes",
-                       "'%s' and '%s' must have same '%s'",
-                       "x", "values", "levels()"))
+    lvls <- unique(c(levels(x), levels(values)))
     factor(append(as.character(x), as.character(values)),
-           levels=levels(x))
+           lvls)
 }

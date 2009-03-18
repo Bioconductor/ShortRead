@@ -6,6 +6,9 @@
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o For functions accepting dirPath, pattern to name files, allow
+    dirPath to be a vector of file names when pattern is character()
+
 NEW FEATURES
 
     o Parse IPAR image intensity files _int.txt.p, _nse.txt.p, 

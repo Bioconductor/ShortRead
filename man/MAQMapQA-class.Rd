@@ -2,6 +2,7 @@
 \docType{class}
 \alias{MAQMapQA}
 \alias{MAQMapQA-class}
+\alias{report,MAQMapQA-method}
 
 \title{Quality assessment summaries from MAQ map files}
 
@@ -36,11 +37,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 \section{Methods}{
   Accessor methods are inheritted from the \code{\linkS4class{SRList}}
   class. 
-%   \describe{
-%     \item{report}{\code{signature(x="MAQMapQA", ...,
-%         dest=paste(tempfile(), "pdf", sep="."), type="pdf")}: produces a
-%         pdf file summarizing the QA results.}
-%   }
+  \describe{
+    \item{report}{\code{signature(x="MAQMapQA", ...,
+        dest=tempfile(), type="html")}: produces an
+      html file summarizing the QA results.}
+  }
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 

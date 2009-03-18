@@ -99,19 +99,19 @@ setMethod(.report_pdf, "character",
 }
 
 .htmlReadQuality <-
-    function(dir, file, qa, ...)
+    function(dir, file, qa, type="read", ...)
 {
     df <- qa[["readQualityScore"]]
     .html_img(dir, file,
-              .plotReadQuality(df[df$type=="read",]),
+              .plotReadQuality(df[df$type==type,]),
               ...)
 }
 
 .htmlReadOccur <-
-    function(dir, file, qa, ...)
+    function(dir, file, qa, type="read", ...)
 {
     df <- qa[["sequenceDistribution"]]
     .html_img(dir, file,
-              .plotReadOccurrences(df[df$type=="read",], cex=.5),
+              .plotReadOccurrences(df[df$type==type,], cex=.5),
               ...)
 }

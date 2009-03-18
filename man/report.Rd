@@ -41,6 +41,11 @@ report(x, ..., dest=tempfile(), type="html")
       \code{\linkS4class{FastqQA}}.
 	}
 
+    \item{\code{x="MAQMapQA", ..., dest=tempfile(), type="html"}}{
+	  Produce an HTML-based report from an object of class
+      \code{\linkS4class{MAQMapQA}}.
+	}
+
     \item{\code{x="SolexaExportQA", ..., dest=tempfile(), type="html"}}{
 	  Produce an HTML-based report from an object of class
       \code{\linkS4class{SolexaExportQA}}.

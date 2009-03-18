@@ -51,7 +51,8 @@
         df[df$Count != 0, ]
     })
     list(readCounts=data.frame(
-           read=NA, filter=NA, aligned=length(rpt)),
+           read=NA, filter=NA, aligned=length(rpt),
+           row.names=pattern),
          baseCalls=data.frame(
            A=alf[["A"]], C=alf[["C"]], G=alf[["G"]], T=alf[["T"]],
            N=alf[["other"]], row.names=pattern),
@@ -123,3 +124,47 @@
              }))
     .MAQMapQA(lst)
 }
+
+setMethod(.report_html, "MAQMapQA",
+          function(x, dest, type, ...)
+{
+    qa <- x                             # mnemonic alias
+    dir.create(dest, recursive=TRUE)
+    fls <- c("0000-Header.html", "1000-Overview.html",
+             "2000-RunSummary.html", "3000-ReadDistribution.html",
+             "4000-CycleSpecific.html",
+             "6000-Alignment.html",
+             "9999-Footer.html")
+    sections <- system.file("template", fls, package="ShortRead")
+    perCycle <- qa[["perCycle"]]
+    values <-
+        list(PPN_COUNT=hwrite(
+               qa[["readCounts"]],
+               border=NULL),
+             BASE_CALL_COUNT=hwrite(
+               .df2a(qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])),
+               border=NULL),
+             READ_QUALITY_FIGURE=.htmlReadQuality(
+               dest, "readQuality", qa, "aligned"),
+             READ_OCCURRENCES_FIGURE=.htmlReadOccur(
+               dest, "readOccurences", qa, "aligned"),
+             FREQUENT_SEQUENCES_READ=hwrite(
+               .freqSequences(qa, "read"),
+               border=NULL),
+             FREQUENT_SEQUENCES_FILTERED=hwrite(
+               .freqSequences(qa, "filtered"),
+               border=NULL),
+             CYCLE_BASE_CALL_FIGURE=.html_img(
+               dest, "perCycleBaseCall",
+               .plotCycleBaseCall(perCycle$baseCall)),
+             CYCLE_QUALITY_FIGURE=.html_img(
+               dest, "perCycleQuality",
+               .plotCycleQuality(perCycle$quality)),
+             ALIGN_QUALITY_FIGURE=.html_img(
+               dest, "alignmentQuality",
+               .plotAlignQuality(qa[["alignQuality"]]))
+             )
+    .report_html_do(dest, sections, values, ...)
+
+})
+          
