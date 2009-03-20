@@ -7,6 +7,8 @@ pileup <- function (
    stopifnot( length(levels(dir)) == 3 && all( levels(dir) == c("-", "+", "*") ) )
    stopifnot( is.numeric(start) && is.numeric(fraglength) && is.numeric(chrlength) 
       && is.numeric(readlength) )
+   stopifnot( all(!is.na(start)) && all(!is.na(fraglength)) &&
+              all(!is.na(chrlength)) && all(!is.na(readlength)) )
    stopifnot( length(fraglength) == length(start) || length(fraglength) == 1 )
    stopifnot( length(chrlength) == 1 )
    stopifnot( length(readlength) == length(start) || length(readlength) == 1 )
