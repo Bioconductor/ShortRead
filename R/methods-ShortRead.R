@@ -33,7 +33,7 @@ setMethod(length, "ShortRead", function(x) length(sread(x)))
 
 setMethod(width, "ShortRead", function(x) {
     if (length(sread(x)) > 0) {
-        unique(width(sread(x)))
+        sort(unique(width(sread(x))))
     } else {
         0
     }

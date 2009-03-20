@@ -98,9 +98,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       \code{integer(1)} vector describing the number of reads in this
       object.}
 
-    \item{width}{\code{signature(x = "ShortRead")}: returns a
-      \code{integer(1)} vector describing the number of characters in
-      each read in this object.}
+    \item{width}{\code{signature(x = "ShortRead")}: returns an
+      \code{integer()} vector of the unique widths of reads in this
+      object. Different from \code{width(sread(x))}.}
 
     \item{srorder}{\code{signature(x = "ShortRead")}:}
     \item{srrank}{\code{signature(x = "ShortRead")}:}
