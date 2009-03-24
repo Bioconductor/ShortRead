@@ -32,7 +32,7 @@
   \code{SolexaPath(experimentPath,
                    dataPath=.solexaPath(experimentPath, "Data"),
                    scanPath=.solexaPath(dataPath, "GoldCrest"),
-                   imageAnalysisPath=.solexaPath(dataPath, "^C"),
+                   imageAnalysisPath=.solexaPath(dataPath, "^(C|IPAR)"),
                    baseCallPath=.solexaPath(imageAnalysisPath,
                      "^Bustard"),
                    analysisPath=.solexaPath(baseCallPath,

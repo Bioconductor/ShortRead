@@ -8,7 +8,7 @@ setMethod(.srValidity, "SolexaPath", function(object) {
 SolexaPath <- function(experimentPath=NA_character_,
                        dataPath=.srPath(experimentPath, "Data"),
                        scanPath=.srPath(dataPath, "GoldCrest"),
-                       imageAnalysisPath=.srPath(dataPath, "^C"),
+                       imageAnalysisPath=.srPath(dataPath, "^(C|IPAR)"),
                        baseCallPath=.srPath(imageAnalysisPath,
                          "^Bustard"),
                        analysisPath=.srPath(baseCallPath,
