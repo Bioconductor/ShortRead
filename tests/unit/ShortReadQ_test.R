@@ -61,7 +61,7 @@ test_ShortReadQ_narrow <- function() {
     obj <- narrow(sr, start=1, end=10)
     checkTrue(class(obj) == "ShortReadQ")
     checkTrue(length(obj) == length(sr))
-    checkTrue(width(obj) == 10)
+    checkTrue(unique(width(obj)) == 10)
     checkIdentical(as.character(sread(obj)),
                    substr(as.character(sread(sr)), 1, 10))
     checkIdentical(as.character(quality(quality(obj))),

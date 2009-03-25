@@ -99,8 +99,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       object.}
 
     \item{width}{\code{signature(x = "ShortRead")}: returns an
-      \code{integer()} vector of the unique widths of reads in this
-      object. Different from \code{width(sread(x))}.}
+      \code{integer()} vector of the widths of each read in this
+      object.}
 
     \item{srorder}{\code{signature(x = "ShortRead")}:}
     \item{srrank}{\code{signature(x = "ShortRead")}:}

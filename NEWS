@@ -7,7 +7,11 @@
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o For functions accepting dirPath, pattern to name files, allow
-    dirPath to be a vector of file names when pattern is character()
+    dirPath to be a vector of file names when pattern is character().
+
+    o width() on ShortRead and derived classes (including AlignedRead
+    now returns a vector of widths, of length equal to the length of
+    the object.
 
 NEW FEATURES
 

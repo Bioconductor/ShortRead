@@ -31,13 +31,7 @@ setMethod(ShortRead, c("missing", "missing"),
 
 setMethod(length, "ShortRead", function(x) length(sread(x)))
 
-setMethod(width, "ShortRead", function(x) {
-    if (length(sread(x)) > 0) {
-        sort(unique(width(sread(x))))
-    } else {
-        0
-    }
-})
+setMethod(width, "ShortRead", function(x) width(sread(x)))
 
 ## coerce
 
