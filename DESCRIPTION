@@ -8,7 +8,7 @@ Description: Base classes, functions, and methods for representation of
 	high-throughput, short-read sequencing data.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: methods, IRanges (>= 1.1.34), Biostrings (>= 2.11.25), 
+Depends: methods, IRanges (>= 1.1.55), Biostrings (>= 2.11.25), 
          BSgenome (>= 1.1.14), lattice
 Imports: IRanges, Biostrings, Biobase, BSgenome, hwriter
 Enhances: Rmpi
