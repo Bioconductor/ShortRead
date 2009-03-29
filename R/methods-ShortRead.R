@@ -140,7 +140,7 @@ setMethod(trimLRPatterns, c(subject="ShortRead"),
 
 setMethod(show, "ShortRead", function(object) {
     callNextMethod()
-    wd <- width(object)
+    wd <- sort(unique(width(object)))
     if (length(wd)>2) wd <- paste(range(wd), collapse="..")
     cat("length:", length(object), "reads; width:", wd, "cycles\n")
 })

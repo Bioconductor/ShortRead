@@ -65,6 +65,14 @@ setMethod(readPrb, "SolexaPath", .readPrb_SolexaPath)
 
 setMethod(readFastq, "SolexaPath", .readFastq_SolexaPath)
 
+setMethod(readQseq, "SolexaPath",
+    function(dirPath, pattern=".*_qseq.txt.*", run, ...,
+             as="ShortReadQ", filtered=FALSE, verbose=FALSE)
+{
+    callGeneric(baseCallPath(dirPath)[run], pattern=pattern, ...,
+                as=as, filtered=filtered, verbose=verbose)
+})
+
 .readBaseQuality_SolexaPath <- function(dirPath,
                                         seqPattern=".*_seq.txt.*",
                                         prbPattern=".*_prb.txt.*",

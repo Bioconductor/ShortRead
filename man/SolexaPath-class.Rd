@@ -12,6 +12,7 @@
 % transforming methods
 \alias{readIntensities,SolexaPath-method}
 \alias{readPrb,SolexaPath-method}
+\alias{readQseq,SolexaPath-method}
 \alias{readFastq,SolexaPath-method}
 \alias{readBaseQuality,SolexaPath-method}
 \alias{readAligned,SolexaPath-method}
@@ -130,8 +131,18 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \emph{all} base call and quality score files into a single object;
       often one will want to specify a pattern for each lane.}
 
+	\item{readQseq}{
+	  \code{signature(directory="SolexaPath", pattern=".*_qseq.txt.*", run, ...., filtered=FALSE)}:
+
+      Use \code{analysisPath(dirPath)[run]} as the directory path and
+      \code{pattern=".*_qseq.txt.*"} as the pattern for discovering read
+      and quality scores in Solexa 'qseq' files. Data from \emph{all}
+      files are read into a single object; often one will want to
+      specify a pattern for each lane. Details are as for
+      \code{\link{readQseq,character-method}}.}
+
     \item{readAligned}{
-      \code{signature(dirPath = "SolexaPath", pattern = ".*_export.txt", run, ..., filter=srFilter())}: 
+      \code{signature(dirPath = "SolexaPath", pattern = ".*_export.txt.*", run, ..., filter=srFilter())}: 
       
       Use \code{analysisPath(dirPath)[run]} as the directory path and
       \code{pattern=".*_export.txt"} as the pattern for discovering
