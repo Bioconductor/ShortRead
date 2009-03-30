@@ -133,6 +133,13 @@ srdistanceFilter <- function(subject=character(0), threshold=0L,
     }, name=.name)
 }
 
+dustyFilter <-
+    function(threshold=Inf, .name="DustyFilter")
+{
+    .check_type_and_length(threshold, "numeric", 1)
+    srFilter(function(x) dustyScore(sread(x)) <= threshold, name=.name)
+}
+
 alignQualityFilter <- function(threshold=0L,
                                .name="AlignQualityFilter")
 {

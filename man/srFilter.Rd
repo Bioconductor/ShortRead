@@ -9,6 +9,7 @@
 \alias{uniqueFilter}
 \alias{nFilter}
 \alias{polynFilter}
+\alias{dustyFilter}
 \alias{srdistanceFilter}
 \alias{alignQualityFilter}
 \alias{alignDataFilter}
@@ -42,6 +43,7 @@ uniqueFilter(withSread=TRUE, .name="UniqueFilter")
 nFilter(threshold=0L, .name="CleanNFilter")
 polynFilter(threshold=0L, nuc=c("A", "C", "T", "G", "other"),
            .name="PolyNFilter")
+dustyFilter(threshold=Inf, .name="DustyFilter")
 srdistanceFilter(subject=character(0), threshold=0L,
                  .name="SRDistanceFilter")
 alignQualityFilter(threshold=0L, .name="AlignQualityFilter")
@@ -95,10 +97,10 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
 
   \item{threshold}{A \code{numeric(1)} value representing a minimum
     (\code{srdistanceFilter}, \code{alignQualityFilter}) or maximum
-    (\code{nFilter}, \code{polynFilter}) criterion for the filter. The
-    minima and maxima are closed-interval (i.e., \code{x >= threshold},
-    \code{x <= threshold} for some property \code{x} of the object being
-    filtered).}
+    (\code{nFilter}, \code{polynFilter}, \code{dustyFilter}) criterion
+    for the filter. The minima and maxima are closed-interval (i.e.,
+    \code{x >= threshold}, \code{x <= threshold} for some property
+    \code{x} of the object being filtered).}
 
   \item{nuc}{A \code{character} vector containing IUPAC symbols for
     nucleotides or the value \code{"other"} corresponding to all
@@ -159,6 +161,10 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
 
   \code{polynFilter} selects elements with fewer than \code{threshold}
   copies of any nucleotide indicated by \code{nuc}.
+
+  \code{dustyFilter} selects elements with high sequence complexity, as
+  characterized by their \code{\link{dustyScore}}. This emulates the
+  \code{dust} command from \code{WindowMaker} software.
 
   \code{srdistanceFilter} selects elements at an edit distance greater
   than \code{threshold} from all sequences in \code{subject}.

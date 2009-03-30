@@ -243,7 +243,7 @@ setMethod(.report_html, "SolexaExportQA",
     readCnt <- perTile[["readCounts"]]
     values <-
         list(PPN_COUNT=hwrite(
-               qa[["readCounts"]],
+               .ppnCount(qa[["readCounts"]]),
                border=NULL),
              BASE_CALL_COUNT=hwrite(
                .df2a(qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])),

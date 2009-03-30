@@ -15,7 +15,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
-    o Parse _qseq files (to ShortReadQ)
+    o Add dustyScore() and dustyFilter() to identify low-complexity
+    regions
+
+    o Parse _qseq files (to ShortReadQ or XDataFrame)
 
     o Parse IPAR image intensity files _int.txt.p, _nse.txt.p, 
     _pos.txt

@@ -8,6 +8,15 @@ setMethod(clean, "DNAStringSet", function(object, ...) {
     object[alphabetFrequency(object, baseOnly=TRUE)[,'other']==0]
 })
 
+setMethod(dustyScore, "DNAStringSet", function(x, ...)
+{
+    triplets <- DNAStringSet(mkAllStrings(c("A", "C", "G", "T"), 3))
+    tripletPDict <- PDict(triplets)
+    tnf <- t(vcountPDict(tripletPDict, x)) - 1L
+    tnf[tnf < 0] <- 0L
+    rowSums(tnf * tnf)    
+})
+
 setMethod(alphabetByCycle, "BStringSet", .abc_BStringSet)
 
 setMethod(srorder, "XStringSet", function(x, ...) {

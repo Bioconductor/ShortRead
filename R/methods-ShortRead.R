@@ -95,6 +95,9 @@ setMethod(clean, "ShortRead", function(object, ...) {
     object[alf[,'other'] == 0]
 })
 
+setMethod(dustyScore, "ShortRead",
+          function(x, ...) callGeneric(sread(x), ...))
+
 setMethod(srorder, "ShortRead", .forward_x)
 
 setMethod(srrank, "ShortRead", .forward_x)

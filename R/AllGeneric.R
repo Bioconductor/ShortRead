@@ -40,6 +40,9 @@ alphabetByCycle <-
     
 setGeneric("alphabetByCycle", signature="stringSet")
 
+setGeneric("dustyScore",
+           function(x, ...) standardGeneric("dustyScore"))
+
 setGeneric("srorder", function(x, ...) standardGeneric("srorder"))
 
 setGeneric("srduplicated",
