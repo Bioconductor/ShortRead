@@ -136,7 +136,8 @@ setMethod(.report_html, "FastqQA",
              FREQUENT_SEQUENCES_READ=hwrite(
                .freqSequences(qa, "read"),
                border=NULL),
-             FREQUENT_SEQUENCES_FILTERED="NA",
+             FREQUENT_SEQUENCES_FILTERED=.html_NA(),
+             FREQUENT_SEQUENCES_ALIGNED=.html_NA(),
              CYCLE_BASE_CALL_FIGURE=.html_img(
                dest, "perCycleBaseCall",
                .plotCycleBaseCall(perCycle$baseCall)),

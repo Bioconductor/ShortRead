@@ -36,6 +36,10 @@ report(x, ..., dest=tempfile(), type="html")
   The following methods are defined:
   \itemize{
 
+    \item{\code{x="BowtieQA", ..., dest=tempfile(), type="html"}}{
+	  Produce an HTML-based report from an object of class
+          \code{\linkS4class{BowtieQA}}.}
+
     \item{\code{x="FastqQA", ..., dest=tempfile(), type="html"}}{
 	  Produce an HTML-based report from an object of class
       \code{\linkS4class{FastqQA}}.

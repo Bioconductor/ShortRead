@@ -72,10 +72,16 @@ setMethod(.report_pdf, "character",
 
 .df2a <- function(df, fmt="%.3g")
 {
-    a <- sapply(df, sprintf, fmt=fmt)
+    a <- 
+        if (nrow(df) == 1)
+            as.data.frame(lapply(df, sprintf, fmt=fmt))
+        else
+            sapply(df, sprintf, fmt=fmt)
     row.names(a) <- rownames(df)
     a
 }
+
+.html_NA <- function() "<pre>NA</pre>"
 
 .html_img <-
     function(dir, file, fig, ...)

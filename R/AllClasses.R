@@ -273,4 +273,6 @@ setClass("SolexaExportQA", contains=".QA")
 
 setClass("MAQMapQA", contains=".QA")
 
+setClass("BowtieQA", contains=".QA")
+
 setClass("FastqQA", contains=".QA")

@@ -1,34 +1,21 @@
-.MAQMapQA <- function(x, ...)
+.BowtieQA <- function(x, ...)
 {
-    new("MAQMapQA", .srlist=x, ...)
+    new("BowtieQA", .srlist=x, ...)
 }
 
-.maq_reverse <- function(aln)
-{
-    plus <- strand(aln) == "+"
-    new("AlignedRead",
-        append(aln[plus], aln[!plus]),
-        sread=append(
-          sread(aln)[plus],
-          reverseComplement(sread(aln)[!plus])),
-        quality=append(
-          quality(aln)[plus],
-          FastqQuality(reverse(quality(quality(aln)[!plus])))))
-}
-
-.qa_MAQMapShort_lane <-
-    function(dirPath, pattern, ..., type="MAQMapShort", verbose=FALSE) 
+.qa_Bowtie_lane <-
+    function(dirPath, pattern, ..., type="Bowtie", verbose=FALSE)
 {
     if (verbose)
-        message("qa 'MAQMapShort' pattern:", pattern)
-    rpt <- .maq_reverse(readAligned(dirPath, pattern, type))
+        message("qa 'Bowtie' pattern:", pattern)
+    rpt <- readAligned(dirPath, pattern, type)
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE,collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- local({
         qscore <- alphabetScore(quality(rpt)) / width(quality(rpt))
         density(qscore)
     })
-    aqtbl <- table(quality(alignQuality(rpt)))
+    aqtbl <- table(quality(alignQuality(rpt)), useNA="always")
     freqtbl <- tables(sread(rpt))
     abc <- alphabetByCycle(rpt)
     perCycleBaseCall <- local({
@@ -91,12 +78,11 @@
          )
 }
 
-.qa_MAQMapShort <-
-    function(dirPath, pattern, type="MAQMapShort", ...,
-             verbose=FALSE) 
+.qa_Bowtie <-
+    function(dirPath, pattern, type="Bowtie", ..., verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_MAQMapShort_lane,
+    lst <- srapply(basename(fls), .qa_Bowtie_lane,
                    dirPath=dirPath, type=type,
                    verbose=verbose)
     names(lst) <- basename(fls)
@@ -122,10 +108,10 @@
                       medianReadQualityScore=bind(
                         lst, "medianReadQualityScore"))
              }))
-    .MAQMapQA(lst)
+    .BowtieQA(lst)
 }
 
-setMethod(.report_html, "MAQMapQA",
+setMethod(.report_html, "BowtieQA",
           function(x, dest, type, ...)
 {
     qa <- x                             # mnemonic alias
@@ -133,13 +119,12 @@ setMethod(.report_html, "MAQMapQA",
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html",
-             "6000-Alignment.html",
              "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
         list(PPN_COUNT=hwrite(
-               .ppnCount(qa[["readCounts"]]),
+               qa[["readCounts"]],
                border=NULL),
              BASE_CALL_COUNT=hwrite(
                .df2a(qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])),
@@ -148,12 +133,8 @@ setMethod(.report_html, "MAQMapQA",
                dest, "readQuality", qa, "aligned"),
              READ_OCCURRENCES_FIGURE=.htmlReadOccur(
                dest, "readOccurences", qa, "aligned"),
-             FREQUENT_SEQUENCES_READ=hwrite(
-               .freqSequences(qa, "read"),
-               border=NULL),
-             FREQUENT_SEQUENCES_FILTERED=hwrite(
-               .freqSequences(qa, "filtered"),
-               border=NULL),
+             FREQUENT_SEQUENCES_READ=.html_NA(),
+             FREQUENT_SEQUENCES_FILTERED=.html_NA(),
              FREQUENT_SEQUENCES_ALIGNED=hwrite(
                .freqSequences(qa, "aligned"),
                border=NULL),
@@ -162,12 +143,8 @@ setMethod(.report_html, "MAQMapQA",
                .plotCycleBaseCall(perCycle$baseCall)),
              CYCLE_QUALITY_FIGURE=.html_img(
                dest, "perCycleQuality",
-               .plotCycleQuality(perCycle$quality)),
-             ALIGN_QUALITY_FIGURE=.html_img(
-               dest, "alignmentQuality",
-               .plotAlignQuality(qa[["alignQuality"]]))
+               .plotCycleQuality(perCycle$quality))
              )
     .report_html_do(dest, sections, values, ...)
 
 })
-          

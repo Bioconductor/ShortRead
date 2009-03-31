@@ -258,6 +258,9 @@ setMethod(.report_html, "SolexaExportQA",
              FREQUENT_SEQUENCES_FILTERED=hwrite(
                .freqSequences(qa, "filtered"),
                border=NULL),
+             FREQUENT_SEQUENCES_ALIGNED=hwrite(
+               .freqSequences(qa, "filtered"),
+               border=NULL),
              CYCLE_BASE_CALL_FIGURE=.html_img(
                dest, "perCycleBaseCall",
                .plotCycleBaseCall(perCycle$baseCall)),
