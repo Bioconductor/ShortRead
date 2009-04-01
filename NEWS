@@ -6,6 +6,8 @@
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o 454 quality scores are returned as FastqQuality-encoded
+
     o For functions accepting dirPath, pattern to name files, allow
     dirPath to be a vector of file names when pattern is character().
 
@@ -62,6 +64,9 @@ NEW FEATURES
     o readAligned gains ability to parse MAQ 0.7 version binary files
 
 BUG FIXES
+
+    o readQual would fail to read 454 quality scores correctly when
+    these spanned more than one line of input per read
 
     o coverage treated reads as 1 base longer than they were
 

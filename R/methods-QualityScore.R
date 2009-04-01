@@ -56,27 +56,25 @@ IntegerQuality <- function(quality=integer(0)) {
 ## Import integer qualities from 454 .qual files
 .readQual <- function(file, reads = NULL) {
   if (!is.null(reads)) { ## a lot faster if the reads are known
-    nums <- scan(file, integer(0), n = sum(width(reads)), comment.char = ">")
+    nums <- scan(file, integer(0), n = sum(width(reads)),
+                 comment.char = ">")
     scores <- split(nums, rep(seq_len(length(reads)), width(reads)))
   } else {
-    gz <- gzfile(file, "rb")
-    tryCatch({
-        lines <- readLines(gz)
-    }, finally=close(gz))
-    headerLines <- grep("^>", lines)
-    ids <- sub("^(.*?) .*", "\\1", lines[headerLines])
-    scores <- lapply(strsplit(lines[headerLines+1], " "), as.integer)
-    names(scores) <- ids
+      qual <- readFASTA(file, strip.desc=TRUE)
+      scores <- lapply(strsplit(subListExtract(qual, "seq", TRUE), " +"),
+                       as.integer)
+      names(scores) <- subListExtract(qual, "desc", TRUE)
   }
   scores
 }
 
-setMethod(readQual, "character", function(dirPath, reads = NULL,
-                                            pattern=character(), sample = 1,
-                                            ...) {
-  src <- .file_names(dirPath, pattern)[sample]
-  scores <- do.call(c, lapply(src, .readQual, reads))
-  IntegerQuality(scores)
+setMethod(readQual, "character",
+          function(dirPath, reads = NULL, pattern=character(),
+                   sample = 1, ...) 
+{
+    src <- .file_names(dirPath, pattern)[sample]
+    scores <- do.call(c, lapply(src, .readQual, reads))
+    FastqQuality(sapply(scores, function(elt) rawToChar(as.raw(elt+33))))
 })
 
 ## MatrixQuality
