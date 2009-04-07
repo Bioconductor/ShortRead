@@ -122,7 +122,7 @@ setMethod(srduplicated, "AlignedRead", function(x, ...) {
 ## coverage
 
 setMethod(coverage, "AlignedRead",
-    function(x, start=NA, end=NA, ...,
+    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, ...,
              coords=c("leftmost", "fiveprime"),
              extend=0L)
 {
