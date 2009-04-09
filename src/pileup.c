@@ -16,17 +16,17 @@ SEXP pileup( SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir, SEXP readlen
       if( INTEGER(dir)[ length(dir) == 1 ? 0 : i] == 2 ) {
          /* forward direction */
 	 end = INTEGER(start)[i] + INTEGER(fraglength)[ length(fraglength) == 1 ? 0 : i];
-	 if( end-offs > length(res) )
+	 if( end - offs > length(res) )
 	    error( "'chrlength' is too small" );	 
          for( j = INTEGER(start)[i]; j < end; j++ )
 	    INTEGER(res)[j-offs] += 1;
       } else {
          /* backward strand */
-	 st = INTEGER(start)[i] + INTEGER(readlength)[ length(readlength) == 1 ? 0 : i];
-	 if( st-offs >= length(res) )
+	 st = INTEGER(start)[i] + INTEGER(readlength)[ length(readlength) == 1 ? 0 : i] - 1;
+	 if( st - offs >= length(res) )
 	    error( "'chrlength' is too small" );	 
 	 end = st - INTEGER(fraglength)[ length(fraglength) == 1 ? 0 : i];
-	 if( end-offs < 0 )
+	 if( end - offs < 0 )
 	    error( "Lower bound of pile-up vector exceeded." );	 
          for( j = st; j > end; j-- )
 	    INTEGER(res)[j-offs] += 1;
