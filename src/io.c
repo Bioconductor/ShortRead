@@ -278,7 +278,8 @@ _read_solexa_fastq_file(const char *fname,
         case 0:
             /* add linebuf to CharAEAE; start at char +1 to skip the
              * fastq annotation. */
-            append_string_to_CharAEAE(name, linebuf+1);
+  		    if (name != NULL)
+			  append_string_to_CharAEAE(name, linebuf+1);
             break;
         case 1:
             _solexa_to_IUPAC(linebuf);
@@ -299,7 +300,7 @@ _read_solexa_fastq_file(const char *fname,
 }
 
 SEXP
-read_solexa_fastq(SEXP files)
+read_solexa_fastq(SEXP files, SEXP withId)
 {
     CharAEAE seq, name, qualities;
     RoSeqs roSeqs;
@@ -309,18 +310,24 @@ read_solexa_fastq(SEXP files)
 
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character'");
+	if (!IS_LOGICAL(withId) || LENGTH(withId) != 1)
+   	    Rf_error("'withId' must be 'logical(1)'");
 
     /* pre-allocated space */
     nfiles = LENGTH(files);
     nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
     seq = new_CharAEAE(nrec, 0);
-    name = new_CharAEAE(nrec, 0);
+	if (LOGICAL(withId)[0] == TRUE)
+	  name = new_CharAEAE(nrec, 0);
     qualities = new_CharAEAE(nrec, 0);
 
     for (i = 0; i < nfiles; ++i) {
         R_CheckUserInterrupt();
         fname = translateChar(STRING_ELT(files, i));
-        _read_solexa_fastq_file(fname, &seq, &name, &qualities);
+		if (LOGICAL(withId)[0] == TRUE)
+		  _read_solexa_fastq_file(fname, &seq, &name, &qualities);
+		else
+		  _read_solexa_fastq_file(fname, &seq, NULL, &qualities);
     }
 
     PROTECT(ans = NEW_LIST(3));
@@ -331,11 +338,16 @@ read_solexa_fastq(SEXP files)
     SET_VECTOR_ELT(ans, 0, elt);
     SET_STRING_ELT(nms, 0, mkChar("sread"));
 
-    roSeqs = new_RoSeqs_from_CharAEAE(&name);
-    PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
-    SET_VECTOR_ELT(ans, 1, elt);
-    SET_STRING_ELT(nms, 1, mkChar("id"));
-
+	if (LOGICAL(withId)[0] == TRUE) {
+	  roSeqs = new_RoSeqs_from_CharAEAE(&name);
+	  PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
+	  SET_VECTOR_ELT(ans, 1, elt);
+	  UNPROTECT(1);
+	} else {
+	  SET_VECTOR_ELT(ans, 1, R_NilValue);
+	}
+	SET_STRING_ELT(nms, 1, mkChar("id"));
+	
     roSeqs = new_RoSeqs_from_CharAEAE(&qualities);
     PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
     SET_VECTOR_ELT(ans, 2, elt);
@@ -343,7 +355,7 @@ read_solexa_fastq(SEXP files)
 
     setAttrib(ans, R_NamesSymbol, nms);
 
-    UNPROTECT(5);
+    UNPROTECT(4);
     return ans;
 }
 

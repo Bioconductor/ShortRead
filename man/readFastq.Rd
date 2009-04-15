@@ -22,6 +22,7 @@
 }
 \usage{
 readFastq(dirPath, pattern=character(0), ...)
+\S4method{readFastq}{character}(dirPath, pattern=character(0), ..., withIds=TRUE)
 writeFastq(object, file, mode="w", ...)
 }
 
@@ -46,6 +47,9 @@ writeFastq(object, file, mode="w", ...)
     respectively.}
 
   \item{...}{Additional arguments, perhaps used by methods.}
+
+  \item{withIds}{\code{logical(1)} indicating whether identifiers should
+	be read from the fastq file.}
 
 }
 

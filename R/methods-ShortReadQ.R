@@ -26,7 +26,7 @@ setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "missing"),
           function(sread, quality, id, ...)
 {
     new("ShortReadQ", sread=sread, quality=quality,
-        id=BStringSet(rep("", length(sread))), ...)
+        id=BStringSet(character(length(sread))), ...)
 })
 
 setMethod(ShortReadQ, c("missing", "missing", "missing"),
@@ -35,12 +35,16 @@ setMethod(ShortReadQ, c("missing", "missing", "missing"),
     new("ShortReadQ")
 })
 
-setMethod(readFastq, "character", function(dirPath, pattern=character(),
-                                             ...) {
+setMethod(readFastq, "character",
+    function(dirPath, pattern=character(), ..., withIds=TRUE) 
+{
     src <- .file_names(dirPath, pattern)
-    elts <- .Call(.read_solexa_fastq, src)
-    new("ShortReadQ", ..., sread=elts[["sread"]], id=elts[["id"]],
-        quality=SFastqQuality(elts[["quality"]]))
+    elts <- .Call(.read_solexa_fastq, src, withIds)
+    quality <- SFastqQuality(elts[["quality"]])
+    if (withIds)
+        ShortReadQ(elts[["sread"]], quality, elts[["id"]])
+    else
+        ShortReadQ(elts[["sread"]], quality)
 })
 
 setMethod(writeFastq, "ShortReadQ", function(object, file, mode="w", ...) {

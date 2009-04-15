@@ -4,6 +4,17 @@ test_readFastq_errors <- function() {
     checkTrue(FALSE)
 }
 
+test_readFastq_withids <- function() {
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
+    rfq1 <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt",
+                      withIds=FALSE)
+    checkIdentical(as.character(sread(rfq)), as.character(sread(rfq1)))
+    checkIdentical(as.character(quality(quality(rfq))),
+                   as.character(quality(quality(rfq1))))
+    checkIdentical(as.character(id(rfq1)), character(length(rfq1)))
+}
+
 ## alphabetByCycle
 
 checkAlphabetByCycle <- function(obj) {
