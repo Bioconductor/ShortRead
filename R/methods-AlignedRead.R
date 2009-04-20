@@ -179,7 +179,8 @@ setMethod(coverage, "AlignedRead",
         coverage(IRanges(rstart, rend), shift=1L-start, width=end+shift, ...)
     }, x, rstart, rend, start, end, ...)
     names(cvg) <- chrlvls
-    cvg
+    GenomeData(cvg, method="coverage,AlignedRead-method",
+               coords=coords, extend=extend)
 })
 
 ## show

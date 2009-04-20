@@ -123,6 +123,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       read. Extension is in the 3' direction, measured from the
       3' end of the aligned read.
 
+	  The return value of \code{coverage} is a \code{GenomeData} object.
+
     }
     
 
