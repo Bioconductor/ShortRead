@@ -32,7 +32,7 @@
 
 \section{Objects from the Class}{
 
-  Objects from the class are created with the \code{RocehPath}
+  Objects from the class are created with the \code{RochePath}
   constructor:
 
   \code{RochePath(experimentPath = NA_character_,
@@ -85,8 +85,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
 \section{Methods}{
   \code{RochePath} has the following methods or functions defined:
   \describe{
-    \item{readFasta}{\code{signature(dirPath = "character", pattern=".\\.fna$", sample = 1,  ...)}:}
-    \item{readFasta}{\code{signature(dirPath = "RochePath", pattern=".\\.fna$", sample = 1, run, ...)}: 
+    \item{readFasta}{\code{signature(dirPath = "character",
+        pattern=".\\.fna$", sample = 1,  ...)}:} 
+    \item{readFasta}{\code{signature(dirPath = "RochePath",
+        pattern=".\\.fna$", sample = 1, run = 1, ...)}: 
 
       Read sequences from files matching \code{list.files(dirPath,
       pattern)} (when \code{dirPath="character"}) or
@@ -94,7 +96,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
       corresponding to \code{sample}. The result is a
       \code{DNAStringSet}.}
 
-    \item{readQual}{\code{signature(dirPath = "RochePath", pattern="\\.qual$", reads=NULL, sample=1, run, ...)}: 
+    \item{readQual}{\code{signature(dirPath = "RochePath",
+        pattern="\\.qual$", reads=NULL, sample=1, run=1, ...)}: 
 
       Read quality scores from files matching
       \code{list.files(qualPath(dirPath)[run])}, corresponding to
