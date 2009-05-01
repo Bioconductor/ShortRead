@@ -1,8 +1,13 @@
 .read_csv_portion <- function(dirPath, pattern, colClasses, ...) {
     ## visit several files, then collapse
     files <- .file_names(dirPath, pattern)
-    lsts <- lapply(files, read.csv,
-                   ..., colClasses=colClasses, stringsAsFactors=FALSE)
+    lsts <- lapply(files, function(fl, ...) {
+        tryCatch({
+            read.csv(fl, ...)
+        }, error=function(err) {
+            read.csv(gzfile(fl), ...)
+        })
+    }, ..., colClasses=colClasses, stringsAsFactors=FALSE)
     cclasses <- colClasses[!sapply(colClasses, is.null)]
     lst <- lapply(seq_along(names(cclasses)),
                   function(idx) unlist(lapply(lsts, "[[", idx)))
@@ -146,22 +151,6 @@
     AlignedDataFrame(df, meta)
 }
 
-.readAligned_MaqMapOld <-
-    function(dirPath, pattern=character(0), records=-1L, ...)
-{
-    files <- .file_names(dirPath, pattern)
-    if (length(files) > 1)
-        .arg_mismatch_type_err("dirPath', 'pattern", "character(1)")
-    lst <- .Call(.read_maq_map, files, as.integer(records), FALSE)
-    AlignedRead(sread=lst[["readSequence"]],
-                id=lst[["readId"]],
-                quality=FastqQuality(lst[["fastqScores"]]),
-                chromosome=lst[["chromosome"]],
-                position=lst[["position"]],
-                strand=lst[["strand"]],
-                alignQuality=IntegerQuality(lst[["alignQuality"]]),
-                alignData=.readAligned_Maq_ADF(lst))
-}
 
 .maqmap_warning_seen <- local({
     seen <- FALSE
@@ -172,13 +161,39 @@
         } else seen
     }
 })
+
+.maqmap_file_list_error <- 
+    function(files)
+{
+    .throw(SRError("UserArgumentMismatch",
+                   "%s for '%s' must match 1 file, got\n  %s",
+                   "'dirPath', 'pattern'", "MAQMap",
+                   paste(files, collapse="\n  ")))
+}
+
+.readAligned_MaqMapOld <-
+    function(dirPath, pattern=character(0), records=-1L, ...)
+{
+    files <- .file_names(dirPath, pattern)
+    if (length(files) > 1)
+        .maqmap_file_list_error(files)
+    lst <- .Call(.read_maq_map, files, as.integer(records), FALSE)
+    AlignedRead(sread=lst[["readSequence"]],
+                id=lst[["readId"]],
+                quality=FastqQuality(lst[["fastqScores"]]),
+                chromosome=lst[["chromosome"]],
+                position=lst[["position"]],
+                strand=lst[["strand"]],
+                alignQuality=IntegerQuality(lst[["alignQuality"]]),
+                alignData=.readAligned_Maq_ADF(lst))
+}
         
 .readAligned_MaqMap <-
     function(dirPath, pattern=character(0), records=-1L, ...)
 {
     files <- .file_names(dirPath, pattern)
     if (length(files) > 1)
-        .arg_mismatch_type_err("dirPath', 'pattern", "character(1)")
+        .maqmap_file_list_error(files)
     if (!.maqmap_warning_seen()) {
         msg <- paste("API change: The type 'MAQMap' now reads map files produced",
                      "with at least version 0.7.0 of Maq. Before version 0.99.3 of the",
