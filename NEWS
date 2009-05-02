@@ -1,5 +1,21 @@
         **************************************************
         *                                                *
+        *              2.10 SERIES NEWS                  *
+        *                                                *
+        **************************************************
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+NEW FEATURES
+
+    o qa reports from _realign.txt files
+
+BUG FIXES
+
+    o Parse .gz realign files
+
+        **************************************************
+        *                                                *
         *              2.9 SERIES NEWS                   *
         *                                                *
         **************************************************

@@ -3,7 +3,6 @@
     new("SolexaExportQA", .srlist=x, ...)
 }
 
-
 ## qa
 
 .qa_lst_as_data_frame <- function(lst) {
@@ -259,7 +258,7 @@ setMethod(.report_html, "SolexaExportQA",
                .freqSequences(qa, "filtered"),
                border=NULL),
              FREQUENT_SEQUENCES_ALIGNED=hwrite(
-               .freqSequences(qa, "filtered"),
+               .freqSequences(qa, "aligned"),
                border=NULL),
              CYCLE_BASE_CALL_FIGURE=.html_img(
                dest, "perCycleBaseCall",

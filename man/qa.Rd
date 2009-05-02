@@ -32,13 +32,15 @@ qa(dirPath, ...)
   \itemize{
     \item{
       \code{dirPath="character", pattern="character",
-		type=c("SolexaExport", "Bowtie", "MAQMapShort", "fastq"), ...}}{
+		type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMapShort", "fastq"), 
+		...}}{
 
       Quality assessment is performed on all files in directory
       \code{dirPath} whose file name matches \code{pattern}. The type of
       analysis performed is based on the \code{type} argument. Use
       \code{SolexaExport} when all files matching \code{pattern} are
-      Solexa \code{_export.txt} files. Use \code{Bowtie} for Bowtie
+      Solexa \code{_export.txt} files. Use \code{SolexaRealign} for
+      Solexa \code{_realign.txt} files. Use \code{Bowtie} for Bowtie
       files. Use \code{MAQMapShort} for MAQ \code{map} files produced by
       MAQ versions below 0.70, and \code{fastq} for collections of
       fastq-format files. Quality assessment details vary depending on

@@ -1,8 +1,18 @@
 .ppnCount <- function(m) {
     ## scale subsequent columns to be proportions of 
     ## first column
-    m[,-1] <- m[,-1] / m[,1]
+    m[,-1] <- round(1000 * m[,-1] / m[,1]) / 1000
     m
+}
+.df2a <- function(df, fmt="%.3g")
+{
+    a <- 
+        if (nrow(df) == 1)
+            as.data.frame(lapply(df, sprintf, fmt=fmt))
+        else
+            sapply(df, sprintf, fmt=fmt)
+    row.names(a) <- rownames(df)
+    a
 }
 .laneLbl <- function(lane) sub("s_(.*)_.*", "\\1", lane)
 .plotReadQuality <- function(df) {
@@ -140,4 +150,11 @@
     xyplot(AverageScore~Cycle | Lane, score,
            ylab="Average score",
            aspect=2)
+}
+.plotMultipleAlignmentCount <-
+    function(df, ...)
+{
+    df$lane <- .laneLbl(df$lane)
+    xyplot(log10(Count)~log10(Matches + 1) | lane, df,
+           xlab="log10(Number of matches + 1)", aspect=2, ...)
 }

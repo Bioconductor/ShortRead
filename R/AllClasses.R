@@ -271,6 +271,8 @@ setClass(".QA", contains=c("SRList", ".ShortReadBase"),
 
 setClass("SolexaExportQA", contains=".QA")
 
+setClass("SolexaRealignQA", contains=".QA")
+
 setClass("MAQMapQA", contains=".QA")
 
 setClass("BowtieQA", contains=".QA")
