@@ -1,5 +1,5 @@
 RochePath <- function(experimentPath=NA_character_,
-                      readPath=.srPath(experimentPath, "^run"),
+                      readPath=experimentPath,
                       qualPath=readPath,
                       ..., verbose=FALSE) {
     if (verbose) {
@@ -27,8 +27,8 @@ RochePath <- function(experimentPath=NA_character_,
 setMethod(readFasta, "RochePath", .readFasta_RochePath)
 
 .readQual_RochePath <- function(dirPath,
-                                pattern = "\\.qual$",
                                 reads = NULL,
+                                pattern = "\\.qual$",
                                 sample = 1,
                                 run = 1, ...) {
   dirPath <- qualPath(dirPath)[run]
@@ -40,14 +40,26 @@ setMethod(readFasta, "RochePath", .readFasta_RochePath)
 
 setMethod(readQual, "RochePath", .readQual_RochePath)
 
-.read454_RochePath <- function(dirPath, sample = 1, run = 1) {
-  reads <- readFasta(dirPath, sample = sample, run = run)
-  quals <- readQual(dirPath, reads = reads, sample = sample, run = run)
+.readFastaQual_RochePath <- function(dirPath, fastaPattern = "\\.fna$",
+                                     qualPattern = "\\.qual$", sample = 1,
+                                     run = 1)
+{
+  reads <- readFasta(dirPath, fastaPattern, sample, run)
+  quals <- readQual(dirPath, reads, qualPattern, sample, run)
   ## combine the two
   new("ShortReadQ", reads, quality=quals)
 }
 
-setMethod(read454, "RochePath", .read454_RochePath)
+setMethod(readFastaQual, "RochePath", .readFastaQual_RochePath)
+
+.readFastaQual_character <- function(dirPath, fastaPattern = "\\.fna$",
+                                     qualPattern = "\\.qual$", sample = 1,
+                                     run = 1)
+{
+  callGeneric(RochePath(dirPath), fastaPattern, qualPattern, sample, run)
+}
+
+setMethod(readFastaQual, "character", .readFastaQual_character)
 
 .sampleNames_RochePath <- function(object) {
     path <- readPath(object)

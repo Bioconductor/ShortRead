@@ -2,7 +2,8 @@
 \docType{class}
 \alias{RochePath-class}
 \alias{detail,RochePath-method}
-\alias{read454,RochePath-method}
+\alias{readFastaQual,RochePath-method}
+\alias{readFastaQual,character-method}
 \alias{readFasta}
 \alias{readFasta,character-method}
 \alias{readFasta,RochePath-method}
@@ -10,7 +11,7 @@
 \alias{readQual}
 \alias{readQual,character-method}
 \alias{readQual,RochePath-method}
-\alias{read454}
+\alias{readFastaQual}
 \alias{runNames}
 \alias{qualPath}
 \alias{runNames,RochePath-method}
@@ -36,7 +37,7 @@
   constructor:
 
   \code{RochePath(experimentPath = NA_character_,
-    readPath = .srPath(experimentPath, "run"),
+    readPath = experimentPath,
     qualPath = readPath, ..., verbose = FALSE)
   }
 
@@ -96,17 +97,23 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
       corresponding to \code{sample}. The result is a
       \code{DNAStringSet}.}
 
-    \item{readQual}{\code{signature(dirPath = "RochePath",
-        pattern="\\.qual$", reads=NULL, sample=1, run=1, ...)}: 
+    \item{readQual}{\code{signature(dirPath = "RochePath", reads=NULL, 
+        pattern="\\.qual$", sample=1, run=1, ...)}: 
 
       Read quality scores from files matching
       \code{list.files(qualPath(dirPath)[run])}, corresponding to
       \code{sample}. Non-null \code{reads} is used as an (optional)
       template for parsing quality scores. }
 
-    \item{read454}{\code{signature(dirPath = "RochePath")}: read
+    \item{readFastaQual}{\code{signature(dirPath = "RochePath",
+      fastaPattern = "\\.fna$", qualPattern = "\\.qual$", sample = 1,
+      run = 1)}: read
       sequences and quality scores into a
       \code{\linkS4class{ShortReadQ}}.}
+    \item{readFastaQual}{\code{signature(dirPath = "character",
+      fastaPattern = "\\.fna$", qualPattern = "\\.qual$", sample = 1,
+      run = 1)}: wrapper for method above, coercing \code{dirPath}
+      to a \code{RochePath} via \code{RochePath(dirPath)}.}
 
     \item{readPath}{\code{signature(object = "RochePath")}: return the
       contents of the \code{readPath} slot.}
