@@ -103,6 +103,10 @@ setGeneric("readQual",
            function(dirPath, pattern=character(0), ...)
            standardGeneric("readQual"))
 
+setGeneric("read454",
+           function(dirPath, ...)
+           standardGeneric("read454"))
+
 setGeneric("readFastaQual",
            function(dirPath, ...)
            standardGeneric("readFastaQual"))

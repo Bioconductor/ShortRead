@@ -2,6 +2,7 @@
 \docType{class}
 \alias{RochePath-class}
 \alias{detail,RochePath-method}
+\alias{read454,RochePath-method}
 \alias{readFastaQual,RochePath-method}
 \alias{readFastaQual,character-method}
 \alias{readFasta}
@@ -11,6 +12,7 @@
 \alias{readQual}
 \alias{readQual,character-method}
 \alias{readQual,RochePath-method}
+\alias{read454}
 \alias{readFastaQual}
 \alias{runNames}
 \alias{qualPath}

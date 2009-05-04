@@ -50,6 +50,9 @@ setMethod(readQual, "RochePath", .readQual_RochePath)
   new("ShortReadQ", reads, quality=quals)
 }
 
+setMethod(read454, "RochePath",
+          function(dirPath, ...) .Deprecated("readFastaQual", "ShortRead"))
+
 setMethod(readFastaQual, "RochePath", .readFastaQual_RochePath)
 
 .readFastaQual_character <- function(dirPath, fastaPattern = "\\.fna$",
