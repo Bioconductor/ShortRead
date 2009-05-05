@@ -51,7 +51,7 @@ setMethod(readQual, "RochePath", .readQual_RochePath)
 }
 
 setMethod(read454, "RochePath",
-          function(dirPath, ...) .Deprecated("readFastaQual", "ShortRead"))
+          function(dirPath, ...) readFastaQual(dirPath, ...))
 
 setMethod(readFastaQual, "RochePath", .readFastaQual_RochePath)
 
