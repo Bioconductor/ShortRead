@@ -117,6 +117,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
       run = 1)}: wrapper for method above, coercing \code{dirPath}
       to a \code{RochePath} via \code{RochePath(dirPath)}.}
 
+    \item{read454}{
+      \code{signature(dirPath = "RochePath", ...)}:
+      Currently just a wrapper that passes its arguments on to a call to
+      \code{readFastaQual}, documented above.
+    }
+  
     \item{readPath}{\code{signature(object = "RochePath")}: return the
       contents of the \code{readPath} slot.}
 
