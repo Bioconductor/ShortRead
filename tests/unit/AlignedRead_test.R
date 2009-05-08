@@ -218,3 +218,13 @@ test_AlignedRead_constructor <- function()
     checkTrue(validObject(aln))
     checkIdentical(c(5L, 10L), width(aln))
 }
+
+test_AlignedRead_compact <- function() {
+    exp <- aln[1:100]
+    obs <- compact(exp)
+    checkIdentical(as.character(sread(exp)), as.character(sread(obs)))
+    checkIdentical(as.character(quality(quality(exp))),
+                   as.character(quality(quality(obs))))
+    checkIdentical(as.character(id(exp)), as.character(id(obs)))
+    checkIdentical(alignData(exp), alignData(obs))
+}

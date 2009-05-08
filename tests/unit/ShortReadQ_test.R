@@ -71,6 +71,15 @@ test_ShortReadQ_narrow <- function() {
     checkIdentical(narrow(sr, start=start(sread(sr))), sr)
 }
 
+test_ShortReadQ_compact <- function() {
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    sr <- readFastq(sp)[1:10]
+    res <- compact(sr)
+    checkIdentical(as.character(sread(sr)), as.character(sread(res)))
+    checkIdentical(as.character(quality(quality(sr))),
+                   as.character(quality(quality(res))))
+}
+
 test_ShortReadQ_clean <- function() {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     obj <- readFastq(sp)

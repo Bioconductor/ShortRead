@@ -47,6 +47,8 @@ setMethod(show, "NumericQuality", function(object) {
     .show_some("quality", quality(object))
 })
 
+setMethod(compact, "NumericQuality", function(x, ...) x)
+
 ## IntegerQuality
 
 IntegerQuality <- function(quality=integer(0)) {
@@ -186,6 +188,12 @@ setMethod(narrow, "FastqQuality",
 {
     initialize(x, quality=narrow(quality(x), start, end, width,
                     use.names))
+})
+
+setMethod(compact, "FastqQuality",
+    function(x, ...)
+{
+    initialize(x, quality=callGeneric(quality(x)))
 })
 
 setMethod(alphabet, "FastqQuality",

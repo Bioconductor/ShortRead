@@ -111,6 +111,13 @@ setMethod(narrow, "ShortReadQ",
                quality=narrow(quality(x), start, end, width, use.names))
 })
 
+setMethod(compact, "ShortReadQ",
+    function(x, ...)
+{
+    initialize(x, id=callGeneric(id(x)), sread=callGeneric(sread(x)),
+               quality=callGeneric(quality(x)))
+})
+
 ## manip
 
 .abc_ShortReadQ <- function(stringSet, alphabet, ...) {

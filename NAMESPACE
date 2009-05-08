@@ -16,7 +16,7 @@ importFrom(IRanges, append, coverage, narrow, score, start, Views,
 
 importFrom(BSgenome, strand)
 
-importFrom(Biostrings, BStringSet, DNAStringSet,
+importFrom(Biostrings, BStringSet, DNAStringSet, compact,
            alphabetFrequency, alphabet, DNA_ALPHABET,
            quality, pairwiseAlignment, pattern,
            trimLRPatterns, unaligned)
