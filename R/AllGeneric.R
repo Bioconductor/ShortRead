@@ -112,10 +112,8 @@ setGeneric("readFastaQual",
            standardGeneric("readFastaQual"))
 
 setGeneric("readBaseQuality",
-           function(dirPath,
-                    seqPattern=character(0), prbPattern=character(0),
-                    ...)
-           standardGeneric("readBaseQuality"), signature="dirPath")
+           function(dirPath, ...)
+           standardGeneric("readBaseQuality"))
 
 setGeneric("readQseq", function(dirPath, pattern=character(0), ...,
                                 as=c("ShortReadQ", "XDataFrame"),

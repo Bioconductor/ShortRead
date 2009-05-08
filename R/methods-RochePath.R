@@ -55,6 +55,9 @@ setMethod(read454, "RochePath",
 
 setMethod(readFastaQual, "RochePath", .readFastaQual_RochePath)
 
+setMethod(readBaseQuality, "RochePath",
+          function(dirPath, ...) .readFastaQual_RochePath(dirPath, ...))
+
 .readFastaQual_character <- function(dirPath, fastaPattern = "\\.fna$",
                                      qualPattern = "\\.qual$", sample = 1,
                                      run = 1)
