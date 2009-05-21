@@ -10,6 +10,8 @@ NEW FEATURES
 
     o qa reports from _realign.txt files
 
+    o QualityScoreDNAStringSet coercion methods
+
 BUG FIXES
 
     o Parse .gz realign files

@@ -35,6 +35,19 @@ setMethod(ShortReadQ, c("missing", "missing", "missing"),
     new("ShortReadQ")
 })
 
+setAs("ShortReadQ", "QualityScaledDNAStringSet", function(from) 
+{
+    q <- quality(from)
+    q <- 
+        if (is(q, "SFastqQuality"))
+            as(q, "SolexaQuality")
+        else if (is(q, "FastqQuality"))
+            as(q, "PhredQuality")
+        else
+            as(q, "XStringQuality")
+    QualityScaledDNAStringSet(sread(from), q)
+})
+
 setMethod(readFastq, "character",
     function(dirPath, pattern=character(), ..., withIds=TRUE) 
 {

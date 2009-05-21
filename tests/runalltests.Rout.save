@@ -33,7 +33,7 @@ Type 'q()' to quit R.
 +                             rngNormalKind="default")
 > 
 > results <- capture.output(runTestSuite(allSuite))
-Error in checkTrue(FALSE) : Test not TRUE.
+Error in checkTrue(FALSE) : Test not TRUE
 
 > if (interactive())
 +     cat(paste(results, collapse="\n"), "\n")

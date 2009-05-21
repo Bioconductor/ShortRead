@@ -41,6 +41,31 @@ test_ShortReadQ_constructors <- function() {
     .equals(sr, obj)
 }
 
+test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
+{
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    obj <- readFastq(sp)
+
+    res <- as(obj, "QualityScaledDNAStringSet")
+    checkIdentical(as.character(sread(obj)),
+                   as.character(as(res, "DNAStringSet")))
+    checkIdentical(as.character(quality(quality(obj))),
+                   as.character(quality(res)))
+    checkTrue(is(quality(res), "SolexaQuality"))
+
+    obj <- initialize(obj, quality=FastqQuality(quality(quality(obj))))
+    res <- as(obj, "QualityScaledDNAStringSet")
+    checkIdentical(as.character(sread(obj)),
+                   as.character(as(res, "DNAStringSet")))
+    checkIdentical(as.character(quality(quality(obj))),
+                   as.character(quality(res)))
+    checkTrue(is(quality(res), "PhredQuality"))
+
+    q <- MatrixQuality(as(quality(obj), "matrix"))
+    obj <- initialize(obj, quality=q)
+    checkException(as(obj, "QualityScaledDNAStringSet"), silent=TRUE)
+}
+
 test_ShortReadQ_subset <- function() {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     obj <- readFastq(sp)

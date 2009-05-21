@@ -35,6 +35,7 @@
 \alias{alphabetScore,FastqQuality-method}
 \alias{coerce,FastqQuality,numeric-method}
 \alias{coerce,FastqQuality,matrix-method}
+\alias{coerce,FastqQuality,PhredQuality-method}
 \alias{narrow,FastqQuality-method}
 \alias{compact,FastqQuality-method}
 \alias{srsort,FastqQuality-method}
@@ -44,6 +45,7 @@
 % SFastqQuality
 \alias{alphabetScore,SFastqQuality-method}
 \alias{coerce,SFastqQuality,matrix-method}
+\alias{coerce,SFastqQuality,SolexaQuality-method}
 
 \title{Quality scores for short reads and their alignments}
 \description{
@@ -156,13 +158,16 @@
 
     \item{coerce}{\code{signature(from = "FastqQuality", to = "numeric")}:}
     \item{coerce}{\code{signature(from = "FastqQuality", to = "matrix")}:}
-    \item{coerce}{\code{signature(from = "SFastqQuality", to = "matrix")}:
-      
+    \item{coerce}{\code{signature(from = "FastqQuality", to = "PhredQuality")}:}
+    \item{coerce}{\code{signature(from = "SFastqQuality", to = "matrix")}:}
+
+    \item{coerce}{\code{signature(from = "SFastqQuality", to = "SolexaQuality")}:
+
       (Use these as, for instance, \code{as(from, "matrix")}) coerce
       objects of class \code{from} to class \code{to}, using the quality
-      encoding implied by the class. WHen \code{to} is \dQuote{matrix},
-      the result is a matrix of type \code{integer}. In addition,
-      methods require that all quality scores are of the same width.}
+      encoding implied by the class. When \code{to} is \dQuote{matrix},
+      all quality scores are of the same width, and the result is a
+      matrix of type \code{integer}.}
 
     \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
       \sQuote{narrow} \code{qualilty} so that scores are between

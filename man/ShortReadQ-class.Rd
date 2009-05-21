@@ -6,6 +6,7 @@
 \alias{ShortReadQ,DNAStringSet,QualityScore,BStringSet-method}
 \alias{ShortReadQ,DNAStringSet,QualityScore,missing-method}
 \alias{ShortReadQ,missing,missing,missing-method}
+\alias{coerce,ShortReadQ,QualityScaledDNAStringSet-method}
 \alias{writeFastq,ShortReadQ-method}
 \alias{alphabetByCycle,ShortReadQ-method}
 \alias{alphabetScore,ShortReadQ-method}
@@ -79,6 +80,14 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
   methods. Additional methods include:
 
   \describe{
+
+    \item{coerce}{\code{signature(from = "SFastqQuality", to = "QualityScaledDNAStringSet")}:
+      
+      (Use \code{as(from, "QualityScaledDNAStringSet")}) coerce objects
+      of class \code{from} to class \code{to}, using the quality
+      encoding implied by \code{quality(from)}. See
+      \code{\linkS4class{QualityScore}} for supported quality
+      classes and their coerced counterparts.}
 
     \item{writeFastq}{\code{signature(object = "ShortReadQ", file = "character", mode="character", ...)}:
       Write \code{object} to \code{file} in fastq format. \code{mode}

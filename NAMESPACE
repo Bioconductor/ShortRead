@@ -4,7 +4,8 @@ importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
                   ScalarCharacter)
 
 importClassesFrom(Biostrings, BStringSet, DNAStringSet,
-                  PairwiseAlignedXStringSet)
+                  PairwiseAlignedXStringSet,
+                  SolexaQuality, PhredQuality, XStringQuality)
 
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",

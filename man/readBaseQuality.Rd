@@ -16,7 +16,9 @@
 }
 \usage{
 
-readBaseQuality(dirPath, seqPattern=character(0), prbPattern=character(0), ...)
+readBaseQuality(dirPath, ...)
+\S4method{readBaseQuality}{character}(dirPath, seqPattern=character(0),
+prbPattern=character(0), type=c("Solexa"), ...)
 
 }
 
@@ -33,6 +35,10 @@ readBaseQuality(dirPath, seqPattern=character(0), prbPattern=character(0), ...)
   \item{prbPattern}{The (\code{\link{grep}}-style) pattern describing
     quality score file names to be read. The default (\code{character(0)})
     results in (attempted) input of all files in the directory.}
+
+  \item{type}{The type of file to be parsed. Supported types include:
+	\code{Solexa}: parse reads and their qualities from \code{_seq.txt}
+	and \code{_prb.txt}-formatted files, respectively.}
 
   \item{...}{Additional arguments, perhaps used by methods.}
 
