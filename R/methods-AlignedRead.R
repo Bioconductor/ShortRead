@@ -176,7 +176,8 @@ setMethod(coverage, "AlignedRead",
         else if (length(start) != 1) start <- start[chr]
         if (length(end) == 1 && is.na(end)) end <- max(rend)
         else if (length(end) != 1) end <- end[chr]
-        coverage(IRanges(rstart, rend), shift=1L-start, width=end+shift, ...)
+        coverage(IRanges(rstart, rend),
+                 shift=1L-start, width=end+1L-start, ...)
     }, x, rstart, rend, start, end, ...)
     names(cvg) <- chrlvls
     GenomeData(cvg, method="coverage,AlignedRead-method",

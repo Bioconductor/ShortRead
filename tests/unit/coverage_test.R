@@ -53,3 +53,16 @@ test_coverage_fiveprime_minus <- function()
     cvg <- coverage(aln, 1, 25, coords="fiveprime", extend=5L)
     checkIdentical(c(2L, 15L, 8L), runLength(cvg[[1]]))
 }
+
+test_coverage_contract <- function()
+{
+    cvg <- coverage(.mkAln(1, 10, strand("+")))[[1]]
+    checkIdentical(10L, length(cvg))
+    cvg <- coverage(.mkAln(10, 10, strand("+")))[[1]]
+    checkIdentical(10L, length(cvg))
+
+    cvg <- coverage(.mkAln(10, 10, strand("+")), start=1L)[[1]]
+    checkIdentical(19L, length(cvg))
+    cvg <- coverage(.mkAln(1, 10, strand("+")), end=19L)[[1]]
+    checkIdentical(19L, length(cvg))
+}
