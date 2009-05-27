@@ -19,7 +19,7 @@
         id=BStringSet(rep("", length(elts[[1]]))))
 }
 
-.readQseq_XDataFrame <- 
+.readQseq_DataFrame <- 
     function(dirPath, pattern=character(0), ...,
              what=list(machine=character(0), run=integer(0),
                lane=integer(0), tile=integer(0), x=integer(0),
@@ -46,7 +46,7 @@
                    function(elt) sub("Set$", "", class(elt)))
         data[xstrings] <- readXStringColumns(dirPath, pattern, xWhat)
     }
-    xdf <- do.call(XDataFrame, data)
+    xdf <- do.call(DataFrame, data)
     if (is.factor(what[[11]])) {
         xdf[[11]] <- factor(levels(what[[11]])[xdf[[11]] + 1],
                             levels=levels(what[[11]]))
@@ -58,7 +58,7 @@
 
 .readQseq_character <-
     function(dirPath, pattern=character(0), ...,
-             as=c("ShortReadQ", "XDataFrame"),
+             as=c("ShortReadQ", "DataFrame", "XDataFrame"),
              filtered=FALSE,
              verbose=FALSE)
 {
@@ -77,9 +77,15 @@
                ShortReadQ=.readQseq_ShortReadQ(
                  dirPath, pattern, ...,
                  filtered=filtered, verbose=verbose),
-               XDataFrame=.readQseq_XDataFrame(
+               DataFrame=.readQseq_DataFrame(
                  dirPath, pattern, ...,
-                 filtered=filtered, verbose=verbose))
+                 filtered=filtered, verbose=verbose),
+               XDataFrame={
+                   .Deprecated(msg="Use type='DataFrame' instead")
+                   .readQseq_DataFrame(dirPath, pattern, ...,
+                                       filtered=filtered,
+                                       verbose=verbose)
+               })
     }, error=function(err) {
         if (is(err, "SRError")) stop(err)
         else {

@@ -23,21 +23,21 @@ test_readQseq_ShortReadQ_filtered <- function()
     checkEquals(187L, length(res))
 }
 
-test_readQseq_XDataFrame <- function()
+test_readQseq_DataFrame <- function()
 {
     res <- readQseq(sp)
-    xdf <- readQseq(sp, as="XDataFrame")
-    checkEquals("XDataFrame", as.vector(class(xdf)))
+    xdf <- readQseq(sp, as="DataFrame")
+    checkEquals("DataFrame", as.vector(class(xdf)))
     checkEquals(c(256L, 11L), dim(xdf))
     checkBstring(sread(res), xdf[[9]])
     checkBstring(quality(quality(res)), xdf[[10]])
 }
 
-test_readQseq_XDataFrame_filtered <- function()
+test_readQseq_DataFrame_filtered <- function()
 {
-    xdf0 <- readQseq(sp, as="XDataFrame")
+    xdf0 <- readQseq(sp, as="DataFrame")
     xdf0 <- xdf0[xdf0[[11]]=="Y", -11]
-    xdf <- readQseq(sp, as="XDataFrame", filtered=TRUE)
+    xdf <- readQseq(sp, as="DataFrame", filtered=TRUE)
     checkEquals(dim(xdf0), dim(xdf))
     for (i in 1:8)
         checkEquals(xdf0[[i]], xdf[[i]])

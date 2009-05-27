@@ -16,7 +16,7 @@
 }
 \usage{
 readQseq(dirPath, pattern = character(0), ...,
-         as=c("ShortReadQ", "XDataFrame"),
+         as=c("ShortReadQ", "DataFrame", "XDataFrame"),
          filtered=FALSE,
          verbose=FALSE)
 }
@@ -32,7 +32,8 @@ readQseq(dirPath, pattern = character(0), ...,
   \item{\dots}{Additional argument, passed to I/O functions.}
 
   \item{as}{\code{character(1)} indicating the class of the return
-	type.}
+	type. \dQuote{XDataFrame} is included for backward compatibility,
+	but is no longer supported.}
 
   \item{filtered}{\code{logical(1)} indicating whether to include only
 	those reads passing Solexa filtering?}

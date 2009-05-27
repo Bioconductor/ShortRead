@@ -67,7 +67,7 @@ setMethod(srduplicated, "XStringSet", function(x, ...) {
                 nrow=4, byrow=TRUE,
                 dimnames=list(DNA_ALPHABET[1:4], DNA_ALPHABET))
     patternAlf <- alphabetFrequency(pattern, collapse=TRUE)
-    subjectAlf <- alphabetFrequency(subject, collapse=TRUE)
+    subjectAlf <- alphabetFrequency(subject)
     alf <- unique(c(names(patternAlf)[patternAlf!=0],
                     names(subjectAlf)[subjectAlf!=0]))
     m <- m[, alf]
