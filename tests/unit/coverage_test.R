@@ -16,7 +16,7 @@ test_coverage_leftmost_plus <- function()
     ##        ++++++++++-----
     ## ....|....|....|....|....|
     aln <- .mkAln(8L, .width, strand("+"))
-    cvg <- coverage(aln, 1, 25, extend=5L)
+    cvg <- coverage(aln, width=c(ChrA=25L), extend=5L)
     checkIdentical(c(7L, 15L, 3L), runLength(cvg[[1]]))
 }
 
@@ -27,7 +27,7 @@ test_coverage_leftmost_minus <- function()
     ##   3    8        1
     ##                 7
     aln <- .mkAln(8L, .width, strand("-"))
-    cvg <- coverage(aln, 1, 20, extend=5L)
+    cvg <- coverage(aln, width=c(ChrA=20L), extend=5L)
     checkIdentical(c(2L,15L,3L), runLength(cvg[[1]]))
 }
 
@@ -39,7 +39,7 @@ test_coverage_fiveprime_plus <- function()
     ##        ++++++++++-----
     ## ....|....|....|....|....|
     aln <- .mkAln(8L, .width, strand("+"))
-    cvg <- coverage(aln, 1, 25, coords="fiveprime", extend=5L)
+    cvg <- coverage(aln, width=c(ChrA=25L), coords="fiveprime", extend=5L)
     checkIdentical(c(7L, 15L, 3L), runLength(cvg[[1]]))
 }
 
@@ -50,7 +50,7 @@ test_coverage_fiveprime_minus <- function()
     ##   3    8        1
     ##                 7
     aln <- .mkAln(17L, .width, strand("-"))
-    cvg <- coverage(aln, 1, 25, coords="fiveprime", extend=5L)
+    cvg <- coverage(aln, width=c(ChrA=25L), coords="fiveprime", extend=5L)
     checkIdentical(c(2L, 15L, 8L), runLength(cvg[[1]]))
 }
 
@@ -59,10 +59,27 @@ test_coverage_contract <- function()
     cvg <- coverage(.mkAln(1, 10, strand("+")))[[1]]
     checkIdentical(10L, length(cvg))
     cvg <- coverage(.mkAln(10, 10, strand("+")))[[1]]
-    checkIdentical(10L, length(cvg))
+    checkIdentical(19L, length(cvg))
 
-    cvg <- coverage(.mkAln(10, 10, strand("+")), start=1L)[[1]]
+    cvg <- suppressWarnings(coverage(.mkAln(10, 10, strand("+")),
+                                     start=c(ChrA=1L),
+                                     end=c(ChrA=19L)))[[1]]
     checkIdentical(19L, length(cvg))
-    cvg <- coverage(.mkAln(1, 10, strand("+")), end=19L)[[1]]
+    cvg <- suppressWarnings(coverage(.mkAln(1, 10, strand("+")),
+                                     start=c(ChrA=1L),
+                                     end=c(ChrA=19L)))[[1]]
     checkIdentical(19L, length(cvg))
+}
+
+test_coverage_width_names <- function()
+{
+    aln <- .mkAln(1, 10, strand("+"))
+    checkTrue(validObject(coverage(aln)))
+    checkTrue(validObject(coverage(aln, width=c(ChrA=20L))))
+    ## no names on width
+    checkException(coverage(aln, width=100), silent=TRUE)
+    ## wrong name on width
+    checkException(coverage(aln, width=c(ChrB=100)), silent=TRUE)
+    ## extra width element -- ok
+    checkTrue(validObject(coverage(aln, width=c(ChrA=20L, ChrB=20L))))
 }

@@ -6,6 +6,10 @@
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o coverage,AlignedRead-method has a changed interface (shift/width
+    rather than start/end) and default behavior (return value in
+    genome coordinates, rather than minimal covered region).
+
 NEW FEATURES
 
     o qa reports from _realign.txt files

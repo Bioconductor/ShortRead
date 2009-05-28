@@ -170,7 +170,7 @@ setMethod(coverage, "AlignedRead",
         }
         if (!is.integer(shift))
             shift <- as.integer(shift)
-        if (!setequal(names(shift), chrlvls)) {
+        if (!all(chrlvls %in% names(shift))) { 
             .throw(SRError("UserArgumentMismatch",
                            "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
                            "shift", "start", '?"AlignedRead-class"'))
@@ -189,7 +189,7 @@ setMethod(coverage, "AlignedRead",
         }
         if (!is.integer(width))
             width <- as.integer(width)
-        if (!setequal(names(width), chrlvls)) {
+        if (!all(chrlvls %in% names(width))) {
             .throw(SRError("UserArgumentMismatch",
                            "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
                            "width", "end", '?"AlignedRead-class"'))

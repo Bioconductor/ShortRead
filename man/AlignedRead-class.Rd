@@ -113,21 +113,21 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       See \code{\link[IRanges]{coverage}} for more information.
 
       \code{shift} must be either \code{0L} or a named integer vector
-      with names matching  \code{levels(chromosome(x))}.
+      with names including all \code{levels(chromosome(x))}.
       It specifies how the reads in \code{x} should be (horizontally)
       shifted \emph{before} the coverage is computed.
 
       \code{width} must be either \code{NULL} or a named vector of
-      non-negative integers with names matching \code{levels(chromosome(x))}.
-      In the latter case, it specifies for each chromosome the end of the
-      chromosome region over which coverage is to be calculated \emph{after}
-      the reads have been shifted. Note that this region always starts
-      at chromosome position 1.
-      If \code{width} is \code{NULL}, it ends at the rightmost chromosome
-      position covered by at least one read.
+      non-negative integers with names including all
+      \code{levels(chromosome(x))}.  In the latter case, it specifies
+      for each chromosome the end of the chromosome region over which
+      coverage is to be calculated \emph{after} the reads have been
+      shifted. Note that this region always starts at chromosome
+      position 1.  If \code{width} is \code{NULL}, it ends at the
+      rightmost chromosome position covered by at least one read.
 
-      \code{weight} must be \code{1L} for now (weighting the reads is not
-      supported yet, sorry).
+      \code{weight} must be \code{1L} for now (weighting the reads is
+      not supported yet, sorry).
 
       \code{coords} specifies the coordinate system used to record
       position. Both systems number base pairs from left to right on the
@@ -169,6 +169,14 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 \examples{
 showMethods(class="AlignedRead", where=getNamespace("ShortRead"))
 dirPath <- system.file('extdata', 'maq', package='ShortRead')
-readAligned(dirPath, 'out.aln.1.txt', type="MAQMapview")
+(aln <- readAligned(dirPath, 'out.aln.1.txt', type="MAQMapview"))
+coverage(aln)[[1]]
+cvg <- coverage(aln, shift=c(ChrA=10L))
+## remove 0 coverage on left ends
+ltrim0 <- function(x) {
+    i <- !cumprod(runValue(x) == 0)
+    Rle(runValue(x)[i], runLength(x)[i])
+}
+gdapply(cvg, ltrim0)
 }
 \keyword{classes}
