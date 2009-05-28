@@ -100,16 +100,34 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}
 
-    \item{coverage}{\code{signature(x = "AlignedRead", start = NA, end = NA, ..., coords=c("leftmost", "fiveprime"), extend=0L)}:
+    \item{coverage}{
+      \code{signature(x = "AlignedRead", start = NA, end = NA, shift = 0L, width = NULL, weight = 1L, ..., coords = c("leftmost", "fiveprime"), extend=0L)}:
 
-      Calculate coverage across reads present in \code{x}. 
+      Calculate coverage across reads present in \code{x}.
 
-      \code{start} and \code{end} are regions (e.g., of chromosomes)
-      over which coverage is to be calculated. If provided, these are
-      length 1 integers or \emph{named} integer vectors of length
-      greater than 1. If named integer vectors, the names must match
-      \code{levels(chromosome(x))}. If omitted, coverage is calculated
-      over the range of values spanned by the reads in \code{x}
+      IMPORTANT NOTE: The interface of the \code{coverage} generic is
+      currently being migrated from "start/end" to "shift/width".
+      In the near future, the \code{start} and \code{end} arguments will
+      be dropped and the remaining arguments will be:
+        \code{coverage(x, shift=0L, width=NULL, weight=1L, ...)}
+      See \code{\link[IRanges]{coverage}} for more information.
+
+      \code{shift} must be either \code{0L} or a named integer vector
+      with names matching  \code{levels(chromosome(x))}.
+      It specifies how the reads in \code{x} should be (horizontally)
+      shifted \emph{before} the coverage is computed.
+
+      \code{width} must be either \code{NULL} or a named vector of
+      non-negative integers with names matching \code{levels(chromosome(x))}.
+      In the latter case, it specifies for each chromosome the end of the
+      chromosome region over which coverage is to be calculated \emph{after}
+      the reads have been shifted. Note that this region always starts
+      at chromosome position 1.
+      If \code{width} is \code{NULL}, it ends at the rightmost chromosome
+      position covered by at least one read.
+
+      \code{weight} must be \code{1L} for now (weighting the reads is not
+      supported yet, sorry).
 
       \code{coords} specifies the coordinate system used to record
       position. Both systems number base pairs from left to right on the
@@ -123,8 +141,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       read. Extension is in the 3' direction, measured from the
       3' end of the aligned read.
 
-	  The return value of \code{coverage} is a \code{GenomeData} object.
-
+      The return value of \code{coverage} is a \code{GenomeData} object.
     }
     
 

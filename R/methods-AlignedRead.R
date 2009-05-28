@@ -1,3 +1,5 @@
+###
+
 .AlignedRead_validity <- function(object) {
     msg <- NULL
     len <- length(sread(object))
@@ -126,6 +128,83 @@ setMethod(coverage, "AlignedRead",
              coords=c("leftmost", "fiveprime"),
              extend=0L)
 {
+##---- remove this block when the start/end interface gets finally dropped ---
+    isSingleNA <- function(x) {is.atomic(x) && length(x) == 1 && is.na(x)}
+    if (!isSingleNA(start) || !isSingleNA(end)) {
+        if (!identical(shift, 0L) || !is.null(width)) {
+            fmt <- c("you cannot use both the \"start/end\" interface\n",
+                     "  and the \"shift/width\" interface when calling ",
+                     "coverage()")
+            .throw(SRError("UserArgumentMismatch", paste(fmt, collapse="")))
+        }
+        fmt <- c("the signature of coverage() has changed.\n  Please use ",
+                 "the \"shift/width\" interface instead of the \"start/end\" ",
+                 "interface.\n  See '?coverage'")
+        .throw(SRWarn("UserArgumentMismatch", paste(fmt, collapse="")))
+        if (!is.numeric(start) || any(is.na(start))
+         || !is.numeric(end) || any(is.na(end))) {
+            fmt <- c("when calling coverage() with the \"start/end\" interface,\n",
+                     "  both 'start' and 'end' must contain integer values")
+            .throw(SRError("UserArgumentMismatch", paste(fmt, collapse="")))
+        }
+        if (!is.integer(start))
+            start <- as.integer(start)
+        if (!is.integer(end))
+            end <- as.integer(end)
+        shift <- 1L - start
+        width <- end + shift
+        if (any(width < 0L)) {
+            fmt <- "when specified, 'end' must be >= 'start' - 1"
+            .throw(SRError("UserArgumentMismatch", paste(fmt, collapse="")))
+        }
+    }
+##----------------------------------------------------------------------------
+
+    ## Argument checking:
+    chrlvls <- levels(chromosome(x))
+    if (!identical(shift, 0L)) {
+        if (!is.numeric(shift)) {
+            .throw(SRError("UserArgumentMismatch",
+                           "if '%s' is not 0L, then it must be a vector of integer values\n  see %s",
+                           "shift", '?"AlignedRead-class"'))
+        }
+        if (!is.integer(shift))
+            shift <- as.integer(shift)
+        if (!setequal(names(shift), chrlvls)) {
+            .throw(SRError("UserArgumentMismatch",
+                           "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
+                           "shift", "start", '?"AlignedRead-class"'))
+        }
+        if (any(duplicated(names(shift)))) {
+            .throw(SRError("UserArgumentMismatch",
+                           "'names(%s)' (or 'names(%s)') have duplicates\n  see %s",
+                           "shift", "start", '?"AlignedRead-class"'))
+        }
+    }
+    if (!is.null(width)) {
+        if (!is.numeric(width)) {
+            .throw(SRError("UserArgumentMismatch",
+                           "if '%s' is not NULL, then it must be a vector of integer values\n  see %s",
+                           "width", '?"AlignedRead-class"'))
+        }
+        if (!is.integer(width))
+            width <- as.integer(width)
+        if (!setequal(names(width), chrlvls)) {
+            .throw(SRError("UserArgumentMismatch",
+                           "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
+                           "width", "end", '?"AlignedRead-class"'))
+        }
+        if (any(duplicated(names(width)))) {
+            .throw(SRError("UserArgumentMismatch",
+                           "'names(%s)' (or 'names(%s)') have duplicates\n  see %s",
+                           "width", "end", '?"AlignedRead-class"'))
+        }
+    }
+    if (!identical(weight, 1L)) {
+        .throw(SRError("UserArgumentMismatch",
+                       "weighting the reads is not supported yet, sorry\n  see %s",
+                       '?"AlignedRead-class"'))
+    }
     tryCatch(coords <- match.arg(coords),
         error=function(err) {
             vals <- formals(sys.function(sys.parent(4)))[["coords"]]
@@ -134,29 +213,16 @@ setMethod(coverage, "AlignedRead",
                            paste(eval(vals), collapse="' '"),
                            '?"AlignedRead-class"'))
         })
-    chrlvls <- levels(chromosome(x))
-    if (length(start) != 1 && 
-        !all(c(names(start) %in% chrlvls,
-               chrlvls %in% names(start)))) {
-        .throw(SRError("UserArgumentMismatch",
-                       "'names(%s)' mismatch with 'levels(chromosome(x))'\n  see %s",
-                       "start", '?"AlignedRead-class"'))
-    }
-    if (length(end) != 1 &&
-        !all(c(names(end) %in% chrlvls,
-               chrlvls %in% names(end)))) {
-        .throw(SRError("UserArgumentMismatch",
-                       "'names(%s)' mismatch with 'levels(chromosome(x))'\n  see %s",
-                       "end",  '?"AlignedRead-class"'))
-    }
     if (!is.integer(extend) ||
         !(length(extend) == 1 || length(extend) == length(x))) {
         .throw(SRError("UserArgumentMismatch",
                        "'%s' must be '%s'", "extend",
                        "integer(n)', n == 1 or length(x)"))
     }
+    ## end of argument checking.
+
     if (coords == "leftmost") {
-        rstart <- ifelse(strand(x)=="+", position(x),
+        rstart <- ifelse(strand(x) == "+", position(x),
                          position(x) - extend)
         rend <- ifelse(strand(x) == "+",
                        position(x) + width(x) + extend - 1L,
@@ -168,17 +234,24 @@ setMethod(coverage, "AlignedRead",
                        position(x) + width(x) + extend - 1L,
                        position(x))
     }
-    cvg <- lapply(chrlvls, function(chr, aln, rstart, rend, start, end, ...) {
-        idx <- chromosome(aln) == chr
-        rstart <- rstart[idx]
-        rend <- rend[idx]
-        if (length(start) == 1 && is.na(start)) start <- min(rstart)
-        else if (length(start) != 1) start <- start[chr]
-        if (length(end) == 1 && is.na(end)) end <- max(rend)
-        else if (length(end) != 1) end <- end[chr]
-        coverage(IRanges(rstart, rend),
-                 shift=1L-start, width=end+1L-start, ...)
-    }, x, rstart, rend, start, end, ...)
+    cvg <- lapply(chrlvls,
+                  function(chr, ...) {
+                      idx <- chromosome(x) == chr
+                      chr_rstart <- rstart[idx]
+                      chr_rend <- rend[idx]
+                      if (identical(shift, 0L))
+                          chr_shift <- 0L
+                      else
+                          chr_shift <- shift[chr]
+                      if (is.null(width))
+                          chr_width <- NULL
+                      else
+                          chr_width <- width[chr]
+                      coverage(IRanges(chr_rstart, chr_rend),
+                               shift=chr_shift, width=chr_width, ...)
+                  },
+                  ...
+           )
     names(cvg) <- chrlvls
     GenomeData(cvg, method="coverage,AlignedRead-method",
                coords=coords, extend=extend)
