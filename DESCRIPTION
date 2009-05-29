@@ -14,4 +14,4 @@ Imports: IRanges, Biostrings, Biobase, BSgenome, hwriter
 Enhances: Rmpi
 Suggests: biomaRt
 LinkingTo: IRanges, Biostrings
-biocViews: Infrastructure
+biocViews: DataImport, Sequencing, QualityControl
