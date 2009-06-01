@@ -132,30 +132,25 @@ setMethod(coverage, "AlignedRead",
     isSingleNA <- function(x) {is.atomic(x) && length(x) == 1 && is.na(x)}
     if (!isSingleNA(start) || !isSingleNA(end)) {
         if (!identical(shift, 0L) || !is.null(width)) {
-            fmt <- c("you cannot use both the \"start/end\" interface\n",
-                     "  and the \"shift/width\" interface when calling ",
-                     "coverage()")
-            .throw(SRError("UserArgumentMismatch", paste(fmt, collapse="")))
+            msg <- "use only 'shift'/'width' (or 'start'/'end')"
+            .throw(SRError("UserArgumentMismatch", msg))
         }
-        fmt <- c("the signature of coverage() has changed.\n  Please use ",
-                 "the \"shift/width\" interface instead of the \"start/end\" ",
-                 "interface.\n  See '?coverage'")
-        .throw(SRWarn("UserArgumentMismatch", paste(fmt, collapse="")))
+        msg <- "use 'shift'/'width'  instead of 'start'/'end'"
+        .throw(SRWarn("UserArgumentMismatch", msg))
         if (!is.numeric(start) || any(is.na(start))
          || !is.numeric(end) || any(is.na(end))) {
-            fmt <- c("when calling coverage() with the \"start/end\" interface,\n",
-                     "  both 'start' and 'end' must contain integer values")
-            .throw(SRError("UserArgumentMismatch", paste(fmt, collapse="")))
+            msg <- "'start', 'end' must be named integer values"
+            .throw(SRError("UserArgumentMismatch", msg))
         }
-        if (!is.integer(start))
-            start <- as.integer(start)
-        if (!is.integer(end))
-            end <- as.integer(end)
+        if (!all(names(start) == names(end)))
+            .throw(SRError("UserArgumentMismatch", 
+                           "not all names(start) == names(end)"))
         shift <- 1L - start
         width <- end + shift
+        names(shift) <- names(width) <- names(start)
         if (any(width < 0L)) {
-            fmt <- "when specified, 'end' must be >= 'start' - 1"
-            .throw(SRError("UserArgumentMismatch", paste(fmt, collapse="")))
+            .throw(SRError("UserArgumentMismatch", 
+                           "'end' must be >= 'start' - 1"))
         }
     }
 ##----------------------------------------------------------------------------
@@ -168,8 +163,6 @@ setMethod(coverage, "AlignedRead",
                            "if '%s' is not 0L, then it must be a vector of integer values\n  see %s",
                            "shift", '?"AlignedRead-class"'))
         }
-        if (!is.integer(shift))
-            shift <- as.integer(shift)
         if (!all(chrlvls %in% names(shift))) { 
             .throw(SRError("UserArgumentMismatch",
                            "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
@@ -187,8 +180,6 @@ setMethod(coverage, "AlignedRead",
                            "if '%s' is not NULL, then it must be a vector of integer values\n  see %s",
                            "width", '?"AlignedRead-class"'))
         }
-        if (!is.integer(width))
-            width <- as.integer(width)
         if (!all(chrlvls %in% names(width))) {
             .throw(SRError("UserArgumentMismatch",
                            "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
