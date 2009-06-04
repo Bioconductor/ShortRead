@@ -235,8 +235,14 @@ readAligned(dirPath, pattern=character(0), ...)
         \item{Position}{\code{position}; see comment below}
         \item{Read}{\code{sread}; see comment below}
         \item{Read quality}{\code{quality}; see comments below}
-        \item{Bowtie reserved}{ignored}
-        \item{Alignment mismatch locations}{\code{alignData}}
+        \item{Similar alignments}{\code{alignData}, \sQuote{similar}
+        column; Bowtie v. 0.9.9.3 (12 May, 2009) documents this as
+        the number of other instances where the same read aligns against the
+        same reference characters as were aligned against in this
+        alignment. Previous versions marked this as \sQuote{Reserved}}
+        \item{Alignment mismatch locations}{\code{alignData}
+        \sQuote{mismatch}, column}
+
       }
 
       This method includes the argument \code{qualityType} to specify

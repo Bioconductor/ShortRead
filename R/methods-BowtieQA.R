@@ -148,3 +148,44 @@ setMethod(.report_html, "BowtieQA",
     .report_html_do(dest, sections, values, ...)
 
 })
+
+setGeneric(".bowtie_mismatches",
+    function(object, ...) standardGeneric(".bowtie_mismatches"))
+
+setMethod(.bowtie_mismatches, "AlignedRead", function(object, ...)
+{
+    adata <- alignData(object)
+    if (!"mismatch" %in% varLabels(adata))
+        .throw(SRError("UserArgumentMismatch",
+                       "'%s' does not contain varLabels '%s'",
+                       "AlignedDataFrame", "mismatch"))
+    if (any(c("nmismatch", "mismatchScore") %in% varLabels(adata)))
+        .throw(SRError("UserArgumentMismatch",
+                       "'%s' already contains varLabels '%s'",
+                       "AlignedDataFrame",
+                       "nmismatch', 'mismatchScore'"))
+    mmatch <- adata[["mismatch"]]
+    idx <- which(nzchar(mmatch))
+    if (any(grepl(":", mmatch, fixed=TRUE))) {
+        anuc <- lapply(strsplit(mmatch[idx], "[:,]"), "[",
+                       c(TRUE, FALSE))
+        cidx <- unlist(lapply(anuc, as.integer)) + 1L
+    } else {
+        anuc <- lapply(strsplit(mmatch[idx], ",", fixed=TRUE),
+                       as.integer)
+        cidx <- unlist(anuc) + 1L
+    }
+    len <- sapply(anuc, length)
+    ridx <- rep(idx, len)
+    x <- as(narrow(quality(object)[ridx], cidx, cidx), "matrix")
+    mmscore <- rep(NA_integer_, nrow(adata))
+    mmscore[idx] <- unlist(lapply(split(x, ridx), sum), use.names=FALSE)
+    lngth <- integer(nrow(adata))
+    lngth[idx] <- len
+
+    txt <- "Number of mismatches"
+    adata[["nmismatch", labelDescription=txt]] <- lngth
+    txt <- "Summed quality scores at mismatched nucleotides"
+    adata[["mismatchScore", labelDescription=txt]] <- mmscore
+    initialize(object, alignData=adata)
+})

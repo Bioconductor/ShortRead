@@ -242,10 +242,12 @@
                 alignData=.readAligned_Maq_ADF(csv))
 }
 
-.Bowtie_AlignedDataFrame <- function(mismatch)
+.Bowtie_AlignedDataFrame <- function(similar, mismatch)
 {
-    df <- data.frame(mismatch=mismatch, stringsAsFactors=FALSE)
+    df <- data.frame(similar=similar, mismatch=mismatch,
+                     stringsAsFactors=FALSE)
     meta <- data.frame(labelDescription=c(
+                         "if Bowtie >= 0.9.9.3 (May 12, 2009)?: number of alignments aligning to the same reference characters; else 'Reserved'",
                          "Comma-separated mismatch positions"))
     AlignedDataFrame(df, meta)
 }

@@ -63,7 +63,7 @@
   specified path to the corresponding directory (described above) or
   \code{NA} if no appropriate directory was discovered.
   \describe{
-    \item{\code{experimentPath}}{See above.}
+    \item{\code{basePath}}{See \code{experimentPath}, above.}
     \item{\code{dataPath}}{See above.}
     \item{\code{scanPath}}{See above.}
     \item{\code{imageAnalysisPath}}{See above.}

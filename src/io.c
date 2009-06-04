@@ -122,7 +122,7 @@ _count_ipar_int_recs(gzFile *file, int *n_recs, int *n_cycles)
   while (*n_cycles == 0 &&
 		 (bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
 	p = buf;
-	while (p = memchr(p, '\n', (buf + bytes_read) - p)) {
+	while ((p = memchr(p, '\n', (buf + bytes_read) - p))) {
 	  ++p;
 	  if (*p == CYCLE_END) {
 		++p;
@@ -133,13 +133,13 @@ _count_ipar_int_recs(gzFile *file, int *n_recs, int *n_cycles)
 	}
   }
   /* just cycles */
-  while (p = memchr(p, CYCLE_END, (buf + bytes_read) - p)) {
+  while ((p = memchr(p, CYCLE_END, (buf + bytes_read) - p))) {
 	++p;
 	*n_cycles += 1;
   }
   while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
 	p = buf;
-	while (p = memchr(p, CYCLE_END, (buf + bytes_read) - p)) {
+	while ((p = memchr(p, CYCLE_END, (buf + bytes_read) - p))) {
 	  ++p;
 	  *n_cycles += 1;
 	}

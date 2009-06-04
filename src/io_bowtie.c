@@ -7,7 +7,7 @@ HWI-EAS88_1:1:1:83:277  -       chr1    163068612       AGAAGAATCCTTAAGGCTTGCTAG
 
 static const char *ELT_NMS[] = {
     "id", "strand", "chromosome", "position", "sread", "quality",
-    "mismatch"
+    "similar", "mismatch"
 };
 static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
 
@@ -26,9 +26,10 @@ _read_bowtie(const char *fname, const char *csep,
     file = _fopen(fname, "rb");
 
     SEXP chromosome = VECTOR_ELT(ref, 2),
-        mismatch = VECTOR_ELT(ref, 6);
+        mismatch = VECTOR_ELT(ref, 7);
     int *strand = INTEGER(VECTOR_ELT(ref, 1)),
-        *position = INTEGER(VECTOR_ELT(ref, 3));
+      *position = INTEGER(VECTOR_ELT(ref, 3)),
+      *similar = INTEGER(VECTOR_ELT(ref, 6));
 
     while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
 
@@ -55,7 +56,7 @@ _read_bowtie(const char *fname, const char *csep,
         }
         append_string_to_CharAEAE(sread, elt[4]);
         append_string_to_CharAEAE(quality, elt[5]);
-        /* 'internal', ignored */
+        similar[offset] = atoi(elt[6]); /* previous: 'reserved' */
         SET_STRING_ELT(mismatch, offset, mkChar(elt[7]));
         lineno++;
         offset++;
@@ -88,8 +89,9 @@ _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
     PROTECT(sfq);
 
     SEXP adf;
-    NEW_CALL(s, t, ".Bowtie_AlignedDataFrame", nmspc, 2);
-    CSET_CDR(t, "mismatch", VECTOR_ELT(ref, 6));
+    NEW_CALL(s, t, ".Bowtie_AlignedDataFrame", nmspc, 3);
+    CSET_CDR(t, "similar", VECTOR_ELT(ref, 6));
+    CSET_CDR(t, "mismatch", VECTOR_ELT(ref, 7));
     CEVAL_TO(s, nmspc, adf);
     PROTECT(adf);
 
@@ -145,8 +147,8 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
     CharAEAE
         sread = new_CharAEAE(nrec, 0),
         quality = new_CharAEAE(nrec, 0);
-    /* 'reserved'; ignore */
-    SET_VECTOR_ELT(ref, 6, NEW_STRING(nrec)); /* mismatch encoding */
+    SET_VECTOR_ELT(ref, 6, NEW_INTEGER(nrec)); /* similar */
+    SET_VECTOR_ELT(ref, 7, NEW_STRING(nrec)); /* mismatch encoding */
 
     SEXP names = PROTECT(NEW_CHARACTER(N_ELTS));
     for (int i = 0; i < N_ELTS; ++i)
