@@ -81,7 +81,7 @@ this category.
 
 Broad transitions from low to high cumulative proportion of reads may
 reflect sequencing bias or (perhaps intentional) features of sample
-preparation resulting in non-uniform coverage. the transition is about
+preparation resulting in non-uniform coverage. Typically, the transition is about
 5 times as wide as expected from uniform sampling across the Genome
 Analyzer `control' lane.
 <<read-distribution-occurrence, fig=TRUE>>=
@@ -125,8 +125,10 @@ print(ShortRead:::.plotCycleQuality(perCycle$quality))
 
 \section{Tile performance}
 
-Counts per tile. Dashed red line indicates the 10\% of tiles with
-fewest reads. An approximately uniform distribution suggests
+Counts per tile. The dashed red line in the following plot indicates the 10\% of tiles with
+fewest reads. An approximately uniform 
+% FIXME (wh 6 June 2009): do you mean uni-modal?
+distribution suggests
 consistent read representation in each tile. Distinct separation of
 'good' versus poor quality tiles might suggest systematic failure,
 e.g., of many tiles in a lane, or excessive variability (e.g., due to
