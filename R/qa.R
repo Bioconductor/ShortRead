@@ -14,7 +14,7 @@
              type="SolexaExport", ...),
            SolexaRealign=.qa_SolexaRealign(dirPath, pattern,
              type="SolexaRealign", ...),
-           Bowtie=.qa_Bowtie(dirPath, pattern, type="Bowtie"),
+           Bowtie=.qa_Bowtie(dirPath, pattern, type="Bowtie", ...),
            MAQMapShort=.qa_MAQMapShort(dirPath, pattern,
              type="MAQMapShort", ...),
            fastq=.qa_fastq(dirPath, pattern, type="fastq", ...))

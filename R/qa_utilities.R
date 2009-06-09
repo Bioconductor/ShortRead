@@ -125,14 +125,15 @@
     lty <- rep(1:2, each=2)
     df <- df[df$Base != "N",]
     df$lane <- .laneLbl(df$lane)
+    df$Base <- factor(df$Base)
     xyplot(log10(Count)~as.integer(Cycle)|lane, 
            group=factor(Base), 
            df[with(df, order(lane, Base, Cycle)),], 
            type="l", col=col, lty=lty,
            key=list(space="top", 
              lines=list(col=col, lty=lty),
-             text=list(lab=as.character(unique(df$Base))),
-             columns=length(unique(df$Base))),
+             text=list(lab=levels(df$Base)),
+             columns=length(levels(df$Base))),
            xlab="Cycle", 
            aspect=2)
 }

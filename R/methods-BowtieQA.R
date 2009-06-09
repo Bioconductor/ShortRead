@@ -8,7 +8,7 @@
 {
     if (verbose)
         message("qa 'Bowtie' pattern:", pattern)
-    rpt <- readAligned(dirPath, pattern, type)
+    rpt <- readAligned(dirPath, pattern, type, ...)
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE,collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- local({
@@ -84,7 +84,7 @@
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_Bowtie_lane,
                    dirPath=dirPath, type=type,
-                   verbose=verbose)
+                   verbose=verbose, ...)
     names(lst) <- basename(fls)
     bind <- function(lst, elt)
         do.call(rbind,
