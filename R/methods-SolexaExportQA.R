@@ -42,7 +42,7 @@
              verbose=FALSE)
 {
     readLbls <- c("read", "aligned", "filtered")
-    rpt <- readAligned(dirPath, pattern,..., type=type)
+    rpt <- readAligned(dirPath, pattern, ..., type=type)
     df <- pData(alignData(rpt))
     filterIdx <- df$filtering=="Y"
     mapIdx <- !is.na(position(rpt))
@@ -184,7 +184,7 @@
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_SolexaExport_lane,
-                   dirPath=dirPath, type=type,
+                   dirPath=dirPath, type=type, ...,
                    verbose=verbose)
     names(lst) <- basename(fls)
 

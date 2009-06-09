@@ -21,7 +21,7 @@
 {
     if (verbose)
         message("qa 'MAQMapShort' pattern:", pattern)
-    rpt <- .maq_reverse(readAligned(dirPath, pattern, type))
+    rpt <- .maq_reverse(readAligned(dirPath, pattern, type, ...))
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE,collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- local({
@@ -97,7 +97,7 @@
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_MAQMapShort_lane,
-                   dirPath=dirPath, type=type,
+                   dirPath=dirPath, type=type, ...,
                    verbose=verbose)
     names(lst) <- basename(fls)
     bind <- function(lst, elt)

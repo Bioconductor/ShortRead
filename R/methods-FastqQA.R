@@ -8,7 +8,7 @@
 {
     if (verbose)
         message("qa 'fastq' pattern:", pattern)
-    rpt <- readFastq(dirPath, pattern)
+    rpt <- readFastq(dirPath, pattern, ...)
 
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
@@ -84,7 +84,7 @@
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_fastq_lane,
-                   dirPath=dirPath, type=type,
+                   dirPath=dirPath, type=type, ...,
                    verbose=verbose)
     names(lst) <- basename(fls)
     bind <- function(lst, elt)
