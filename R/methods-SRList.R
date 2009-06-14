@@ -6,7 +6,7 @@ SRList <- function(...) {
         new("SRList", .srlist=args)
 }
 
-.srlist <- .make_getter(".srlist")
+.make_getter(".srlist")
 
 setMethod(names, "SRList", function(x) names(.srlist(x)))
 
