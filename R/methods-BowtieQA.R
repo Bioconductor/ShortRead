@@ -9,7 +9,7 @@
     if (verbose)
         message("qa 'Bowtie' pattern:", pattern)
     rpt <- readAligned(dirPath, pattern, type, ...)
-    alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE,collapse=TRUE)
+    alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- local({
         qscore <- alphabetScore(quality(rpt)) / width(quality(rpt))

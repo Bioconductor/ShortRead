@@ -137,6 +137,7 @@ SolexaIntensity <-
             .throw(SRError("Input/Output", msg))
         }, finally=close(gz))
     }
+    a
 }
 
 
