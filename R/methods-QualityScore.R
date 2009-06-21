@@ -245,7 +245,7 @@ setMethod(alphabetByCycle, "FastqQuality", .FastqQuality_abc)
 
 setMethod(alphabetScore, "SFastqQuality", .SFastqQuality_ascore)
 
-.FastqQuality_ascore <- function(object, score=0:255-32L, ...) {
+.FastqQuality_ascore <- function(object, score=0:255-33L, ...) {
     .Call(.alphabet_score, quality(object), as.numeric(score))
 }
 

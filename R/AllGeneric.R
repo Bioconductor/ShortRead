@@ -125,9 +125,8 @@ detail <- function(object, ...) show(object)
 
 setGeneric("detail")
 
-setGeneric("alphabetScore", function(object, ...) {
-    standardGeneric("alphabetScore")
-})
+setGeneric("alphabetScore",
+           function(object, ...) standardGeneric("alphabetScore"))
 
 ## SRFilter
 

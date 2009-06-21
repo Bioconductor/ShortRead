@@ -28,8 +28,8 @@
 }
 \usage{
 srFilter(fun, name = NA_character_, ...)
-\S4method{srFilter}{missing}(fun, name=NA_character_)
-\S4method{srFilter}{function}(fun, name=NA_character_)
+\S4method{srFilter}{missing}(fun, name=NA_character_, ...)
+\S4method{srFilter}{function}(fun, name=NA_character_, ...)
 
 compose(filt, ..., .name)
 

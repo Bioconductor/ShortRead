@@ -16,9 +16,14 @@ NEW FEATURES
 
     o QualityScoreDNAStringSet coercion methods
 
+    o qa type="character" now accepts a filter argument with value
+    srFilter()
+
 BUG FIXES
 
     o Parse .gz realign files
+
+    o alphabetScore,FastqQuality-method shifted quality by +1
 
         **************************************************
         *                                                *

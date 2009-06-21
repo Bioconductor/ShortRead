@@ -48,10 +48,10 @@ polyn <- function(nucleotides, n)
 }
 
 .arg_mismatch_value_err <- function(arg, value, possible_vals) {
+    msg <- sprintf("arugment '%s' had value '%s'\n  allowable values: '%s'",
+                   arg, value, paste(possible_vals, collapse="' '"))
     .throw(SRError("UserArgumentMismatch",
-                   "arugment '%s' had value '%s'\n  allowable values: '%s'",
-                   arg, value,
-                   paste(possible_vals, collapse="' '")))
+                   paste(strwrap(msg, exdent=4), collapse="\n")))
 }
 
 .check_type_and_length <- function(x, type, len)
