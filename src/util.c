@@ -79,7 +79,7 @@ _char_as_strand_int(const char c, const char *fname, const int lineno)
             break;
         default:
             error("invalid 'strand' field '%s', %s:%d",
-                  c, fname, lineno);
+                  &c, fname, lineno);
             break;
         }
     }
@@ -100,6 +100,26 @@ _get_SEXP(SEXP from, SEXP rho, const char *with)
     return res;
 }
 
+/* 
+ * populate elt with pointers into tab-delimited strings in ptr
+ */
+
+int
+_mark_field_0(char *ptr, char **elt, const int n_fields)
+{
+	elt[0] = ptr;
+	int i = 0;
+	for (; *ptr != '\0'; ++ptr)
+		if (*ptr == '\t') {
+			if (++i == n_fields)
+				break;
+			elt[i] = ptr + 1;
+			*ptr = '\0';
+		} 
+	if (*(ptr - 1) == '\n')		/* trailing newline? */
+		*(ptr - 1) = '\0';
+	return i + 1;
+}
 
 /*
  * parse lines into fields.

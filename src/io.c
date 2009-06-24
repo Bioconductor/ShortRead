@@ -568,10 +568,9 @@ _AlignedRead_Solexa_make(SEXP fields)
 #undef CEVAL_TO
 
 int
-_read_solexa_export_file(const char *fname, const char *csep,
-                         const char *commentChar,
-                         MARK_FIELD_FUNC *mark_func, int offset,
-                         CharAEAE *sread, CharAEAE *quality,
+_read_solexa_export_file(const char *fname, const char *commentChar,
+						 int offset, 
+						 CharAEAE *sread, CharAEAE *quality,
                          SEXP result)
 {
     const int N_FIELDS = 22;
@@ -593,21 +592,18 @@ _read_solexa_export_file(const char *fname, const char *csep,
 
     file = _fopen(fname, "rb");
     while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
-        if (_linebuf_skip_p(linebuf, file,
-                            fname, lineno, commentChar)) {
+		if (*linebuf == *commentChar) {
             lineno++;
             continue;
         }
 
         /* field-ify */
-        elt[0] = linebuf;
-        for (i = 1; i < N_FIELDS; ++i) {
-            elt[i] = (*mark_func)(elt[i-1], csep);
-            if (elt[i] == elt[i-1]) {
-                gzclose(file);
-                error("too few fields, %s:%d", fname, lineno);
-            }
-        }
+		int n_fields = _mark_field_0(linebuf, elt, N_FIELDS);
+		if (n_fields != N_FIELDS) {
+			gzclose(file);
+			error("incorrect number of fields (%d) %s:%d",
+				  n_fields, fname, lineno);
+		}
             
         SET_STRING_ELT(run, irec, mkChar(elt[1]));
         lane[irec] = atoi(elt[2]);
@@ -672,21 +668,15 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
 
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character()'");
-    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'sep' must be character(1)"); 
+    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1 ||
+		*(CHAR(STRING_ELT(sep, 0))) != '\t')
+        Rf_error("'sep' must be '\t'"); 
     /* FIXME: !nzchar(sep[1]) */
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
         Rf_error("'commentChar' must be character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));
-
-    const char *csep = translateChar(STRING_ELT(sep, 0));
-    MARK_FIELD_FUNC *sep_func;/* how to parse fields; minor efficiency */
-    if (csep[0] != '\0' && csep[1] == '\0')
-        sep_func = _mark_field_1;
-    else
-        sep_func = _mark_field_n;
 
     int nrec = _count_lines_sum(files);
 
@@ -710,10 +700,9 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
         nrec += _read_solexa_export_file(
-            CHAR(STRING_ELT(files, i)), csep,
+            CHAR(STRING_ELT(files, i)), 
             CHAR(STRING_ELT(commentChar, 0)),
-            sep_func, nrec,
-            &sread, &quality, result);
+            nrec, &sread, &quality, result);
     }
 
     SEXP tmp;

@@ -46,15 +46,17 @@ test_IparIntensity_io <- function()
     checkIdentical(structure(c(11.7, 49.4, 14.3, 110.6, -1.1, 3.2,
                                86.2, 5.9, 18.8, 120.2, 21.1, 218.8,
                                96.2, 2.7, 177.4, 9.1, 55.9, 340.9,
-                               112, 164.8, 0.8, 2.6, 15.7, 4.6),
-                             .Dim = c(2L, 4L, 3L)),
+                               112, 164.8, 0.8, 2.6, 15.7, 4.6), .Dim
+                               = c(2L, 4L, 3L), .Dimnames = list(
+                               NULL, c("A", "C", "G", "T"), NULL)),
                    as(intensity(int), "array")[1:2,,])
 
     checkIdentical(structure(c(8.5, 6.2, 9, 9.2, 3, 3.1, 6.6, 6.4,
                                12.6, 11.9, 12.5, 11, 3.8, 3.6, 6.6,
                                5.8, 13.6, 10.5, 12.4, 12.7, 4.7, 4.2,
-                               7.3, 6.4),
-                             .Dim = c(2L, 4L, 3L)),
+                               7.3, 6.4), .Dim = c(2L, 4L, 3L),
+                               .Dimnames = list(NULL, c("A", "C", "G",
+                               "T"), NULL)),
                    as(measurementError(int), "array")[1:2,,])
 
     checkIdentical(structure(list(lane = structure(c(1L, 1L, 1L, 1L, 1L),

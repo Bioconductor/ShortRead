@@ -25,6 +25,7 @@ int _char_as_strand_int(const char c, const char *fname, const int lineno);
 typedef char * (MARK_FIELD_FUNC)(char *, const char *);
 MARK_FIELD_FUNC _mark_field_1;	/* nchar(delim) == 1 */
 MARK_FIELD_FUNC _mark_field_n;	/* nchar(delim) != 1 */
+int _mark_field_0(char *, char **, const int);
 
 extern const int LINEBUF_SIZE;
 gzFile *_fopen(const char*, const char*);

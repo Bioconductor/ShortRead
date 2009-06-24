@@ -12,9 +12,7 @@ static const char *ELT_NMS[] = {
 static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
 
 int
-_read_bowtie(const char *fname, const char *csep,
-             const char *commentChar,
-             MARK_FIELD_FUNC *mark_func,
+_read_bowtie(const char *fname, const char *commentChar,
              SEXP ref, int offset,
              CharAEAE *id, CharAEAE *sread, CharAEAE *quality)
 {
@@ -33,19 +31,19 @@ _read_bowtie(const char *fname, const char *csep,
 
     while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
 
-        if (_linebuf_skip_p(linebuf, file, fname, lineno,
-                            commentChar)) {
+		if (*linebuf == *commentChar) {
             lineno++;
             continue;
         }
+        lineno++;
 
-        /* field-ify */
-        elt[0] = linebuf;
-        for (int i = 1; i < N_FIELDS; ++i) {
-            elt[i] = (*mark_func)(elt[i-1], csep);
-            if (elt[i] == elt[i-1])
-                error("too few fields, %s:%d", fname, lineno);
-        }
+		int n_fields = _mark_field_0(linebuf, elt, N_FIELDS);
+		if (n_fields != N_FIELDS) {
+			gzclose(file);
+			error("incorrect number of fields (%d) %s:%d",
+				  n_fields, fname, lineno);
+		}
+
         append_string_to_CharAEAE(id, elt[0]);
         strand[offset] = _char_as_strand_int(*elt[1], fname, lineno);
         SET_STRING_ELT(chromosome, offset, mkChar(elt[2]));
@@ -58,7 +56,6 @@ _read_bowtie(const char *fname, const char *csep,
         append_string_to_CharAEAE(quality, elt[5]);
         similar[offset] = atoi(elt[6]); /* previous: 'reserved' */
         SET_STRING_ELT(mismatch, offset, mkChar(elt[7]));
-        lineno++;
         offset++;
     }
     return offset;
@@ -122,9 +119,9 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character()'");
-    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'sep' must be character(1)"); 
-    /* FIXME: !nzchar(sep[1]) */
+    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1 || 
+		*CHAR(STRING_ELT(sep, 0)) != '\t')
+        Rf_error("'sep' must be '\t'"); 
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
         Rf_error("'commentChar' must be character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
@@ -156,20 +153,13 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
     SET_ATTR(ref, R_NamesSymbol, names);
     UNPROTECT(1);
 
-    const char *csep = translateChar(STRING_ELT(sep, 0));
-    MARK_FIELD_FUNC *sep_func;/* how to parse fields; minor efficiency */
-    if (csep[0] != '\0' && csep[1] == '\0')
-        sep_func = _mark_field_1;
-    else
-        sep_func = _mark_field_n;
-
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
         nrec += _read_bowtie(
-            CHAR(STRING_ELT(files, i)), csep,
+            CHAR(STRING_ELT(files, i)),
             CHAR(STRING_ELT(commentChar, 0)),
-            sep_func, ref, nrec, &id, &sread, &quality);
+            ref, nrec, &id, &sread, &quality);
     }
     SET_VECTOR_ELT(ref, 0, _CharAEAE_to_XStringSet(&id, "BString"));
     SET_VECTOR_ELT(ref, 4, _CharAEAE_to_XStringSet(&sread, "DNAString"));
