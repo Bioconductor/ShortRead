@@ -18,7 +18,7 @@
 \title{\textbf{Processing and Visualisation of High-Throughput Sequencing Data
 with \texttt{ShortRead} and \texttt{HilbertVis}}}
 
-\date{2008-07-21}
+\date{version 2: 2009-06-30}
 
 \begin{document}
 
@@ -44,12 +44,12 @@ As an example, we use data from a published study, Ref. \cite{HistMeth_ChipSeq},
 
 \section{The example data}
 
-The authors of our example have deposited their raw data in the NCBI's Provisional Short Read Archive (\url{http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi}) under accession number SRA000206. In the provisional archive, you can access an FTP server by clicking on ``SRA FTP'' and will find there a directory named ``SRA000206'' that contains all the data as output by Bustard, the base-calling program in the SolexaPipeline, as well as a number of fairly self-explanatory XML files with meta data. There are 3 lanes for H3K4me1 and 7 lanes for H3K4me3. 
+The authors of our example have deposited their raw data in the NCBI's Provisional Short Read Archive (SRA, \url{http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi}) under accession number SRA000206. Use the ``Submissions'' tab in the archive's ``Download Facility'' to find the submission (under ``SRA000''). You will get to a directory that contains all the data as output by Bustard, the base-calling program in the SolexaPipeline, as well as a number of fairly self-explanatory XML files with meta-data.\footnote{When I first wrote this vignette in June 2008, the SRA was still in a provisional state, and the presentation of the data has changed since then. You can still find the old files in the subdirectory ``provisional''.} There are 3 lanes for H3K4me1 and 7 lanes for H3K4me3. 
 
 I have used Maq to align the reads from these lanes against the human reference genome as provided on Ensembl. Doing so requires converting the \texttt{\_seq.txt} and \texttt{\_prb.txt} files for the lanes to the Sanger Institute's FASTQ format and on to Maq's BFQ (binary FASTQ format). Likewise, the reference genome is converted to one large BFA (binary FASTA) file. Then, the \texttt{maq map} command may be used to perform the alignment. As these steps are described in the documentation on the Maq web site, I do not go into detail here.\footnote{However, feel free to contact me if you want to know details.} In the end, we have, as output from Maq, a mapping file for each lane. I have put these files onto my web page. So, if you want to try out the following steps for yourself, please download them from \url{http://www.ebi.ac.uk/~anders/ShortReadExampleData/}. Note, however, that you should use a machine with at least 4 GB of RAM to perform the examples.
 
 Of course, Maq is not the only choice to align the reads to the genome. You may as well use Eland (the alignment program that comes with the SolexaPipeline), which can be read in as well by ShortRead, so that the following steps apply to this case as well. Within certain limits, the matching functionality of the Biostrings package allows you to even do everything within R. 
-Finally, there are other alignment tools specialised for high-throughput sequences (e.g., Soap, rmap, shrimp) whose output cannot yet be read by ShortRead but who may be supported in the future.
+Finally, there are other alignment tools specialised for high-throughput sequences. Recently, the \texttt{ShortRead} package's \texttt{readAligned} function was extended and it can now parse the output formats of several popular tools, including Eland, Maq, SOAP, Bowtie, and the SAM format used e.g. by BWA.
 
 \section{Reading in the alignment}
 
@@ -63,7 +63,7 @@ maps.me3 <- sapply( list.files( "H3K4me3", "run.*lane.\\.map" ),
    function(filename) readAligned( "H3K4me3", filename, type="MAQMapShort" ) )
 @
 
-Here, \texttt{readAligned} takes three arguments: the directory that contains the map file, the name of the map file, and the type of data to be read, for Maq alignment data \texttt{MAQMap}. (Our example data has been aligned with an older version of Maq, prior to the recent change in binary format in Maq version 0.7. Using the type \texttt{MAQMapShort} allows to read the old format.) You may also use the type \texttt{SolexaExport} to read in mappings produced by Eland (see help page for \texttt{readAligned} for details). In any case, the function \texttt{readAligned} returns an S4 object of class \texttt{AlignedRead}.
+Here, \texttt{readAligned} takes three arguments: the directory that contains the map file, the name of the map file, and the type of data to be read, for Maq alignment data \texttt{MAQMap}. (Our example data has been aligned with an older version of Maq, prior to the recent change in binary format in Maq version 0.7. Using the type \texttt{MAQMapShort} allows to read the old format.) You may also use the type \texttt{SolexaExport} to read in mappings produced by Eland (see help page for \texttt{readAligned} for details on the supported formats). In any case, the function \texttt{readAligned} returns an S4 object of class \texttt{AlignedRead}.
 
 \section{The class \texttt{AlignedRead}}
 
@@ -97,6 +97,19 @@ Other information stored in the \texttt{AlignedRead} object is the base-call qua
 head( quality( maps.me1$run4_lane8.map ) )
 @ %$
 
+Each of the letters codes for for the quality of a base call, i.e., which stands for the probability that the base call is incorrect. To see the actual quality scores, coerce the quality BStringSet to a matrix:
+
+<<>>=
+quals <- as( head( quality( maps.me1$run4_lane8.map ) ), "matrix" )
+quals
+@ %$
+
+For an explanation how the letters are converted to scores, look up the FASTQ standard. (Wikipedia has a good explanation.) The numbers are Phred scores, i.e. the probability for a base being wrong is given by $10^{-Q/10}$:
+
+<<>>=
+10 ^ ( -quals / 10 )
+@ %$
+
 Maq calculates from this information and from the uniqueness and perfectness of the alignment an alignment score, which is stored in an \texttt{alignQuality} object:
 <<>>=
 alignQuality( maps.me1$run4_lane8.map )
@@ -106,6 +119,10 @@ The actual integer vector of qualities (one number per read) can be obtained wit
 head( quality( alignQuality( maps.me1$run4_lane8.map ) ) )
 @ %$
 
+An alignment quality score of 0 may mean that the read could not be uniquely aligned and has been put by Maq at one of the possible positions, chosen at random.
+
+As before, the probability for the alignment being wrong is $10^{-Q/10}$, where $Q$ is the quality score. Bear in mind that all these probabilities are estimates derived partly by heuristics. See the SolexaPipeline manual and the Maq paper for details before relying on them.
+
 \begin{figure}
 \centering
 \includegraphics[height=5cm]{images/Strand_and_Dir}
@@ -113,13 +130,15 @@ head( quality( alignQuality( maps.me1$run4_lane8.map ) ) )
 \label{strand}
 \end{figure}
 
-The accessor function \texttt{strand} reports whether the read was mapped to the ``+'' or to the ``--'' strand of the chromosome. It returns a factor with two levels:
+The accessor function \texttt{strand} reports whether the read was mapped to the ``+'' or to the ``--'' strand of the chromosome. It returns a factor with three levels:
 <<>>=
 head( strand( maps.me1$run4_lane8.map ) )
 @ %$
-Remember that Solexa sequencing is not strand-specific. The information, from which strand the sequence actually was precipitated, got lost during bridge PCR amplification. Hence, it is better to think of this factor not as information on the strand but rather on the \textit{direction} of the fragment Have a look at Fig.\ \ref{strand} for an illustration.
+You should never see the level ``*'' in an AlignedData object. It is used in other contexts to indicate that a strand information is not just unavailable (this would be an \texttt{NA}) but does not have any meaning.
 
-The fields described so far are available for all \texttt{AlignedRead} objects. Depending on the alignment software that was used additional information may be available. The slot \texttt{alignData} is meant to hold such information
+Remember that Solexa sequencing is not strand-specific (unless you use one of the new strand-specific RNA-Seq protocols). Hence, it is better to think of this factor not as information on the strand but rather on the \textit{direction} of the fragment. Have a look at Fig.\ \ref{strand} for an illustration.
+
+The fields described so far are available for all \texttt{AlignedRead} objects. Depending on the alignment software that was used additional information may be available. The slot \texttt{alignData} is meant to hold such information. The fields that you can see here are explained in the manual to Maq.
 
 <<>>=
 alignData( maps.me1$run4_lane8.map )
@@ -129,9 +148,9 @@ alignData( maps.me1$run4_lane8.map )
 head( pData( alignData( maps.me1$run4_lane8.map ) ) )
 @ %$
 
-\section{Pile-up}
+\section{Coverage}
 
-In ChIP-Seq, one is usually interested in the number of precipitated DNA fragments in the sample that were mapped to each genomic locus. This is best represented by what I call a ``pile-up vector''\footnote{Maybe, there is another, more established term that I am not aware of. I borrow from the terminology used with Maq, where a related function is called ``pileup''.}. A pile-up vector is a very long \texttt{integer} vector with as many elements as there are base pairs in the chromosome under consideration. Each vector element counts the number of fragments that were mapped such that they cover this base pair. The function \texttt{pileup} in the \texttt{ShortRead} package calculates such a vector from alignment information.
+In ChIP-Seq, one is usually interested in the number of precipitated DNA fragments in the sample that were mapped to each genomic locus. This is best represented by what is often called a ``coverage vector'' (or sometimes a ``pile-up vector''). This is a very long \texttt{integer} vector with as many elements as there are base pairs in the chromosome under consideration. Each vector element counts the number of fragments that were mapped such that they cover this base pair. The function \texttt{coverage} in the \texttt{ShortRead} package calculates such a vector from alignment information.\footnote{The first version of this vignette used the \texttt{pileup} function instead. Both functions do essentially the same job but \texttt{pileup} returns an ordinary vector while \texttt{coverage} (which was not yet available then) returns an \texttt{Rle} vector, as explained in the following.}
 
 In order to allocate a vector of the right size, \texttt{pileup} needs to know the length of the chromosome. \texttt{readBfaToc} obtains the lengths of all sequences in a BFA file (binary FASTA, the compressed FASTA format used by Maq). As a BFA file has a table of content at the beginning, \texttt{readBfaToc} only has to read the header of the BFA file and is hence quite fast.
 
@@ -179,64 +198,94 @@ seqlens <- c( `10`=135374737, `11`=134452384, `12`=132349534, `13`=114142980,
 `7`=158821424, `8`=146274826, `9`=140273252, MT=16571, X=154913754, Y=57772954 )
 @ 
 
-In order to get a pileup for, say, chromosome 10, using only mappings in \texttt{maps.me3\$run13\_lane4.map} with a mapping quality of at least 15, we first create a new \texttt{AlignedRead} object containing only these reads
+In order to get coverage vectors for all chromosomes, using only mappings in \texttt{maps.me3\$run13\_lane4.map} with a mapping quality of at least 10, we first create a new \texttt{AlignedRead} object containing only these reads (note that we also filter out reads that map to chromosomes or contigs for which we do not have sequence lengths)
 <<>>=
-foo <- maps.me3$run13_lane4.map[ 
-   chromosome( maps.me3$run13_lane4.map ) == "10" & 
-   quality(alignQuality( maps.me3$run13_lane4.map )) >= 15 ]
+filteredReads <- maps.me3$run13_lane4.map[ 
+   chromosome( maps.me3$run13_lane4.map ) %in% names(seqlens) & 
+   quality(alignQuality( maps.me3$run13_lane4.map )) >= 10 ]
 @ %$
-and then run the \texttt{pileup} function on these:
+and then run the \texttt{coverage} function\footnote{texttt{coverage} is a generic method defined in the \texttt{IRanges} object. Here, we use its specialization for \texttt{ReadAligned} objects, defined in the \texttt{ShortRead} package. For the help pages, see both \texttt{?coverage} and \texttt{class?AlignedRead}.} on these:
 <<>>=
-me3.p10 <- pileup( position(foo), width(foo), seqlens[["10"]] )
-str(me3.p10)
+coverage.me3.lane4 <- coverage( filteredReads, width=seqlens )
+coverage.me3.lane4
 @
+
+The object \texttt{coverage.me3} is a \texttt{GenomeData} object, essentially a list of coverage vectors, one for each chromosome.
+
+Here is the coverage vector for chromsome 10:
+
+<<>>=
+coverage.me3.lane4$`10`
+@ %$
+
+This is a vector with 135 mio elements, i.e., one number for each base pair on chromosome 10. If we stored this as an ordinary vector in RAM, it would need 135 MB. However, it contains long stretches of constant values, and hence, \texttt{coverage} returns its result as run-length encoded (\texttt{Rle}) vectors. As you can see, the coverage vector contains a few ten thousands of ``runs'', i.e., of repeats of the same value, and stores this information in the form of the lengths and the values of these runs.
 
 \begin{figure}
 \centering
-\includegraphics{ShortRead_and_HilbertCurveDisplay-me3_p10}
+\includegraphics{ShortRead_and_HilbertVis-me3_p10}
 \caption{Output of \texttt{plotLongVector( me3.p10 )}.}
 \label{me3_p10}
 \end{figure}
 
-In principle, we could now plot this vector simply by typing 
+In principle, we could now plot this vector by converting it to an ordinary vector and using the standard ``plot'' function:
 <<eval=FALSE>>=
-plot( me3.p10, type='h' )
-@
+plot( as.vector( coverage.me3.lane4$`10` ), type='h' )
+@ $%
 However, this command takes very long, as it plots one needle for each vector element, spending most of its time plotting over and over at the same spot. The function \texttt{plotLongVector} (in \texttt{HilbertVis}) produces the same plot with a decent speed:
 <<me3_p10,fig=TRUE,width=5,height=3,include=FALSE>>=
 library("HilbertVis")
-plotLongVector( me3.p10 )
-@
+plotLongVector( coverage.me3.lane4$`10` )
+@ $%
 [Output: See Fig.\ \ref{me3_p10}.]
 
-It does so by first partitioning the vector in 4,000 parts of equal length, getting the maximum out of each part, and returning it as a vector, which has now only length 4,000. In case you want to write your own plotting function (because \texttt{plotLongVector} is rather rudimentary), you can use the function \texttt{shrinkVector} (in \texttt{HilbertVis}) to accomplish this.
+It does so by first partitioning the vector in 4,000 segments of equal length and the gets the maxima and minima of each segments (with the \texttt{shrinkVector} funcion). It the draws vertcial lines from the minima to the maxima. In case you want to write your own plotting function (because \texttt{plotLongVector} is rather rudimentary), you can use the function \texttt{shrinkVector} (in \texttt{HilbertVis}) to accomplish this.
 
-In the form used above, the function \texttt{pileup} counts only which base pairs the actual read covers. Typically, the read length (here: 25 nt) is much shorter than the length of the DNA fragments. In the present data, the length of the fragments after sonication, adaptor ligation and gel-electrophoretic size selection was about 220 bp including adaptors, i.\,e., approx.\ 185 bp without adaptors. Given that the immuno-precipitated histone can be anywhere on the fragment, not necessarily within the part at the end that is actually sequenced (the ``read'') we get a less biased picture by incorporating this information into the calculation of the pile-up vector. As illustrated in Fig.\ \ref{strand} we cannot simply replace the second argument with 185 because depending on the strand value the position my need shifting. The \texttt{pileup} function does this calculation correctly when called thus:
+In the form used above, the function \texttt{pileup} counts only which base pairs the actual read covers. Typically, the read length (here: 25 nt) is much shorter than the length of the DNA fragments. In the present data, the length of the fragments after sonication, adaptor ligation and gel-electrophoretic size selection was about 220 bp including adaptors, i.\,e., approx.\ 185 bp without adaptors. Given that the immuno-precipitated histone can be anywhere on the fragment, not necessarily within the part at the end that is actually sequenced (the ``read'') we get a less biased picture by incorporating this information into the calculation of the pile-up vector.  The \texttt{coverage} can be called with an \texttt{extend} argument to extend each fragment by a certain size. It uses the strand information to know which direction to extend to (see Fig.\ \ref{strand}).
 <<>>=
-me3.p10 <- pileup( position(foo), 185, seqlens[["10"]], strand(foo), width(foo) )
+coverage.me3.lane4.ext <- coverage( filteredReads, 
+   width=seqlens, extend=185L-width(filteredReads) )
 @
 
-The vector \texttt{me3.p10} incorporated only the information from one lane. We get better count statistics by getting such a vector for each lane from the H3K4me3 sample and then simply summing them up element-wise:
+Our coverage vector incorporated only the information from one lane. We get better count statistics by getting such a vector for each lane from the H3K4me3 sample and then simply summing them all up:
 <<>>=
-chr <- "10"
-me3.p10 <- rep.int( 0, seqlens[[chr]] )
-for( mp in maps.me3) {
-   foo <- mp[ chromosome(mp) == chr & quality(alignQuality( mp )) >= 15 ]
-   me3.p10 <- me3.p10 + 
-      pileup( position(foo), 185, seqlens[[chr]], strand(foo), width(foo) ) }
-@
-Note that a \texttt{for} loop is used here instead of the use of \texttt{sapply} together with \texttt{rowSums}. The latter may look more natural in R but as it builds up a two-dimensional array of all the intermediate pile-up vectors it requires too much memory. Even with the \texttt{for} loop we give the garbage collector quite some work, and the operation takes a while. Let's do the same for ``me1'':
-<<>>=
-me1.p10 <- rep.int( 0, seqlens[[chr]] )
-for( mp in maps.me1) {
-   foo <- mp[ chromosome(mp) == chr & quality(alignQuality( mp )) >= 15 ]
-   me1.p10 <- me1.p10 + 
-      pileup( position(foo), 185, seqlens[[chr]], strand(foo), width(foo) ) }
+sumUpCoverage <- function( lanes, seqLens, minAQual, fragmentLength ) 
+{
+   res <- NULL
+   for( i in 1:length(lanes) ) {
+      filteredLane <- lanes[[i]][
+         quality(alignQuality( lanes[[i]] )) >= minAQual & 
+         chromosome(lanes[[i]]) %in% names(seqlens) ]
+      cvg <- coverage( filteredLane, width = seqLens,  
+         extend = as.integer(fragmentLength) - width(filteredLane) )
+      if( is.null( res ) )
+         res <- cvg
+      else {
+         stopifnot( all( names(res) == names(cvg) ) )
+         for( seq in names(res) )
+            res[[seq]] <- res[[seq]] + cvg[[seq]]
+      }
+   }
+   res
+}
+
+coverage.me3 <- sumUpCoverage( maps.me3, seqlens, 10, 185 )
 @
 
-As ``me1'' has only 3 lanes as opposed to ``me3'''s 7 lanes, we multiply it with 7/3 to get both pile-ups on the same scale:
+Note that \texttt{for} loops are used here instead of \texttt{sapply}. The latter may look more natural in R but it builds up a two-dimensional array of all the intermediate coverage vectors, which is wasteful. Even with the \texttt{for} loop the operation takes a while. Let's do the same for ``me1'':
 <<>>=
-me1.p10 <- me1.p10 * 7/3
+coverage.me1 <- sumUpCoverage( maps.me1, seqlens, 10, 185 )
+@
+
+As ``me1'' has only 3 lanes as opposed to ``me3'''s 7 lanes, we cannot compare them directly. A simple way of normalizing is to divide by the ``library size'', i.e., the total number of reads.
+<<>>=
+nreads.me1 <- sum( sapply( maps.me1, length ) )
+coverage.me1.n <- GenomeData( lapply( 
+   coverage.me1, function(r) r / nreads.me1 ) )
+
+
+nreads.me3 <- sum( sapply( maps.me3, length ) )
+coverage.me3.n <- GenomeData( lapply( 
+   coverage.me3, function(r) r / nreads.me3 ) )
 @
 
 \section{Visualisation with Hilbert curve plots} \label{secHilbert}
@@ -244,33 +293,35 @@ me1.p10 <- me1.p10 * 7/3
 \subsection{The Hilbert curve}
 
 \noindent{\small \textbf{Note:} If you have skipped the previous sections as you only want to read about \texttt{HilbertVis}, here is what you need to know in order to start reading here: We have re-analysed part of the ChIP-Seq experiments done in Ref.\ \cite{HistMeth_ChipSeq}, 
-namely the data regarding histone methylation patterns H3K4me1 and H3K4me3. We have constructed two very long ``pile-up'' vectors, \texttt{me1.p10} and \texttt{me3.p10}, which represent human chromosome 10 and have a length of 135374737, corresponding to the number of base pairs in chromosome 10. Each element corresponds to a base pair and counts how many precipitated and sequenced DNA fragments within the respective sample (H3K4me1 or H3K4me3) cover this position. To do your own experiments with these vectors, you may download them as R data file from \url{http://www.ebi.ac.uk/~anders/ShortReadExampleData/meX.p10.Rdata}.}
+namely the data regarding histone methylation patterns H3K4me1 and H3K4me3. We
+have constructed two sets of very long ``coverage'' vectors in \texttt{IRanges}'s \texttt{Rle} form, \texttt{coverage.me1} and \texttt{coverage.me3}, which represent the human chromosomes and have a length corresponding to the number of base pairs of each chromosome. Each element corresponds to a base pair and counts how many precipitated and sequenced DNA fragments within the respective sample (H3K4me1 or H3K4me3) cover this position. The vectors \texttt{coverage.me1.n} and \texttt{coverage.me3.n} have been normalized by dividing by the total number of reads. To do your own experiments with these vectors, you can download these vectors (truncated to only contain chromosome 10, to save space) as R data file from \url{http://www.ebi.ac.uk/~anders/ShortReadExampleData/meX.chr10.rda}.}
 \bigskip
 
-\noindent{\small \textbf{Note 2:} Since I have written this vignette, I have restructured teh package and split it into two parts, called ``HilbertVis'' and ``HilbertVisGUI''. This text focuses on the functionality of ``HilbertVisGUI'', which provides an interactive tool to explore data using teh visualisation technique desribed in the following. ``HilbertVis'' contains further functions to produce the same kind of images but without interactive tools, i.e. solely from the R command line. If you want to know more about these functions, which are not (yet) mentioned in the present text, see the vignette ``Visualising very long data vectors with the Hilbert curve'', which is included in the ``HilbertVis'' package.}
+\noindent{\small \textbf{Note 2:} Since I have written this vignette, I have restructured the package and split it into two parts, called ``HilbertVis'' and ``HilbertVisGUI''. This text focuses on the functionality of ``HilbertVisGUI'', which provides an interactive tool to explore data using teh visualisation technique desribed in the following. ``HilbertVis'' contains further functions to produce the same kind of images but without interactive tools, i.e. solely from the R command line. If you want to know more about these functions, which are not mentioned in the present text, see the vignette ``Visualising very long data vectors with the Hilbert curve'', which is included in the ``HilbertVis'' package.}
 \bigskip
 
 
 \begin{figure}
 \centering
-\includegraphics{ShortRead_and_HilbertCurveDisplay-pileup1D}
+\includegraphics{ShortRead_and_HilbertVis-pileup1D}
 \caption{Pile-up representation of the ChIP-Seq data for H3K4me1 and H3K4me3, depicting the whole of chromosome 10.}
 \label{pileup1D}
 \end{figure}
 
 \noindent A first approach to visualising the two vectors is plotting them with the \texttt{plotLongVector} function described above:
 <<pileup1D,fig=TRUE,include=FALSE>>=
+library( ShortRead )
 library( HilbertVis )
 library( HilbertVisGUI )
 par( mfrow = c(2,1) )
-plotLongVector( me1.p10, main="Chr 10, H3K3me1" )
-plotLongVector( me3.p10, main="Chr 10, H3K3me3" )
+plotLongVector( coverage.me1.n$`10`, main="Chr 10, H3K3me1" )
+plotLongVector( coverage.me3.n$`10`, main="Chr 10, H3K3me3" )
 @
 [Output: Fig.\ \ref{pileup1D}.]
 
 \begin{figure}
 \centering
-\includegraphics{ShortRead_and_HilbertCurveDisplay-pileup1Dzoom}
+\includegraphics{ShortRead_and_HilbertVis-pileup1Dzoom}
 \caption{Zoom into a small portion of Fig.\ \ref{pileup1D}.}
 \label{pileup1Dzoom}
 \end{figure}
@@ -278,8 +329,10 @@ plotLongVector( me3.p10, main="Chr 10, H3K3me3" )
 The two vectors do look different but it is hard to make out what gives rise to the difference. Is the number of peaks different, or their distribution, or their typical width? Given that each pixel on the x axis corresponds to more than 100 kp, each of the needle can as well be a small peak, only a few fragment lengths wide, a wide peak with a base of tens of kb, or even a cluster of several peaks. We might zoom in somewhere but this is not too illuminating:
 <<pileup1Dzoom,fig=TRUE,include=FALSE>>=
 par( mfrow = c(2,1) )
-plotLongVector( me1.p10[100000000:101000000], main="Chr 10, H3K3me1", offset=100000000 )
-plotLongVector( me3.p10[100000000:101000000], main="Chr 10, H3K3me3", offset=100000000 )
+plotLongVector( coverage.me1.n$`10`[100000000:101000000], 
+   main="Chr 10, H3K3me1", offset=100000000 )
+plotLongVector( coverage.me1.n$`10`[100000000:101000000], 
+   main="Chr 10, H3K3me3", offset=100000000 )
 @
 [Output: Fig.\ \ref{pileup1Dzoom}.]
 
@@ -297,7 +350,7 @@ The Hilbert curve plot is an approach to display an as detailed picture of the w
 
 \begin{figure}
 \centering
-\includegraphics{ShortRead_and_HilbertCurveDisplay-HilbertCurves}
+\includegraphics{ShortRead_and_HilbertVis-HilbertCurves}
 \caption{The first four levels of the Hilbert curve fractal.}
 \label{HilbertCurves}
 \end{figure}
@@ -322,7 +375,7 @@ Going back to Fig.\ \ref{twoHilbertPlots}, we can now see clear difference betwe
 
 In order to study the pile-up vectors, you can now simply call 
 \begin{verbatim}
-hilbertDisplay( me1.p10, me3.p10 )
+hilbertDisplay( coverage.me1.n$`10`, coverage.me3.n$`10` )
 \end{verbatim}
 
 \begin{figure}
@@ -332,11 +385,11 @@ hilbertDisplay( me1.p10, me3.p10 )
 \label{GUI}
 \end{figure}
 
-A GUI, as depicted in Fig.\ \ref{GUI} will pop up that allows you to interactively explore your data in the Hilbert curve plot representation. First, move the mouse over the coloured square and observe how the small red line in the right-hand gauge (labelled ``Displayed part of sequence'') indicates where within the chromosome you are pointing. Playing with this feature allows you to quickly orient yourself on how the chromosome is folded into the square. You can also read off the exact position from the field ``Bin under mouse cursor''\footnote{The display of the bin's value is not yet functional.}
+A GUI, as depicted in Fig.\ \ref{GUI} will pop up that allows you to interactively explore your data in the Hilbert curve plot representation. First, press the ``Darker'' button two or three times to get better contrast. Then, move the mouse over the coloured square and observe how the small red line in the right-hand gauge (labelled ``Displayed part of sequence'') indicates where within the chromosome you are pointing. Playing with this feature allows you to quickly orient yourself on how the chromosome is folded into the square. You can also read off the exact position from the field ``Bin under mouse cursor''\footnote{The display of the bin's value is not yet functional.}
 
 Use the left mouse button to zoom in by clicking on one of the four quarters of the image. You can only zoom into a quarter, not into any part of the image, because this ensures that the displayed part is always a single consecutive stretch of the chromosome. The left-hand gauge (labelled ``Full sequence'') indicates which part is displayed: the full width of the gauge represents the whole chromosome, the portion highlighted in red the part that is currently displayed in the square. The coordinates of the first and last displayed base are printed in the edges of the right-hand gauge. With the radio buttons labelled ``Effect of left mouse button'' you my switch from zooming into a quarter to zooming into a 1/64 part, i.e. into one of the small squares in a though $8\times 8$ grid. Use the buttons at the bottom to zoom out.
 
-If you have passed several vectors when calling \texttt{hilbertDisplay}, you may switch back and forth between them with the buttons ``Next'' and ``Previous'' in order to compare the displayed parts.
+If you have passed several vectors when calling \texttt{hilbertDisplay}, you may switch back and forth between them with the buttons ``Next'' and ``Previous'' (or by pressing Alt-N and Alt-P) in order to compare the displayed parts.
 
 The two buttons ``Coarser'' and ``Finer'' allow to adjust the pixel size. Initially, each bin is represented by one pixel at your monitor's resolution, and there are $512\times 512$ pixels in the image. Pressing ``Coarser'' once blows up each image pixel to a $2\times 2$ square of monitor pixels, which allows for easier viewing but reduces the number of displayed image pixels to $256\times 256$, i.e., each pixel now represents four times as many base pairs.
 
@@ -402,12 +455,14 @@ exons <- getBM( attributes=c( "exon_chrom_start", "exon_chrom_end" ),
    filters="chromosome_name", values="10", mart=ensembl )
 @
 
+This is a set of intervals and hence best represented as an \texttt{IRanges} object:
+<<>>=
+exon.chr10.ranges <- IRanges( start=exons$exon_chrom_start, end=exons$exon_chrom_end )
+@ %$
+
 Them, we construct a vector that indicates for each base pair on chromosome 10, whether it is exonic or not (bty means of the values 1 and 0).
 <<>>=
-ex.p10 <- rep( 0, seqlens["10"] )
-
-for( i in 1:nrow(exons) )
-   ex.p10[ exons$exon_chrom_start[i] : exons$exon_chrom_end[i] ] <- 1
+exons.chr10 <- coverage( exon.chr10.ranges, width = seqlens[["10"]] )
 @
 
 \begin{figure}
@@ -420,10 +475,13 @@ for( i in 1:nrow(exons) )
 With the following command, we get a 3-color representation of the three vectors in the HilbertDisplay GUI:
 
 <<eval=FALSE>>=
-hilbertDisplayThreeChannel( me1.p10 / 100, me3.p10 / 200, ex.p10 / 3 )
+hilbertDisplayThreeChannel( 
+   coverage.me1.n$`10` * 5e5, 
+   coverage.me3.n$`10` * 5e5, 
+   exons.chr10 * .5 )
 @
 
-See Fig.\ ref{threeColor} for the image that the GUI shows. While the function \texttt{hilbertDisplay} adjusts to the value range of the data (or can be manually adjusted with optional the \texttt{paletteSteps} argument), the function \texttt{hilbertDisplayThreeChannel} expects all three vectors to be in the value range between 0 and 1. This range is transformed to colours from black to a saturated red, green, and blue. Values below 0 or above 1 are cut and displayed as if they were 0 or 1. To get the pile-up vectors down to this range, an obvious step would be to devide by their maximum value. However, this gives a too dark value, and hence, I have chosen for Fig.\ \ref{threeColor} larger scaling factors, allowing extremely high peaks to become saturated.
+See Fig.\ ref{threeColor} for the image that the GUI shows. While the function \texttt{hilbertDisplay} adjusts to the value range of the data (or can be manually adjusted with optional the \texttt{paletteSteps} argument), the function \texttt{hilbertDisplayThreeChannel} expects all three vectors to be in the value range between 0 and 1. This range is transformed to colours from black to a saturated red, green, and blue. Values below 0 or above 1 are cut and displayed as if they were 0 or 1. To get the pile-up vectors down to this range, an obvious step would be to divide by their maximum value. However, this gives a too dark value, and hence, I have chosen for Fig.\ \ref{threeColor} larger scaling factors, allowing extremely high peaks to become saturated.
 
 \section{Correlation with transcription start}
 
@@ -431,32 +489,48 @@ A common plot to do with histone modification ChIP-Seq data is to see how the pi
 
 First, we get a list of known TSSs on chromosome 10 from EnsEMBL (again via BioMart).
 <<>>=
-tss <- getBM( attributes=c( "transcript_start", "strand" ),
+tss <- getBM( attributes=c( "transcript_start", "transcript_end", "strand" ),
    filters="chromosome_name", values="10", mart=ensembl )
 @
 
-Then, we go through all TSS, cutting out a window from 200 bp upstreams to 200 bp downstreams of the TSS and sum these up these vectors of length 401.
 <<>>=
-wnd <- -200:200
-tme1 <- rep( 0, length(wnd) )
-tme3 <- rep( 0, length(wnd) )
-for( i in 1:nrow(tss) ) {
-   tme1 <- tme1 + me1.p10[ tss$transcript_start[i] + wnd * tss$strand[i] ]
-   tme3 <- tme3 + me3.p10[ tss$transcript_start[i] + wnd * tss$strand[i] ] }
+head(tss)
 @
-Note how the strand information (which is an integer, either 1 or $-1$) is used to reverse the window for the `--' strand. 
+
+Note that \texttt{transcript\_start} is always smaller than \texttt{transcript\_end}, even when the transcript is on the ``--'' strand. Hence, we have to use either the start or the end coordinate of the transcript, depending on the strand, to get the actual transcription start sites, i.e., the 5' ends of the transcripts. Then, we go through all TSS, cutting out a window from 2000 bp upstreams to 2000 bp downstreams of the TSS and sum these up these vectors of length 4001 (reversing them whenever they are from the ``--'' strand):
+
+<<>>=
+tme1 <- rep( 0, 4001 )
+tme3 <- rep( 0, 4001 )
+for( i in 1:nrow(tss) ) {
+   if( tss$strand[i] == 1 ) {
+      tme1 <- tme1 + as.vector( seqextract( coverage.me1.n$`10`, 
+         tss$transcript_start[i] - 2000, tss$transcript_start[i] + 2000 ) )
+      tme3 <- tme3 + as.vector( seqextract( coverage.me3.n$`10`, 
+         tss$transcript_start[i] - 2000, tss$transcript_start[i] + 2000 ) )
+   } else {
+      tme1 <- tme1 + rev( as.vector( seqextract( coverage.me1.n$`10`, 
+         tss$transcript_end[i] - 2000, tss$transcript_end[i] + 2000 ) ) )
+      tme3 <- tme3 + rev( as.vector( seqextract( coverage.me3.n$`10`, 
+         tss$transcript_end[i] - 2000, tss$transcript_end[i] + 2000 ) ) )
+   }
+}
+@ $%
+
+Note the use of \texttt{as.vector}, which transforms the \texttt{Rle} vector into an ordinary one. Without it, we would sum up many short \texttt{Rle} vectors which is very slow. 
 
 \begin{figure}
 \centering
-\includegraphics{ShortRead_and_HilbertCurveDisplay-tssPlot}
+\includegraphics{ShortRead_and_HilbertVis-tssPlot}
 \caption{Correlation against transcription start sites for H3K4me1 (red) and H3K4me3 (green).}
 \label{tssPlot}
 \end{figure}
 
 Normally, one would add all the other chromosomes, as well. For this vignette, we simply plot what we have so far:
 <<tssPlot,fig=TRUE,include=FALSE>>=
-matplot( wnd, cbind( tme1, tme3 ), 
-   type="l", col=c("red","green"), lty="solid", xlab="", ylab="" )
+matplot( -2000:2000, cbind( tme1, tme3 ), 
+   type="l", col=c("red","green"), lty="solid", 
+   xlab="distance to TSS", ylab="" )
 abline( v=0, col="gray" )
 @
 [Output: Fig.\ \ref{tssPlot}.]
@@ -466,6 +540,13 @@ abline( v=0, col="gray" )
 <<>>=
 sessionInfo()
 @
+
+\section*{Version history}
+
+\begin{itemize}
+\item v1: 2008-07-21
+\item v2: 2009-06-30
+\end{itemize}
 
 \bibliographystyle{simon2}
 \bibliography{hilbert}
