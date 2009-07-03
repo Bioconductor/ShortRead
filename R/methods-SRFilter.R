@@ -30,7 +30,7 @@ setMethod(name, "SRFilter", function(x, ...) {
 
 .getAlphabetFrequency <- function(x, ...)
 {
-    if (is(x, "AlignedRead"))
+    if (is(x, "ShortRead"))
         alphabetFrequency(sread(x), ...)
     else
         alphabetFrequency(x, ...)

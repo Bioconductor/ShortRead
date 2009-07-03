@@ -213,17 +213,15 @@ setMethod(coverage, "AlignedRead",
     ## end of argument checking.
 
     if (coords == "leftmost") {
-        rstart <- ifelse(strand(x) == "+", position(x),
-                         position(x) - extend)
-        rend <- ifelse(strand(x) == "+",
-                       position(x) + width(x) + extend - 1L,
-                       position(x) + width(x) - 1L)
+        rstart <- position(x) -
+            ifelse(strand(x) == "+", 0L, extend)
+        rend <- position(x) + width(x) - 1L + 
+            ifelse(strand(x) == "+", extend, 0L)
     } else {
-        rstart <- ifelse(strand(x) == "+", position(x),
-                         position(x) - width(x) - extend + 1L)
-        rend <- ifelse(strand(x) == "+",
-                       position(x) + width(x) + extend - 1L,
-                       position(x))
+        rstart <- position(x) -
+            ifelse(strand(x) == "+", 0L, width(x) + extend - 1L)
+        rend <- position(x) +
+            ifelse(strand(x) == "+", width(x) + extend - 1L, 0L)
     }
     cvg <- lapply(chrlvls,
                   function(chr, ...) {
