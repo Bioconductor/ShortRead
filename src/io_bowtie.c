@@ -13,8 +13,7 @@ static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
 
 int
 _read_bowtie(const char *fname, const char *commentChar,
-             SEXP ref, int offset,
-             CharAEAE *id, CharAEAE *sread, CharAEAE *quality)
+             SEXP ref, int offset)
 {
     const int N_FIELDS = 8;
     gzFile *file;
@@ -23,6 +22,9 @@ _read_bowtie(const char *fname, const char *commentChar,
 
     file = _fopen(fname, "rb");
 
+	_XSnap id = VECTOR_ELT(ref, 0),
+		sread = VECTOR_ELT(ref, 4),
+		quality = VECTOR_ELT(ref, 5);
     SEXP chromosome = VECTOR_ELT(ref, 2),
         mismatch = VECTOR_ELT(ref, 7);
     int *strand = INTEGER(VECTOR_ELT(ref, 1)),
@@ -44,7 +46,7 @@ _read_bowtie(const char *fname, const char *commentChar,
 				  n_fields, fname, lineno);
 		}
 
-        append_string_to_CharAEAE(id, elt[0]);
+        _APPEND_XSNAP(id, elt[0]);
         strand[offset] = _char_as_strand_int(*elt[1], fname, lineno);
         SET_STRING_ELT(chromosome, offset, mkChar(elt[2]));
         position[offset] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
@@ -52,8 +54,8 @@ _read_bowtie(const char *fname, const char *commentChar,
             _reverseComplement(elt[4]);
             _reverse(elt[5]);
         }
-        append_string_to_CharAEAE(sread, elt[4]);
-        append_string_to_CharAEAE(quality, elt[5]);
+		_APPEND_XSNAP(sread, elt[4]);
+		_APPEND_XSNAP(quality, elt[5]);
         similar[offset] = atoi(elt[6]); /* previous: 'reserved' */
         SET_STRING_ELT(mismatch, offset, mkChar(elt[7]));
         offset++;
@@ -93,8 +95,6 @@ _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
     PROTECT(adf);
 
     SEXP aln;
-    SEXP strand_lvls = PROTECT(_get_strand_levels());
-    _as_factor_SEXP(VECTOR_ELT(ref, 1), strand_lvls);
     NEW_CALL(s, t, "AlignedRead", nmspc, 8);
     CSET_CDR(t, "id", VECTOR_ELT(ref, 0));
     CSET_CDR(t, "sread", VECTOR_ELT(ref, 4));
@@ -106,7 +106,7 @@ _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
     CSET_CDR(t, "alignData", adf);
     CEVAL_TO(s, nmspc, aln);
 
-    UNPROTECT(4);
+    UNPROTECT(3);
     return aln;
 }
 
@@ -137,13 +137,12 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
-    CharAEAE id = new_CharAEAE(nrec, 0);
+	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec));  /* id */
     SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec)); /* strand */
     SET_VECTOR_ELT(ref, 2, NEW_STRING(nrec)); /* chromosome */
     SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* position */
-    CharAEAE
-        sread = new_CharAEAE(nrec, 0),
-        quality = new_CharAEAE(nrec, 0);
+	SET_VECTOR_ELT(ref, 4, _NEW_XSNAP(nrec)); /* sread */
+	SET_VECTOR_ELT(ref, 5, _NEW_XSNAP(nrec)); /* quality */
     SET_VECTOR_ELT(ref, 6, NEW_INTEGER(nrec)); /* similar */
     SET_VECTOR_ELT(ref, 7, NEW_STRING(nrec)); /* mismatch encoding */
 
@@ -159,12 +158,18 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
         nrec += _read_bowtie(
             CHAR(STRING_ELT(files, i)),
             CHAR(STRING_ELT(commentChar, 0)),
-            ref, nrec, &id, &sread, &quality);
+            ref, nrec);
     }
-    SET_VECTOR_ELT(ref, 0, _CharAEAE_to_XStringSet(&id, "BString"));
-    SET_VECTOR_ELT(ref, 4, _CharAEAE_to_XStringSet(&sread, "DNAString"));
-    SET_VECTOR_ELT(ref, 5, _CharAEAE_to_XStringSet(&quality, "BString"));
+    _XSNAP_ELT(ref, 0, "BString");
+    _XSNAP_ELT(ref, 4, "DNAString");
+    _XSNAP_ELT(ref, 5, "BString");
+
+    SEXP strand_lvls = PROTECT(_get_strand_levels());
+    _as_factor_SEXP(VECTOR_ELT(ref, 1), strand_lvls);
+	UNPROTECT(1);
+
     SEXP aln = _AlignedRead_Bowtie_make(ref, qtype);
+
     UNPROTECT(1);
     return aln;
 }

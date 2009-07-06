@@ -4,9 +4,10 @@
     msg <- NULL
     len <- length(sread(object))
     slts <- c("chromosome", "position", "strand", "alignQuality")
-    olen <- sapply(slts, function(elt) {
-        length(do.call(elt, list(object)))
-    })
+    olen <- c(length(chromosome(object)),
+              length(position(object)),
+              length(strand(object)),
+              length(alignQuality(object)))
     if (!all(olen==len)) {
         bad <- olen!=len
         msg <- c(msg,

@@ -15,8 +15,7 @@ static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
 int
 _read_soap(const char *fname, const char *csep,
            const char *commentChar,
-           MARK_FIELD_FUNC *mark_func, SEXP ref, int offset,
-           CharAEAE *id, CharAEAE *sread, CharAEAE *quality)
+           MARK_FIELD_FUNC *mark_func, SEXP ref, int offset)
 {
     const int N_FIELDS = N_ELTS;
     gzFile *file;
@@ -25,6 +24,9 @@ _read_soap(const char *fname, const char *csep,
 
     file = _fopen(fname, "rb");
 
+	_XSnap id = VECTOR_ELT(ref, 0),
+		sread = VECTOR_ELT(ref, 1),
+		quality = VECTOR_ELT(ref, 2);
     SEXP pairedEnd = VECTOR_ELT(ref, 4),
         chromosome = VECTOR_ELT(ref, 7),
         hitDetail = VECTOR_ELT(ref, 10);
@@ -59,13 +61,13 @@ _read_soap(const char *fname, const char *csep,
         typeOfHit[offset] = atoi(elt[9]);
         SET_STRING_ELT(hitDetail, offset, mkChar(elt[10]));
         /* 1-3: id, strand, quality */
-        append_string_to_CharAEAE(id, elt[0]);
+		_APPEND_XSNAP(id, elt[0]);
         if (strand[offset] == 1) {
             _reverseComplement(elt[1]);
             _reverse(elt[2]);
         }
-        append_string_to_CharAEAE(sread, elt[1]);
-        append_string_to_CharAEAE(quality, elt[2]);
+		_APPEND_XSNAP(sread, elt[1]);
+		_APPEND_XSNAP(quality, elt[2]);
 
         lineno++;
         offset++;
@@ -108,8 +110,6 @@ _AlignedRead_SOAP_make(SEXP ref, const char *qtype)
     PROTECT(adf);
 
     SEXP aln;
-    SEXP strand_lvls = PROTECT(_get_strand_levels());
-    _as_factor_SEXP(VECTOR_ELT(ref, 6), strand_lvls);
     NEW_CALL(s, t, "AlignedRead", nmspc, 8);
     CSET_CDR(t, "sread", VECTOR_ELT(ref, 1));
     CSET_CDR(t, "id", VECTOR_ELT(ref, 0));
@@ -121,7 +121,7 @@ _AlignedRead_SOAP_make(SEXP ref, const char *qtype)
     CSET_CDR(t, "alignData", adf);
     CEVAL_TO(s, nmspc, aln);
 
-    UNPROTECT(4);
+    UNPROTECT(3);
     return aln;
 }
 
@@ -152,10 +152,9 @@ read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
-    CharAEAE
-        id = new_CharAEAE(nrec, 0),
-        sread = new_CharAEAE(nrec, 0),
-        quality = new_CharAEAE(nrec, 0);
+	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec));
+	SET_VECTOR_ELT(ref, 1, _NEW_XSNAP(nrec));
+	SET_VECTOR_ELT(ref, 2, _NEW_XSNAP(nrec));
     SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* nEquallyBestHits */
     SET_VECTOR_ELT(ref, 4, NEW_STRING(nrec)); /* pairedEnd */
     SET_VECTOR_ELT(ref, 5, NEW_INTEGER(nrec)); /* alignedLength */
@@ -184,12 +183,16 @@ read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
         nrec += _read_soap(
             CHAR(STRING_ELT(files, i)), csep,
             CHAR(STRING_ELT(commentChar, 0)),
-            sep_func, ref, nrec, &id, &sread, &quality);
+            sep_func, ref, nrec);
     }
-    SET_VECTOR_ELT(ref, 0, _CharAEAE_to_XStringSet(&id, "BString"));
-    SET_VECTOR_ELT(ref, 1, _CharAEAE_to_XStringSet(&sread, "DNAString"));
-    SET_VECTOR_ELT(ref, 2, _CharAEAE_to_XStringSet(&quality, "BString"));
+	_XSNAP_ELT(ref, 0, "BString");
+	_XSNAP_ELT(ref, 1, "DNAString");
+	_XSNAP_ELT(ref, 2, "BString");
+
+    SEXP strand_lvls = PROTECT(_get_strand_levels());
+    _as_factor_SEXP(VECTOR_ELT(ref, 6), strand_lvls);
+
     SEXP aln = _AlignedRead_SOAP_make(ref, qtype);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return aln;
 }

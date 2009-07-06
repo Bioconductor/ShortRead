@@ -13,7 +13,9 @@ extern "C" {
 /* util.c */
 
 typedef unsigned char (*DECODE_FUNC)(char); /* DNAdecode, RNAdecode */
+typedef char (*ENCODE_FUNC)(char); /* DNAdecode, RNAdecode */
 DECODE_FUNC decoder(const char*);
+ENCODE_FUNC encoder(const char*);
 
 void _reverse(char *);
 void _reverseComplement(char *);
@@ -40,6 +42,13 @@ int _count_lines_sum(SEXP files);
 SEXP count_lines(SEXP files);
 SEXP count_ipar_int_recs(SEXP files);
 SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
+
+/* xstring_util.c */
+
+typedef SEXP _XSnap;  /* list: raw, starts, widths, i, offset */
+_XSnap _NEW_XSNAP(int nelt);
+void _APPEND_XSNAP(_XSnap snap, const char *str);
+void _XSNAP_ELT(SEXP x, int elt, const char *baseclass);
 
 /* io.c */
 

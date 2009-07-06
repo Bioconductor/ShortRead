@@ -7,8 +7,18 @@ unsigned char _dnaDecode(char);
 unsigned char _rnaDecode(char);
 
 /*
- * Decode XStringSet wrappers
+ * Encode / decode XString wrappers
  */
+
+char
+_bEncode(char c)
+{
+	return c;
+}
+
+#define _dnaEncode DNAencode;
+#define _rnaEncode RNAencode;
+
 unsigned char
 _bDecode(char c)
 {
@@ -41,6 +51,22 @@ decoder(const char* base)
         Rf_error("unknown class '%s'", base);
     }
     return decode;
+}
+
+ENCODE_FUNC
+encoder(const char *base)
+{
+    ENCODE_FUNC encode;
+    if (strcmp(base, "DNAString")==0) {
+        encode = _dnaEncode;
+    } else if (strcmp(base, "RNAString")==0) {
+        encode = _rnaEncode;
+    } else if (strcmp(base, "BString")==0) {
+        encode = _bEncode;
+    } else {
+        Rf_error("unknown class '%s'", base);
+    }
+    return encode;
 }
 
 SEXP

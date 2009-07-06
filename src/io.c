@@ -251,12 +251,14 @@ read_prb_as_character(SEXP fname, SEXP asSolexa)
  * Read a solexa 's_<lane>_sequence.txt' file into CharAEAE objects.
  */
 static void
-_read_solexa_fastq_file(const char *fname,
-                        CharAEAE *seq, CharAEAE *name, CharAEAE *qualities)
+_read_solexa_fastq_file(const char *fname, SEXP ans)
 {
     gzFile *file;
     char linebuf[LINEBUF_SIZE];
     int lineno, reclineno, nchar_in_buf;
+	_XSnap seq = VECTOR_ELT(ans, 0),
+		id = VECTOR_ELT(ans, 1),
+		qualities = VECTOR_ELT(ans, 2);
 
     file = _fopen(fname, "rb");
     lineno = 0;
@@ -278,15 +280,15 @@ _read_solexa_fastq_file(const char *fname,
         case 0:
             /* add linebuf to CharAEAE; start at char +1 to skip the
              * fastq annotation. */
-  		    if (name != NULL)
-			  append_string_to_CharAEAE(name, linebuf+1);
+  		    if (id != R_NilValue)
+				_APPEND_XSNAP(id, linebuf+1);
             break;
         case 1:
             _solexa_to_IUPAC(linebuf);
-            append_string_to_CharAEAE(seq, linebuf);
+            _APPEND_XSNAP(seq, linebuf);
             break;
         case 3:
-            append_string_to_CharAEAE(qualities, linebuf);
+            _APPEND_XSNAP(qualities, linebuf);
             break;
         default:
             error("unexpected 'reclineno'; consult maintainer");
@@ -313,49 +315,34 @@ read_solexa_fastq(SEXP files, SEXP withId)
 	if (!IS_LOGICAL(withId) || LENGTH(withId) != 1)
    	    Rf_error("'withId' must be 'logical(1)'");
 
-    /* pre-allocated space */
     nfiles = LENGTH(files);
     nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
-    seq = new_CharAEAE(nrec, 0);
-	if (LOGICAL(withId)[0] == TRUE)
-	  name = new_CharAEAE(nrec, 0);
-    qualities = new_CharAEAE(nrec, 0);
+    PROTECT(ans = NEW_LIST(3));
+	SET_VECTOR_ELT(ans, 0, _NEW_XSNAP(nrec)); /* sread */
+	if (LOGICAL(withId)[0] == TRUE)			  /* id */
+		SET_VECTOR_ELT(ans, 1, _NEW_XSNAP(nrec));
+	else
+		SET_VECTOR_ELT(ans, 1, R_NilValue);
+	SET_VECTOR_ELT(ans, 2, _NEW_XSNAP(nrec)); /* quality */
+
+    PROTECT(nms = NEW_CHARACTER(3));
+    SET_STRING_ELT(nms, 0, mkChar("sread"));
+	SET_STRING_ELT(nms, 1, mkChar("id"));
+    SET_STRING_ELT(nms, 2, mkChar("quality"));
+    setAttrib(ans, R_NamesSymbol, nms);
+	UNPROTECT(1);
 
     for (i = 0; i < nfiles; ++i) {
         R_CheckUserInterrupt();
         fname = translateChar(STRING_ELT(files, i));
-		if (LOGICAL(withId)[0] == TRUE)
-		  _read_solexa_fastq_file(fname, &seq, &name, &qualities);
-		else
-		  _read_solexa_fastq_file(fname, &seq, NULL, &qualities);
+		_read_solexa_fastq_file(fname, ans);
     }
+	_XSNAP_ELT(ans, 0, "DNAString");
+	if (VECTOR_ELT(ans, 1) != R_NilValue)
+		_XSNAP_ELT(ans, 1, "BString");
+	_XSNAP_ELT(ans, 2, "BString");
 
-    PROTECT(ans = NEW_LIST(3));
-    PROTECT(nms = NEW_CHARACTER(3));
-
-    roSeqs = new_RoSeqs_from_CharAEAE(&seq);
-    PROTECT(elt = new_XStringSet_from_RoSeqs("DNAString", &roSeqs));
-    SET_VECTOR_ELT(ans, 0, elt);
-    SET_STRING_ELT(nms, 0, mkChar("sread"));
-
-	if (LOGICAL(withId)[0] == TRUE) {
-	  roSeqs = new_RoSeqs_from_CharAEAE(&name);
-	  PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
-	  SET_VECTOR_ELT(ans, 1, elt);
-	  UNPROTECT(1);
-	} else {
-	  SET_VECTOR_ELT(ans, 1, R_NilValue);
-	}
-	SET_STRING_ELT(nms, 1, mkChar("id"));
-	
-    roSeqs = new_RoSeqs_from_CharAEAE(&qualities);
-    PROTECT(elt = new_XStringSet_from_RoSeqs("BString", &roSeqs));
-    SET_VECTOR_ELT(ans, 2, elt);
-    SET_STRING_ELT(nms, 2, mkChar("quality"));
-
-    setAttrib(ans, R_NamesSymbol, nms);
-
-    UNPROTECT(4);
+    UNPROTECT(1);
     return ans;
 }
 
@@ -365,7 +352,7 @@ _io_XStringSet_columns(const char *fname,
                        const char *sep, MARK_FIELD_FUNC *mark_field,
                        const int *colidx, int ncol,
                        int nrow, int skip, const char *commentChar,
-                       CharAEAE *sets, const int *toIUPAC)
+                       SEXP sets, const int *toIUPAC)
 {
     gzFile *file;
     char *linebuf;
@@ -394,7 +381,7 @@ _io_XStringSet_columns(const char *fname,
             if (j == colidx[cidx]) {
                 if (toIUPAC[cidx])
                     _solexa_to_IUPAC(curr);
-                append_string_to_CharAEAE(&sets[cidx], curr);
+                _APPEND_XSNAP(VECTOR_ELT(sets, cidx), curr);
                 cidx++;
             }
             curr = next;
@@ -449,11 +436,11 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
     }
 
     int ncol = LENGTH(colIndex);
-    CharAEAE *sets = (CharAEAE*) R_alloc(sizeof(CharAEAE), ncol);
+	SEXP ans = PROTECT(NEW_LIST(ncol));
     int *colidx = (int *) R_alloc(sizeof(int), ncol);
     int *toIUPAC = (int *) R_alloc(sizeof(int), ncol);
     for (j = 0; j < ncol; ++j) {
-        sets[j] = new_CharAEAE(nrow, 0);
+		SET_VECTOR_ELT(ans, j, _NEW_XSNAP(nrow));
         colidx[j] = INTEGER(colIndex)[j] - 1;
         toIUPAC[j] = !strcmp(CHAR(STRING_ELT(colClasses, j)), "DNAString");
     }
@@ -471,18 +458,12 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
                                    colidx, ncol,
                                    nrow - nreads, INTEGER(skip)[0],
                                    CHAR(STRING_ELT(commentChar, 0)),
-                                   sets, toIUPAC);
+                                   ans, toIUPAC);
     }
 
     /* formulate return value */
-    SEXP ans, elt;
-    PROTECT(ans = NEW_LIST(ncol));
-    for (j = 0; j < ncol; ++j) {
-        const char *clsName = CHAR(STRING_ELT(colClasses, j));
-        PROTECT(elt = _CharAEAE_to_XStringSet(sets + j, clsName));
-        SET_VECTOR_ELT(ans, j, elt);
-        UNPROTECT(1);
-    }
+    for (j = 0; j < ncol; ++j)
+		_XSNAP_ELT(ans, j, CHAR(STRING_ELT(colClasses, j)));
     UNPROTECT(1);
     return ans;
 }
@@ -547,8 +528,6 @@ _AlignedRead_Solexa_make(SEXP fields)
     PROTECT(adf);
 
     SEXP aln;
-    SEXP strand_lvls = PROTECT(_get_strand_levels());
-    _as_factor_SEXP(VECTOR_ELT(fields, 9), strand_lvls);
     NEW_CALL(s, t, "AlignedRead", nmspc, 8);
     CSET_CDR(t, "sread", VECTOR_ELT(fields, 5));
     CSET_CDR(t, "quality", sfq); 
@@ -559,7 +538,7 @@ _AlignedRead_Solexa_make(SEXP fields)
     CSET_CDR(t, "alignData", adf);
     CEVAL_TO(s, nmspc, aln);
 
-    UNPROTECT(7);
+    UNPROTECT(6);
     return aln;
 }
 
@@ -569,9 +548,7 @@ _AlignedRead_Solexa_make(SEXP fields)
 
 int
 _read_solexa_export_file(const char *fname, const char *commentChar,
-						 int offset, 
-						 CharAEAE *sread, CharAEAE *quality,
-                         SEXP result)
+						 int offset, SEXP result)
 {
     const int N_FIELDS = 22;
     gzFile *file;
@@ -583,7 +560,8 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         *tile = INTEGER(VECTOR_ELT(result, 2)),
         *x = INTEGER(VECTOR_ELT(result, 3)),
         *y = INTEGER(VECTOR_ELT(result, 4));
-    /* sread, quality */
+	_XSnap sread = VECTOR_ELT(result, 5),
+		quality = VECTOR_ELT(result, 6);
     SEXP chromosome = VECTOR_ELT(result, 7);
     int *position = INTEGER(VECTOR_ELT(result, 8)),
         *strand = INTEGER(VECTOR_ELT(result, 9)),
@@ -612,8 +590,8 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         y[irec] = atoi(elt[5]);
     
         /* 6: indexString, 7: pairedReadNumber */
-        append_string_to_CharAEAE(sread, elt[8]);
-        append_string_to_CharAEAE(quality, elt[9]);
+        _APPEND_XSNAP(sread, elt[8]);
+        _APPEND_XSNAP(quality, elt[9]);
         SET_STRING_ELT(chromosome, irec, mkChar(elt[10]));
         /* 11: contig */
         if (*elt[12] == '\0')
@@ -680,16 +658,14 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
 
-    CharAEAE
-        sread = new_CharAEAE(nrec, 0),
-        quality = new_CharAEAE(nrec, 0);
     SEXP result = PROTECT(NEW_LIST(N_ELTS));;
     SET_VECTOR_ELT(result, 0, NEW_STRING(nrec)); /* run */
     SET_VECTOR_ELT(result, 1, NEW_INTEGER(nrec)); /* lane */
     SET_VECTOR_ELT(result, 2, NEW_INTEGER(nrec)); /* tile */
     SET_VECTOR_ELT(result, 3, NEW_INTEGER(nrec)); /* x */
     SET_VECTOR_ELT(result, 4, NEW_INTEGER(nrec)); /* y */
-    /* 5, 6: sread, quality */
+	SET_VECTOR_ELT(result, 5, _NEW_XSNAP(nrec));
+	SET_VECTOR_ELT(result, 6, _NEW_XSNAP(nrec));
     SET_VECTOR_ELT(result, 7, NEW_STRING(nrec));  /* chromosome */
     SET_VECTOR_ELT(result, 8, NEW_INTEGER(nrec)); /* position */
     SET_VECTOR_ELT(result, 9, NEW_INTEGER(nrec)); /* strand: factor */
@@ -701,17 +677,17 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
         R_CheckUserInterrupt();
         nrec += _read_solexa_export_file(
             CHAR(STRING_ELT(files, i)), 
-            CHAR(STRING_ELT(commentChar, 0)),
-            nrec, &sread, &quality, result);
+			CHAR(STRING_ELT(commentChar, 0)),
+            nrec, result);
     }
 
-    SEXP tmp;
-    PROTECT(tmp = _CharAEAE_to_XStringSet(&sread, "DNAString"));
-    SET_VECTOR_ELT(result, 5, tmp);
-    PROTECT(tmp = _CharAEAE_to_XStringSet(&quality, "BString"));
-    SET_VECTOR_ELT(result, 6, tmp);
+	_XSNAP_ELT(result, 5, "DNAString");
+	_XSNAP_ELT(result, 6, "BString");
+
+    SEXP strand_lvls = PROTECT(_get_strand_levels());
+    _as_factor_SEXP(VECTOR_ELT(result, 9), strand_lvls);
 
     SEXP aln = _AlignedRead_Solexa_make(result);
-    UNPROTECT(3);
+    UNPROTECT(2);
     return aln;
 }
