@@ -106,7 +106,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       \code{values} after the corresponding fields of \code{x}.}
 
     \item{narrow}{\code{signature(x = "ShortReadQ", start = NA, end = NA, width = NA, use.names = TRUE)}:
-      \sQuote{narrow} \code{sread} and \code{qualilty} so that sequences
+      \sQuote{narrow} \code{sread} and \code{quality} so that sequences
       are between \code{start} and \code{end} bases, according to
       \code{\link[IRanges:IRanges-utils]{narrow}} in the \code{IRanges}
       package.}

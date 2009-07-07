@@ -133,7 +133,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       position. Both systems number base pairs from left to right on the
       5' strand. \code{leftmost} indicates the eland convention,
       where \code{position(x)} is the left-most (minimum) base pair,
-      regardless of strand. \code{fiveprime} is the MAQ convetion, where
+      regardless of strand. \code{fiveprime} is the MAQ convention, where
       \code{position(x)} is the coordinate of the 5' end of the
       aligned read.
 

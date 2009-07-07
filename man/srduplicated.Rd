@@ -42,7 +42,7 @@ srduplicated(x, ...)
 
   \code{srrank} settles ties using the \dQuote{min} criterion described
   in \code{\link{rank}}, i.e., identical elements are ranked equal to the
-  rank of the first occurence of the sorted element.
+  rank of the first occurrence of the sorted element.
 
   The following methods are defined, in addition to methods described in
   class-specific documentation:

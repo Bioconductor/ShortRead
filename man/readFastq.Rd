@@ -16,7 +16,7 @@
 
   \code{writeFastq} writes an object to a single \code{file}, using
   \code{mode="w"} (the default) to create a new file or \code{mode="a"}
-  append to an existing file. Attemptint to write to an existing file
+  append to an existing file. Attempting to write to an existing file
   with \code{mode="w"} results in an error.
 
 }

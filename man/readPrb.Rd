@@ -32,7 +32,7 @@ readPrb(dirPath, pattern = character(0), ...)
 
 \details{
 
-  The \code{readPrb,character-method} contains an arugment \code{as}
+  The \code{readPrb,character-method} contains an argument \code{as}
   that determines the value of the returned object, as follows.
 
   \itemize{
@@ -64,7 +64,7 @@ readPrb(dirPath, pattern = character(0), ...)
 
       The quality scores are \emph{not} summarized; the return value is
       an integer array with dimensions corresponding to reads,
-      nucleotids, and cycles.
+      nucleotides, and cycles.
 
     }
 

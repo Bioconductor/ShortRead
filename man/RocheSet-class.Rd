@@ -26,7 +26,7 @@
       for details on data representation in this class.}
 
     \item{\code{readCount}:}{Object of class \code{"integer"}
-      containingn the number of reads associated with each sample; see
+      containing the number of reads associated with each sample; see
       \code{\linkS4class{SRSet}} for details on data representation in
       this class.}
 

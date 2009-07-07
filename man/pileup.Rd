@@ -65,7 +65,7 @@ actual 'end' of the fragment. If you are confused now, look at the examples belo
 \examples{\dontrun{ 
 
 Example 1: Assuming that 'lane' is an 'AlignedRead' object containing
-aligned reads froma Solexa lane, you may get a pile-up representation of
+aligned reads from a Solexa lane, you may get a pile-up representation of
 chromosome 13 as follows
 
 chr13length <- 114142980   # the length of human chromosme 13

@@ -101,7 +101,7 @@ readAligned(dirPath, pattern=character(0), ...)
       \code{s_L_TTTT_align.txt} or \code{s_L_TTTT_realign.txt} files
       produced by default and eland analyses. From the Solexa
       documentation, \code{align} corresponds to unfiltered first-pass
-      alignements, \code{prealign} adjusts alignments for error rates
+      alignments, \code{prealign} adjusts alignments for error rates
       (when available), \code{realign} filters alignments to exclude
       clusters failing to pass quality criteria.
 
@@ -167,7 +167,7 @@ readAligned(dirPath, pattern=character(0), ...)
         \item{Substitution error}{stored in \code{alignData} as
           \code{mismatchDetailOne} and \code{mismatchDetailTwo}. Present
           only for unique inexact matches at one or two
-          positions. Position and type of first substituation error,
+          positions. Position and type of first substitution error,
           e.g., 11A represents 11 matches with 12th base an A in
           reference but not read. The reference manual cited below lists
           only one field (\code{mismatchDetailOne}), but two are present

@@ -35,7 +35,7 @@ readIntensities(dirPath, pattern=character(0), ...)
   Additional methods are defined on specific classes, see, e.g.,
   \code{\linkS4class{SolexaPath}}.
 
-  The \code{readIntensities,character-method} contains an arugment
+  The \code{readIntensities,character-method} contains an argument
   \code{type} that determines how intensities are parsed. Use the
   \code{type} argument to \code{readIntensities,character-method}, as
   follows:
@@ -72,7 +72,7 @@ readIntensities(dirPath, pattern=character(0), ...)
     }
   }
 
-  Arugments to these methods are as follows:
+  Arguments to these methods are as follows:
 
   \itemize{
 

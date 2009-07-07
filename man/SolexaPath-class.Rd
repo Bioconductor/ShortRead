@@ -84,7 +84,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \code{signature(dirPath = "SolexaPath", pattern=character(0), run, ...)}:
 
       Use \code{imageAnalysisPath(sp)[run]} as the directory path(s) and
-      \code{pattern=character(0)} as the pattern for discovering Soelxa
+      \code{pattern=character(0)} as the pattern for discovering Solexa
       intensity files. See
       \code{\link{readIntensities,character-method}} for additional
       parameters.}
@@ -95,7 +95,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 
       Use \code{baseCallPath(dirPath)[run]} as the directory path(s) and
       \code{pattern=character(0)} as the pattern for discovering Solexa
-      \sQuote{prb} files, retuning a \code{\linkS4class{SFastqQuality}}
+      \sQuote{prb} files, returning a \code{\linkS4class{SFastqQuality}}
       object containing the maximum qualities found for each base of
       each cycle.
 
@@ -150,8 +150,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
     \item{qa}{
       \code{signature(dirPath="SolexaPath", pattern="character(0)", run, ...)}:
 
-      Use \code{analysisPath(dirPath)[run]} as the directorpy path(s) and
-      \code{pattern=".*_export.txt"} as the pattern for discovering solexa
+      Use \code{analysisPath(dirPath)[run]} as the directory path(s) and
+      \code{pattern=".*_export.txt"} as the pattern for discovering Solexa
       \code{export}-formatted fileds, returning a
       \code{\linkS4class{SolexaExportQA}} object summarizing quality
       assessment. If \code{Rmpi} has been initiated, quality assessment

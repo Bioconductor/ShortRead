@@ -11,7 +11,7 @@
   into a single \code{\linkS4class{ShortReadQ}}-class object.
   Information on machine, lane, tile, x, and y coordinates, filtering
   status, and read number are not returned (although filtering status
-  can be used to selectively include reads as descrbied below).
+  can be used to selectively include reads as described below).
 
 }
 \usage{

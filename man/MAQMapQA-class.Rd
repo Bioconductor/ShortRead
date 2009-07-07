@@ -35,7 +35,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 }
 
 \section{Methods}{
-  Accessor methods are inheritted from the \code{\linkS4class{SRList}}
+  Accessor methods are inherited from the \code{\linkS4class{SRList}}
   class. 
   \describe{
     \item{report}{\code{signature(x="MAQMapQA", ...,

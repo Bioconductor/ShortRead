@@ -50,17 +50,17 @@
 
   \describe{
 
-    \item{data}{Object of class \code{"data.frame"}, inheritted from
+    \item{data}{Object of class \code{"data.frame"}, inherited from
       \code{AnnotatedDataFrame}.}
     
-    \item{varMetadata}{Object of class \code{"data.frame"}, inheritted
+    \item{varMetadata}{Object of class \code{"data.frame"}, inherited
       from \code{AnnotatedDataFrame}.}
 
-    \item{dimLabels}{Object of class \code{"character"}, inheritted
+    \item{dimLabels}{Object of class \code{"character"}, inherited
       from \code{AnnotatedDataFrame}.}
 
     \item{\code{.__classVersion__}}{Object of class \code{"Versions"},
-      inheritted from \code{AnnotatedDataFrame}.}
+      inherited from \code{AnnotatedDataFrame}.}
 
     \item{.init}{Object of class \code{"ScalarLogical"}, used internally
       to indicate whether the user initialized this object.}

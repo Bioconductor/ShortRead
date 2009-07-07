@@ -170,7 +170,7 @@
       matrix of type \code{integer}.}
 
     \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
-      \sQuote{narrow} \code{qualilty} so that scores are between
+      \sQuote{narrow} \code{quality} so that scores are between
       \code{start} and \code{end} bases, according to
       \code{\link[IRanges:IRanges-utils]{narrow}} in the \code{IRanges}
       package.}
