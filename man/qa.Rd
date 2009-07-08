@@ -14,8 +14,10 @@
 }
 \usage{
 qa(dirPath, ...)
-\S4method{qa}{character}(dirPath, pattern=character(0), type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", "MAQMapShort",
-"fastq"), ...)
+\S4method{qa}{character}(dirPath, pattern=character(0), 
+    type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", 
+           "MAQMapShort", "fastq"),
+    ...)
 }
 
 \arguments{
@@ -41,10 +43,7 @@ qa(dirPath, ...)
   The following methods are defined, in addition to those on S4 formal
   classes documented elsewhere:
   \itemize{
-    \item{
-      \code{dirPath="character", pattern="character",
-		type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", "MAQMapShort", "fastq"), 
-		...}}{
+    \item{\code{qa,character-method}}{
 
       Quality assessment is performed on all files in directory
       \code{dirPath} whose file name matches \code{pattern}. The type of
