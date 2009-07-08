@@ -14,6 +14,8 @@
 }
 \usage{
 qa(dirPath, ...)
+\S4method{qa}{character}(dirPath, pattern=character(0), type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", "MAQMapShort",
+"fastq"), ...)
 }
 
 \arguments{
@@ -24,15 +26,24 @@ qa(dirPath, ...)
     pages for defined methods (by evaluating the example code, below)
     for details of available methods.}
 
+  \item{pattern}{A character vector limiting the files in \code{dirPath}
+	to be processed, as with \code{\link{list.files}}. Care should be
+	taken to specify pattern to avoid reading unintneded files.}
+
+  \item{type}{The type of file being parsed; must be a character vector
+	of length 1, selected from one of the types enumerated in the
+	parameter.}
+
   \item{\dots}{Additional arguments used by methods.}
 }
 
 \details{
-  The following methods are defined:
+  The following methods are defined, in addition to those on S4 formal
+  classes documented elsewhere:
   \itemize{
     \item{
       \code{dirPath="character", pattern="character",
-		type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMapShort", "fastq"), 
+		type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", "MAQMapShort", "fastq"), 
 		...}}{
 
       Quality assessment is performed on all files in directory
@@ -42,9 +53,9 @@ qa(dirPath, ...)
       Solexa \code{_export.txt} files. Use \code{SolexaRealign} for
       Solexa \code{_realign.txt} files. Use \code{Bowtie} for Bowtie
       files. Use \code{MAQMapShort} for MAQ \code{map} files produced by
-      MAQ versions below 0.70, and \code{fastq} for collections of
-      fastq-format files. Quality assessment details vary depending on
-      data source.
+      MAQ versions below 0.70 and \code{MAQMap} for more recent output.
+      Use \code{fastq} for collections of fastq-format files. Quality
+      assessment details vary depending on data source.
 
     }
   }
@@ -64,7 +75,7 @@ qa(dirPath, ...)
 }
 
 \examples{
-showMethods("qa")
+showMethods("qa", where=getNamespace("ShortRead"))
 }
 
 \keyword{manip}

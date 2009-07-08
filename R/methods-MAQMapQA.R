@@ -16,11 +16,11 @@
           FastqQuality(reverse(quality(quality(aln)[!plus])))))
 }
 
-.qa_MAQMapShort_lane <-
-    function(dirPath, pattern, ..., type="MAQMapShort", verbose=FALSE) 
+.qa_MAQMap_lane <-
+    function(dirPath, pattern, type, ..., verbose=FALSE) 
 {
     if (verbose)
-        message("qa 'MAQMapShort' pattern:", pattern)
+        message("qa '", type, "' pattern: ", pattern, sep="")
     rpt <- .maq_reverse(readAligned(dirPath, pattern, type, ...))
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE,collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
@@ -91,12 +91,11 @@
          )
 }
 
-.qa_MAQMapShort <-
-    function(dirPath, pattern, type="MAQMapShort", ...,
-             verbose=FALSE) 
+.qa_MAQMap <-
+    function(dirPath, pattern, type, ..., verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_MAQMapShort_lane,
+    lst <- srapply(basename(fls), .qa_MAQMap_lane,
                    dirPath=dirPath, type=type, ...,
                    verbose=verbose)
     names(lst) <- basename(fls)

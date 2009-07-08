@@ -1,7 +1,7 @@
 .qa_character <-
     function(dirPath, pattern=character(0),
              type=c("SolexaExport", "SolexaRealign", "Bowtie",
-               "MAQMapShort", "fastq"),
+               "MAQMap", "MAQMapShort", "fastq"),
              ...)
 {
     tryCatch(type <- match.arg(type),
@@ -15,8 +15,8 @@
            SolexaRealign=.qa_SolexaRealign(dirPath, pattern,
              type="SolexaRealign", ...),
            Bowtie=.qa_Bowtie(dirPath, pattern, type="Bowtie", ...),
-           MAQMapShort=.qa_MAQMapShort(dirPath, pattern,
-             type="MAQMapShort", ...),
+           MAQMap=.qa_MAQMap(dirPath, pattern, type=type, ...),
+           MAQMapShort=.qa_MAQMap(dirPath, pattern, type=type, ...),
            fastq=.qa_fastq(dirPath, pattern, type="fastq", ...))
 }
 

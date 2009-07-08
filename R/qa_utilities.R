@@ -1,7 +1,7 @@
 .ppnCount <- function(m) {
     ## scale subsequent columns to be proportions of 
     ## first column
-    m[,-1] <- round(1000 * m[,-1] / m[,1]) / 1000
+    m[,-1] <- round(1000 * m[,-1] / ifelse(is.na(m[,1]), 1, m[,1])) / 1000
     m
 }
 .df2a <- function(df, fmt="%.3g")
