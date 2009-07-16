@@ -81,6 +81,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 
   \describe{
 
+    \item{quality}{inheritted from \code{signature(object = "ANY")}:
+      access the quality slot of \code{object}.}
+
+
     \item{coerce}{\code{signature(from = "SFastqQuality", to = "QualityScaledDNAStringSet")}:
       
       (Use \code{as(from, "QualityScaledDNAStringSet")}) coerce objects

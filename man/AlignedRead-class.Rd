@@ -11,6 +11,8 @@
 \alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{append,AlignedRead,AlignedRead,missing-method}
 \alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
+\alias{chromosome,AlignedRead-method}
+\alias{position,AlignedRead-method}
 \alias{strand,AlignedRead-method}
 \alias{coverage,AlignedRead-method}
 \alias{srrank,AlignedRead-method}
@@ -96,6 +98,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       
       (Invoke this method with, \code{as(from, "AlignedRead")}) coerce
       objects of class \code{from} to class \code{to}.}
+
+    \item{chromosome}{\code{signature(object = "AlignedRead")}: access the
+      chromosome slot of \code{object}.}
+
+    \item{position}{\code{signature(object = "AlignedRead")}: access the
+      position slot of \code{object}.}
 
     \item{strand}{\code{signature(object = "AlignedRead")}: access the
       strand slot of \code{object}.}

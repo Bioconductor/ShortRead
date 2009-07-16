@@ -27,8 +27,9 @@
 
 \description{
 
-  These functions are `accessors' (to get and set values) for objects in
-  the \pkg{ShortRead} package.
+  These functions and generics define `accessors' (to get and set
+  values) for objects in the \pkg{ShortRead} package; methods defined in
+  other packages may have additional meaning.
 
 }
 \usage{

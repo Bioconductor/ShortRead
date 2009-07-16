@@ -9,7 +9,10 @@
 
 setMethod(.srValidity, "ShortRead", .ShortRead_validity)
 
-.make_getter(c("id", "sread"))
+.make_getter("sread")
+
+setMethod(id, "ShortRead",
+          function(object, ...) slot(object, "id"))
 
 setMethod(ShortRead, c("DNAStringSet", "BStringSet"),
           function(sread, id, ...)

@@ -142,6 +142,15 @@ setGeneric("readAligned",
            function(dirPath, pattern=character(0), ...)
            standardGeneric("readAligned"), signature="dirPath")
 
+setGeneric("chromosome",
+           function(object, ...) standardGeneric("chromosome"))
+
+setGeneric("id",
+           function(object, ...) standardGeneric("id"))
+
+setGeneric("position",
+           function(object, ...) standardGeneric("position"))
+
 ## ExperimentPath
 
 experimentPath <- function(object, ...) {

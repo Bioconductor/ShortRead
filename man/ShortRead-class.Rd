@@ -26,6 +26,7 @@
 \alias{narrow,ShortRead-method}
 \alias{compact,ShortRead-method}
 \alias{detail,ShortRead-method}
+\alias{id,ShortRead-method}
 \alias{length,ShortRead-method}
 \alias{show,ShortRead-method}
 \alias{width,ShortRead-method}
@@ -75,9 +76,16 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
 
   }
 
-  See \code{\link{accessors}} for slot accessor functions.
+  Methods include:
 
   \describe{
+
+    \item{sread}{\code{signature(object = "AlignedRead")}: access the
+      sread slot of \code{object}.}
+
+    \item{id}{\code{signature(object = "AlignedRead")}: access the
+      id slot of \code{object}.}
+
     \item{[}{\code{signature(x = "ShortRead", i = "ANY", j = "missing")}: 
       This method creates a new \code{ShortRead} object containing only
       those reads indexed by \code{i}. Additional methods on

@@ -47,13 +47,16 @@ AlignedRead <- function(sread = DNAStringSet(character(0)),
         strand=strand, alignQuality=alignQuality, alignData=alignData)
 }
 
-.make_getter(c("chromosome", "position", "alignQuality",
-               "alignData"))
+.make_getter(c("alignQuality", "alignData"))
 
-setMethod(strand, "AlignedRead", function(x)
-{
-    slot(x, "strand")
-})
+setMethod(chromosome, "AlignedRead",
+          function(object, ...) slot(object, "chromosome"))
+
+setMethod(position, "AlignedRead",
+          function(object, ...) slot(object, "position"))
+
+setMethod(strand, "AlignedRead",
+          function(x) slot(x, "strand"))
 
 ## coerce
 
