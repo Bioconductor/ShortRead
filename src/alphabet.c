@@ -52,10 +52,10 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
      *
      * FIXME:
      */
-    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    cachedXStringSet cache = cache_XStringSet(stringSet);
     const int len = get_XStringSet_length(stringSet);
     for (i = 0; i < len; ++i) {
-        RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        RoSeq seq = get_cachedXStringSet_elt(&cache, i);
         for (j = 0; j < seq.nelt; ++j) {
             int idx = map[decode(seq.elts[j])];
             if (idx >= 0)
@@ -126,12 +126,12 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
      *
      * FIXME:
      */
-    CachedXStringSet cache1 = new_CachedXStringSet(stringSet1);
-    CachedXStringSet cache2 = new_CachedXStringSet(stringSet2);
+    cachedXStringSet cache1 = cache_XStringSet(stringSet1);
+    cachedXStringSet cache2 = cache_XStringSet(stringSet2);
     const int len = get_XStringSet_length(stringSet1);
     for (i = 0; i < len; ++i) {
-        RoSeq seq1 = get_CachedXStringSet_elt_asRoSeq(&cache1, i);
-        RoSeq seq2 = get_CachedXStringSet_elt_asRoSeq(&cache2, i);
+        RoSeq seq1 = get_cachedXStringSet_elt(&cache1, i);
+        RoSeq seq2 = get_cachedXStringSet_elt(&cache2, i);
         for (j = 0; j < seq1.nelt; ++j) {
             int idx1 = map1[decode1(seq1.elts[j])];
             int idx2 = map2[decode2(seq2.elts[j])];
@@ -163,9 +163,9 @@ alphabet_score(SEXP stringSet, SEXP score)
     PROTECT(ans = NEW_NUMERIC(len));
     double *dans = REAL(ans);
 
-    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    cachedXStringSet cache = cache_XStringSet(stringSet);
     for (i = 0; i < len; ++i) {
-        RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        RoSeq seq = get_cachedXStringSet_elt(&cache, i);
         dans[i] = 0;
         for (j = 0; j < seq.nelt; ++j)
             dans[i] +=  dscore[decode(seq.elts[j])];
@@ -187,15 +187,15 @@ alphabet_as_int(SEXP stringSet, SEXP score)
     DECODE_FUNC decode = decoder(base);
     const int len = get_XStringSet_length(stringSet);
 
-    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    cachedXStringSet cache = cache_XStringSet(stringSet);
     int i;
 
-    RoSeq seq = get_CachedXStringSet_elt_asRoSeq(&cache, 0);
+    RoSeq seq = get_cachedXStringSet_elt(&cache, 0);
     int width = seq.nelt;
     int *ians;
     SEXP ans;
     for (i = 1; i < len && width > 0; ++i) {
-        seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        seq = get_cachedXStringSet_elt(&cache, i);
         if (seq.nelt != width) width = -1;
     }
     if (width >= 0) {           /* matrix */
@@ -208,7 +208,7 @@ alphabet_as_int(SEXP stringSet, SEXP score)
     const int *iscore = INTEGER(score);
     int j;
     for (i = 0; i < len; ++i) {
-        seq = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        seq = get_cachedXStringSet_elt(&cache, i);
         if (width >= 0) { /* int matrix */
             for (j = 0; j < seq.nelt; ++j)
                 ians[len*j + i] =  iscore[decode(seq.elts[j])];
@@ -244,13 +244,13 @@ compare_RoSeq(const void *a, const void *b)
 }
 
 void
-_alphabet_order(CachedXStringSet cache, XSort *xptr, const int len)
+_alphabet_order(cachedXStringSet cache, XSort *xptr, const int len)
 {
     int i;
 
     for (i = 0; i < len; ++i) {
         xptr[i].offset=i;
-        xptr[i].ref = get_CachedXStringSet_elt_asRoSeq(&cache, i);
+        xptr[i].ref = get_cachedXStringSet_elt(&cache, i);
     }
     qsort(xptr, len, sizeof(XSort), compare_RoSeq);
 }
@@ -260,7 +260,7 @@ alphabet_order(SEXP stringSet)
 {
     /* FIXME: stringSet is XStringSet; non-zero len? */
     const int len = get_XStringSet_length(stringSet);
-    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    cachedXStringSet cache = cache_XStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
 
@@ -279,7 +279,7 @@ alphabet_duplicated(SEXP stringSet)
 {
     /* FIXME: stringSet is XStringSet; non-zero len? */
     const int len = get_XStringSet_length(stringSet);
-    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    cachedXStringSet cache = cache_XStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
 
@@ -300,7 +300,7 @@ alphabet_rank(SEXP stringSet)
 {
     /* integer vector of unique indices into sorted set */
     const int len = get_XStringSet_length(stringSet);
-    CachedXStringSet cache = new_CachedXStringSet(stringSet);
+    cachedXStringSet cache = cache_XStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
 
@@ -329,16 +329,16 @@ aligned_read_rank(SEXP alignedRead, SEXP order, SEXP rho)
     PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
     int *c = INTEGER(chr), *s = INTEGER(str), *p = INTEGER(pos),
         *o = INTEGER(order), len = LENGTH(order);
-    CachedXStringSet cache = new_CachedXStringSet(sread);
+    cachedXStringSet cache = cache_XStringSet(sread);
     XSort *xptr = (XSort*) R_alloc(2, sizeof(XSort));
     SEXP rank;
     PROTECT(rank = NEW_INTEGER(len));
     int *r = INTEGER(rank), i;
-    xptr[0].ref = get_CachedXStringSet_elt_asRoSeq(&cache, 0);
+    xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
     r[o[0]-1] = 1;
     for (i = 1; i < len; ++i) {
         const int this = o[i]-1, prev=o[i-1]-1;
-        xptr[i%2].ref = get_CachedXStringSet_elt_asRoSeq(&cache, this);
+        xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
         if (c[this] != c[prev] || s[this] != s[prev] ||
             p[this] != p[prev] || compare_RoSeq(xptr, xptr+1) != 0)
             r[this] = i + 1;

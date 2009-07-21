@@ -29,11 +29,11 @@ _write_err(FILE *file, int i)
 
 
 char *
-_cache_to_char(CachedXStringSet *cache, const int i,
+_cache_to_char(cachedXStringSet *cache, const int i,
                char *buf, const int width, 
                DECODE_FUNC decode)
 {
-    RoSeq roSeq = get_CachedXStringSet_elt_asRoSeq(cache, i);
+    RoSeq roSeq = get_cachedXStringSet_elt(cache, i);
     if (roSeq.nelt > width)
         return NULL;
     if (decode != NULL) {
@@ -74,9 +74,9 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
     const int width = INTEGER(max_width)[0];
 
     DECODE_FUNC dnaDecoder = decoder(get_XStringSet_baseClass(sread));
-    CachedXStringSet xid = new_CachedXStringSet(id),
-        xsread = new_CachedXStringSet(sread),
-        xquality = new_CachedXStringSet(quality);
+    cachedXStringSet xid = cache_XStringSet(id),
+        xsread = cache_XStringSet(sread),
+        xquality = cache_XStringSet(quality);
 
     FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)), 
                        CHAR(STRING_ELT(fmode, 0)));
