@@ -33,16 +33,16 @@ _cache_to_char(cachedXStringSet *cache, const int i,
                char *buf, const int width, 
                DECODE_FUNC decode)
 {
-    RoSeq roSeq = get_cachedXStringSet_elt(cache, i);
-    if (roSeq.nelt > width)
+    cachedCharSeq roSeq = get_cachedXStringSet_elt(cache, i);
+    if (roSeq.length > width)
         return NULL;
     if (decode != NULL) {
         int j;
-        for (j = 0; j < roSeq.nelt; ++j)
-            buf[j] = decode(roSeq.elts[j]);
+        for (j = 0; j < roSeq.length; ++j)
+            buf[j] = decode(roSeq.seq[j]);
     } else 
-        strncpy(buf, roSeq.elts, roSeq.nelt);
-    buf[roSeq.nelt] = '\0';
+        strncpy(buf, roSeq.seq, roSeq.length);
+    buf[roSeq.length] = '\0';
     return buf;
 }
 
@@ -73,7 +73,7 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
         Rf_error("'%s' must be %s", "max_width", "'integer(1)', >=0");
     const int width = INTEGER(max_width)[0];
 
-    DECODE_FUNC dnaDecoder = decoder(get_XStringSet_baseClass(sread));
+    DECODE_FUNC dnaDecoder = decoder(get_XStringSet_xsbaseclassname(sread));
     cachedXStringSet xid = cache_XStringSet(id),
         xsread = cache_XStringSet(sread),
         xquality = cache_XStringSet(quality);

@@ -33,7 +33,7 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */
 
     /* set up a decoder for the string */
-    const char *base = get_XStringSet_baseClass(stringSet);
+    const char *base = get_XStringSet_xsbaseclassname(stringSet);
     DECODE_FUNC decode = decoder(base);
 
     /* map between decoded character and offset into 'ans' */
@@ -55,9 +55,9 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     cachedXStringSet cache = cache_XStringSet(stringSet);
     const int len = get_XStringSet_length(stringSet);
     for (i = 0; i < len; ++i) {
-        RoSeq seq = get_cachedXStringSet_elt(&cache, i);
-        for (j = 0; j < seq.nelt; ++j) {
-            int idx = map[decode(seq.elts[j])];
+        cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+        for (j = 0; j < seq.length; ++j) {
+            int idx = map[decode(seq.seq[j])];
             if (idx >= 0)
                 ansp[j * nrow + idx] += 1;
         }
@@ -100,8 +100,8 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */
 
     /* set up a decoder for string1 and string2 */
-    const char *base1 = get_XStringSet_baseClass(stringSet1);
-    const char *base2 = get_XStringSet_baseClass(stringSet2);
+    const char *base1 = get_XStringSet_xsbaseclassname(stringSet1);
+    const char *base2 = get_XStringSet_xsbaseclassname(stringSet2);
     DECODE_FUNC decode1 = decoder(base1);
     DECODE_FUNC decode2 = decoder(base2);
 
@@ -130,11 +130,11 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     cachedXStringSet cache2 = cache_XStringSet(stringSet2);
     const int len = get_XStringSet_length(stringSet1);
     for (i = 0; i < len; ++i) {
-        RoSeq seq1 = get_cachedXStringSet_elt(&cache1, i);
-        RoSeq seq2 = get_cachedXStringSet_elt(&cache2, i);
-        for (j = 0; j < seq1.nelt; ++j) {
-            int idx1 = map1[decode1(seq1.elts[j])];
-            int idx2 = map2[decode2(seq2.elts[j])];
+        cachedCharSeq seq1 = get_cachedXStringSet_elt(&cache1, i);
+        cachedCharSeq seq2 = get_cachedXStringSet_elt(&cache2, i);
+        for (j = 0; j < seq1.length; ++j) {
+            int idx1 = map1[decode1(seq1.seq[j])];
+            int idx2 = map2[decode2(seq2.seq[j])];
             if (idx1 >= 0 && idx2 >= 0)
                 ansp[j * dim1xdim2 + idx2 * dim1 + idx1] += 1;
         }
@@ -148,7 +148,7 @@ SEXP
 alphabet_score(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStringSet */
-    const char *base = get_XStringSet_baseClass(stringSet);
+    const char *base = get_XStringSet_xsbaseclassname(stringSet);
     if (strcmp(base, "BString") != 0)
         Rf_error("'stringSet' must contain BString elements");
     if (!IS_NUMERIC(score) || LENGTH(score) != 256)
@@ -165,10 +165,10 @@ alphabet_score(SEXP stringSet, SEXP score)
 
     cachedXStringSet cache = cache_XStringSet(stringSet);
     for (i = 0; i < len; ++i) {
-        RoSeq seq = get_cachedXStringSet_elt(&cache, i);
+        cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
         dans[i] = 0;
-        for (j = 0; j < seq.nelt; ++j)
-            dans[i] +=  dscore[decode(seq.elts[j])];
+        for (j = 0; j < seq.length; ++j)
+            dans[i] +=  dscore[decode(seq.seq[j])];
     }
 
     UNPROTECT(1);
@@ -179,7 +179,7 @@ SEXP
 alphabet_as_int(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStrinSet(1) or longer? */
-    const char *base = get_XStringSet_baseClass(stringSet);
+    const char *base = get_XStringSet_xsbaseclassname(stringSet);
     if (strcmp(base, "BString") != 0)
         Rf_error("'stringSet' must contain BString elements");
     if (!IS_INTEGER(score) || LENGTH(score) != 256)
@@ -190,13 +190,13 @@ alphabet_as_int(SEXP stringSet, SEXP score)
     cachedXStringSet cache = cache_XStringSet(stringSet);
     int i;
 
-    RoSeq seq = get_cachedXStringSet_elt(&cache, 0);
-    int width = seq.nelt;
+    cachedCharSeq seq = get_cachedXStringSet_elt(&cache, 0);
+    int width = seq.length;
     int *ians;
     SEXP ans;
     for (i = 1; i < len && width > 0; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);
-        if (seq.nelt != width) width = -1;
+        if (seq.length != width) width = -1;
     }
     if (width >= 0) {           /* matrix */
         ans = PROTECT(allocMatrix(INTSXP, len, width));
@@ -210,13 +210,13 @@ alphabet_as_int(SEXP stringSet, SEXP score)
     for (i = 0; i < len; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);
         if (width >= 0) { /* int matrix */
-            for (j = 0; j < seq.nelt; ++j)
-                ians[len*j + i] =  iscore[decode(seq.elts[j])];
+            for (j = 0; j < seq.length; ++j)
+                ians[len*j + i] =  iscore[decode(seq.seq[j])];
         } else {                /* list of ints */
-            SET_VECTOR_ELT(ans, i, NEW_INTEGER(seq.nelt));
+            SET_VECTOR_ELT(ans, i, NEW_INTEGER(seq.length));
             ians = INTEGER(VECTOR_ELT(ans, i));
-            for (j = 0; j < seq.nelt; ++j)
-                ians[j] =  iscore[decode(seq.elts[j])];
+            for (j = 0; j < seq.length; ++j)
+                ians[j] =  iscore[decode(seq.seq[j])];
         }
     }
 
@@ -228,18 +228,18 @@ alphabet_as_int(SEXP stringSet, SEXP score)
 
 typedef struct {
     int offset;
-    RoSeq ref;
+    cachedCharSeq ref;
 } XSort;
 
 int
-compare_RoSeq(const void *a, const void *b)
+compare_cachedCharSeq(const void *a, const void *b)
 {
-    const RoSeq ra = ((const XSort*) a)->ref;
-    const RoSeq rb = ((const XSort*) b)->ref;
+    const cachedCharSeq ra = ((const XSort*) a)->ref;
+    const cachedCharSeq rb = ((const XSort*) b)->ref;
 
-    const int diff = ra.nelt - rb.nelt;
-    size_t len = diff < 0 ? ra.nelt : rb.nelt;
-    int res = memcmp(ra.elts, rb.elts, len);
+    const int diff = ra.length - rb.length;
+    size_t len = diff < 0 ? ra.length : rb.length;
+    int res = memcmp(ra.seq, rb.seq, len);
     return res == 0 ? diff : res;
 }
 
@@ -252,7 +252,7 @@ _alphabet_order(cachedXStringSet cache, XSort *xptr, const int len)
         xptr[i].offset=i;
         xptr[i].ref = get_cachedXStringSet_elt(&cache, i);
     }
-    qsort(xptr, len, sizeof(XSort), compare_RoSeq);
+    qsort(xptr, len, sizeof(XSort), compare_cachedCharSeq);
 }
 
 SEXP
@@ -289,7 +289,7 @@ alphabet_duplicated(SEXP stringSet)
     ians[xptr[0].offset]=0;
     int i;
     for (i = 1; i < len; ++i)
-        ians[xptr[i].offset] = compare_RoSeq(xptr+i-1, xptr+i) == 0;
+        ians[xptr[i].offset] = compare_cachedCharSeq(xptr+i-1, xptr+i) == 0;
 
     UNPROTECT(1);
     return ans;
@@ -308,7 +308,7 @@ alphabet_rank(SEXP stringSet)
     int *irank = INTEGER(rank), i;
     irank[xptr[0].offset] = 1;
     for (i = 1; i < len; ++i) {
-        if (compare_RoSeq(&xptr[i-1], &xptr[i]) == 0) {
+        if (compare_cachedCharSeq(&xptr[i-1], &xptr[i]) == 0) {
             irank[xptr[i].offset] = irank[xptr[i-1].offset];
         } else {
             irank[xptr[i].offset] = i + 1;
@@ -340,7 +340,7 @@ aligned_read_rank(SEXP alignedRead, SEXP order, SEXP rho)
         const int this = o[i]-1, prev=o[i-1]-1;
         xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
         if (c[this] != c[prev] || s[this] != s[prev] ||
-            p[this] != p[prev] || compare_RoSeq(xptr, xptr+1) != 0)
+            p[this] != p[prev] || compare_cachedCharSeq(xptr, xptr+1) != 0)
             r[this] = i + 1;
         else
             r[this] = r[prev];
