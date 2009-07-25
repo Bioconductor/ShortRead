@@ -25,7 +25,7 @@
 
 \title{An Introduction to \Rpackage{ShortRead}}
 \author{Martin Morgan}
-\date{8 November 2008}
+\date{Modified: 8 November 2008. Compiled: \today}
 
 \begin{document}
 
