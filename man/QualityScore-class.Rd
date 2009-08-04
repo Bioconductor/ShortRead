@@ -163,11 +163,12 @@
 
     \item{coerce}{\code{signature(from = "SFastqQuality", to = "SolexaQuality")}:
 
-      (Use these as, for instance, \code{as(from, "matrix")}) coerce
-      objects of class \code{from} to class \code{to}, using the quality
-      encoding implied by the class. When \code{to} is \dQuote{matrix},
-      all quality scores are of the same width, and the result is a
-      matrix of type \code{integer}.}
+      Use like \code{as(from, "matrix")}) to coerce objects of class
+      \code{from} to class \code{to}, using the quality encoding implied
+      by the class. When \code{to} is \dQuote{matrix}, all quality
+      scores must be of the same width, and the result is a matrix of
+      type \code{integer}. The result always represents the
+      integer encoding of the corresponding quality string.}
 
     \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
       \sQuote{narrow} \code{quality} so that scores are between
