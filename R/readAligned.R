@@ -127,7 +127,8 @@
                          "Flow cell tile",
                          "Cluster x-coordinate",
                          "Cluster y-coordinate",
-                         "Read successfully passed filtering?")))
+                         "Read successfully passed filtering?",
+                         "Contig")))
 }
 
 .readAligned_SolexaExport <-

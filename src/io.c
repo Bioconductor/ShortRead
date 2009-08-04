@@ -304,11 +304,9 @@ _read_solexa_fastq_file(const char *fname, SEXP ans)
 SEXP
 read_solexa_fastq(SEXP files, SEXP withId)
 {
-    CharAEAE seq, name, qualities;
-    RoSeqs roSeqs;
     int i, nfiles, nrec = 0;
     const char *fname;
-    SEXP ans = R_NilValue, nms = R_NilValue, elt;
+    SEXP ans = R_NilValue, nms = R_NilValue;
 
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character'");
@@ -512,13 +510,14 @@ _AlignedRead_Solexa_make(SEXP fields)
     CEVAL_TO(s, nmspc, run);
     PROTECT(run);
     SEXP dataframe;
-    NEW_CALL(s, t, "data.frame", nmspc, 7);
+    NEW_CALL(s, t, "data.frame", nmspc, 8);
     CSET_CDR(t, "run", run);
     CSET_CDR(t, "lane", VECTOR_ELT(fields, 1)); 
     CSET_CDR(t, "tile", VECTOR_ELT(fields, 2)); 
     CSET_CDR(t, "x", VECTOR_ELT(fields, 3));
     CSET_CDR(t, "y", VECTOR_ELT(fields, 4));
     CSET_CDR(t, "filtering", VECTOR_ELT(fields, 11));
+    CSET_CDR(t, "contig", VECTOR_ELT(fields, 12));
     CEVAL_TO(s, nmspc, dataframe);
     PROTECT(dataframe);
     SEXP adf;
@@ -553,7 +552,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
     const int N_FIELDS = 22;
     gzFile *file;
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
-    int lineno = 0, irec = offset, i;
+    int lineno = 0, irec = offset;
 
     SEXP run = VECTOR_ELT(result, 0);
     int *lane = INTEGER(VECTOR_ELT(result, 1)),
@@ -567,6 +566,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         *strand = INTEGER(VECTOR_ELT(result, 9)),
         *alignQuality = INTEGER(VECTOR_ELT(result, 10)),
         *filtering = INTEGER(VECTOR_ELT(result, 11));
+    SEXP contig = VECTOR_ELT(result, 12);
 
     file = _fopen(fname, "rb");
     while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
@@ -593,7 +593,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         _APPEND_XSNAP(sread, elt[8]);
         _APPEND_XSNAP(quality, elt[9]);
         SET_STRING_ELT(chromosome, irec, mkChar(elt[10]));
-        /* 11: contig */
+        SET_STRING_ELT(contig, irec, mkChar(elt[11]));
         if (*elt[12] == '\0')
             position[irec] = NA_INTEGER;
         else
@@ -642,7 +642,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
 SEXP
 read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
 {
-    static const int N_ELTS = 12;
+    static const int N_ELTS = 13;
 
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character()'");
@@ -671,6 +671,7 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
     SET_VECTOR_ELT(result, 9, NEW_INTEGER(nrec)); /* strand: factor */
     SET_VECTOR_ELT(result, 10, NEW_INTEGER(nrec)); /* alignQuality */
     SET_VECTOR_ELT(result, 11, NEW_INTEGER(nrec)); /* filtering: factor */
+    SET_VECTOR_ELT(result, 12, NEW_STRING(nrec));  /* contig */
 
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {

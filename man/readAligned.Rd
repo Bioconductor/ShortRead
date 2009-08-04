@@ -70,7 +70,7 @@ readAligned(dirPath, pattern=character(0), ...)
             \item{Read}{\code{sread}}
             \item{Quality}{\code{quality}}
             \item{Match chromosome}{\code{chromosome}}
-            \item{Match contig}{Ignored}
+            \item{Match contig}{\code{alignData}}
             \item{Match position}{\code{position}}
             \item{Match strand}{\code{strand}}
             \item{Match description}{Ignored}

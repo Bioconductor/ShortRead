@@ -76,7 +76,7 @@ test_AlignedRead_readAligned_SolexaExport <- function() {
     checkTrue(is(quality(obj), "SFastqQuality"))
     checkTrue(is(alignQuality(obj), "NumericQuality"))
     checkIdentical(varLabels(alignData(obj)),
-                   c("run", "lane", "tile", "x", "y", "filtering"))
+                   c("run", "lane", "tile", "x", "y", "filtering", "contig"))
 }
 
 test_AlignedRead_readAligned_SolexaExport_filter <- function()
