@@ -44,7 +44,7 @@ test_ShortReadQ_constructors <- function() {
 test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
 {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
-    obj <- readFastq(sp)
+    obj <- readFastq(sp, qualityType="SFastqQuality")
 
     res <- as(obj, "QualityScaledDNAStringSet")
     checkIdentical(as.character(sread(obj)),

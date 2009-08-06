@@ -244,12 +244,15 @@ readAligned(dirPath, pattern=character(0), ...)
         \sQuote{mismatch}, column}
 
       }
+	  
+      NOTE: the default quality encoding changes to \code{FastqQuality}
+      with \pkg{ShortRead} version 1.3.24.
 
       This method includes the argument \code{qualityType} to specify
       how quality scores are encoded.  Bowtie quality scores are
-      \sQuote{Solexa}-like by default, with
-      \code{qualityType='SFastqQuality'}, but can be specified as
-      \sQuote{Phred}-like, with \code{qualityType='FastqQuality'}.
+      \sQuote{Phred}-like by default, with
+      \code{qualityType='FastqQuality'}, but can be specified as
+      \sQuote{Solexa}-like, with \code{qualityType='SFastqQuality'}.
 
       Bowtie outputs positions that are 0-offset from the left-most end
       of the \code{+} strand. \code{ShortRead} parses position

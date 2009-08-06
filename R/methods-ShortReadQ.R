@@ -50,13 +50,22 @@ setAs("ShortReadQ", "QualityScaledDNAStringSet", function(from)
 
 setMethod(readFastq, "character",
     function(dirPath, pattern=character(0), ...,
+             qualityType=c("FastqQuality", "SFastqQuality"),
              filter=srFilter(), withIds=TRUE) 
 {
     if (!missing(filter))
         .check_type_and_length(filter, "SRFilter", NA)
+    tryCatch(qualityType <- match.arg(qualityType),
+             error=function(err) {
+                 .throw(SRError("UserArgumentMismatch",
+                                conditionMessage(err)))
+             })
     src <- .file_names(dirPath, pattern)
     elts <- .Call(.read_solexa_fastq, src, withIds)
-    quality <- SFastqQuality(elts[["quality"]])
+    quality <- 
+        switch(qualityType,
+               SFastqQuality=SFastqQuality(elts[["quality"]]),
+               FastqQuality=FastqQuality(elts[["quality"]]))
     srq <- 
         if (withIds)
             ShortReadQ(elts[["sread"]], quality, elts[["id"]])

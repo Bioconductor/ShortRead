@@ -255,8 +255,14 @@
 
 .readAligned_Bowtie <-
   function(dirPath, pattern=character(0), ...,
-           qualityType="SFastqQuality", sep="\t", commentChar="#")
+           qualityType=c("FastqQuality", "SFastqQuality"),
+           sep="\t", commentChar="#")
 {
+    tryCatch(qualityType <- match.arg(qualityType),
+             error=function(err) {
+                 .throw(SRError("UserArgumentMismatch",
+                                conditionMessage(err)))
+             })
     files <- .file_names(dirPath, pattern)
     .Call(.read_bowtie, files, qualityType, sep, commentChar)
 }

@@ -10,6 +10,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     rather than start/end) and default behavior (return value in
     genome coordinates, rather than minimal covered region).
 
+    o readAligned,character-method, type="Bowtie" and readFastq return
+    FastqQuality by default.
+
 NEW FEATURES
 
     o qa reports from _realign.txt, MAQMap files
