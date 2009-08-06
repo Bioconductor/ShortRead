@@ -4,9 +4,12 @@
             tryCatch({
                 FUN(...)
             }, error=function(err) {
-                SRError("RemoteError",
-                        paste(capture.output(conditionCall(err)),
-                              conditionMessage(err), sep="\n  "))
+                msg <- paste(capture.output(conditionCall(err)),
+                             conditionMessage(err), sep="\n ")
+                if (is.loaded("mpi_comm_size"))
+                    SRError("RemoteError", msg)
+                else
+                    SRError("UnspecifiedError", msg)
             })
         }
     }
@@ -56,7 +59,10 @@
             elts <- lst[errs]
             msg <- paste(sapply(elts, .type), sapply(elts, .message),
                          sep=": ", collapse="\n  ")
-            .throw(SRWarn("RemoteWarning",
+            type <- 
+                if (is.loaded("mpi_comm_size")) "RemoteWarning"
+                else "UnspecifiedWarning"
+            .throw(SRWarn(type,
                           "elements: %s\n  %s",
                           paste(which(errs), collapse=" "),
                           msg))
