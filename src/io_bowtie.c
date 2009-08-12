@@ -18,7 +18,7 @@ _read_bowtie(const char *fname, const char *commentChar,
     const int N_FIELDS = 8;
     gzFile *file;
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
-    int lineno = 0;
+    int lineno = 0, irec = offset;
 
     file = _fopen(fname, "rb");
 
@@ -47,20 +47,20 @@ _read_bowtie(const char *fname, const char *commentChar,
 		}
 
         _APPEND_XSNAP(id, elt[0]);
-        strand[offset] = _char_as_strand_int(*elt[1], fname, lineno);
-        SET_STRING_ELT(chromosome, offset, mkChar(elt[2]));
-        position[offset] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
-        if (strand[offset] == 1) {
+        strand[irec] = _char_as_strand_int(*elt[1], fname, lineno);
+        SET_STRING_ELT(chromosome, irec, mkChar(elt[2]));
+        position[irec] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
+        if (strand[irec] == 1) {
             _reverseComplement(elt[4]);
             _reverse(elt[5]);
         }
 		_APPEND_XSNAP(sread, elt[4]);
 		_APPEND_XSNAP(quality, elt[5]);
-        similar[offset] = atoi(elt[6]); /* previous: 'reserved' */
-        SET_STRING_ELT(mismatch, offset, mkChar(elt[7]));
-        offset++;
+        similar[irec] = atoi(elt[6]); /* previous: 'reserved' */
+        SET_STRING_ELT(mismatch, irec, mkChar(elt[7]));
+        irec++;
     }
-    return offset;
+    return irec - offset;
 }
 
 #define NEW_CALL(S, T, NAME, ENV, N) \
