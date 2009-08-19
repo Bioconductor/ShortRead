@@ -227,27 +227,27 @@ setMethod(coverage, "AlignedRead",
         rend <- position(x) +
             ifelse(strand(x) == "+", width(x) + extend - 1L, 0L)
     }
-    cvg <- lapply(chrlvls,
-                  function(chr, ...) {
-                      idx <- chromosome(x) == chr
-                      chr_rstart <- rstart[idx]
-                      chr_rend <- rend[idx]
-                      if (identical(shift, 0L))
-                          chr_shift <- 0L
-                      else
-                          chr_shift <- shift[chr]
-                      if (is.null(width))
-                          chr_width <- NULL
-                      else
-                          chr_width <- width[chr]
-                      coverage(IRanges(chr_rstart, chr_rend),
-                               shift=chr_shift, width=chr_width, ...)
-                  },
-                  ...
-           )
-    names(cvg) <- chrlvls
-    GenomeData(cvg, method="coverage,AlignedRead-method",
-               coords=coords, extend=extend)
+    cvg <- RleList(lapply(structure(chrlvls, names = chrlvls),
+                          function(chr, ...) {
+                              idx <- chromosome(x) == chr
+                              chr_rstart <- rstart[idx]
+                              chr_rend <- rend[idx]
+                              if (identical(shift, 0L))
+                                  chr_shift <- 0L
+                              else
+                                  chr_shift <- shift[chr]
+                              if (is.null(width))
+                                  chr_width <- NULL
+                              else
+                                  chr_width <- width[chr]
+                              coverage(IRanges(chr_rstart, chr_rend),
+                                       shift=chr_shift, width=chr_width, ...)
+                          },
+                          ...),
+                   compress = FALSE)
+    metadata(cvg) <-
+      list(method="coverage,AlignedRead-method", coords=coords, extend=extend)
+    cvg
 })
 
 ## show

@@ -210,7 +210,7 @@ coverage.me3.lane4 <- coverage( filteredReads, width=seqlens )
 coverage.me3.lane4
 @
 
-The object \texttt{coverage.me3} is a \texttt{GenomeData} object, essentially a list of coverage vectors, one for each chromosome.
+The object \texttt{coverage.me3} is a \texttt{SimpleRleList} object, essentially a list of coverage vectors, one for each chromosome.
 
 Here is the coverage vector for chromsome 10:
 
