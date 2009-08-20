@@ -13,6 +13,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o readAligned,character-method, type="Bowtie" and readFastq return
     FastqQuality by default.
 
+    o coverage,AlignedRead-method now returns an RleList
+
 NEW FEATURES
 
     o qa reports from _realign.txt, MAQMap files
