@@ -7,12 +7,9 @@
 
 \description{
 
-  \code{readAligned} reads all aligned read files in a directory
-  \code{dirPath} whose file name matches \code{pattern},
-  returning a compact internal representation of the alignments,
-  sequences, and quality scores in the files. Methods read all files into a
-  single R object; a typical use is to restrict input to a single
-  aligned read file.
+  Import files containing aligned reads into an internal representation
+  of the alignments, sequences, and quality scores. Methods read all
+  files into a single R object.
 
 }
 \usage{
@@ -25,7 +22,8 @@ readAligned(dirPath, pattern=character(0), ...)
 
   \item{dirPath}{A character vector (or other object; see methods
     defined on this generic) giving the directory path (relative or
-    absolute) of aligned read files to be input.}
+    absolute; some methods also accept a character vector of file names)
+    of aligned read files to be input.}
 
   \item{pattern}{The (\code{\link{grep}}-style) pattern describing file
     names to be read. The default (\code{character(0)}) results in
