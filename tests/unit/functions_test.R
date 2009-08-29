@@ -39,7 +39,14 @@ test_alphabetByCycle <- function() {
     checkEqualsNumeric(alphabetByCycle(quality(sq)),
                        apply(obj, 2:3, sum))
 
-    checkException(alphabetByCycle(id(sq)), silent=TRUE) # unequal widths
+    obj <- rowSums(alphabetByCycle(id(sq)))
+    obj <- obj[obj != 0]
+    exp <- table(unlist(strsplit(as.character(id(sq)), ""),
+                        use.names=FALSE))
+    checkTrue(setequal(names(obj), names(exp)))
+    checkIdentical(as.numeric(exp[names(obj)]),
+                   as.vector(obj))
+
     checkException(alphabetByCycle(sread(new("ShortReadQ"))),
                    silent=TRUE)         # zero-length
     checkException(alphabetByCycle(new("ShortReadQ")), silent=TRUE)

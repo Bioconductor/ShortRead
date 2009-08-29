@@ -13,7 +13,7 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     if (!IS_INTEGER(width) || LENGTH(width) != 1)
         Rf_error("'width' must be integer(1)");
     if (!IS_CHARACTER(alphabet))
-        Rf_error("'alphabet' must be character");
+        Rf_error("'alphabet' must be character()");
 
     /* allocate and initialize the answer matrix */
     const int nrow = LENGTH(alphabet), ncol = INTEGER(width)[0];
@@ -50,7 +50,6 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
      * string. For each character, decode and map into the answer
      * matrix.
      *
-     * FIXME:
      */
     cachedXStringSet cache = cache_XStringSet(stringSet);
     const int len = get_XStringSet_length(stringSet);
@@ -73,9 +72,7 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     const int MAX_MAP = 256;
     /* FIXME: check types of incoming arguments */
     if (get_XStringSet_length(stringSet1) != get_XStringSet_length(stringSet2))
-    	Rf_error("'stringSet1' and 'stringSet2' must have the same length");
-    if (!IS_INTEGER(width) || LENGTH(width) != 1)
-        Rf_error("'width' must be integer(1)");
+        Rf_error("'stringSet1' and 'stringSet2' must have the same length");
     if (!IS_CHARACTER(alphabet1) || !IS_CHARACTER(alphabet2))
         Rf_error("'alphabet' must be list of character vectors");
 
@@ -124,7 +121,6 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
      * string. For each character, decode and map into the answer
      * matrix.
      *
-     * FIXME:
      */
     cachedXStringSet cache1 = cache_XStringSet(stringSet1);
     cachedXStringSet cache2 = cache_XStringSet(stringSet2);

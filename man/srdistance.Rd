@@ -11,7 +11,7 @@
 
   \code{srdistance} calculates the edit distance from each read in
   \code{pattern} to each read in \code{subject}. The underlying
-  algorithm \code{\link[Biobase]{pairwiseAlignment}} is only efficient when both
+  algorithm \code{\link[Biostrings]{pairwiseAlignment}} is only efficient when both
   reads are short, and when the number of \code{subject} reads is small.
 
 }
@@ -57,7 +57,7 @@ srdistance(pattern, subject, ...)
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
-\seealso{\code{\link[Biobase]{pairwiseAlignment}}}
+\seealso{\code{\link[Biostrings]{pairwiseAlignment}}}
 
 \examples{
 sp <- SolexaPath(system.file("extdata", package="ShortRead"))

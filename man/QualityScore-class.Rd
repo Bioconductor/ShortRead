@@ -141,9 +141,9 @@
 
     \item{alphabetFrequency}{\code{signature(stringSet = "FastqQuality")}:
 
-      Apply \code{\link[Biostrings]{alphabetFrequency}} to quality
-      scores, returning a matrix as described in
-      \code{\link[Biostrings]{alphabetFrequency}}.}
+      Apply \code{\link[Biostrings:letterFrequency]{alphabetFrequency}}
+      to quality scores, returning a matrix as described in
+      \code{\link[Biostrings:letterFrequency]{alphabetFrequency}}.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "FastqQuality")}:
 

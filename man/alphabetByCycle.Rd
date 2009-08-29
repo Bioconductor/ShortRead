@@ -21,9 +21,7 @@ alphabetByCycle(stringSet, alphabet, ...)
 \arguments{
 
   \item{stringSet}{A R object representing the collection of reads or
-    quality scores to be summarized. All entries in the string set must
-    have the same width (i.e., number of characters in each read or
-    quality score).}
+    quality scores to be summarized.}
 
   \item{alphabet}{The alphabet (character vector of length 1 strings)
     from which the sequences in \code{stringSet} are composed. Methods
@@ -38,7 +36,8 @@ alphabetByCycle(stringSet, alphabet, ...)
 \details{
 
   The default method requires that \code{stringSet} extends the
-  \code{\link[Biostrings:XStringSet-class]{XStringSet}} class of \pkg{Biostrings}.
+  \code{\link[Biostrings:XStringSet-class]{XStringSet}} class of
+  \pkg{Biostrings}.
 
   The following method is defined, in addition to methods described in
   class-specific documentation:
@@ -54,10 +53,10 @@ alphabetByCycle(stringSet, alphabet, ...)
 \value{
 
   A matrix with number of rows equal to the length of \code{alphabet}
-  and columns equal to the width of reads or quality scores in the
-  string set. Entries in the matrix are the number of times, over all
-  reads of the set, that the corresponding letter of the alphabet (row)
-  appeared at the specified cycle (column).
+  and columns equal to the maximum width of reads or quality scores in
+  the string set. Entries in the matrix are the number of times, over
+  all reads of the set, that the corresponding letter of the alphabet
+  (row) appeared at the specified cycle (column).
 
 }
 

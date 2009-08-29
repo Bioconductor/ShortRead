@@ -31,7 +31,7 @@ SFastqQuality(quality, ...)
     structure. Appropriate objects are indicated in the constructors
     above for Numeric, Integer, and Matrix qualities. For
     \code{FastqQuality} and \code{SFastqQuality}, methods are defined
-    for \code{\link[Biostrings:BStringSet]{BStringSet}},
+    for \code{\link[Biostrings:XStringSet-class]{BStringSet}},
     \code{character}, and \code{missing}.}
 
   \item{...}{Additional arguments, currently unused.}

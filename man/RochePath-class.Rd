@@ -90,7 +90,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
   \code{RochePath} has the following methods or functions defined:
   \describe{
     \item{readFasta}{\code{signature(dirPath = "character",
-        pattern=".\\.fna$", sample = 1,  ...)}:} 
+        pattern=character(), sample = 1,  ...)}:} 
     \item{readFasta}{\code{signature(dirPath = "RochePath",
         pattern=".\\.fna$", sample = 1, run = 1, ...)}: 
 

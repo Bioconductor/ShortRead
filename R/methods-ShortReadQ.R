@@ -169,7 +169,7 @@ setMethod(compact, "ShortReadQ",
         alphabet <- list(Biostrings::alphabet(sread),
                          Biostrings::alphabet(quality))
     res <- .Call(.alphabet_pair_by_cycle, sread, quality(quality),
-                 unique(width(stringSet)), alphabet[[1]], alphabet[[2]])
+                 max(width(stringSet)), alphabet[[1]], alphabet[[2]])
     dm <- dimnames(res)
     dm[[3]]<- seq_len(unique(width(stringSet)))
     names(dm)[[3]] <- "cycle"

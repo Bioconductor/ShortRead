@@ -24,6 +24,8 @@ NEW FEATURES
     o qa type="character" now accepts a filter argument with value
     srFilter()
 
+    o alphabetByCycle supports variable-width XStringSets
+
 BUG FIXES
 
     o Parse .gz realign files
