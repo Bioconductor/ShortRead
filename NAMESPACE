@@ -13,7 +13,7 @@ importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            mkScalar)
 
 importFrom(IRanges, append, coverage, narrow, score, start, Views,
-           width)
+           width, rbind)
 
 importFrom(BSgenome, strand)
 
@@ -28,7 +28,8 @@ exportClassPattern("^[^\\.]")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
               alphabet, coverage, narrow, strand, trimLRPatterns,
-              width, append)
+              width, append, rbind)
+
 export(pData, phenoData, varLabels, varMetadata)
 
 exportPattern("^[^\\.]")

@@ -21,3 +21,13 @@
 }
 
 setMethod(qa, "character", .qa_character)
+
+setMethod(qa, "list", function(dirPath, ...)
+{
+    if (length(unique(sapply(dirPath, class))) != 1)
+        .throw(SRError("UserArgumentMismatch",
+                       "qa,list-method 'dirPath' arguments must all be of same class"))
+    l <- mapply(qa, dirPath, names(dirPath), MoreArgs=list(...),
+                SIMPLIFY=FALSE)
+    do.call(rbind, l)
+})

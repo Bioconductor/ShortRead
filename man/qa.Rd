@@ -1,6 +1,7 @@
 \name{qa}
 \alias{qa}
 \alias{qa,character-method}
+\alias{qa,list-method}
 
 \title{Perform quality assessment on short reads}
 
@@ -18,6 +19,7 @@ qa(dirPath, ...)
     type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", 
            "MAQMapShort", "fastq"),
     ...)
+\S4method{qa}{list}(dirPath, ...)
 }
 
 \arguments{
@@ -30,7 +32,7 @@ qa(dirPath, ...)
 
   \item{pattern}{A character vector limiting the files in \code{dirPath}
 	to be processed, as with \code{\link{list.files}}. Care should be
-	taken to specify pattern to avoid reading unintneded files.}
+	taken to specify pattern to avoid reading unintended files.}
 
   \item{type}{The type of file being parsed; must be a character vector
 	of length 1, selected from one of the types enumerated in the
@@ -42,7 +44,9 @@ qa(dirPath, ...)
 \details{
   The following methods are defined, in addition to those on S4 formal
   classes documented elsewhere:
-  \itemize{
+
+  \describe{
+
     \item{\code{qa,character-method}}{
 
       Quality assessment is performed on all files in directory
@@ -55,6 +59,15 @@ qa(dirPath, ...)
       MAQ versions below 0.70 and \code{MAQMap} for more recent output.
       Use \code{fastq} for collections of fastq-format files. Quality
       assessment details vary depending on data source.
+
+    }
+	
+    \item{\code{qa,list-method}}{
+
+	  \code{dirPath} is a list of objects, all of the same class and
+	  typically derived from \code{ShortReadQ}, on which quality
+	  assessment is performed. All elements of the list must have names,
+	  and these should be unique.
 
     }
   }

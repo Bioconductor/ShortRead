@@ -2,17 +2,17 @@
 \docType{class}
 \alias{SolexaExportQA}
 \alias{SolexaExportQA-class}
+\alias{SolexaRealignQA-class}
 \alias{report,SolexaExportQA-method}
-\alias{show,.QA-method}
 \alias{show,SolexaExportQA-method}
 
-\title{Quality assessment summaries from Solexa export files}
+\title{Quality assessment summaries from Solexa export and realign files}
 
 \description{
 
   This class contains a list-like structure with summary descriptions
-  derived from visiting one or more Solexa \sQuote{export}
-  files. 
+  derived from visiting one or more Solexa \sQuote{export} or
+  \sQuote{realign} files.
 
 }
 
@@ -51,8 +51,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 	  (deprecated; use \code{type="html"} instead) produces a pdf file
 	  summarizing QA results. \code{dest} should be a file.}
 
-    \item{show}{\code{signature(object = "SolexaExportQA")}: Display an
-      overview of the object contents.}
+    \item{report}{\code{signature(x="SolexaRealignQA", ..., dest=tempfile(), type="html")}:
+	  produces HTML files summarizing QA results. \code{dest} should be
+	  a directory.}
   }
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}

@@ -269,6 +269,10 @@ setClass("RocheSet", contains=c("SRSet", ".Roche"),
 setClass(".QA", contains=c("SRList", ".ShortReadBase"),
          representation=representation("VIRTUAL"))
 
+setClass("ShortReadQQA", contains=".QA")
+
+setClass("FastqQA", contains="ShortReadQQA") # synonym
+
 setClass("SolexaExportQA", contains=".QA")
 
 setClass("SolexaRealignQA", contains=".QA")
@@ -276,5 +280,3 @@ setClass("SolexaRealignQA", contains=".QA")
 setClass("MAQMapQA", contains=".QA")
 
 setClass("BowtieQA", contains=".QA")
-
-setClass("FastqQA", contains=".QA")

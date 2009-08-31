@@ -1,70 +1,72 @@
+.ShortReadQQA <- function(x, ...)
+{
+    new("ShortReadQQA", .srlist=x, ...)
+}
+
 .FastqQA <- function(x, ...)
 {
     new("FastqQA", .srlist=x, ...)
 }
 
-.qa_fastq_lane <-
-    function(dirPath, pattern, ..., type="fastq", verbose=FALSE)
+.qa_ShortReadQ <-
+    function(dirPath, lane, ..., verbose=FALSE)
 {
-    if (verbose)
-        message("qa 'fastq' pattern:", pattern)
-    rpt <- readFastq(dirPath, pattern, ...)
-
-    alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE, collapse=TRUE)
-    bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
+    obj <- dirPath                      # mnemonic
+    alf <- alphabetFrequency(sread(obj), baseOnly=TRUE, collapse=TRUE)
+    bqtbl <- alphabetFrequency(quality(obj), collapse=TRUE)
     rqs <- local({
-        qscore <- alphabetScore(quality(rpt)) / width(quality(rpt))
+        qscore <- alphabetScore(quality(obj)) / width(quality(obj))
         density(qscore)
     })
-    freqtbl <- tables(sread(rpt))
-    abc <- alphabetByCycle(rpt)
+    freqtbl <- tables(sread(obj))
+    abc <- alphabetByCycle(obj)
     perCycleBaseCall <- local({
         abc <- apply(abc, c(1, 3), sum)
         df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
                          Base=factor(rownames(abc)[row(abc)]),
                          Count=as.vector(abc),
-                         lane=pattern)
+                         lane=lane)
         df[df$Count != 0,]
     })
     perCycleQuality <- local({
         abc <- apply(abc, 2:3, sum)
         q <- factor(rownames(abc)[row(abc)])
-        q0 <- 1 + 32 * is(quality(rpt), "SFastqQuality")
+        q0 <- 1 + 32 * is(quality(obj), "SFastqQuality")
         df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
                          Quality=q,
                          Score=as.numeric(q)-q0,
                          Count=as.vector(abc),
-                         lane=pattern)
+                         lane=lane)
         df[df$Count != 0, ]
     })
-    list(readCounts=data.frame(
-           read=length(rpt), filter=NA, aligned=NA,
-           row.names=pattern),
+    lst <- list(readCounts=data.frame(
+           read=length(obj), filter=NA, aligned=NA,
+           row.names=lane),
          baseCalls=data.frame(
            A=alf[["A"]], C=alf[["C"]], G=alf[["G"]], T=alf[["T"]],
-           N=alf[["other"]], row.names=pattern),
+           N=alf[["other"]], row.names=lane),
          readQualityScore=data.frame(
            quality=rqs$x,
            density=rqs$y,
-           lane=pattern,
+           lane=lane,
            type="read"),
          baseQuality=data.frame(
            score=names(bqtbl),
            count=as.vector(bqtbl),
-           lane=pattern),
+           lane=lane),
          alignQuality=data.frame(
            score=as.numeric(NA),
            count=as.numeric(NA),
-           lane=pattern, row.names=NULL),
+           lane=lane, row.names=NULL),
          frequentSequences=data.frame(
            sequence=names(freqtbl$top),
            count=as.integer(freqtbl$top),
            type="read",
-           lane=pattern),
+           lane=lane),
          sequenceDistribution=cbind(
            freqtbl$distribution,
            type="read",
-           lane=pattern),
+           lane=lane),
          perCycle=list(
            baseCall=perCycleBaseCall,
            quality=perCycleQuality),
@@ -76,6 +78,17 @@
              score=integer(), type=character(), tile=integer(),
              lane=integer(), row.names=NULL))
          )
+    .ShortReadQQA(lst)
+}
+
+setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
+
+.qa_fastq_lane <-
+    function(dirPath, pattern, ..., type="fastq", verbose=FALSE)
+{
+    if (verbose)
+        message("qa 'fastq' pattern:", pattern)
+    qa(readFastq(dirPath, pattern, ...), pattern, verbose=verbose)
 }
 
 .qa_fastq <-
@@ -86,34 +99,12 @@
     lst <- srapply(basename(fls), .qa_fastq_lane,
                    dirPath=dirPath, type=type, ...,
                    verbose=verbose)
-    names(lst) <- basename(fls)
-    bind <- function(lst, elt)
-        do.call(rbind,
-                subListExtract(lst, elt, keep.names=FALSE))
-    lst <-
-        list(readCounts=bind(lst, "readCounts"),
-             baseCalls=bind(lst, "baseCalls"),
-             readQualityScore=bind(lst, "readQualityScore"),
-             baseQuality=bind(lst, "baseQuality"),
-             alignQuality=bind(lst, "alignQuality"),
-             frequentSequences=bind(lst, "frequentSequences"),
-             sequenceDistribution=bind(lst, "sequenceDistribution"),
-             perCycle=local({
-                 lst <- subListExtract(lst, "perCycle")
-                 list(baseCall=bind(lst, "baseCall"),
-                      quality=bind(lst, "quality"))
-             }),
-             perTile=local({
-                 lst <- subListExtract(lst, "perTile")
-                 list(readCounts=bind(lst, "readCounts"),
-                      medianReadQualityScore=bind(
-                        lst, "medianReadQualityScore"))
-             }))
-    .FastqQA(lst)
+    lst <- do.call(rbind, lst)
+    .FastqQA(.srlist(lst))              # re-cast
 }
 
-setMethod(.report_html, "FastqQA",
-    function (x, dest, type, ...)
+.report_html_ShortReadQA <-             # or FastqQA
+    function(x, dest, type, ...)
 {
     qa <- x                             # mnemonic alias
     dir.create(dest, recursive=TRUE)
@@ -146,4 +137,8 @@ setMethod(.report_html, "FastqQA",
                .plotCycleQuality(perCycle$quality))
              )
     .report_html_do(dest, sections, values, ...)
-})
+}
+
+setMethod(.report_html, "ShortReadQQA", .report_html_ShortReadQA)
+setMethod(.report_html, "FastqQA", .report_html_ShortReadQA)
+

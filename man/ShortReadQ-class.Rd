@@ -21,6 +21,7 @@
 \alias{append,ShortReadQ,ShortReadQ,missing-method}
 \alias{narrow,ShortReadQ-method}
 \alias{compact,ShortReadQ-method}
+\alias{qa,ShortReadQ-method}
 \alias{detail,ShortReadQ-method}
 
 \title{"ShortReadQ" class for short reads and their quality scores}
@@ -81,7 +82,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 
   \describe{
 
-    \item{quality}{inheritted from \code{signature(object = "ANY")}:
+    \item{quality}{inherited from \code{signature(object = "ANY")}:
       access the quality slot of \code{object}.}
 
 
@@ -129,11 +130,18 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
     \item{alphabetScore}{\code{signature(object = "ShortReadQ")}:
       See \code{\link{alphabetScore}} for details.}
 
+	\item{qa}{\code{signature(dirPath = "ShortReadQ", lane="character",
+		..., verbose=FALSE)}:
+	  Perform quality assessment on the \code{ShortReadQ} object using
+	  \code{lane} to identify the object and returning an instance of
+	  \code{\linkS4class{ShortReadQA}}. See \code{\link{qa}}}
+
     \item{detail}{\code{signature(object = "ShortReadQ")}: display the
 	  first and last entries of each of \code{sread}, \code{id}, and
 	  \code{quality} entries of \code{object}.}
   }
 }
+
 \author{Martin Morgan}
 
 \seealso{

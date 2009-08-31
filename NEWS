@@ -26,6 +26,8 @@ NEW FEATURES
 
     o alphabetByCycle supports variable-width XStringSets
 
+    o qa,ShortReadQ and qa,list methods for qa on existing objects
+
 BUG FIXES
 
     o Parse .gz realign files

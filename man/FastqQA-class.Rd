@@ -1,16 +1,17 @@
-\name{FastqQA-class}
+\name{ShortReadQA-class}
 \docType{class}
 \alias{FastqQA}
 \alias{FastqQA-class}
+\alias{ShortReadQQA-class}
 \alias{report,FastqQA-method}
 
-\title{Quality assessment summaries from MAQ map files}
+\title{Quality assessment of fastq files and ShortReadQ objects}
 
 \description{
 
-  This class contains a list-like structure with summary descriptions
-  derived from visiting one or more Solexa \sQuote{export}
-  files. 
+  These classes contains a list-like structure with summary descriptions
+  derived from visiting one or more fastq files, or from a
+  \code{\linkS4class{ShortReadQ}} object.
 
 }
 
@@ -40,9 +41,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 
   Additional methods defined on this class are:
   \describe{
+
     \item{report}{\code{signature(x="FastqQA", ..., dest=tempfile(), type="html")}:
 	  produces HTML files summarizing QA results. \code{dest} should be
 	  a directory.}
+
+    \item{report}{\code{signature(x="ShortReadQA", ..., dest=tempfile(), type="html")}:
+	  produces HTML files summarizing QA results. \code{dest} should be
+	  a directory.}
+
   }
 
 }

@@ -1,6 +1,8 @@
 \name{.QA-class}
 \docType{class}
 \alias{.QA-class}
+\alias{rbind,.QA-method}
+\alias{show,.QA-method}
 
 \title{Virtual class for representing quality assessment results}
 \description{
@@ -21,14 +23,23 @@
 }
 
 \section{Methods}{
+  
+  Methods defined on this class include:
 
-  There are no methods defined directly on the \code{QA} class; see
-  derived class help pages for additional methods.
+  \describe{
 
+	\item{rbind}{\code{signature(...="list")}: rbind data frame objects
+	  in \code{...}. All objects of \code{...} must be of the same
+	  class; the return value is an instance of that class.}
+
+    \item{show}{\code{signature(object = "SolexaExportQA")}: Display an
+      overview of the object contents.}
+
+  }
 }
 
 \seealso{
-  \code{\linkS4class{SolexaExportQA}}.
+  Specific classes derived from \code{.QA}
 }
 
 \author{Martin Morgan <mtmmorgan@fhcrc.org>}
