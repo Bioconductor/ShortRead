@@ -11,6 +11,7 @@
 \alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{append,AlignedRead,AlignedRead,missing-method}
 \alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
+\alias{coerce,AlignedRead,RangesList-method}
 \alias{chromosome,AlignedRead-method}
 \alias{position,AlignedRead-method}
 \alias{strand,AlignedRead-method}
@@ -18,6 +19,7 @@
 \alias{srrank,AlignedRead-method}
 \alias{srorder,AlignedRead-method}
 \alias{srduplicated,AlignedRead-method}
+\alias{\%in\%,AlignedRead,RangesList-method}
 \alias{detail,AlignedRead-method}
 \alias{show,AlignedRead-method}
 
@@ -41,30 +43,30 @@
 \section{Slots}{
   \describe{
 
-    \item{\code{chromosome}:}{Object of class \code{"factor"} the
+    \item{\code{chromosome}}{Object of class \code{"factor"} the
       particular sequence within a set of target sequences
       (e.g. chromosomes in a genome assembly) to which each short read
       aligns.}
 
-    \item{\code{position}:}{Object of class \code{"integer"} the
+    \item{\code{position}}{Object of class \code{"integer"} the
     (base-pair) position in the genome to which the read is aligned.}
 
-    \item{\code{strand}:}{Object of class \code{"factor"} the strand of
+    \item{\code{strand}}{Object of class \code{"factor"} the strand of
       the alignment.}
 
-    \item{\code{alignQuality}:}{Object of class \code{"numeric"}
+    \item{\code{alignQuality}}{Object of class \code{"numeric"}
       representing an alignment quality score.}
 
-    \item{\code{alignData}:}{Object of class \code{"AlignedDataFrame"}
+    \item{\code{alignData}}{Object of class \code{"AlignedDataFrame"}
       additional alignment information.}
 
-    \item{\code{quality}:}{Object of class \code{"BStringSet"}
+    \item{\code{quality}}{Object of class \code{"BStringSet"}
       representing base-call read quality scores.}
 
-    \item{\code{sread}:}{Object of class \code{"DNAStringSet"} DNA
+    \item{\code{sread}}{Object of class \code{"DNAStringSet"} DNA
       sequence of the read.}
 
-    \item{\code{id}:}{Object of class \code{"BStringSet"} read
+    \item{\code{id}}{Object of class \code{"BStringSet"} read
       identifier.}
 
   }
@@ -94,10 +96,14 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       for \code{ShortReadQ}, \code{AlignedDataFrame} for details of how
       these components of \code{x} and \code{y} are appended.}
 
-    \item{coerce}{\code{signature(from = "PairwiseAlignedXStringSet", to = "AlignedRead")}:
+    \item{coerce}{
+	  \code{signature(from = "PairwiseAlignedXStringSet", to = "AlignedRead")}:
+
+	  \code{signature(from = "AlignedRead", to = "RangesList")}:
       
-      (Invoke this method with, \code{as(from, "AlignedRead")}) coerce
-      objects of class \code{from} to class \code{to}.}
+      (Invoke these methods with, e.g., \code{as(from, "AlignedRead")})
+      to coerce objects of class \code{from} to class
+      \code{"AlignedRead"}.}
 
     \item{chromosome}{\code{signature(object = "AlignedRead")}: access the
       chromosome slot of \code{object}.}
@@ -152,11 +158,22 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       The return value of \code{coverage} is a \code{SimpleRleList} object.
     }
     
+	\item{\%in\%}{
+	  \code{signature(x = "AlignedRead", table = "RangesList")}:
 
-    \item{srorder}{\code{signature{x = "AlignedRead"}}:}
-    \item{srrank}{\code{signature{x = "AlignedRead"}}:}
-    \item{srsort}{\code{signature{x = "AlignedRead"}}:}
-    \item{srduplicated}{\code{signature{x = "AlignedRead"}}:
+	  Return a length(x) logical vector indicating whether the
+	  chromosome, position, and width of \code{x} overlap (see IRanges
+	  \code{\link[IRanges:IntervalTree-class]{overlap}}) with ranges in
+	  \code{table}. Reads for which \code{chromosome()},
+	  \code{position()}, or \code{width()} return \code{NA} \emph{never}
+	  overlap with \code{table}.
+
+	}
+	
+    \item{srorder}{\code{signature(x = "AlignedRead")}:}
+    \item{srrank}{\code{signature(x = "AlignedRead")}:}
+    \item{srsort}{\code{signature(x = "AlignedRead")}:}
+    \item{srduplicated}{\code{signature(x = "AlignedRead")}:
       Order, rank, sort, and find duplicates in \code{AlignedRead}
       objects. Reads are sorted by \code{chromosome}, \code{strand},
       \code{position}, and then \code{sread}; less fine-grained sorting

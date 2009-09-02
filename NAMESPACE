@@ -7,13 +7,15 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet,
                   PairwiseAlignedXStringSet,
                   SolexaQuality, PhredQuality, XStringQuality)
 
+importClassesFrom(IRanges, RangesList)
+
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",
            pData, phenoData, varLabels, varMetadata, sampleNames,
            mkScalar)
 
 importFrom(IRanges, append, coverage, narrow, score, start, Views,
-           width, rbind)
+           width, rbind, "%in%")
 
 importFrom(BSgenome, strand)
 
@@ -28,7 +30,7 @@ exportClassPattern("^[^\\.]")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
               alphabet, coverage, narrow, strand, trimLRPatterns,
-              width, append, rbind)
+              width, append, rbind, "%in%")
 
 export(pData, phenoData, varLabels, varMetadata)
 

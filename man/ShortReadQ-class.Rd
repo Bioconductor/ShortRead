@@ -134,7 +134,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 		..., verbose=FALSE)}:
 	  Perform quality assessment on the \code{ShortReadQ} object using
 	  \code{lane} to identify the object and returning an instance of
-	  \code{\linkS4class{ShortReadQA}}. See \code{\link{qa}}}
+	  \code{\linkS4class{ShortReadQQA}}. See \code{\link{qa}}}
 
     \item{detail}{\code{signature(object = "ShortReadQ")}: display the
 	  first and last entries of each of \code{sread}, \code{id}, and

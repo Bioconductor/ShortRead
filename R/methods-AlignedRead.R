@@ -61,16 +61,26 @@ setMethod(strand, "AlignedRead",
 ## coerce
 
 setAs("PairwiseAlignedXStringSet", "AlignedRead",
-      function(from, to) {
-        pat <- pattern(from)
-        quality <- character()
-        if (is(pat, "QualityAlignedXStringSet"))
-          quality <- quality(pat)
-        new("AlignedRead", sread = unaligned(pat), id = names(pat),
-            quality = FastqQuality(quality),
-            position = start(Views(pat)),
-            alignQuality = IntegerQuality(score(from)))
-      })
+      function(from, to) 
+{
+    pat <- pattern(from)
+    quality <- character()
+    if (is(pat, "QualityAlignedXStringSet"))
+        quality <- quality(pat)
+    new("AlignedRead", sread = unaligned(pat), id = names(pat),
+        quality = FastqQuality(quality),
+        position = start(Views(pat)),
+        alignQuality = IntegerQuality(score(from)))
+})
+
+setAs("AlignedRead", "RangesList", function(from)
+{
+    chr <- chromosome(from)
+    pos <- position(from)
+    wd <- width(from)
+    notNA <- !(is.na(chr) | is.na(pos) | is.na(wd))
+    split(IRanges(start=pos[notNA], width=wd[notNA]), chr[notNA])
+})
 
 ## subset
 
@@ -109,6 +119,31 @@ setMethod(append, c("AlignedRead", "AlignedRead", "missing"),
                sread=append(sread(x), sread(values)),
                id=append(id(x), id(values)))
 })
+
+## match, %in%
+
+setMethod("%in%", c("AlignedRead", "RangesList"),
+    function(x, table)
+{
+    ## could use as(x, "RangesList"), but the assumptions here (about
+    ## the definition of notNA, and about split() preserving order)
+    ## make this fragile enough as it is
+    ##
+    ## consider only sensible alignemnts
+    chr <- chromosome(x)
+    pos <- position(x)
+    wd <- width(x)
+    notNA <- !(is.na(chr) | is.na(pos) | is.na(wd))
+    chr <- chr[notNA]
+    ## find overlap
+    rl <- split(IRanges(start=pos[notNA], width=wd[notNA]), chr)
+    olap <- rl %in% table
+    ## map to original indicies
+    len <- seq <- len(length(x))
+    idx <- unlist(split(len[notNA], chr), use.names=FALSE)
+    len %in% idx[unlist(olap)]
+})
+
 
 ## srorder, etc; srsort picked up by generic
 
