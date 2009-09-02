@@ -40,7 +40,7 @@ readIntensities(dirPath, pattern=character(0), ...)
   \code{type} argument to \code{readIntensities,character-method}, as
   follows:
 
-  \itemize{
+  \describe{
 
     \item{\code{type="IparIntensity"}}{
 
@@ -74,7 +74,7 @@ readIntensities(dirPath, pattern=character(0), ...)
 
   Arguments to these methods are as follows:
 
-  \itemize{
+  \describe{
 
 	\item{intExtension, nseExtension, posExtension}{\code{character(1)}
 	  values pasted (with \code{sep=""}) to \code{pattern} to

@@ -34,7 +34,7 @@ report(x, ..., dest=tempfile(), type="html")
 
 \details{
   The following methods are defined:
-  \itemize{
+  \describe{
 
     \item{\code{x="BowtieQA", ..., dest=tempfile(), type="html"}}{
 	  Produce an HTML-based report from an object of class

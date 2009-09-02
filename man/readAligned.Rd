@@ -45,7 +45,7 @@ readAligned(dirPath, pattern=character(0), ...)
 
   The \code{readAligned,character-method} interprets file types based
   on an additional \code{type} argument. Supported types are:
-  \itemize{
+  \describe{
 
     \item{\code{type="SolexaExport"}}{
 
