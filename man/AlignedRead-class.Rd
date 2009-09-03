@@ -101,9 +101,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
 	  \code{signature(from = "AlignedRead", to = "RangesList")}:
       
-      (Invoke these methods with, e.g., \code{as(from, "AlignedRead")})
+      Invoke these methods with, e.g., \code{as(from, "AlignedRead")}
       to coerce objects of class \code{from} to class
-      \code{"AlignedRead"}.}
+      \code{"AlignedRead"}.
+	  
+	  Coercion from AlignedRead to RangesList assumes that
+	  \code{position(from)} uses a \sQuote{leftmost} (see
+	  \code{coverage} on this page) coordinate system.
+  
+	}
 
     \item{chromosome}{\code{signature(object = "AlignedRead")}: access the
       chromosome slot of \code{object}.}
@@ -119,12 +125,13 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
       Calculate coverage across reads present in \code{x}.
 
-      IMPORTANT NOTE: The interface of the \code{coverage} generic is
-      currently being migrated from "start/end" to "shift/width".
-      In the near future, the \code{start} and \code{end} arguments will
-      be dropped and the remaining arguments will be:
-        \code{coverage(x, shift=0L, width=NULL, weight=1L, ...)}
-      See \code{\link[IRanges]{coverage}} for more information.
+      IMPORTANT NOTE: The interface to the \code{coverage} generic is
+      currently being migrated from "start/end" to "shift/width".  In
+      the near future, the \code{start} and \code{end} arguments will be
+      dropped and the remaining arguments will be: \code{coverage(x,
+      shift=0L, width=NULL, weight=1L, ...)}  See
+      \code{\link[IRanges]{coverage}} in the IRanges package for more
+      information.
 
       \code{shift} must be either \code{0L} or a named integer vector
       with names including all \code{levels(chromosome(x))}.
@@ -145,10 +152,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
       \code{coords} specifies the coordinate system used to record
       position. Both systems number base pairs from left to right on the
-      5' strand. \code{leftmost} indicates the eland convention,
-      where \code{position(x)} is the left-most (minimum) base pair,
-      regardless of strand. \code{fiveprime} is the MAQ convention, where
-      \code{position(x)} is the coordinate of the 5' end of the
+      5' strand. \code{leftmost} indicates the eland convention, where
+      \code{position(x)} is the left-most (minimum) base pair,
+      regardless of strand. \code{fiveprime} is the MAQ convention,
+      where \code{position(x)} is the coordinate of the 5' end of the
       aligned read.
 
       \code{extend} indicates the number of base pairs to extend the
@@ -166,7 +173,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \code{\link[IRanges:IntervalTree-class]{overlap}}) with ranges in
 	  \code{table}. Reads for which \code{chromosome()},
 	  \code{position()}, or \code{width()} return \code{NA} \emph{never}
-	  overlap with \code{table}.
+	  overlap with \code{table}. This function assumes that positions	
+	  are in \sQuote{leftmost} coordinates, as defined in
+	  \code{coverage}.
 
 	}
 	
