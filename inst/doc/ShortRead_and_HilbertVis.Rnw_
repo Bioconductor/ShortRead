@@ -504,14 +504,14 @@ tme1 <- rep( 0, 4001 )
 tme3 <- rep( 0, 4001 )
 for( i in 1:nrow(tss) ) {
    if( tss$strand[i] == 1 ) {
-      tme1 <- tme1 + as.vector( seqextract( coverage.me1.n$`10`, 
+      tme1 <- tme1 + as.vector( seqselect( coverage.me1.n$`10`, 
          tss$transcript_start[i] - 2000, tss$transcript_start[i] + 2000 ) )
-      tme3 <- tme3 + as.vector( seqextract( coverage.me3.n$`10`, 
+      tme3 <- tme3 + as.vector( seqselect( coverage.me3.n$`10`, 
          tss$transcript_start[i] - 2000, tss$transcript_start[i] + 2000 ) )
    } else {
-      tme1 <- tme1 + rev( as.vector( seqextract( coverage.me1.n$`10`, 
+      tme1 <- tme1 + rev( as.vector( seqselect( coverage.me1.n$`10`, 
          tss$transcript_end[i] - 2000, tss$transcript_end[i] + 2000 ) ) )
-      tme3 <- tme3 + rev( as.vector( seqextract( coverage.me3.n$`10`, 
+      tme3 <- tme3 + rev( as.vector( seqselect( coverage.me3.n$`10`, 
          tss$transcript_end[i] - 2000, tss$transcript_end[i] + 2000 ) ) )
    }
 }
