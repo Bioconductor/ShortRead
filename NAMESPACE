@@ -15,7 +15,7 @@ importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            mkScalar)
 
 importFrom(IRanges, append, coverage, narrow, score, start, Views,
-           width, rbind, "%in%")
+           width, rbind, split, "%in%")
 
 importFrom(BSgenome, strand)
 
