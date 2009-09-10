@@ -139,7 +139,7 @@ setMethod("%in%", c("AlignedRead", "RangesList"),
     rl <- split(IRanges(start=pos[notNA], width=wd[notNA]), chr)
     olap <- rl %in% table
     ## map to original indicies
-    len <- seq <- len(length(x))
+    len <- seq_len(length(x))
     idx <- unlist(split(len[notNA], chr), use.names=FALSE)
     len %in% idx[unlist(olap)]
 })
