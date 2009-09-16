@@ -79,7 +79,7 @@ _XSnap_to_XStringSet(_XSnap snap, const char *baseclass)
 	char *str = (char *) RAW(seq);
 	for (int i = 0; i < width; ++i)
 		str[i] = encode(str[i]);
-	SEXP ptr = PROTECT(new_SequencePtr("RawPtr", seq));
+	SEXP ptr = PROTECT(new_SharedVector("SharedRaw", seq));
 	SEXP xstring = PROTECT(new_XSequence(baseclass, ptr, 0, width));
 
 	const int XSETCLASS_BUF = 40;
