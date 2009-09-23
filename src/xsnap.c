@@ -1,7 +1,7 @@
 /* 
  * An _XSNAP is a SEXP that contains sufficient information to create
  * (`snap') an XStringSet object from its content, without copying the
- * super-string. It is allocated once to an initial size, and grows as
+ * sequence data. It is allocated once to an initial size, and grows as
  * needed (the design goal is only one growth, using a simple
  * heuristic). Any `extra' allocation is not recovered at the end, but
  * carried forward until the DNAStringSet is garbage collected; the
@@ -85,9 +85,6 @@ _XSnap_to_XStringSet(_XSnap snap, const char *baseclass)
 	const int XSETCLASS_BUF = 40;
 	if (strlen(baseclass) > XSETCLASS_BUF - 4)
 		error("ShortRead internal error: *Set buffer too small");
-	char xsetclass[XSETCLASS_BUF];
-	snprintf(xsetclass, XSETCLASS_BUF, "%sSet", baseclass);
-	SEXP xclassdef = PROTECT(MAKE_CLASS(xsetclass));
 
 	if (LENGTH(VECTOR_ELT(snap, 1)) != length) {
 		SEXP tmp;
@@ -99,12 +96,8 @@ _XSnap_to_XStringSet(_XSnap snap, const char *baseclass)
 	SEXP irange = 
 		PROTECT(new_IRanges("IRanges", VECTOR_ELT(snap, 1),
 							VECTOR_ELT(snap, 2), R_NilValue));
-
-	SEXP xstringset = PROTECT(NEW_OBJECT(xclassdef));
-	SET_SLOT(xstringset, mkChar("super"), xstring);
-	SET_SLOT(xstringset, mkChar("ranges"), irange);
-
-	UNPROTECT(5);
+	SEXP xstringset = PROTECT(new_XStringSet(NULL, xstring, irange));
+	UNPROTECT(4);
 	return xstringset;
 }
 
