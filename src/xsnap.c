@@ -73,12 +73,14 @@ _XSnap_to_XStringSet(_XSnap snap, const char *baseclass)
 {
 	SEXP seq = VECTOR_ELT(snap, 0);
 	int length = INTEGER(VECTOR_ELT(snap, 3))[0];
-	int width = INTEGER(VECTOR_ELT(snap, 4))[0];
+	int width = INTEGER(VECTOR_ELT(snap, 4))[0], i;
 
 	ENCODE_FUNC encode = encoder(baseclass);
 	char *str = (char *) RAW(seq);
-	for (int i = 0; i < width; ++i)
+	for (i = 0; i < width; ++i)
 		str[i] = encode(str[i]);
+	if (width < LENGTH(seq))	/* pad */
+		memset(str + width, encode('N'), LENGTH(seq) - width);
 	SEXP ptr = PROTECT(new_SharedVector("SharedRaw", seq));
 	SEXP xstring = PROTECT(new_XVector(baseclass, ptr, 0, width));
 
