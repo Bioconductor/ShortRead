@@ -639,30 +639,28 @@ pairwise aligment are encouraged to investigate the
 \Rpackage{Biostrings} package, especially the \Rclass{PDict} class and
 \Rfunction{matchPDict} and \Rfunction{pairwiseAlignment} functions.
 
-\subsection{The \Rfunction{coverage} and \Rfunction{pileup} and functions}
+\subsection{The \Rfunction{coverage} function}
 
-The \Rfunction{coverage} and \Rfunction{pileup} functions provide ways
-to summarize where reads align on a reference sequence. The idea is
-that the aligned reads, or under some analyses the extension of those
-aligned reads by an amount meant to estimate the actual fragment size,
-`pile up' on top of nucleotide positions in the reference sequence. A
-convenient summary of the alignment of many reads is thus a vector
-describing the depth of the pile at each position in the reference
-sequence. A typical work flow invokes \Rfunction{coverage} on an
-instance of the \Rclass{AlignedRead} class obtained from
-\Rfunction{readAligned}; additional methods offering greater control
-operate on \Rclass{IRanges} directly.  The \Rfunction{coverage}
-methods returns a run-length encoding of the pile-up (or a list of
-such run length encodings), whereas \Rfunction{pileup} returns a
-(long!) integer vector. The run-length encoding returned by
-\Rfunction{coverage} is a space-efficient representation; the long
-integer vector can be recovered with \Rcode{as.integer}.
+The \Rfunction{coverage} function provides a way to summarize where
+reads align on a reference sequence. The idea is that the aligned
+reads, or under some analyses the extension of those aligned reads by
+an amount meant to estimate the actual fragment size, `pile up' on top
+of nucleotide positions in the reference sequence. A convenient
+summary of the alignment of many reads is thus a vector describing the
+depth of the pile at each position in the reference sequence. A
+typical work flow invokes \Rfunction{coverage} on an instance of the
+\Rclass{AlignedRead} class obtained from \Rfunction{readAligned};
+additional methods offering greater control operate on
+\Rclass{IRanges} directly.  The \Rfunction{coverage} methods returns a
+run-length encoding of the pile-up (or a list of such run length
+encodings). The run-length encoding returned by \Rfunction{coverage}
+is a space-efficient representation; the long integer vector can be
+recovered with \Rcode{as.integer}.
 
 There are complicated issues associated with use of
-\Rfunction{coverage} and \Rfunction{pileup}, relating to how software
-reports the `position' of an alignment, especially on the minus
-strand. These issues are illustrated in
-figure~\ref{fig:coverage}. 
+\Rfunction{coverage}, relating to how software reports the `position'
+of an alignment, especially on the minus strand. These issues are
+illustrated in figure~\ref{fig:coverage}.
 \begin{figure}
 \begin{verbatim}
 'leftmost':
@@ -701,9 +699,7 @@ alignments on either the plus or the minus strand. In contrast the
 minus strand 19. This is the scheme used by \MAQ{}, for instance.
 
 The default behavior of \Rfunction{coverage} is to use the `leftmost'
-coordinate system; the \Rfunarg{start} argument of \Rfunction{pileup}
-can also be viewed as the leftmost position of the read. This is
-appropriate for data derived from \ELAND{}.
+coordinate system. This is appropriate for data derived from \ELAND{}.
 
 \section{Advanced features}
 

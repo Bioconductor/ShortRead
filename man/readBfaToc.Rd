@@ -4,7 +4,7 @@
 \title{Get a list of the sequences in a Maq .bfa file}
 
 \description{
-As \code{\link{pileup}} needs to know the lengths of the reference sequences,
+As \code{\link{coverage}} needs to know the lengths of the reference sequences,
 this function is provided which extracts this information from
 a .bfa file (Maq's "binary FASTA" format).
 }
