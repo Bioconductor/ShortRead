@@ -3,9 +3,12 @@ pileup <- function (
    readlength = fraglength,
    offset = 1 )
 {
+   .Deprecated("coverage")
    stopifnot( is.factor(dir) )
-   stopifnot( length(levels(dir)) == 3 && all( levels(dir) == c("-", "+", "*") ) )
-   stopifnot( is.numeric(start) && is.numeric(fraglength) && is.numeric(chrlength) 
+   stopifnot( length(levels(dir)) == 3 &&
+             all( levels(dir) == c("-", "+", "*") ) )
+   stopifnot( is.numeric(start) &&
+             is.numeric(fraglength) && is.numeric(chrlength) 
       && is.numeric(readlength) )
    stopifnot( all(!is.na(start)) && all(!is.na(fraglength)) &&
               all(!is.na(chrlength)) && all(!is.na(readlength)) )
