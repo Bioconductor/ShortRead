@@ -108,6 +108,12 @@ setMethod(srdistance, c("DNAStringSet", "DNAStringSet"),
 ## tables
 
 .stringset_tables <- function(x, n=50, ...) {
+    if (length(x) == 0) {
+        return(list(top=integer(0),
+                    distribution=data.frame(
+                      nOccurrences=integer(0),
+                      nReads=integer(0))))
+    }
     ## FIXME: two sorts
     srt <- srsort(x)
     r <- srrank(x)

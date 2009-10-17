@@ -11,34 +11,17 @@
 .qa_ShortReadQ <-
     function(dirPath, lane, ..., verbose=FALSE)
 {
+    if (missing(lane))
+        .throw(SRError("UserArgumentMismatch",
+                       "'%s' must be '%s'", "lane", "character(1)"))
     obj <- dirPath                      # mnemonic
     alf <- alphabetFrequency(sread(obj), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(obj), collapse=TRUE)
-    rqs <- local({
-        qscore <- alphabetScore(quality(obj)) / width(quality(obj))
-        density(qscore)
-    })
+    rqs <- .qa_qdensity(quality(obj))
     freqtbl <- tables(sread(obj))
     abc <- alphabetByCycle(obj)
-    perCycleBaseCall <- local({
-        abc <- apply(abc, c(1, 3), sum)
-        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
-                         Base=factor(rownames(abc)[row(abc)]),
-                         Count=as.vector(abc),
-                         lane=lane)
-        df[df$Count != 0,]
-    })
-    perCycleQuality <- local({
-        abc <- apply(abc, 2:3, sum)
-        q <- factor(rownames(abc)[row(abc)])
-        q0 <- 1 + 32 * is(quality(obj), "SFastqQuality")
-        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
-                         Quality=q,
-                         Score=as.numeric(q)-q0,
-                         Count=as.vector(abc),
-                         lane=lane)
-        df[df$Count != 0, ]
-    })
+    perCycleBaseCall <- .qa_perCycleBaseCall(abc, lane)
+    perCycleQuality <- .qa_perCycleQuality(abc, quality(obj), lane)
     lst <- list(readCounts=data.frame(
            read=length(obj), filter=NA, aligned=NA,
            row.names=lane),

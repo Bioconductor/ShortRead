@@ -14,7 +14,6 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
         Rf_error("'width' must be integer(1)");
     if (!IS_CHARACTER(alphabet))
         Rf_error("'alphabet' must be character()");
-
     /* allocate and initialize the answer matrix */
     const int nrow = LENGTH(alphabet), ncol = INTEGER(width)[0];
     SEXP ans, dimnms, nms;
@@ -256,6 +255,8 @@ alphabet_order(SEXP stringSet)
 {
     /* FIXME: stringSet is XStringSet; non-zero len? */
     const int len = get_XStringSet_length(stringSet);
+	if (len == 0)
+		return NEW_INTEGER(0);
     cachedXStringSet cache = cache_XStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
@@ -275,6 +276,8 @@ alphabet_duplicated(SEXP stringSet)
 {
     /* FIXME: stringSet is XStringSet; non-zero len? */
     const int len = get_XStringSet_length(stringSet);
+	if (len == 0)
+		return NEW_LOGICAL(0);
     cachedXStringSet cache = cache_XStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
@@ -296,6 +299,8 @@ alphabet_rank(SEXP stringSet)
 {
     /* integer vector of unique indices into sorted set */
     const int len = get_XStringSet_length(stringSet);
+	if (len == 0)
+		return NEW_INTEGER(0);
     cachedXStringSet cache = cache_XStringSet(stringSet);
     XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
@@ -318,6 +323,8 @@ alphabet_rank(SEXP stringSet)
 SEXP
 aligned_read_rank(SEXP alignedRead, SEXP order, SEXP rho)
 {
+	if (LENGTH(order) == 0)
+		return NEW_INTEGER(0);
     SEXP chr, str, pos, sread;
     PROTECT(chr = _get_SEXP(alignedRead, rho, "chromosome"));
     PROTECT(str = _get_SEXP(alignedRead, rho, "strand"));
@@ -331,16 +338,17 @@ aligned_read_rank(SEXP alignedRead, SEXP order, SEXP rho)
     PROTECT(rank = NEW_INTEGER(len));
     int *r = INTEGER(rank), i;
     xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
-    r[o[0]-1] = 1;
-    for (i = 1; i < len; ++i) {
-        const int this = o[i]-1, prev=o[i-1]-1;
-        xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
-        if (c[this] != c[prev] || s[this] != s[prev] ||
-            p[this] != p[prev] || compare_cachedCharSeq(xptr, xptr+1) != 0)
-            r[this] = i + 1;
-        else
-            r[this] = r[prev];
-    }
+	r[o[0]-1] = 1;
+	for (i = 1; i < len; ++i) {
+		const int this = o[i]-1, prev=o[i-1]-1;
+		xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
+		if (c[this] != c[prev] || s[this] != s[prev] ||
+			p[this] != p[prev] || 
+			compare_cachedCharSeq(xptr, xptr+1) != 0)
+			r[this] = i + 1;
+		else
+			r[this] = r[prev];
+	}
     UNPROTECT(5);
     return rank;
 }

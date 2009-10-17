@@ -46,18 +46,8 @@
                   nrow(tablesAligned$distribution))),
               lane=pattern)
 
-    perCycleBaseCall <- local({
-        abc <- apply(abc, c(1, 3), sum)[1:4,]
-        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
-                         Base=factor(rownames(abc)[row(abc)]),
-                         Count=as.vector(abc),
-                         lane=pattern)
-        df[df$Count != 0,]
-    })
-    perCycleQuality <-
-        data.frame(Cycle=integer(0), Quality=numeric(0),
-                   Score=numeric(0), Count=integer(0),
-                   lane=character(0))
+    perCycleBaseCall <- .qa_perCycleBaseCall(abc, pattern)
+    perCycleQuality <- .qa_perCycleQuality()
     malntbl <- table(alignData(aln)[["nMatch"]])
 
     list(readCounts=data.frame(

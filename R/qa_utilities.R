@@ -1,3 +1,57 @@
+## qa summary
+
+.qa_qdensity <-
+    function(quality)
+{
+    qscore <- alphabetScore(quality) / width(quality)
+    if (length(qscore) >= 2) {
+        density(qscore)
+    } else {
+        pseudo <- list(x=NA, y=NA, bw=Inf, n=0)
+        class(pseudo) <- "density"
+        pseudo
+    }
+
+}
+
+.qa_perCycleBaseCall <-
+    function(abc, lane)
+{
+    if (missing(abc) || dim(abc)[[3]] == 0) {
+        df <- data.frame(Cycle=integer(0), Base=factor(),
+                         Count=integer(0), lane=character(0))
+        return(df)
+    }
+    abc <- apply(abc, c(1, 3), sum)
+    df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
+                     Base=factor(rownames(abc)[row(abc)]),
+                     Count=as.vector(abc),
+                     lane=lane)
+    df[df$Count != 0,]
+}
+
+.qa_perCycleQuality <-
+    function(abc, quality, lane)
+{
+    if (missing(abc) || dim(abc)[[3]] == 0) {
+        df <- data.frame(Cycle=integer(0), Quality=numeric(0),
+                         Score=numeric(0), Count=integer(0),
+                         lane=character(0))
+        return(df)
+    }
+    abc <- apply(abc, 2:3, sum)
+    q <- factor(rownames(abc)[row(abc)])
+    q0 <- 1 + 32 * is(quality, "SFastqQuality")
+    df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
+                     Quality=q,
+                     Score=as.numeric(q)-q0,
+                     Count=as.vector(abc),
+                     lane=lane)
+    df[df$Count != 0, ]
+}
+
+## report-generation
+
 .ppnCount <- function(m) {
     ## scale subsequent columns to be proportions of 
     ## first column

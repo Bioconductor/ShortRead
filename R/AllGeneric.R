@@ -25,12 +25,9 @@ setGeneric("countLines", signature="dirPath")
 alphabetByCycle <-
     function(stringSet, alphabet, ...)
 {
-    if (length(stringSet)==0)
-        .throw(SRError("UserArgumentMismatch",
-                      "'stringSet' must have non-zero length"))
     if (missing(alphabet))
-        alphabet <- Biostrings::alphabet(stringSet[[1]])
-    w <- max(width(stringSet))
+        alphabet <- Biostrings::alphabet(stringSet)
+    w <- max(0L, width(stringSet))
     .Call(.alphabet_by_cycle, stringSet, w, alphabet)
 }
     

@@ -47,9 +47,18 @@ test_alphabetByCycle <- function() {
     checkIdentical(as.numeric(exp[names(obj)]),
                    as.vector(obj))
 
-    checkException(alphabetByCycle(sread(new("ShortReadQ"))),
-                   silent=TRUE)         # zero-length
-    checkException(alphabetByCycle(new("ShortReadQ")), silent=TRUE)
+    srq <- ShortReadQ(DNAStringSet(), FastqQuality())
+    abc <- alphabetByCycle(srq)
+    alf <- alphabet(sread(srq))
+    qalf <- alphabet(quality(srq))
+    checkIdentical(matrix(0L, nrow=length(alf), ncol=0,
+                          dimnames=list(alphabet=alf,
+                            cycle=character(0))),
+                   alphabetByCycle(sread(srq)))
+    checkIdentical(array(0L, dim=c(17, 94, 0),
+                         dimnames=list(base=alf, quality=qalf,
+                           cycle=character(0))),
+                   alphabetByCycle(srq))
 }
 
 ## countLines
@@ -63,6 +72,13 @@ test_countLines <- function() {
 }
 
 ## sort / order
+
+test_order_stats <- function()
+{
+    checkIdentical(integer(0), srrank(AlignedRead()))
+    checkIdentical(integer(0), srorder(AlignedRead()))
+    checkIdentical(logical(0), srduplicated(AlignedRead()))
+}
 
 test_alphabetOrder <- function() {
     ## setup

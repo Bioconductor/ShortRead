@@ -24,32 +24,12 @@
     rpt <- .maq_reverse(readAligned(dirPath, pattern, type, ...))
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE,collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
-    rqs <- local({
-        qscore <- alphabetScore(quality(rpt)) / width(quality(rpt))
-        density(qscore)
-    })
-    aqtbl <- table(quality(alignQuality(rpt)))
+    rqs <- .qa_qdensity(quality(rpt))
     freqtbl <- tables(sread(rpt))
     abc <- alphabetByCycle(rpt)
-    perCycleBaseCall <- local({
-        abc <- apply(abc, c(1, 3), sum)
-        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
-                         Base=factor(rownames(abc)[row(abc)]),
-                         Count=as.vector(abc),
-                         lane=pattern)
-        df[df$Count != 0,]
-    })
-    perCycleQuality <- local({
-        abc <- apply(abc, 2:3, sum)
-        q <- factor(rownames(abc)[row(abc)])
-        q0 <- 1 + 32 * is(quality(rpt), "SFastqQuality")
-        df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
-                         Quality=q,
-                         Score=as.numeric(q)-q0,
-                         Count=as.vector(abc),
-                         lane=pattern)
-        df[df$Count != 0, ]
-    })
+    perCycleBaseCall <- .qa_perCycleBaseCall(abc, pattern)
+    perCycleQuality <- .qa_perCycleQuality(abc, quality(rpt), pattern)
+    aqtbl <- table(quality(alignQuality(rpt)))
     list(readCounts=data.frame(
            read=NA, filter=NA, aligned=length(rpt),
            row.names=pattern),

@@ -149,10 +149,8 @@ setMethod(compact, "ShortReadQ",
 
 ## manip
 
-.abc_ShortReadQ <- function(stringSet, alphabet, ...) {
-    if (length(stringSet)==0)
-        .throw(SRError("UserArgumentMismatch",
-                       "'stringSet' must have non-zero length"))
+.abc_ShortReadQ <- function(stringSet, alphabet, ...)
+{
     if (!missing(alphabet)) {
         if (!(is.list(alphabet) && length(alphabet) == 2))
             .throw(SRError("UserArgumentMismatch",
@@ -168,10 +166,11 @@ setMethod(compact, "ShortReadQ",
     if (missing(alphabet))
         alphabet <- list(Biostrings::alphabet(sread),
                          Biostrings::alphabet(quality))
+    w <- max(0L, width(stringSet))
     res <- .Call(.alphabet_pair_by_cycle, sread, quality(quality),
-                 max(width(stringSet)), alphabet[[1]], alphabet[[2]])
+                 w, alphabet[[1]], alphabet[[2]])
     dm <- dimnames(res)
-    dm[[3]]<- seq_len(max(width(stringSet)))
+    dm[[3]]<- seq_len(w)
     names(dm)[[3]] <- "cycle"
     dimnames(res) <- dm
     res
