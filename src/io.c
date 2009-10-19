@@ -317,12 +317,12 @@ read_solexa_fastq(SEXP files, SEXP withId)
     nfiles = LENGTH(files);
     nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
     PROTECT(ans = NEW_LIST(3));
-	SET_VECTOR_ELT(ans, 0, _NEW_XSNAP(nrec)); /* sread */
+	SET_VECTOR_ELT(ans, 0, _NEW_XSNAP(nrec, "DNAString")); /* sread */
 	if (LOGICAL(withId)[0] == TRUE)			  /* id */
-		SET_VECTOR_ELT(ans, 1, _NEW_XSNAP(nrec));
+		SET_VECTOR_ELT(ans, 1, _NEW_XSNAP(nrec, "BString"));
 	else
 		SET_VECTOR_ELT(ans, 1, R_NilValue);
-	SET_VECTOR_ELT(ans, 2, _NEW_XSNAP(nrec)); /* quality */
+	SET_VECTOR_ELT(ans, 2, _NEW_XSNAP(nrec, "BString")); /* quality */
 
     PROTECT(nms = NEW_CHARACTER(3));
     SET_STRING_ELT(nms, 0, mkChar("sread"));
@@ -336,10 +336,10 @@ read_solexa_fastq(SEXP files, SEXP withId)
         fname = translateChar(STRING_ELT(files, i));
 		_read_solexa_fastq_file(fname, ans);
     }
-	_XSNAP_ELT(ans, 0, "DNAString");
+	_XSNAP_ELT(ans, 0);
 	if (VECTOR_ELT(ans, 1) != R_NilValue)
-		_XSNAP_ELT(ans, 1, "BString");
-	_XSNAP_ELT(ans, 2, "BString");
+		_XSNAP_ELT(ans, 1);
+	_XSNAP_ELT(ans, 2);
 
     UNPROTECT(1);
     return ans;
@@ -439,9 +439,10 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
     int *colidx = (int *) R_alloc(sizeof(int), ncol);
     int *toIUPAC = (int *) R_alloc(sizeof(int), ncol);
     for (j = 0; j < ncol; ++j) {
-		SET_VECTOR_ELT(ans, j, _NEW_XSNAP(nrow));
+		const char *baseclass = CHAR(STRING_ELT(colClasses, j));
+		SET_VECTOR_ELT(ans, j, _NEW_XSNAP(nrow, baseclass));
         colidx[j] = INTEGER(colIndex)[j] - 1;
-        toIUPAC[j] = !strcmp(CHAR(STRING_ELT(colClasses, j)), "DNAString");
+        toIUPAC[j] = !strcmp(baseclass, "DNAString");
     }
 
     /* read columns */
@@ -462,7 +463,7 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 
     /* formulate return value */
     for (j = 0; j < ncol; ++j)
-		_XSNAP_ELT(ans, j, CHAR(STRING_ELT(colClasses, j)));
+		_XSNAP_ELT(ans, j);
     UNPROTECT(1);
     return ans;
 }
@@ -648,8 +649,8 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
     SET_VECTOR_ELT(result, 2, NEW_INTEGER(nrec)); /* tile */
     SET_VECTOR_ELT(result, 3, NEW_INTEGER(nrec)); /* x */
     SET_VECTOR_ELT(result, 4, NEW_INTEGER(nrec)); /* y */
-	SET_VECTOR_ELT(result, 5, _NEW_XSNAP(nrec));
-	SET_VECTOR_ELT(result, 6, _NEW_XSNAP(nrec));
+	SET_VECTOR_ELT(result, 5, _NEW_XSNAP(nrec, "DNAString"));
+	SET_VECTOR_ELT(result, 6, _NEW_XSNAP(nrec, "BString"));
     SET_VECTOR_ELT(result, 7, NEW_STRING(nrec));  /* chromosome */
     SET_VECTOR_ELT(result, 8, NEW_INTEGER(nrec)); /* position */
     SET_VECTOR_ELT(result, 9, NEW_INTEGER(nrec)); /* strand: factor */
@@ -666,8 +667,8 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
             nrec, result);
     }
 
-	_XSNAP_ELT(result, 5, "DNAString");
-	_XSNAP_ELT(result, 6, "BString");
+	_XSNAP_ELT(result, 5);
+	_XSNAP_ELT(result, 6);
 
     SEXP strand_lvls = PROTECT(_get_strand_levels());
     _as_factor_SEXP(VECTOR_ELT(result, 9), strand_lvls);

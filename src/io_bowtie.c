@@ -121,12 +121,12 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
-	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec));  /* id */
+	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec, "BString"));  /* id */
     SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec)); /* strand */
     SET_VECTOR_ELT(ref, 2, NEW_STRING(nrec)); /* chromosome */
     SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* position */
-	SET_VECTOR_ELT(ref, 4, _NEW_XSNAP(nrec)); /* sread */
-	SET_VECTOR_ELT(ref, 5, _NEW_XSNAP(nrec)); /* quality */
+	SET_VECTOR_ELT(ref, 4, _NEW_XSNAP(nrec, "DNAString")); /* sread */
+	SET_VECTOR_ELT(ref, 5, _NEW_XSNAP(nrec, "BString")); /* quality */
     SET_VECTOR_ELT(ref, 6, NEW_INTEGER(nrec)); /* similar */
     SET_VECTOR_ELT(ref, 7, NEW_STRING(nrec)); /* mismatch encoding */
 
@@ -144,9 +144,9 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
             CHAR(STRING_ELT(commentChar, 0)),
             ref, nrec);
     }
-    _XSNAP_ELT(ref, 0, "BString");
-    _XSNAP_ELT(ref, 4, "DNAString");
-    _XSNAP_ELT(ref, 5, "BString");
+    _XSNAP_ELT(ref, 0);
+    _XSNAP_ELT(ref, 4);
+    _XSNAP_ELT(ref, 5);
 
     SEXP strand_lvls = PROTECT(_get_strand_levels());
     _as_factor_SEXP(VECTOR_ELT(ref, 1), strand_lvls);

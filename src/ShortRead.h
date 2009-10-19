@@ -46,9 +46,9 @@ SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 /* xstring_util.c */
 
 typedef SEXP _XSnap;
-_XSnap _NEW_XSNAP(int nelt);
+_XSnap _NEW_XSNAP(int nelt, const char *baseclass);
 void _APPEND_XSNAP(_XSnap snap, const char *str);
-void _XSNAP_ELT(SEXP x, int elt, const char *baseclass);
+void _XSNAP_ELT(SEXP x, int elt);
 
 /* io.c */
 

@@ -136,9 +136,9 @@ read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
-	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec));
-	SET_VECTOR_ELT(ref, 1, _NEW_XSNAP(nrec));
-	SET_VECTOR_ELT(ref, 2, _NEW_XSNAP(nrec));
+	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec, "BString"));
+	SET_VECTOR_ELT(ref, 1, _NEW_XSNAP(nrec, "DNAString"));
+	SET_VECTOR_ELT(ref, 2, _NEW_XSNAP(nrec, "BString"));
     SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* nEquallyBestHits */
     SET_VECTOR_ELT(ref, 4, NEW_STRING(nrec)); /* pairedEnd */
     SET_VECTOR_ELT(ref, 5, NEW_INTEGER(nrec)); /* alignedLength */
@@ -169,9 +169,9 @@ read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
             CHAR(STRING_ELT(commentChar, 0)),
             sep_func, ref, nrec);
     }
-	_XSNAP_ELT(ref, 0, "BString");
-	_XSNAP_ELT(ref, 1, "DNAString");
-	_XSNAP_ELT(ref, 2, "BString");
+	_XSNAP_ELT(ref, 0);
+	_XSNAP_ELT(ref, 1);
+	_XSNAP_ELT(ref, 2);
 
     SEXP strand_lvls = PROTECT(_get_strand_levels());
     _as_factor_SEXP(VECTOR_ELT(ref, 6), strand_lvls);
