@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "ShortRead.h"
+#include "call.h"
 
 /*
 SIMU_0001_00000081/1	TGTACAGTATGTGAAGAGATTTGTTCTGAACCAAA	hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh	1	a	35	+	refseq	2210	0
@@ -75,19 +76,6 @@ _read_soap(const char *fname, const char *csep,
     return offset;
 }
 
-#define NEW_CALL(S, T, NAME, ENV, N) \
-    PROTECT(S = T = allocList(N)); \
-    SET_TYPEOF(T, LANGSXP); \
-    SETCAR(T, findFun(install(NAME), ENV)); \
-    T = CDR(T)
-#define CSET_CDR(T, NAME, VALUE) \
-    SETCAR(T, VALUE); \
-    SET_TAG(T, install(NAME)); \
-    T = CDR(T)
-#define CEVAL_TO(S, ENV, GETS) \
-    GETS = eval(S, ENV); \
-    UNPROTECT(1)
-
 SEXP
 _AlignedRead_SOAP_make(SEXP ref, const char *qtype)
 {
@@ -124,10 +112,6 @@ _AlignedRead_SOAP_make(SEXP ref, const char *qtype)
     UNPROTECT(3);
     return aln;
 }
-
-#undef NEW_CALL
-#undef CSET_CDR
-#undef CEVAL_TO
 
 SEXP
 read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)

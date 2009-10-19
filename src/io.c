@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>             /* atoi */
 #include "ShortRead.h"
+#include "call.h"
 
 static const int SOLEXA_QBASE = 64;
 static const int PHRED_QBASE = 33;
@@ -470,19 +471,6 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
  * _export parser
  */
 
-#define NEW_CALL(S, T, NAME, ENV, N)            \
-    PROTECT(S = T = allocList(N));              \
-    SET_TYPEOF(T, LANGSXP);                     \
-    SETCAR(T, findFun(install(NAME), ENV));     \
-    T = CDR(T)
-#define CSET_CDR(T, NAME, VALUE)                \
-    SETCAR(T, VALUE);                           \
-    SET_TAG(T, install(NAME));                  \
-    T = CDR(T)
-#define CEVAL_TO(S, ENV, GETS)                  \
-    GETS = eval(S, ENV);                        \
-    UNPROTECT(1)
-
 SEXP
 _AlignedRead_Solexa_make(SEXP fields)
 {
@@ -540,10 +528,6 @@ _AlignedRead_Solexa_make(SEXP fields)
     UNPROTECT(6);
     return aln;
 }
-
-#undef NEW_CALL
-#undef CSET_CDR
-#undef CEVAL_TO
 
 int
 _read_solexa_export_file(const char *fname, const char *commentChar,

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "ShortRead.h"
+#include "call.h"
 
 /*
 HWI-EAS88_1:1:1:83:277  -       chr1    163068612       AGAAGAATCCTTAAGGCTTGCTAGGCAGCAGTCTA     77777::::::::::::::::::::::::::::::     0       23
@@ -63,19 +64,6 @@ _read_bowtie(const char *fname, const char *commentChar,
     return irec - offset;
 }
 
-#define NEW_CALL(S, T, NAME, ENV, N) \
-    PROTECT(S = T = allocList(N)); \
-    SET_TYPEOF(T, LANGSXP); \
-    SETCAR(T, findFun(install(NAME), ENV)); \
-    T = CDR(T)
-#define CSET_CDR(T, NAME, VALUE) \
-    SETCAR(T, VALUE); \
-    SET_TAG(T, install(NAME)); \
-    T = CDR(T)
-#define CEVAL_TO(S, ENV, GETS) \
-    GETS = eval(S, ENV); \
-    UNPROTECT(1)
-
 SEXP
 _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
 {
@@ -109,10 +97,6 @@ _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
     UNPROTECT(3);
     return aln;
 }
-
-#undef NEW_CALL
-#undef CSET_CDR
-#undef CEVAL_TO
 
 SEXP
 read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
