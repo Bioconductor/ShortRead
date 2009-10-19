@@ -45,7 +45,7 @@ SEXP _get_SEXP(SEXP from, SEXP rho, const char *with);
 
 /* xstring_util.c */
 
-typedef SEXP _XSnap;  /* list: raw, starts, widths, i, offset */
+typedef SEXP _XSnap;
 _XSnap _NEW_XSNAP(int nelt);
 void _APPEND_XSNAP(_XSnap snap, const char *str);
 void _XSNAP_ELT(SEXP x, int elt, const char *baseclass);
@@ -98,3 +98,4 @@ SEXP readBfaToc(SEXP bfa_filename);
 #endif
 
 #endif /* _SHORTREAD_H_ */
+

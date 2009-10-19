@@ -20,87 +20,102 @@
 
 #include "ShortRead.h"
 
-static const int INITIAL_SIZE = 32000;
-static const double SCALE = 1.1;
+/* _Snap */
 
-_XSnap
-_NEW_XSNAP(int nelt)
+struct _Snap {
+	int i_entries, n_entries;
+	char **entries;
+};
+
+struct _Snap *
+snap_new(int n_entries)
 {
-	_XSnap snap = PROTECT(NEW_LIST(5));
-
-	SET_VECTOR_ELT(snap, 0, NEW_RAW(INITIAL_SIZE)); /* data */
-	SET_VECTOR_ELT(snap, 1, NEW_INTEGER(nelt)); /* starts */
-	SET_VECTOR_ELT(snap, 2, NEW_INTEGER(nelt)); /* widths */
-	SET_VECTOR_ELT(snap, 3, NEW_INTEGER(2));	/* i, nelt */
-	INTEGER(VECTOR_ELT(snap, 3))[0] = 0;
-	INTEGER(VECTOR_ELT(snap, 3))[1] = nelt;
-	SET_VECTOR_ELT(snap, 4, NEW_INTEGER(1));	/* offset */
-	INTEGER(VECTOR_ELT(snap, 4))[0] = 0;
-	UNPROTECT(1);
+	struct _Snap *snap = Calloc(1, struct _Snap);
+	snap->entries = Calloc(n_entries, char *);
+	for (int i = 0; i < n_entries; ++i)
+		snap->entries[i] = NULL;
+	snap->n_entries = n_entries;
+	snap->i_entries = 0;
 	return snap;
 }
 
 void
-_APPEND_XSNAP(_XSnap snap, const char *str)
+snap_encode(struct _Snap *snap, ENCODE_FUNC encode)
 {
-	const int width = strlen(str);
+	for (int i = 0; i < snap->i_entries; ++i)
+		for (char *c = snap->entries[i]; *c != '\0'; ++c)
+			*c = encode(*c);
+}
 
-	const int i = INTEGER(VECTOR_ELT(snap, 3))[0];
-	const int offset = INTEGER(VECTOR_ELT(snap, 4))[0];
-	char *dest = (char *) RAW(VECTOR_ELT(snap, 0));
+void
+snap_free(struct _Snap *snap)
+{
+	Free(snap->entries);
+	Free(snap);
+}
 
-	int rlength = LENGTH(VECTOR_ELT(snap, 0));
-	if (offset + width > rlength) {
-		/* re-allocate */
-		int nelt = INTEGER(VECTOR_ELT(snap, 3))[1];
-		int sz = SCALE * rlength * nelt / i;
-		SEXP buf = PROTECT(NEW_RAW(sz));
-		memcpy((char *) RAW(buf), dest, offset);
-		SET_VECTOR_ELT(snap, 0, buf);
-		dest = (char *) RAW(buf);
-		UNPROTECT(1);
-	} 
+/* _XSnap: wrap in ExternalPtr as interface and to ensure garbage
+ * collection */
 
-	memcpy(dest + offset, str, width);
-	INTEGER(VECTOR_ELT(snap, 1))[i] = offset + 1; /* R is 1-based */
-	INTEGER(VECTOR_ELT(snap, 2))[i] = width;
-	INTEGER(VECTOR_ELT(snap, 3))[0] = i + 1;
-	INTEGER(VECTOR_ELT(snap, 4))[0] = offset + width;
+void
+_xsnap_finalizer(SEXP xsnap)
+{
+	struct _Snap *snap = R_ExternalPtrAddr(xsnap);
+	if (!snap) return;
+	snap_free(snap);
+	R_ClearExternalPtr(xsnap);
+}
+
+_XSnap
+_NEW_XSNAP(int nelt)
+{
+	struct _Snap *snap = snap_new(nelt);
+	SEXP xsnap = PROTECT(R_MakeExternalPtr(snap, mkString("XSnap"),
+										   R_NilValue));
+	R_RegisterCFinalizerEx(xsnap, _xsnap_finalizer, TRUE);
+	UNPROTECT(1);
+	return xsnap;
+}
+
+void
+_APPEND_XSNAP(_XSnap xsnap, const char *str)
+{
+	struct _Snap *snap = (struct _Snap *) R_ExternalPtrAddr(xsnap);
+	if (snap->i_entries >= snap->n_entries)
+		Rf_error("ShortRead internal: too many 'snap' entries");
+	snap->entries[snap->i_entries] = Calloc(strlen(str) + 1, char);
+	strcpy(snap->entries[snap->i_entries], str);
+	snap->i_entries += 1;
 }
 
 SEXP
-_XSnap_to_XStringSet(_XSnap snap, const char *baseclass)
+_XSnap_to_XStringSet(_XSnap xsnap, const char *baseclass)
 {
-	SEXP seq = VECTOR_ELT(snap, 0);
-	int length = INTEGER(VECTOR_ELT(snap, 3))[0];
-	int width = INTEGER(VECTOR_ELT(snap, 4))[0], i;
+	struct _Snap *snap = (struct _Snap *) R_ExternalPtrAddr(xsnap);
 
-	ENCODE_FUNC encode = encoder(baseclass);
-	char *str = (char *) RAW(seq);
-	for (i = 0; i < width; ++i)
-		str[i] = encode(str[i]);
-	if (width < LENGTH(seq))	/* pad */
-		memset(str + width, encode('N'), LENGTH(seq) - width);
-	SEXP ptr = PROTECT(new_SharedVector("SharedRaw", seq));
-	SEXP xstring = PROTECT(new_XVector(baseclass, ptr, 0, width));
-
+	snap_encode(snap, encoder(baseclass));
+	SEXP width = PROTECT(NEW_INTEGER(snap->i_entries));
+	int i, *w = INTEGER(width);
+	for (i = 0; i < snap->i_entries; ++i)
+		w[i] = strlen(snap->entries[i]);
+	
 	const int XSETCLASS_BUF = 40;
 	if (strlen(baseclass) > XSETCLASS_BUF - 4)
-		error("ShortRead internal error: *Set buffer too small");
+		Rf_error("ShortRead internal: *Set buffer too small");
+	char class[XSETCLASS_BUF];
+	sprintf(class, "%sSet", baseclass);
 
-	if (LENGTH(VECTOR_ELT(snap, 1)) != length) {
-		SEXP tmp;
-		tmp = VECTOR_ELT(snap, 1);
-		SET_VECTOR_ELT(snap, 1, SET_LENGTH(tmp, length));
-		tmp = VECTOR_ELT(snap, 2);
-		SET_VECTOR_ELT(snap, 2, SET_LENGTH(tmp, length));
+	SEXP ans = PROTECT(alloc_XRawList(class, baseclass, width));
+	cachedXVectorList cached_ans = cache_XVectorList(ans);
+	cachedCharSeq elt;
+
+	for (i = 0; i < snap->i_entries; ++i) {
+		elt = get_cachedXRawList_elt(&cached_ans, i);
+		memcpy((char *) elt.seq, snap->entries[i], w[i]);
 	}
-	SEXP irange = 
-		PROTECT(new_IRanges("IRanges", VECTOR_ELT(snap, 1),
-							VECTOR_ELT(snap, 2), R_NilValue));
-	SEXP xstringset = PROTECT(new_XStringSet(NULL, xstring, irange));
-	UNPROTECT(4);
-	return xstringset;
+
+	UNPROTECT(2);
+	return ans;
 }
 
 void
