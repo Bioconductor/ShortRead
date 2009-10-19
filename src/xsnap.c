@@ -82,11 +82,11 @@ _APPEND_XSNAP(_XSnap xsnap, const char *str)
 	if (snap->i_entries >= snap->n_entries)
 		Rf_error("ShortRead internal: too many 'snap' entries");
 	const int len = strlen(str);
-	char *entries = Calloc(len + 1, char);
+	char *entry = Calloc(len + 1, char);
 	for (int i = 0; i < len; ++i)
-		entries[i] = snap->encode(str[i]);
-	entries[len] = '\0';
-	snap->entries[snap->i_entries++] = entries;
+		entry[i] = snap->encode(str[i]);
+	entry[len] = '\0';
+	snap->entries[snap->i_entries++] = entry;
 }
 
 SEXP
