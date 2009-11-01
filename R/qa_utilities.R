@@ -140,8 +140,23 @@
     paste(names(at), " (", sprintf(fmt, at), ")", sep="")
 }
 
+.tileGeometry <- function(tileIndicies)
+{
+    n <- as.character(max(tileIndicies))
+    switch(n,
+           "100"=c(50, 2),
+           "120"=c(60, 2),
+           "300"=c(100, 3),
+           {
+               warning(n, " tiles; ",
+                       "assuming lane geometry with 50 tiles / row",
+                       call.=FALSE)
+               c(50, ceiling(as.integer(n) / 50))
+           })
+}
+
 .plotTileCounts <- 
-    function(df, nrow=if (max(df$tile)==100) 50 else 100)
+    function(df, nrow=.tileGeometry(df$tile)[[1]])
 {
     df <- df[!is.na(df$count),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
@@ -153,12 +168,11 @@
               xlab="Tile x-coordinate",
               ylab="Tile y-coordinate",
               cuts=length(at)-2,
-              colorkey=list(
-                labels=.colorkeyNames(at, "%d")),
+              colorkey=list(labels=.colorkeyNames(at, "%d")),
               aspect=2)
 }
 .plotTileQualityScore <- 
-    function(df, nrow=if (max(df$tile)==100) 50 else 100)
+    function(df, nrow=.tileGeometry(df$tile)[[1]])
 {
     df <- df[!is.na(df$score),]
     xy <- .plotTileLocalCoords(df$tile, nrow)
