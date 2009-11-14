@@ -8,12 +8,13 @@ setMethod(.srValidity, "SolexaPath", function(object) {
 SolexaPath <- function(experimentPath=NA_character_,
                        dataPath=.srPath(experimentPath, "Data"),
                        scanPath=.srPath(dataPath, "GoldCrest"),
-                       imageAnalysisPath=.srPath(dataPath, "^(C|IPAR)"),
+                       imageAnalysisPath=.srPath(dataPath, "^(C[[:digit:]]|IPAR|Intensities)"),
                        baseCallPath=.srPath(imageAnalysisPath,
-                         "^Bustard"),
+                         "^(Bustard|BaseCalls)"),
                        analysisPath=.srPath(baseCallPath,
                          "^GERALD"),
-                       ..., verbose=FALSE) {
+                       ..., verbose=FALSE)
+{
     if (verbose) {
         .checkPath(experimentPath)
         .checkPath(dataPath)
