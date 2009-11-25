@@ -49,7 +49,10 @@
       aligns.}
 
     \item{\code{position}}{Object of class \code{"integer"} the
-    (base-pair) position in the genome to which the read is aligned.}
+      (base-pair) position in the genome to which the read is
+      aligned. AlignedRead objects created by readAligned use 1-based
+      indexing, with alignemnts reported in \sQuote{left-most}
+      coordinates, as described in the vignette.}
 
     \item{\code{strand}}{Object of class \code{"factor"} the strand of
       the alignment.}
