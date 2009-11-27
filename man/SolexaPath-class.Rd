@@ -107,7 +107,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 
     \item{readFastq}{
 
-      \code{signature(dirPath = "SolexaPath", pattern = ".*_sequence.txt", run, ...)}:
+      \code{signature(dirPath = "SolexaPath", pattern = ".*_sequence.txt",
+		run, ..., qualityType="SFastqQuality")}:
 
       Use \code{analysisPath(dirPath)[run]} as the directory path(s) and
       \code{pattern=".*_sequence.txt"} as the pattern for

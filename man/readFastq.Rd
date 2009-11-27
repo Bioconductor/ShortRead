@@ -22,9 +22,11 @@
 }
 \usage{
 readFastq(dirPath, pattern=character(0), ...)
-\S4method{readFastq}{character}(dirPath, pattern=character(0),
-    ..., qualityType=c("FastqQuality", "SFastqQuality"),
+
+\S4method{readFastq}{character}(dirPath, pattern=character(0), ...,
+    qualityType=c("Auto", "FastqQuality", "SFastqQuality"),
     filter=srFilter(), withIds=TRUE)
+
 writeFastq(object, file, mode="w", ...)
 }
 
@@ -51,8 +53,9 @@ writeFastq(object, file, mode="w", ...)
   \item{...}{Additional arguments, perhaps used by methods.}
 
   \item{qualityType}{Representation to be used for quality scores, must
-	be one of \code{FastqQuality} (Phred-like encoding),
-	\code{SFastqQuality} (Illumina encoding).}
+	be one of \code{Auto} (choose Phred-like if any character is
+	ASCII-encoded as less than 59) \code{FastqQuality} (Phred-like
+	encoding), \code{SFastqQuality} (Illumina encoding).}
 
   \item{filter}{An object of class \code{\link{srFilter}}, used to
 	filter objects of class \code{\linkS4class{ShortReadQ}} at input.}

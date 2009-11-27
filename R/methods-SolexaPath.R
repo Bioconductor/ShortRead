@@ -49,12 +49,13 @@ setMethod(readPrb, "SolexaPath", .readPrb_SolexaPath)
 
 .readFastq_SolexaPath <- function(dirPath, 
                                   pattern=".*_sequence.txt$",
-                                  run, ...) {
+                                  run, ...,
+                                  qualityType="SFastqQuality") {
     dirPath <- analysisPath(dirPath)[run]
     if (is.na(dirPath))
         .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                        "analysisPath", "dirPath"))
-    callGeneric(dirPath, ..., pattern=pattern)
+    callGeneric(dirPath, ..., pattern=pattern, qualityType=qualityType)
 }
 
 setMethod(readFastq, "SolexaPath", .readFastq_SolexaPath)

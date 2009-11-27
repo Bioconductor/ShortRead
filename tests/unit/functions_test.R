@@ -4,6 +4,17 @@ test_readFastq_errors <- function() {
     checkTrue(FALSE)
 }
 
+test_readFastq_autoDetectType <- function() 
+{
+    srq <- readFastq(file.path("cases", "sanger.fastq"))
+    checkTrue(class(quality(srq)) == "FastqQuality")
+    srq <- readFastq(file.path("cases", "solexa.fastq"))
+    checkTrue(class(quality(srq)) == "SFastqQuality")
+    srq <- readFastq(file.path("cases", "solexa.fastq"),
+                     qualityType="FastqQuality")
+    checkTrue(class(quality(srq)) == "FastqQuality")
+}
+
 test_readFastq_withids <- function() {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
