@@ -24,21 +24,20 @@ SEXP _to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass);
 const char *_get_lookup(const char *baseclass);
 
 /* 50m 2x100 reads; 10G reads */
-static const int _BUFFERNODE_SIZE = 100000000;
-static const int _BUFFERNODE_OFFSET_SIZE = 5000000;
+static const int _BUFFERNODE_SIZE = 250000000;
 
 /* _Buffer, _BufferNode: linked list of XString data chunks */
 
 struct _Buffer {
 	char *baseclass;
+	int *offset, i_offset;
 	struct _BufferNode *root, *curr;
 };
 
 struct _BufferNode {
-	int i_offset, n_offsets;
-	int *offset;
+	int n;						/* number of entries */
 	int buf_size;
-	char *buf;
+	char *buf, *curr;
 	/* linked list */
 	struct _BufferNode *next;
 };
@@ -49,19 +48,10 @@ struct _BufferNode *
 _BufferNode_new()
 {
 	struct _BufferNode *node = Calloc(1, struct _BufferNode);
-	if (!node)
-		Rf_error("ShortRead internal: failed to allocate _BufferNode");
-	node->offset = Calloc(_BUFFERNODE_OFFSET_SIZE, int);
-	if (!node->offset)
-		Rf_error("ShortRead internal: failed to allocate _BufferNode offsets");
-	node->offset[0] = 0;
-	node->i_offset = 0;
-	node->n_offsets = _BUFFERNODE_OFFSET_SIZE;
-	node->buf = Calloc(_BUFFERNODE_SIZE, char);
-	if (!node->buf)
-		Rf_error("ShortRead internal: failed to allcoate _BufferNode buffer");
+	node->curr = node->buf = Calloc(_BUFFERNODE_SIZE, char);
+	node->n = 0;
 	node->buf_size = _BUFFERNODE_SIZE;
-	node->next = 0;
+	node->next = NULL;
 	return node;
 }
 
@@ -69,45 +59,49 @@ void
 _BufferNode_free(struct _BufferNode *node)
 {
 	Free(node->buf);
-	Free(node->offset);
 	Free(node);
 }
 
 void
 _BufferNode_encode(struct _BufferNode *node, const char *lkup)
 {
-	char *buf = node->buf;
-	for (int i = 0; i < node->offset[node->i_offset]; ++i) {
-		const char c = lkup[(int) buf[i]];
+	for (char *buf = node->buf; buf < node->curr; ++buf) {
+		const char c = lkup[(int) *buf];
 		if (c == 0)
 			Rf_error("invalid character '%c'", c);
-		buf[i] = c;
+		*buf = c;
 	}
 }
 
-void
+int
 _BufferNode_append(struct _BufferNode *node, const char *s, int w)
 {
-	memcpy(&node->buf[node->offset[node->i_offset]], s, w);
-	node->i_offset += 1;
-	node->offset[node->i_offset] = node->offset[node->i_offset-1] + w;
+	int offset = node->curr - node->buf;
+	if (offset + w >=  node->buf_size)
+		return -1;
+	memcpy(node->curr, s, w);
+	node->curr += w;
+	node->n += 1;
+	return offset;
 }
 
 SEXP
-_BufferNode_snap(struct _BufferNode *node, const char *baseclass)
+_BufferNode_snap(struct _BufferNode *node, const int *offset, 
+				 const char *baseclass)
 {
-	const int *offset = node->offset;
-	SEXP seq = PROTECT(NEW_RAW(offset[node->i_offset])),
-		start = PROTECT(NEW_INTEGER(node->i_offset)),
-		width = PROTECT(NEW_INTEGER(node->i_offset));
-	memcpy(RAW(seq), node->buf, offset[node->i_offset]);
-	for (int i = 0; i < node->i_offset; ++i) {
+	const int n_raw = node->curr - node->buf;
+	SEXP seq = PROTECT(NEW_RAW(n_raw)),
+		start = PROTECT(NEW_INTEGER(node->n)),
+		width = PROTECT(NEW_INTEGER(node->n));
+	memcpy(RAW(seq), node->buf, n_raw);
+	for (int i = 0; i < node->n; ++i)
 		INTEGER(start)[i] = offset[i] + 1;
+	for (int i = 0; i < node->n - 1; ++i)
 		INTEGER(width)[i] = offset[i + 1] - offset[i];
-	}
-
+	if (node->n > 0)
+		INTEGER(width)[node->n-1] = 
+			node->curr - (node->buf + offset[node->n-1]);
 	SEXP xstringset = _to_XStringSet(seq, start, width, baseclass);
-
 	UNPROTECT(3);
 	return xstringset;
 }
@@ -115,12 +109,12 @@ _BufferNode_snap(struct _BufferNode *node, const char *baseclass)
 /* _Buffer implementation */
 
 struct _Buffer *
-_Buffer_new(const char *baseclass)
+_Buffer_new(int n_offsets, const char *baseclass)
 {
 	struct _Buffer *buffer = Calloc(1, struct _Buffer);
-	if (!buffer)
-		Rf_error("ShortRead internal: failed to allocate _Buffer");
 	buffer->baseclass = Calloc(strlen(baseclass) + 1, char);
+	buffer->offset = Calloc(n_offsets, int);
+	buffer->i_offset = 0;
 	strcpy(buffer->baseclass, baseclass);
 	buffer->root = buffer->curr = _BufferNode_new();
 	return buffer;
@@ -135,6 +129,7 @@ _Buffer_free(struct _Buffer *buf)
 		curr = curr->next;
 		_BufferNode_free(tmp);
 	}
+	Free(buf->offset);
 	Free(buf->baseclass);
 	Free(buf);
 }
@@ -144,11 +139,14 @@ _Buffer_append(struct _Buffer *buf, const char *s)
 {
 	int w = strlen(s);
 	struct _BufferNode *curr = buf->curr;
-	if (curr->i_offset + 1 >= curr->n_offsets ||
-		curr->offset[curr->i_offset] + w > curr->buf_size) {
+	int i;
+	if ((i = _BufferNode_append(curr, s, w)) < 0) {
 		curr = buf->curr = curr->next = _BufferNode_new();
+		i = _BufferNode_append(curr, s, w);
+		if (i < 0)
+			Rf_error("ShortRead internal: _BufferNode too small");
 	}
-	_BufferNode_append(curr, s, w);
+	buf->offset[buf->i_offset++] = i;
 }
 
 void
@@ -163,16 +161,18 @@ _Buffer_encode(struct _Buffer *buf)
 SEXP
 _Buffer_snap(struct _Buffer *buf)
 {
-	int n_buf = 0;
-	struct _BufferNode *curr;
+	int n_buf = 0, n_off = 0;
+	struct _BufferNode *curr, *tmp;
 	for (curr = buf->root; curr != NULL; curr = curr->next)
 		++n_buf;
 	SEXP xstringsets = PROTECT(NEW_LIST(n_buf));
 	curr = buf->root;
 	for (int i = 0; i < n_buf; ++i) {
-		SET_VECTOR_ELT(xstringsets, i, 
-					   _BufferNode_snap(curr, buf->baseclass));
-		struct _BufferNode *tmp = curr;
+		SEXP xs = _BufferNode_snap(curr, buf->offset + n_off,
+								   buf->baseclass);
+		SET_VECTOR_ELT(xstringsets, i, xs);
+		n_off += curr->n;
+		tmp = curr; 
 		curr = curr->next;
 		_BufferNode_free(tmp);
 	}
@@ -192,9 +192,9 @@ _xsnap_finalizer(SEXP xsnap)
 }
 
 _XSnap
-_NEW_XSNAP(int nelt, const char *baseclass)
+_NEW_XSNAP(int n_elt, const char *baseclass)
 {
-	struct _Buffer *buffer = _Buffer_new(baseclass);
+	struct _Buffer *buffer = _Buffer_new(n_elt, baseclass);
 	SEXP xsnap = PROTECT(R_MakeExternalPtr(buffer, mkString("XSnap"),
 										   R_NilValue));
 	R_RegisterCFinalizerEx(xsnap, _xsnap_finalizer, TRUE);
@@ -282,11 +282,11 @@ _XSnap_to_XStringSet(_XSnap snap)
 				SEXP l = lang3(appender, VECTOR_ELT(xstringset, i),
 							   VECTOR_ELT(xstringset, i + 1));
 				res = eval(l, R_GlobalEnv);
+				SET_VECTOR_ELT(xstringset, i + 1, R_NilValue);
 			} else {
 				res = VECTOR_ELT(xstringset, i);
 			}
 			SET_VECTOR_ELT(xstringset, i, R_NilValue);
-			SET_VECTOR_ELT(xstringset, i + 1, R_NilValue);
 			SET_VECTOR_ELT(xstringset, i / 2, res);
 		}
 		n = i / 2;
