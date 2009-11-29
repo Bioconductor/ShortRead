@@ -20,110 +20,198 @@
 
 #include "ShortRead.h"
 
+SEXP _to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass);
+const char *_get_lookup(const char *baseclass);
+
 /* 50m 2x100 reads; 10G reads */
-static const int GROUP_SIZE = 100000000;
-static const int N_GROUP = 1000;
+static const int _BUFFERNODE_SIZE = 100000000;
+static const int _BUFFERNODE_OFFSET_SIZE = 5000000;
 
-enum { GROUPS_IDX = 0, READS_PER_GROUP_IDX, GROUP_IDX, START_IDX, 
-	   WIDTH_IDX, STATE_IDX, BASENAME_IDX };
+/* _Buffer, _BufferNode: linked list of XString data chunks */
 
-#define GET_GRP_I(snap, i) \
-	VECTOR_ELT(VECTOR_ELT((snap), GROUPS_IDX), i)
-#define SET_GRP_I(snap, i, value) \
-	SET_VECTOR_ELT(VECTOR_ELT((snap), GROUPS_IDX), i, (value))
-#define GET_CURR_GRP(snap) GET_GRP_I((snap), GET_STATE((snap))[1])
-#define SET_CURR_GRP(snap, value) \
-	SET_GRP_I((snap), GET_STATE((snap))[1], (value))
-#define GET_STATE(snap) INTEGER(VECTOR_ELT((snap), STATE_IDX))
+struct _Buffer {
+	char *baseclass;
+	struct _BufferNode *root, *curr;
+};
+
+struct _BufferNode {
+	int i_offset, n_offsets;
+	int *offset;
+	int buf_size;
+	char *buf;
+	/* linked list */
+	struct _BufferNode *next;
+};
+
+/* _BufferNode implementation */
+
+struct _BufferNode *
+_BufferNode_new()
+{
+	struct _BufferNode *node = Calloc(1, struct _BufferNode);
+	if (!node)
+		Rf_error("ShortRead internal: failed to allocate _BufferNode");
+	node->offset = Calloc(_BUFFERNODE_OFFSET_SIZE, int);
+	if (!node->offset)
+		Rf_error("ShortRead internal: failed to allocate _BufferNode offsets");
+	node->offset[0] = 0;
+	node->i_offset = 0;
+	node->n_offsets = _BUFFERNODE_OFFSET_SIZE;
+	node->buf = Calloc(_BUFFERNODE_SIZE, char);
+	if (!node->buf)
+		Rf_error("ShortRead internal: failed to allcoate _BufferNode buffer");
+	node->buf_size = _BUFFERNODE_SIZE;
+	node->next = 0;
+	return node;
+}
 
 void
-_trim_group_i(_XSnap snap, int i, int len)
+_BufferNode_free(struct _BufferNode *node)
 {
-	SEXP grp = GET_GRP_I(snap, i);
-	SET_LENGTH(grp, len);
-	SET_GRP_I(snap, i, grp);
+	Free(node->buf);
+	Free(node->offset);
+	Free(node);
+}
+
+void
+_BufferNode_encode(struct _BufferNode *node, const char *lkup)
+{
+	char *buf = node->buf;
+	for (int i = 0; i < node->offset[node->i_offset]; ++i) {
+		const char c = lkup[(int) buf[i]];
+		if (c == 0)
+			Rf_error("invalid character '%c'", c);
+		buf[i] = c;
+	}
+}
+
+void
+_BufferNode_append(struct _BufferNode *node, const char *s, int w)
+{
+	memcpy(&node->buf[node->offset[node->i_offset]], s, w);
+	node->i_offset += 1;
+	node->offset[node->i_offset] = node->offset[node->i_offset-1] + w;
+}
+
+SEXP
+_BufferNode_snap(struct _BufferNode *node, const char *baseclass)
+{
+	const int *offset = node->offset;
+	SEXP seq = PROTECT(NEW_RAW(offset[node->i_offset])),
+		start = PROTECT(NEW_INTEGER(node->i_offset)),
+		width = PROTECT(NEW_INTEGER(node->i_offset));
+	memcpy(RAW(seq), node->buf, offset[node->i_offset]);
+	for (int i = 0; i < node->i_offset; ++i) {
+		INTEGER(start)[i] = offset[i] + 1;
+		INTEGER(width)[i] = offset[i + 1] - offset[i];
+	}
+
+	SEXP xstringset = _to_XStringSet(seq, start, width, baseclass);
+
+	UNPROTECT(3);
+	return xstringset;
+}
+
+/* _Buffer implementation */
+
+struct _Buffer *
+_Buffer_new(const char *baseclass)
+{
+	struct _Buffer *buffer = Calloc(1, struct _Buffer);
+	if (!buffer)
+		Rf_error("ShortRead internal: failed to allocate _Buffer");
+	buffer->baseclass = Calloc(strlen(baseclass) + 1, char);
+	strcpy(buffer->baseclass, baseclass);
+	buffer->root = buffer->curr = _BufferNode_new();
+	return buffer;
+}
+
+void
+_Buffer_free(struct _Buffer *buf)
+{
+	struct _BufferNode *curr = buf->root;
+	while (curr != NULL) {
+		struct _BufferNode *tmp = curr;
+		curr = curr->next;
+		_BufferNode_free(tmp);
+	}
+	Free(buf->baseclass);
+	Free(buf);
+}
+
+void
+_Buffer_append(struct _Buffer *buf, const char *s)
+{
+	int w = strlen(s);
+	struct _BufferNode *curr = buf->curr;
+	if (curr->i_offset + 1 >= curr->n_offsets ||
+		curr->offset[curr->i_offset] + w > curr->buf_size) {
+		curr = buf->curr = curr->next = _BufferNode_new();
+	}
+	_BufferNode_append(curr, s, w);
+}
+
+void
+_Buffer_encode(struct _Buffer *buf)
+{
+	const char *lkup = _get_lookup(buf->baseclass);
+	struct _BufferNode *curr;
+	for (curr = buf->root; curr != NULL; curr = curr->next)
+		_BufferNode_encode(curr, lkup);
+}
+
+SEXP
+_Buffer_snap(struct _Buffer *buf)
+{
+	int n_buf = 0;
+	struct _BufferNode *curr;
+	for (curr = buf->root; curr != NULL; curr = curr->next)
+		++n_buf;
+	SEXP xstringsets = PROTECT(NEW_LIST(n_buf));
+	curr = buf->root;
+	for (int i = 0; i < n_buf; ++i) {
+		SET_VECTOR_ELT(xstringsets, i, 
+					   _BufferNode_snap(curr, buf->baseclass));
+		struct _BufferNode *tmp = curr;
+		curr = curr->next;
+		_BufferNode_free(tmp);
+	}
+	buf->curr = buf->root = NULL;
+	UNPROTECT(1);
+	return xstringsets;
+}
+
+/* Wrap _Buffer in external pointer */
+void
+_xsnap_finalizer(SEXP xsnap)
+{
+	struct _Buffer *buffer = R_ExternalPtrAddr(xsnap);
+	if (!buffer) return;
+	_Buffer_free(buffer);
+	R_ClearExternalPtr(xsnap);
 }
 
 _XSnap
 _NEW_XSNAP(int nelt, const char *baseclass)
 {
-	_XSnap snap = PROTECT(NEW_LIST(7));
-
-	SET_VECTOR_ELT(snap, GROUPS_IDX, NEW_LIST(N_GROUP)); /* GROUP list */
-	SET_VECTOR_ELT(snap, READS_PER_GROUP_IDX, 
-				   NEW_INTEGER(GROUP_SIZE)); /* group sizes */
-	SET_VECTOR_ELT(snap, GROUP_IDX, NEW_INTEGER(nelt)); /* group */
-	SET_VECTOR_ELT(snap, START_IDX, NEW_INTEGER(nelt)); /* starts */
-	SET_VECTOR_ELT(snap, WIDTH_IDX, NEW_INTEGER(nelt)); /* widths */
-	SET_VECTOR_ELT(snap, STATE_IDX, NEW_INTEGER(5));	/* state */
-	SET_VECTOR_ELT(snap, BASENAME_IDX, NEW_CHARACTER(1));
-	int *state = GET_STATE(snap);
-	state[0] = 0;							/* i */
-	state[1] = 0;							/* current group */
-	state[2] = 0;							/* offset */
-	state[3] = nelt;						/* nelt */
-	state[4] = N_GROUP;						/* ngroups */
-	SET_CURR_GRP(snap, NEW_RAW(GROUP_SIZE));
-	SET_STRING_ELT(VECTOR_ELT(snap, BASENAME_IDX), 0, mkChar(baseclass));
+	struct _Buffer *buffer = _Buffer_new(baseclass);
+	SEXP xsnap = PROTECT(R_MakeExternalPtr(buffer, mkString("XSnap"),
+										   R_NilValue));
+	R_RegisterCFinalizerEx(xsnap, _xsnap_finalizer, TRUE);
 	UNPROTECT(1);
-	return snap;
+	return xsnap;
 }
 
 void
 _APPEND_XSNAP(_XSnap snap, const char *str)
 {
-	const int width = strlen(str);
-
-	int *state = GET_STATE(snap);
-	SEXP grp = GET_CURR_GRP(snap);
-	if (state[2] + width > LENGTH(grp)) { /* grow */
-		if (state[1] >= state[4]) {	  /* grow groups */
-			int new_sz = state[4] * 2;
-			SEXP grps = NEW_LIST(state[4]); /* no PROTECT needed here */
-			for (int i = 0; i < state[1]; ++i)
-				SET_VECTOR_ELT(grps, i, GET_GRP_I(snap, i));
-			for (int i = state[i]; i < new_sz; ++i)
-				SET_VECTOR_ELT(grps, i, R_NilValue);
-			SET_VECTOR_ELT(snap, GROUPS_IDX, grps);
-			int *orig_reads_per_group = 
-				INTEGER(VECTOR_ELT(snap, READS_PER_GROUP_IDX));
-			SEXP reads_per_group = NEW_INTEGER(new_sz);
-			for (int i = 0; i < state[4]; ++i)
-				INTEGER(reads_per_group)[i] = orig_reads_per_group[i];
-			SET_VECTOR_ELT(snap, READS_PER_GROUP_IDX, reads_per_group);
-			state[4] = new_sz;
-		}
-		_trim_group_i(snap, state[1], state[2]);
-		state[1] += 1;			/* next group */
-		state[2] = 0;			/* reset offset */
-		grp = NEW_RAW(GROUP_SIZE);
-		SET_CURR_GRP(snap, grp);
-	} 
-
-	char *dest = (char *) RAW(grp);
-	memcpy(dest + state[2], str, width);
-	int i = state[0];
-	INTEGER(VECTOR_ELT(snap, READS_PER_GROUP_IDX))[state[1]] += 1;
-	INTEGER(VECTOR_ELT(snap, GROUP_IDX))[i] = state[1];
-	INTEGER(VECTOR_ELT(snap, START_IDX))[i] = state[2] + 1;
-	INTEGER(VECTOR_ELT(snap, WIDTH_IDX))[i] = width;
-	state[0] += 1;
-	state[2] += width;
+	_Buffer_append(R_ExternalPtrAddr(snap), str);
 }
 
 SEXP
-_to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass,
-			   const char *lkup)
+_to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass)
 {
 	int seq_width = LENGTH(seq);
-
-	char *str = (char *) RAW(seq);
-	for (int i = 0; i < seq_width; ++i) {
-		const char c = lkup[(int) str[i]];
-		if (c == 0)
-			Rf_error("invalid character '%c' in '%s'", str[i], baseclass);
-		str[i] = c;
-	}
 
 	SEXP ptr = PROTECT(new_SharedVector("SharedRaw", seq));
 	SEXP xstring = PROTECT(new_XVector(baseclass, ptr, 0, seq_width));
@@ -179,37 +267,12 @@ _get_appender(const char *baseclass)
 SEXP
 _XSnap_to_XStringSet(_XSnap snap)
 {
-	int *state = GET_STATE(snap);
-	/* trim */
-	_trim_group_i(snap, state[1], state[2]);
-
-	int *reads_per_group = INTEGER(VECTOR_ELT(snap, READS_PER_GROUP_IDX));
-	int *starts = INTEGER(VECTOR_ELT(snap, START_IDX));
-	int *widths = INTEGER(VECTOR_ELT(snap, WIDTH_IDX));
-	int tot_reads = 0;
-
-	const char *baseclass = 
-		CHAR(STRING_ELT(VECTOR_ELT(snap, BASENAME_IDX), 0));
-
-	/* convert to xstringset; use list to manage protection */
-	SEXP xstringset = PROTECT(NEW_LIST(state[1] + 1)); 
-	const char *lkup = _get_lookup(baseclass);
-	for (int i = 0; i <= state[1]; ++i) {
-		SEXP start = PROTECT(NEW_INTEGER(reads_per_group[i]));
-		SEXP width = PROTECT(NEW_INTEGER(reads_per_group[i]));
-		int sz = reads_per_group[i] * sizeof(int);
-		memcpy(INTEGER(start), starts + tot_reads, sz);
-		memcpy(INTEGER(width), widths + tot_reads, sz);
-		SEXP grp = GET_GRP_I(snap, i);
-		SEXP xstringset1 = 
-			_to_XStringSet(grp, start, width, baseclass, lkup);
-		SET_VECTOR_ELT(xstringset, i, xstringset1);
-		SET_GRP_I(snap, i, R_NilValue);
-		UNPROTECT(2);
-	}
+	struct _Buffer *buffer = (struct _Buffer *) R_ExternalPtrAddr(snap);
+	_Buffer_encode(buffer);
+	SEXP xstringset = PROTECT(_Buffer_snap(buffer));
 
 	/* concatenate */
-	SEXP appender = PROTECT(_get_appender(baseclass));
+	SEXP appender = PROTECT(_get_appender(buffer->baseclass));
 	int n = LENGTH(xstringset);
 	while (n > 1) {
 		SEXP res;
