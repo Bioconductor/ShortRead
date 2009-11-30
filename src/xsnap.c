@@ -1,12 +1,8 @@
 /* 
  * An _XSNAP is a SEXP that contains sufficient information to create
- * (`snap') an XStringSet object from its content, without copying the
- * sequence data. It is allocated once to an initial size, and grows as
- * needed (the design goal is only one growth, using a simple
- * heuristic). Any `extra' allocation is not recovered at the end, but
- * carried forward until the DNAStringSet is garbage collected; the
- * design goal is that the extra allocation is no more than 10% of the
- * total object size.
+ * (`snap') an XStringSet object from its content. It is allocated
+ * once to an initial size, and grows as needed. Any `extra'
+ * allocation is recovered.
  *
  * Basic usage is
  *
@@ -23,7 +19,6 @@
 SEXP _to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass);
 const char *_get_lookup(const char *baseclass);
 
-/* 50m 2x100 reads; 10G reads */
 static const int _BUFFERNODE_SIZE = 250000000;
 
 /* _Buffer, _BufferNode: linked list of XString data chunks */
