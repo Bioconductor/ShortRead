@@ -1,5 +1,22 @@
         **************************************************
         *                                                *
+        *              2.11 SERIES NEWS                  *
+        *                                                *
+        **************************************************
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+NEW FEATURES
+
+    o readIntensities supports Illumina RTA '.cif' / '.cnf' files
+
+BUG FIXES
+
+    o readIntensities type="IparIntensity" correctly handles multiple
+      tiles
+
+        **************************************************
+        *                                                *
         *              2.10 SERIES NEWS                  *
         *                                                *
         **************************************************
