@@ -97,8 +97,9 @@ setClass("SolexaIntensityInfo",
          validity=.srValidity)
 
 SolexaIntensityInfo <-
-  function(lane=integer(0), tile=integer(length(lane)),
-           x=integer(length(lane)), y=integer(length(lane)))
+  function(lane=integer(0), tile=integer(0)[seq_along(lane)],
+           x=integer(0)[seq_along(lane)],
+           y=integer(0)[seq_along(lane)])
 {
     new("SolexaIntensityInfo",
         data=data.frame(
@@ -118,6 +119,8 @@ setClass("SolexaIntensity", contains="Intensity",
            intensity=ArrayIntensity(),
            measurementError=ArrayIntensity()),
          validity=.srValidity)
+
+setClass("RtaIntensity", contains="SolexaIntensity")
 
 ## QualityScore
 

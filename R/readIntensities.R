@@ -1,6 +1,6 @@
 .readIntensities_character <-
     function(dirPath, pattern=character(0), ...,
-             type=c("SolexaIntensity", "IparIntensity"))
+             type=c("SolexaIntensity", "IparIntensity", "RtaIntensity"))
 {
     if (missing(type)) {
         type <- "SolexaIntensity"
@@ -16,6 +16,8 @@
                SolexaIntensity=.readIntensities_SolexaIntensity(
                  dirPath, pattern, ...),
                IparIntensity=.readIntensities_IparIntensity(
+                 dirPath, pattern, ...),
+               RtaIntensity=.readIntensities_RtaIntensity(
                  dirPath, pattern, ...))
     }, error=function(err) {
         if (is(err, "SRError")) stop(err)

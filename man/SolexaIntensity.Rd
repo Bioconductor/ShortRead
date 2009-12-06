@@ -20,9 +20,9 @@ SolexaIntensity(intensity=array(0, c(0, 0, 0)),
                   lane=integer(nrow(intensity))),
                 ...)
 SolexaIntensityInfo(lane=integer(0),
-                    tile=integer(length(lane)),
-                    x=integer(length(lane)),
-                    y=integer(length(lane)))
+                    tile=integer(0)[seq_along(lane)],
+                    x=integer(0)[seq_along(lane)],
+                    y=integer(0)[seq_along(lane)])
 }
 
 \arguments{
