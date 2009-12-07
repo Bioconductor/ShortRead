@@ -140,7 +140,10 @@ readIntensities(dirPath, pattern=character(0), ...)
   An object derived from class \code{\linkS4class{Intensity}}.
 }
 
-\author{Martin Morgan <mtmorgan@fhcrc.org>}
+\author{
+  Martin Morgan <mtmorgan@fhcrc.org>,
+  Michael Muratet <mmuratet@hudsonalpha.org> (RTA).
+}
 
 \examples{
 fl <- system.file("extdata", package="ShortRead")
