@@ -184,8 +184,7 @@
               xlab="Tile x-coordinate",
               ylab="Tile y-coordinate",
               cuts=length(at)-2,
-              colorkey=list(
-                labels=.colorkeyNames(at, "%.2f")),
+              colorkey=list(labels=.colorkeyNames(at, "%.2f")),
               aspect=2)
 }
 .plotCycleBaseCall <- function(df) {

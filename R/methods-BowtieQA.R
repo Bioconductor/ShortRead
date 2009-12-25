@@ -126,7 +126,6 @@ setMethod(.report_html, "BowtieQA",
                .plotCycleQuality(perCycle$quality))
              )
     .report_html_do(dest, sections, values, ...)
-
 })
 
 setGeneric(".bowtie_mismatches",

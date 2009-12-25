@@ -147,6 +147,5 @@ setMethod(.report_html, "MAQMapQA",
                .plotAlignQuality(qa[["alignQuality"]]))
              )
     .report_html_do(dest, sections, values, ...)
-
 })
           

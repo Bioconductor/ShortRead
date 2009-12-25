@@ -35,7 +35,7 @@ readPrb(dirPath, pattern = character(0), ...)
   The \code{readPrb,character-method} contains an argument \code{as}
   that determines the value of the returned object, as follows.
 
-  \itemize{
+  \describe{
 
     \item{\code{as="SolexaEncoding"}}{
 
@@ -51,7 +51,7 @@ readPrb(dirPath, pattern = character(0), ...)
 
     }
 
-    \item{\code{as="IntgerEncoding"}}{
+    \item{\code{as="IntegerEncoding"}}{
 
       The maximum per cycle and read quality score is returned as a in
       integer value. Values are collated into a matrix with number of

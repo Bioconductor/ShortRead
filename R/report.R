@@ -46,13 +46,19 @@ setMethod(.report_pdf, "character",
 ## HTML
 
 .report_html_do <-
-    function(destDir, sections, values, ...)
+    function(destDir, sections, values,
+             cssFile=c(QA.css=system.file("template", "QA.css",
+                                          package="ShortRead")),
+             ...)
 {
+    if (length(cssFile) != 1L || is.null(names(cssFile)))
+        .throw(SRError("UserArgumentMismatch",
+                        "'%s' must be named character(1)",
+                        "cssFile"))
     htmlFile <- file.path(destDir, "index.html")
-    cssFile <- "QA.css"
     biocFile <- "bioclogo-small.jpg"
     values <-
-        c(list(CSS=cssFile, DATE=date(),
+        c(list(CSS=names(cssFile), DATE=date(),
                VERSION=packageDescription("ShortRead")$Version),
           values)
     toConn <- file(htmlFile, "w")
@@ -62,8 +68,7 @@ setMethod(.report_pdf, "character",
         close(fromConn)
     }
     close(toConn)
-    file.copy(system.file("template", cssFile, package="ShortRead"),
-              file.path(destDir, cssFile))
+    file.copy(cssFile, file.path(destDir, names(cssFile)))
     file.copy(system.file("template", "image", biocFile,
                           package="ShortRead"),
               file.path(destDir, "image", biocFile))

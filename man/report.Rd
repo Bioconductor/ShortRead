@@ -20,8 +20,17 @@ report(x, ..., dest=tempfile(), type="html")
   \item{x}{An object returned by \code{\link{qa}}, usually derived from
     class \code{\linkS4class{.QA}}}
 
-  \item{\dots}{Additional arguments used by specific methods. See
-    specific methods for details.}
+  \item{\dots}{Additional arguments used by specific methods.
+
+	All methods with \code{type="html"} support the argument
+    \code{cssFile}, which is a named, length 1 character vector. The
+    value is a path to a CSS file to be incorporated into the report
+    (e.g., \code{system.file("template", "QA.css",
+    package="ShortRead")}). The name of \code{cssFile} is the name of
+    the CSS file as seen by the html report (e.g., \dQuote{QA.css}).
+
+	See specific methods for details on additional \code{\dots}
+	arguments.}
 
   \item{dest}{The output destination for the final report. For
     \code{type="html"} this is a directory; for (deprecated)
@@ -91,6 +100,11 @@ report(x, ..., dest=tempfile(), type="html")
 
 \examples{
 showMethods("report")
+
+## default CSS file
+cssFile <- c(QA.css=system.file("template", "QA.css",
+                                package="ShortRead"))
+noquote(readLines(cssFile))
 }
 
 \keyword{manip}
