@@ -152,12 +152,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \code{signature(dirPath="SolexaPath", pattern="character(0)", run, ...)}:
 
       Use \code{analysisPath(dirPath)[run]} as the directory path(s) and
-      \code{pattern=".*_export.txt"} as the pattern for discovering Solexa
-      \code{export}-formatted fileds, returning a
+      \code{pattern=".*_export.txt"} as the pattern for discovering
+      Solexa \code{export}-formatted fileds, returning a
       \code{\linkS4class{SolexaExportQA}} object summarizing quality
-      assessment. If \code{Rmpi} has been initiated, quality assessment
-      calculations are distributed across available nodes (one node per
-      export file.)}
+      assessment. If \code{Rmpi} or \code{multicore} has been initiated,
+      quality assessment calculations are distributed across available
+      nodes or cores (one node per export file.)}
 
     \item{report}{
       \code{signature(x, ..., dest=tempfile(), type="pdf")}: Use
@@ -188,7 +188,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 \author{Martin Morgan}
 \examples{
 showClass("SolexaPath")
-showMethods(class="SolexaPath")
+showMethods(class="SolexaPath", where=getNamespace("ShortRead"))
 sf <- system.file("extdata", package="ShortRead")
 sp <- SolexaPath(sf)
 sp
@@ -197,6 +197,11 @@ readFastq(sp, pattern="s_1_sequence.txt")
 nfiles <- length(list.files(analysisPath(sp), "s_[1-8]_export.txt"))
 library(Rmpi)
 mpi.spawn.Rslaves(nslaves=nfiles)
+report(qa(sp))
+}
+\dontrun{
+nfiles <- length(list.files(analysisPath(sp), "s_[1-8]_export.txt"))
+library(multicore)
 report(qa(sp))
 }
 }

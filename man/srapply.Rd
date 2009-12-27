@@ -2,10 +2,13 @@
 \alias{srapply}
 \title{Apply-like function for distribution across MPI-based clusters.}
 \description{
+
   This \code{lapply} like function evaluates locally or, if \pkg{Rmpi}
-  is loaded and workers spawned, across nodes in a cluster. Errors in
-  evaluation of \code{FUN} generate warnings; results are trimmed to
-  exclude results where the error occurs.
+  or \pkg{multicore} is loaded (and \pkg{Rmpi} workers spawned), across
+  nodes in a cluster. Errors in evaluation of \code{FUN} generate
+  warnings; results are trimmed to exclude results where the error
+  occurs.
+
 }
 
 \usage{
@@ -16,9 +19,10 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(), verbose = FALSE)
 
   \item{X}{Tasks to be distributed. \code{X} should be an object for
     which \code{lapply} or \code{sapply} are defined (more precisely,
-    \code{mpi.parLapply}, \code{mpi.parSapply}). Performance is best
-    when these objects are relatively small, e.g., file names, compared
-    to the work to be done on each by \code{FUN}.}
+    \code{mpi.parLapply}, \code{mpi.parSapply}, or
+    \code{mclapply}). Performance is best when these objects are
+    relatively small, e.g., file names, compared to the work to be done
+    on each by \code{FUN}.}
 
   \item{FUN}{A function to be applied to each element of \code{X}. The
     function must have \code{...} or named argument \code{verbose} in
@@ -45,16 +49,21 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(), verbose = FALSE)
 \details{
 
     The default value for \code{fapply} is available with
-    \code{ShortRead:::.fapply()}. It tests whether \pkg{Rmpi} is loaded
-    and workers spawned. If so, the default ensures that \pkg{ShortRead}
+    \code{ShortRead:::.fapply()}. It tests first whether \pkg{Rmpi} is
+    loaded and workers spawned, and if not then whether \pkg{multicore}
+    is laoded.
+
+	If \pkg{Rmpi} is laoded, \code{fapply} ensures that \pkg{ShortRead}
     is \code{require}d on all workers, and then invokes
     \code{mpi.parLapply} with arguments \code{X}, \code{FUN},
     \code{...}, and \code{verbose}. The function \code{FUN} is wrapped
     so that errors are returned as objects of class \code{SRError} with
-    type \code{RemoteError}.
+    type \code{RemoteError}.  If no workers are available, the code
+    evaluates \code{FUN} so that errors are reported as with remote
+    evaluation.
 
-    If no workers are available, the code evaluates \code{FUN} so that
-    errors are reported as with remote evaluation.
+	If \pkg{multicore} is loaded (and \pkg{Rmpi} not), \code{fapply}
+	invokes \code{mclapply} with arguments as for \code{mpi.parLapply}.
 
     Custom \code{reduce} functions might be written as
     \code{reduce=function(lst) unlist(lst, use.names=TRUE)}.

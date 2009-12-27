@@ -13,7 +13,7 @@
             })
         }
     }
-    if (is.loaded("mpi_comm_size")) {
+    if (is.loaded("mpi_comm_size", PACKAGE="Rmpi")) {
         ## 'get()' are to quieten R CMD check, and for no other reason
         commSize <- get("mpi.comm.size", mode="function")
         remoteExec <- get("mpi.remote.exec", mode="function")
@@ -38,9 +38,16 @@
                 remoteExec(setwd, wd, ret=FALSE)
                 if (identical(globalenv(), environment(FUN)))
                     bcastRobj(FUN)
-                res <- parLapply(X, CFUN, ..., verbose=verbose)
-                res
+                parLapply(X, CFUN, ..., verbose=verbose)
             }
+        }
+    } else if (is.loaded("mc_fork", PACKAGE="multicore")) {
+        mcLapply <- get('mclapply', envir=getNamespace('multicore'))
+        function(X, FUN, ..., verbose=FALSE) {
+            CFUN <- catchErrs(FUN)
+            if (verbose)
+                message("using 'mclapply'")
+            mcLapply(X, CFUN, ..., verbose=verbose)
         }
     } else {
         function(X, FUN, ..., verbose=FALSE) {
@@ -60,8 +67,11 @@
             msg <- paste(sapply(elts, .type), sapply(elts, .message),
                          sep=": ", collapse="\n  ")
             type <- 
-                if (is.loaded("mpi_comm_size")) "RemoteWarning"
-                else "UnspecifiedWarning"
+                if (is.loaded("mpi_comm_size", PACKAGE="Rmpi") |
+                    is.loaded("mc_fork", PACKAGE="multicore"))
+                {
+                    "RemoteWarning"
+                } else "UnspecifiedWarning"
             .throw(SRWarn(type,
                           "elements: %s\n  %s",
                           paste(which(errs), collapse=" "),
