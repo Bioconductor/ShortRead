@@ -364,9 +364,9 @@ minutes. For this reason a common use case is to evaluate
 save(qaSummary, file="/path/to/file.rda")
 @ 
 %% 
-A feature of \ShortRead{} is the use of \Rpackage{Rmpi} and
-coarse-grained parallel processing when available. Thus commands such
-as
+A feature of \ShortRead{} is the use of \Rpackage{Rmpi} or
+\Rpackage{multicore} and coarse-grained parallel processing when
+available. Thus commands such as
 <<eval=FALSE>>=
 library("Rmpi")
 mpi.spawn.Rslaves(nsl=8)
@@ -374,9 +374,18 @@ qaSummary <- qa(sp)
 mpi.close.Rslaves()
 @ 
 %% 
+or
+<<eval=FALSE>>=
+library(multicore)
+qaSummary <- qa(sp)
+@ 
+%% 
 will distribute the task of processing each lane to each of the
-\Rpackage{Rmpi} workers. With \Rpackage{Rmpi}, all 8 lanes of a Solexa
-experiment are processed in the time take to process a single lane.
+\Rpackage{Rmpi} workers or \Rpackage{multicore} cores. In the
+\Rpackage{Rmpi} example, all 8 lanes of a Solexa experiment are
+processed in the time take to process a single lane.
+\Rpackage{multicore} may impose significant memory demands, as each
+core will attempt to load a full lane of data.
 
 The elements of the quality assessment list are suggested by the
 output:
@@ -759,7 +768,7 @@ The files are generally large and numerous, so even simple
 calculations consume significant computational resources. The
 \Rfunction{srapply} function is meant to provide a transparent way to
 perform calculations like this distributed over multiple nodes of an
-MPI cluster. Thus
+MPI cluster, or across multiple cores of a single machine. Thus
 <<srapply-simple>>=
 srres <- srapply(intFls, calcInt, cycle=12)
 identical(lres, srres)
@@ -773,9 +782,16 @@ srres <- srapply(intFls, calcInt, cycle=12)
 mpi.close.Rslaves()
 @ 
 %% 
-distributes the calculation over available workers, resulting in a
+distributes the calculation over available workers, while 
+<<srapply-multicore, eval=FALSE>>=
+library(multicore)
+srres <- srapply(intFls, calcInt, cycle=12)
+@ 
+%% 
+distributes tasks across cores of a single machine. The result is a
 speedup approximately inversely proportional to the number of
-available compute nodes.
+available compute nodes or cores; memory requirements for
+the \Rpackage{multicore} approach may be substantial.
 
 \section{Conclusions and directions for development}
 
