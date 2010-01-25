@@ -33,7 +33,7 @@
     }
     if (length(pattern)==0) pattern=".*_seq.txt$"
     lst <- srapply(list.files(dirPath, pattern, full.names=TRUE),
-                   .qa_Solexa_tileStats_tile, dirPath=dirPath)
+                   .qa_Solexa_tileStats_tile, dirPath=dirPath, ...)
     .qa_lst_as_data_frame(lst)
 }
 

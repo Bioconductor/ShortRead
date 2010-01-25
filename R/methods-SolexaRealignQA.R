@@ -94,7 +94,7 @@
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_SolexaRealign_lane,
-                   dirPath=dirPath, type=type,
+                   dirPath=dirPath, type=type, ...,
                    verbose=verbose)
     names(lst) <- basename(fls)
 
