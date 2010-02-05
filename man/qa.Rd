@@ -39,9 +39,10 @@ qa(dirPath, ...)
 	parameter.}
 
   \item{\dots}{Additional arguments used by methods. For instance,
-	\code{fapply) can be used to influence how evaluation occurs when
+	\code{fapply} can be used to influence how evaluation occurs when
 	this function is run with the \pkg{Rmpi} or \pkg{multicore}
-	packages; see \code{\link{srapply}}.}  }
+	packages; see \code{\link{srapply}}.}
+}
 
 \details{
   The following methods are defined, in addition to those on S4 formal

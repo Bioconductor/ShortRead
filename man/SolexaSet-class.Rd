@@ -95,7 +95,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 \author{Martin Morgan}
 \examples{
 showClass("SolexaSet")
-showMethods(class="SolexaSet")
+showMethods(class="SolexaSet", where=getNamespace("ShortRead"))
 ## construct a SolexaSet
 sf <- system.file("extdata", package="ShortRead")
 df <- data.frame(Sample=c("Sample 1", "Sample 2", "Sample 3", "Sample

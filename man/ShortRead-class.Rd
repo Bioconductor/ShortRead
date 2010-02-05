@@ -168,6 +168,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
 }
 \examples{
 showClass("ShortRead")
-showMethods(class="ShortRead")
+showMethods(class="ShortRead", where=getNamespace("ShortRead"))
 }
 \keyword{classes}

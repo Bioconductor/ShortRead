@@ -152,7 +152,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 }
 \examples{
 showClass("ShortReadQ")
-showMethods(class="ShortReadQ", inherit=FALSE)
-showMethods(class="ShortRead", inherit=FALSE)
+showMethods(class="ShortReadQ", where=getNamespace("ShortRead"),
+            inherit=FALSE)
+showMethods(class="ShortRead", where=getNamespace("ShortRead"),
+            inherit=FALSE)
 }
 \keyword{classes}
