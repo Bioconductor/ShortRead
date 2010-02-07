@@ -91,7 +91,7 @@ RtaIntensity <-
              "\n  file: ", fileName)
     version <- readBin(conn, "integer", 1L, 1L, signed=FALSE)
     if (version != 1L)
-        stop("unknown CIF / CNF version:\n  version: ", vers,
+        stop("unknown CIF / CNF version:\n  version: ", version,
              "\n  file: ", fileName)
     dataType <- readBin(conn, "integer", 1L, 1L, signed=FALSE)
     firstCycle <- readBin(conn, "integer", 1L, 2L,
