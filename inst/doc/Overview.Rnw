@@ -219,7 +219,7 @@ selecting only a single read for any chromosome, position and strand:
 nfilt <- nFilter()
 cfilt <- chromosomeFilter('chr5.fa')
 sfilt <- strandFilter("+")
-ufilt <- uniqueFilter(withSread=FALSE)    
+ofilt <- occurrenceFilter(withSread=FALSE)
 @
 %% 
 Here we select only those reads that map to \texttt{chr5.fa}:

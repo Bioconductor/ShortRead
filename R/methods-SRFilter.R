@@ -75,6 +75,10 @@ positionFilter <-
 uniqueFilter <-
     function(withSread=TRUE, .name="UniqueFilter")
 {
+    msg <-
+        if (withSread) "occurrenceFilter(withSread=TRUE)"
+        else "occurrenceFilter"
+    .Deprecated(msg, package="ShortRead")
     .check_type_and_length(withSread, "logical", 1)
     srFilter(function(x) {
         if (withSread)
@@ -90,7 +94,6 @@ uniqueFilter <-
 ##   TRUE: sread, chromosome, position, strand
 ##   FALSE: chromosome, position, strand
 ##   NA: sread
-
 .occurrenceName <-
     function(min, max, withSread, duplicates)
 {

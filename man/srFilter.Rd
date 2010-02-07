@@ -6,7 +6,6 @@
 \alias{chromosomeFilter}
 \alias{positionFilter}
 \alias{strandFilter}
-\alias{uniqueFilter}
 \alias{occurrenceFilter}
 \alias{nFilter}
 \alias{polynFilter}
@@ -40,7 +39,6 @@ chromosomeFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
                  .name="ChromosomeFilter")
 positionFilter(min=-Inf, max=Inf, .name="PositionFilter")
 strandFilter(strandLevels=character(0), .name="StrandFilter")
-uniqueFilter(withSread=TRUE, .name="UniqueFilter")
 occurrenceFilter(min=1L, max=1L,
                  withSread=c(TRUE, FALSE, NA),
                  duplicates=c("head", "tail", "sample", "none"),
@@ -99,16 +97,15 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
     meaning strand information not available and \code{"*"} meaning
     strand information not relevant.}
 
-  \item{withSread}{A \code{logical(1)}. For \code{uniqueFilter},
-    indicating whether uniqueness includes the read sequence
-    (\code{withSread=TRUE}) or is based only on chromosome, position,
-    and strand (\code{withSread=FALSE}). For \code{occurrenceFilter},
-    \code{withSread=NA} indicates only the read sequence is taken into
-    account.}
+  \item{withSread}{A \code{logical(1)} indicating whether uniqueness
+    includes the read sequence (\code{withSread=TRUE}), is based only on
+    chromosome, position, and strand (\code{withSread=FALSE}), or only
+    the read sequence (\code{withSread=NA}), as described for
+    \code{occurrenceFilter} below..}
 
   \item{duplicates}{Either \code{character{1}}, a function \code{name},
 	or a function taking a single argument. Influence how duplicates are
-	handled, as described for \code{occurrenceFilter}, below.}
+	handled, as described for \code{occurrenceFilter} below.}
 
   \item{threshold}{A \code{numeric(1)} value representing a minimum
     (\code{srdistanceFilter}, \code{alignQualityFilter}) or maximum
@@ -165,11 +162,6 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
 
   \code{strandFilter} selects elements satisfying
   \code{match(strand(x), strand, nomatch=0) > 0}.
-
-  \code{uniqueFilter} selects elements satisfying
-  \code{!srduplicated(x)} when \code{withSread=TRUE}, and
-  \code{!(duplicated(chromosome(x)) & duplicated(position(x)) & duplicated(strand(x)))}
-  when \code{withSread=FALSE}.
 
   \code{occurrenceFilter} selects elements that occur \code{>=min} and
   \code{<=max} times. \code{withSread} determines how reads will be
