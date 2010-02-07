@@ -187,7 +187,7 @@ alphabet_as_int(SEXP stringSet, SEXP score)
 
     cachedCharSeq seq = get_cachedXStringSet_elt(&cache, 0);
     int width = seq.length;
-    int *ians;
+    int *ians = NULL;
     SEXP ans;
     for (i = 1; i < len && width > 0; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);

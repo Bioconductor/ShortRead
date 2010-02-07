@@ -40,7 +40,7 @@ _rnaDecode(char c)
 DECODE_FUNC
 decoder(const char* base)
 {
-    DECODE_FUNC decode;
+    DECODE_FUNC decode = NULL;
     if (strcmp(base, "DNAString")==0) {
         decode = _dnaDecode;
     } else if (strcmp(base, "RNAString")==0) {
@@ -56,7 +56,7 @@ decoder(const char* base)
 ENCODE_FUNC
 encoder(const char *base)
 {
-    ENCODE_FUNC encode;
+    ENCODE_FUNC encode = NULL;
     if (strcmp(base, "DNAString")==0) {
         encode = _dnaEncode;
     } else if (strcmp(base, "RNAString")==0) {
@@ -92,7 +92,7 @@ _get_strand_levels()
 int
 _char_as_strand_int(const char c, const char *fname, const int lineno)
 {
-    int strand;
+    int strand = 0;
     if (c == '\0')
         strand = NA_INTEGER;
     else {
