@@ -7,6 +7,7 @@
 \alias{positionFilter}
 \alias{strandFilter}
 \alias{uniqueFilter}
+\alias{occurrenceFilter}
 \alias{nFilter}
 \alias{polynFilter}
 \alias{dustyFilter}
@@ -40,6 +41,11 @@ chromosomeFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
 positionFilter(min=-Inf, max=Inf, .name="PositionFilter")
 strandFilter(strandLevels=character(0), .name="StrandFilter")
 uniqueFilter(withSread=TRUE, .name="UniqueFilter")
+occurrenceFilter(min=1L, max=1L,
+                 withSread=c(TRUE, FALSE, NA),
+                 duplicates=c("head", "tail", "sample", "none"),
+                 .name=.occurrenceName(min, max, withSread,
+                                       duplicates))
 nFilter(threshold=0L, .name="CleanNFilter")
 polynFilter(threshold=0L, nuc=c("A", "C", "T", "G", "other"),
            .name="PolyNFilter")
@@ -79,11 +85,13 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   \item{exclude}{\code{logical(1)} which, when \code{TRUE}, uses
     \code{regex} to exclude, rather than include, reads.}
 
-  \item{min}{}
+  \item{min}{\code{numeric(1)}}
 
-  \item{max}{\code{numeric(1)} value defining the closed interval in
-    which position must be found,
-    \code{min <= position <= max}}
+  \item{max}{\code{numeric(1)}. For \code{positionFilter}, \code{min}
+    and \code{max} define the closed interval in which position must be
+    found \code{min <= position <= max}. For \code{occurrenceFilter},
+    \code{min} and \code{max} define the minimum and maximum number of
+    times a read occurs after the filter.}
 
   \item{strandLevels}{Either \code{character(0)} or \code{character(1)}
     containing strand levels to be selected. \code{ShortRead} objects
@@ -91,9 +99,16 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
     meaning strand information not available and \code{"*"} meaning
     strand information not relevant.}
 
-  \item{withSread}{A \code{logical(1)} indicating whether uniqueness
-    includes the read sequence (\code{withSread=TRUE}) or is based only
-    on chromosome, position, and strand (\code{withSread=FALSE}).}
+  \item{withSread}{A \code{logical(1)}. For \code{uniqueFilter},
+    indicating whether uniqueness includes the read sequence
+    (\code{withSread=TRUE}) or is based only on chromosome, position,
+    and strand (\code{withSread=FALSE}). For \code{occurrenceFilter},
+    \code{withSread=NA} indicates only the read sequence is taken into
+    account.}
+
+  \item{duplicates}{Either \code{character{1}}, a function \code{name},
+	or a function taking a single argument. Influence how duplicates are
+	handled, as described for \code{occurrenceFilter}, below.}
 
   \item{threshold}{A \code{numeric(1)} value representing a minimum
     (\code{srdistanceFilter}, \code{alignQualityFilter}) or maximum
@@ -156,6 +171,21 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   \code{!(duplicated(chromosome(x)) & duplicated(position(x)) & duplicated(strand(x)))}
   when \code{withSread=FALSE}.
 
+  \code{occurrenceFilter} selects elements that occur \code{>=min} and
+  \code{<=max} times. \code{withSread} determines how reads will be
+  treated: \code{TRUE} to include the sread, chromosome, strand, and
+  position when determining occurrence, \code{FALSE} to include
+  chromosome, strand, and position, and \code{NA} to include only
+  sread. The default is \code{withSread=TRUE}. \code{duplicates}
+  determines how reads with more than \code{max} reads are
+  treated. \code{head} selects the first \code{max} reads of each set of
+  duplicates, \code{tail} the last \code{max} reads, and \code{sample} a
+  random sample of \code{max} reads. \code{node} removes all reads
+  represented more than \code{max} times. The user can also provide a
+  function (as used by \code{\link{tapply}}) of a single argument to
+  select amongst reads.
+  
+
   \code{nFilter} selects elements with fewer than \code{threshold}
   \code{'N'} symbols in each element of \code{sread(x)}.
 
@@ -209,6 +239,13 @@ aln[xy(aln)]
 # both filters
 chr5xy <- compose(filt, xy)
 aln[chr5xy(aln)]
+
+# read, chromosome, strand, position tuples occurring exactly once
+aln[occurrenceFilter(withSread=TRUE, duplicates="none")(aln)]
+# reads occurring exactly once
+aln[occurrenceFilter(withSread=NA, duplicates="none")(aln)]
+# chromosome, strand, position tuples occurring exactly once
+aln[occurrenceFilter(withSread=FALSE, duplicates="none")(aln)]
 
 # custom filter: minimum calibrated base call quality >20
 goodq <- srFilter(function(x) {

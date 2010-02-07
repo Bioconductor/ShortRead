@@ -62,8 +62,8 @@ chromosomeFilter <-
     }, name=.name)
 }
 
-positionFilter <- function(min=-Inf, max=Inf,
-                           .name="PositionFilter")
+positionFilter <-
+    function(min=-Inf, max=Inf, .name="PositionFilter")
 {
     .check_type_and_length(min, "numeric", 1)
     .check_type_and_length(max, "numeric", 1)
@@ -72,8 +72,8 @@ positionFilter <- function(min=-Inf, max=Inf,
     }, name=.name)
 }
 
-uniqueFilter <- function(withSread=TRUE,
-                         .name="UniqueFilter")
+uniqueFilter <-
+    function(withSread=TRUE, .name="UniqueFilter")
 {
     .check_type_and_length(withSread, "logical", 1)
     srFilter(function(x) {
@@ -83,6 +83,59 @@ uniqueFilter <- function(withSread=TRUE,
             !(duplicated(position(x)) & duplicated(strand(x)) &
               duplicated(chromosome(x)))
         }
+    }, name=.name)
+}
+
+## withSread
+##   TRUE: sread, chromosome, position, strand
+##   FALSE: chromosome, position, strand
+##   NA: sread
+
+.occurrenceName <-
+    function(min, max, withSread, duplicates)
+{
+    if (!is.character(duplicates))
+    {
+        duplicates <- deparse(substitute(duplicates, env=parent.frame()))
+        if (length(duplicates) > 1)
+            duplicates <- "custom"
+    }
+    sprintf("%s\n  min=%d max=%d withSread='%s'\n  duplicates='%s'",
+            "OccurrenceFilter", min, max, withSread, duplicates)
+}
+
+occurrenceFilter <-
+    function(min=1L, max=1L, withSread=c(TRUE, FALSE, NA),
+             duplicates=c("head", "tail", "sample", "none"),
+             .name=.occurrenceName(min, max, withSread,
+                 duplicates))
+{
+    .check_type_and_length(min, "numeric", 1L)
+    .check_type_and_length(max, "numeric", 1L)
+    if (missing(withSread))
+        withSread <- withSread[1]
+    .check_type_and_length(withSread, "logical", 1L)
+    if (is.character(duplicates))
+        duplicates <- match.arg(duplicates)
+    if (max < min)
+        .throw(SRError("UserArgumentMismatch",
+                       "'min' must be <= 'max'"))
+    srFilter(function(x) {
+        rnk <- 
+            if (is(x, "AlignedRead")) {
+                if (is.na(withSread)) srrank(sread(x))
+                else srrank(x, withSread=withSread)
+            } else srrank(x)
+        t <- tabulate(rnk)
+        result <- rnk %in% which(t >= min & t <= max)
+        if (!(is.character(duplicates) && "none" == duplicates)) {
+            q <- which(rnk %in% which(t > max))
+            if(sum(q) != 0L) {
+                x <- tapply(q, rnk[q], duplicates, max, simplify=FALSE)
+                result[unlist(x, use.names=FALSE)] <- TRUE
+            }
+        }
+        result
     }, name=.name)
 }
 

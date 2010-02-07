@@ -182,14 +182,18 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 
 	}
 	
-    \item{srorder}{\code{signature(x = "AlignedRead")}:}
-    \item{srrank}{\code{signature(x = "AlignedRead")}:}
-    \item{srsort}{\code{signature(x = "AlignedRead")}:}
-    \item{srduplicated}{\code{signature(x = "AlignedRead")}:
+    \item{srorder}{\code{signature(x = "AlignedRead", ..., withSread=TRUE)}:}
+    \item{srrank}{\code{signature(x = "AlignedRead", ..., withSread=TRUE)}:}
+    \item{srsort}{\code{signature(x = "AlignedRead", ..., withSread=TRUE)}:}
+    \item{srduplicated}{\code{signature(x = "AlignedRead", ..., withSread=TRUE)}:
+
       Order, rank, sort, and find duplicates in \code{AlignedRead}
       objects. Reads are sorted by \code{chromosome}, \code{strand},
-      \code{position}, and then \code{sread}; less fine-grained sorting
-      can be accomplished with, e.g., \code{x[srorder(sread(x))]}.}
+      \code{position}, and then (if \code{withSread=TRUE}) \code{sread};
+      less fine-grained sorting can be accomplished with, e.g.,
+      \code{x[srorder(sread(x))]}. \code{srduplicated} behaves like
+      \code{duplicated}, i.e., the first copy of a duplicate is
+      \code{FALSE} while the remaining copies are \code{TRUE}.}
 
     \item{show}{\code{signature(object = "AlignedRead")}: provide a
       compact display of the \code{AlignedRead}  content.}

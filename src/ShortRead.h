@@ -78,7 +78,8 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score);
 SEXP alphabet_order(SEXP stringSet);
 SEXP alphabet_duplicated(SEXP stringSet);
 SEXP alphabet_rank(SEXP stringSet);
-SEXP aligned_read_rank(SEXP stringSet, SEXP order, SEXP rho);
+SEXP aligned_read_rank(SEXP stringSet, SEXP order, SEXP withSread, 
+					   SEXP rho);
 
 /* read_maq_map.c */
 

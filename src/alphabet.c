@@ -321,34 +321,51 @@ alphabet_rank(SEXP stringSet)
 }
 
 SEXP
-aligned_read_rank(SEXP alignedRead, SEXP order, SEXP rho)
+aligned_read_rank(SEXP alignedRead, SEXP order, SEXP withSread,
+				  SEXP rho)
 {
 	if (LENGTH(order) == 0)
 		return NEW_INTEGER(0);
-    SEXP chr, str, pos, sread;
+    SEXP chr, str, pos;
     PROTECT(chr = _get_SEXP(alignedRead, rho, "chromosome"));
     PROTECT(str = _get_SEXP(alignedRead, rho, "strand"));
     PROTECT(pos = _get_SEXP(alignedRead, rho, "position"));
-    PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
     int *c = INTEGER(chr), *s = INTEGER(str), *p = INTEGER(pos),
         *o = INTEGER(order), len = LENGTH(order);
-    cachedXStringSet cache = cache_XStringSet(sread);
-    XSort *xptr = (XSort*) R_alloc(2, sizeof(XSort));
     SEXP rank;
     PROTECT(rank = NEW_INTEGER(len));
     int *r = INTEGER(rank), i;
-    xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
-	r[o[0]-1] = 1;
-	for (i = 1; i < len; ++i) {
-		const int this = o[i]-1, prev=o[i-1]-1;
-		xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
-		if (c[this] != c[prev] || s[this] != s[prev] ||
-			p[this] != p[prev] || 
-			compare_cachedCharSeq(xptr, xptr+1) != 0)
-			r[this] = i + 1;
-		else
-			r[this] = r[prev];
+
+	if (LOGICAL(withSread)[0]) {
+		SEXP sread;
+		PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
+		cachedXStringSet cache = cache_XStringSet(sread);
+		XSort *xptr = (XSort*) R_alloc(2, sizeof(XSort));
+		xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
+
+		r[o[0]-1] = 1;
+		for (i = 1; i < len; ++i) {
+			const int this = o[i]-1, prev=o[i-1]-1;
+			xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
+			if (c[this] != c[prev] || s[this] != s[prev] ||
+				p[this] != p[prev] || 
+				compare_cachedCharSeq(xptr, xptr+1) != 0)
+				r[this] = i + 1;
+			else
+				r[this] = r[prev];
+		}
+		UNPROTECT(1);
+	} else {
+		r[o[0]-1] = 1;
+		for (i = 1; i < len; ++i) {
+			const int this = o[i]-1, prev=o[i-1]-1;
+			if (c[this] != c[prev] || s[this] != s[prev] ||
+				p[this] != p[prev])
+				r[this] = i + 1;
+			else
+				r[this] = r[prev];
+		}
 	}
-    UNPROTECT(5);
+    UNPROTECT(4);
     return rank;
 }

@@ -147,17 +147,30 @@ setMethod("%in%", c("AlignedRead", "RangesList"),
 
 ## srorder, etc; srsort picked up by generic
 
-setMethod(srorder, "AlignedRead", function(x, ...) {
-    order(chromosome(x), strand(x), position(x), srorder(sread(x)))
+setMethod(srorder, "AlignedRead",
+          function(x, ..., withSread=TRUE) 
+{
+    if (withSread)
+        order(chromosome(x), strand(x), position(x), srorder(sread(x)))
+    else
+        order(chromosome(x), strand(x), position(x))
 })
 
-setMethod(srrank, "AlignedRead", function(x, ...) {
+setMethod(srrank, "AlignedRead",
+          function(x, ..., withSread=TRUE)
+{
+    .check_type_and_length(withSread, "logical", 1)
+    if (is.na(withSread))
+        .throw(SRError("UserArgumentMismatch",
+                       "'%s' must not be NA", "withSread"))
     o <- srorder(x)
-    .Call(.aligned_read_rank, x, o, environment())
+    .Call(.aligned_read_rank, x, o, withSread, environment())
 })
 
-setMethod(srduplicated, "AlignedRead", function(x, ...) {
-    duplicated(srrank(x, ...))
+setMethod(srduplicated, "AlignedRead",
+          function(x, ..., withSread=TRUE)
+{
+    duplicated(srrank(x, ..., withSread=withSread))
 })
 
 ## coverage
