@@ -6,11 +6,16 @@
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o uniqueFilter is deprecated in favor of occurrenceFilter.
+
 NEW FEATURES
 
     o srapply checks for and uses multicore
 
     o readIntensities supports Illumina RTA '.cif' / '.cnf' files
+
+    o occurrenceFilter is introduced as a more flexible replacement to
+    uniqueFilter.
 
 BUG FIXES
 
