@@ -133,7 +133,7 @@ occurrenceFilter <-
         result <- rnk %in% which(t >= min & t <= max)
         if (!(is.character(duplicates) && "none" == duplicates)) {
             q <- which(rnk %in% which(t > max))
-            if(sum(q) != 0L) {
+            if(length(q) != 0L) {
                 x <- tapply(q, rnk[q], duplicates, max, simplify=FALSE)
                 result[unlist(x, use.names=FALSE)] <- TRUE
             }
