@@ -1,12 +1,7 @@
-        **************************************************
-        *                                                *
-        *              2.11 SERIES NEWS                  *
-        *                                                *
-        **************************************************
+CHANGES IN VERSION 2.11
+-----------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
-
-    o uniqueFilter is deprecated in favor of occurrenceFilter.
 
 NEW FEATURES
 
@@ -14,19 +9,13 @@ NEW FEATURES
 
     o readIntensities supports Illumina RTA '.cif' / '.cnf' files
 
-    o occurrenceFilter is introduced as a more flexible replacement to
-    uniqueFilter.
-
 BUG FIXES
 
     o readIntensities type="IparIntensity" correctly handles multiple
       tiles
 
-        **************************************************
-        *                                                *
-        *              2.10 SERIES NEWS                  *
-        *                                                *
-        **************************************************
+CHANGES IN VERSION 2.10
+-----------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -58,11 +47,9 @@ BUG FIXES
 
     o alphabetScore,FastqQuality-method shifted quality by +1
 
-        **************************************************
-        *                                                *
-        *              2.9 SERIES NEWS                   *
-        *                                                *
-        **************************************************
+
+CHANGES IN VERSION 2.9 SERIES
+-----------------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -142,11 +129,8 @@ BUG FIXES
     o readAligned MAQMapview failed for most chromosome labels
 
 
-        **************************************************
-        *                                                *
-        *              2.8 SERIES NEWS                   *
-        *                                                *
-        **************************************************
+CHANGES IN VERSION 2.8 SERIES
+-----------------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
