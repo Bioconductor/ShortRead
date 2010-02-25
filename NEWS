@@ -1,5 +1,5 @@
-CHANGES IN VERSION 2.11
------------------------
+CHANGES IN VERSION 1.5
+----------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -17,8 +17,8 @@ BUG FIXES
     o readIntensities type="IparIntensity" correctly handles multiple
       tiles
 
-CHANGES IN VERSION 2.10
------------------------
+CHANGES IN VERSION 1.3
+----------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -51,8 +51,8 @@ BUG FIXES
     o alphabetScore,FastqQuality-method shifted quality by +1
 
 
-CHANGES IN VERSION 2.9 SERIES
------------------------------
+CHANGES IN VERSION 1.1
+----------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -132,8 +132,8 @@ BUG FIXES
     o readAligned MAQMapview failed for most chromosome labels
 
 
-CHANGES IN VERSION 2.8 SERIES
------------------------------
+CHANGES IN VERSION 1.0
+----------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
