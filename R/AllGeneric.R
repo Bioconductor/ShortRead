@@ -10,6 +10,10 @@ setGeneric(".throw",
            function(object, call=NULL, ...) standardGeneric(".throw"),
            signature=c("object"))
 
+setGeneric("renewable", function(x, ...) standardGeneric("renewable"))
+
+setGeneric("renew", function(x, ...) standardGeneric("renew"))
+
 countLines <- function(dirPath, pattern=character(0), ..., useFullName=FALSE)
 {
     src <- .file_names(path.expand(dirPath), pattern, ...)
