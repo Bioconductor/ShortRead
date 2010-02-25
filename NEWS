@@ -3,10 +3,12 @@ CHANGES IN VERSION 1.5
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o No significant user-visible changes
+
 NEW FEATURES
 
     o renew() and renewable() provide an interface to updating
-      ShortRead instances
+    ShortRead instances
 
     o srapply checks for and uses multicore
 
@@ -15,7 +17,7 @@ NEW FEATURES
 BUG FIXES
 
     o readIntensities type="IparIntensity" correctly handles multiple
-      tiles
+    tiles
 
 CHANGES IN VERSION 1.3
 ----------------------
@@ -131,7 +133,6 @@ BUG FIXES
 
     o readAligned MAQMapview failed for most chromosome labels
 
-
 CHANGES IN VERSION 1.0
 ----------------------
 
@@ -152,9 +153,6 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Functions using SolexaPath now search all relevant directories,
     e.g., in analysisPath, rather than the first
-
-NEW FEATURES
-
 
 BUG FIXES
 
