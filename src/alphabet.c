@@ -11,9 +11,9 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     const int MAX_MAP = 256;
     /* FIXME: check types of incoming arguments */
     if (!IS_INTEGER(width) || LENGTH(width) != 1)
-        Rf_error("'width' must be integer(1)");
+        Rf_error("'%s' must be '%s'", "width", "integer(1)");
     if (!IS_CHARACTER(alphabet))
-        Rf_error("'alphabet' must be character()");
+        Rf_error("'%s' must be '%s'", "alphabet", "character()");
     /* allocate and initialize the answer matrix */
     const int nrow = LENGTH(alphabet), ncol = INTEGER(width)[0];
     SEXP ans, dimnms, nms;

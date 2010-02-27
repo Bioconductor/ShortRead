@@ -117,12 +117,12 @@ SEXP
 read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
-        Rf_error("'files' must be 'character()'");
+        Rf_error("'%s' must be '%s'", "files", "character()");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'sep' must be character(1)"); 
+        Rf_error("'%s' must be '%s'", "sep", "character(1)"); 
     /* FIXME: !nzchar(sep[1]) */
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
-        Rf_error("'commentChar' must be character(1)");
+        Rf_error("'%s' must be '%s'", "commentChar", "character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));

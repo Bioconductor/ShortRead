@@ -310,9 +310,9 @@ read_solexa_fastq(SEXP files, SEXP withId)
     SEXP ans = R_NilValue, nms = R_NilValue;
 
     if (!IS_CHARACTER(files))
-        Rf_error("'files' must be 'character'");
+        Rf_error("'%s' must be '%s'", "files", "character");
 	if (!IS_LOGICAL(withId) || LENGTH(withId) != 1)
-   	    Rf_error("'withId' must be 'logical(1)'");
+   	    Rf_error("'%s' must be '%s'", "withId", "logical(1)");
 
     nfiles = LENGTH(files);
     nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
@@ -398,22 +398,22 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
                         SEXP nrows, SEXP skip, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
-        Rf_error("'files' must be 'character(1)'");
+        Rf_error("'%s' must be '%s'", "files", "character(1)");
     if (!IS_LOGICAL(header) || LENGTH(header) != 1)
-        Rf_error("'header' must be logical(1)");
+        Rf_error("'%s' must be '%s'", "header", "logical(1)");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'sep' must be character(1)"); 
+        Rf_error("'%s' must be '%s'", "sep", "character(1)"); 
     /* FIXME: !nzchar(sep[1]) */
     if (!IS_INTEGER(colIndex) || LENGTH(colIndex) == 0)
         Rf_error("'colIndex' must be 'integer' with length > 0");
     if (!IS_CHARACTER(colClasses) || LENGTH(colClasses) != LENGTH(colIndex))
         Rf_error("'colClasses' must be 'character' with length(colClasses) == length(colIndex)");
     if (!IS_INTEGER(nrows) || LENGTH(nrows) != 1)
-        Rf_error("'nrows' msut be 'integer(1)'");
+        Rf_error("'%s' must be '%s'", "nrows", "integer(1)");
     if (!IS_INTEGER(skip) || LENGTH(skip) != 1)
-        Rf_error("'skip' must be 'integer(1)'");
+        Rf_error("'%s' must be '%s'", "skiip", "integer(1)");
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
-        Rf_error("'commentChar' must be character(1)");
+        Rf_error("'%s' must be '%s'", "commentChar", "character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));
@@ -731,18 +731,18 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar,
     const int N_ELTS = SLX_ELEMENT_END;
 
     if (!IS_CHARACTER(files))
-        Rf_error("'files' must be 'character()'");
+        Rf_error("'%s' must be '%s'", "files", "character()");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1 ||
         *(CHAR(STRING_ELT(sep, 0))) != '\t')
-        Rf_error("'sep' must be '\t'");
+        Rf_error("'%s' must be '%s'", "sep", "\t");
     /* FIXME: !nzchar(sep[1]) */
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
-        Rf_error("'commentChar' must be character(1)");
+        Rf_error("'%s' must be '%s'", "commentChar", "character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));
     if (!IS_LOGICAL(withFlags) || LENGTH(withFlags) != 3)
-        Rf_error("'withFlags' must be 'logical(3)'");
+        Rf_error("'%s' must be '%s'", "withFlags", "logical(3)");
     Rboolean 
         withId = LOGICAL(withFlags)[0],
         withMultiplexIndex = LOGICAL(withFlags)[1],
