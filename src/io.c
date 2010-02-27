@@ -115,7 +115,7 @@ _count_ipar_int_recs(gzFile *file, int *n_recs, int *n_cycles)
 {
   const char CYCLE_END = '#';
   const int LINEBUF_SIZE=200001;
-  size_t bytes_read;
+  size_t bytes_read = 0;
   char buf[LINEBUF_SIZE + 1];
   *n_recs = *n_cycles = 0;
   char *p = 0;
@@ -472,43 +472,71 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
  * _export parser
  */
 
+enum {
+    /* fields from the _export spec */
+    SLX_MACHINE = 0, SLX_RUN, SLX_LANE, SLX_TILE, SLX_X, SLX_Y,
+    SLX_MULTIPLEX, SLX_PAIRID, SLX_SREAD, SLX_QUAL, SLX_CHR, 
+    SLX_CONTIG, SLX_POS, SLX_STRAND, SLX_ALIGNQUAL, SLX_FILT, 
+    /* ID, when calculated */
+    SLX_ID,
+    /* length of ENUM */
+    SLX_ELEMENT_END
+};
+
 SEXP
 _AlignedRead_Solexa_make(SEXP fields)
 {
     const char *FILTER_LEVELS[] = { "Y", "N" };
     SEXP s, t, nmspc = PROTECT(_get_namespace("ShortRead"));
+    const Rboolean
+        withMultiplexIndex = R_NilValue != VECTOR_ELT(fields, 
+                                                      SLX_MULTIPLEX),
+        withPairedReadNumber = R_NilValue != VECTOR_ELT(fields, 
+                                                        SLX_PAIRID),
+        withIds = R_NilValue != VECTOR_ELT(fields, SLX_MACHINE);
 
     SEXP sfq;                   /* SFastqQuality */
     NEW_CALL(s, t, "SFastqQuality", nmspc, 2);
-    CSET_CDR(t, "quality", VECTOR_ELT(fields, 6));
+    CSET_CDR(t, "quality", VECTOR_ELT(fields, SLX_QUAL));
     CEVAL_TO(s, nmspc, sfq);
     PROTECT(sfq);
 
     SEXP alnq;                  /* NumericQuality() */
     NEW_CALL(s, t, "NumericQuality", nmspc, 2);
-    CSET_CDR(t, "quality", VECTOR_ELT(fields, 10));
+    CSET_CDR(t, "quality", VECTOR_ELT(fields, SLX_ALIGNQUAL));
     CEVAL_TO(s, nmspc, alnq);
     PROTECT(alnq);
 
     /* .SolexaExport_AlignedDataFrame(...) */
-    _as_factor(VECTOR_ELT(fields, 11), FILTER_LEVELS,
+    _as_factor(VECTOR_ELT(fields, SLX_FILT), FILTER_LEVELS,
                sizeof(FILTER_LEVELS) / sizeof(const char *));
     SEXP run;
     NEW_CALL(s, t, "factor", nmspc, 2);
-    CSET_CDR(t, "x", VECTOR_ELT(fields, 0));
+    CSET_CDR(t, "x", VECTOR_ELT(fields, SLX_RUN));
     CEVAL_TO(s, nmspc, run);
     PROTECT(run);
+
     SEXP dataframe;
-    NEW_CALL(s, t, "data.frame", nmspc, 8);
+    NEW_CALL(s, t, "data.frame", nmspc, 
+             8 + withMultiplexIndex + withPairedReadNumber);
     CSET_CDR(t, "run", run);
-    CSET_CDR(t, "lane", VECTOR_ELT(fields, 1)); 
-    CSET_CDR(t, "tile", VECTOR_ELT(fields, 2)); 
-    CSET_CDR(t, "x", VECTOR_ELT(fields, 3));
-    CSET_CDR(t, "y", VECTOR_ELT(fields, 4));
-    CSET_CDR(t, "filtering", VECTOR_ELT(fields, 11));
-    CSET_CDR(t, "contig", VECTOR_ELT(fields, 12));
+    CSET_CDR(t, "lane", VECTOR_ELT(fields, SLX_LANE)); 
+    CSET_CDR(t, "tile", VECTOR_ELT(fields, SLX_TILE)); 
+    CSET_CDR(t, "x", VECTOR_ELT(fields, SLX_X));
+    CSET_CDR(t, "y", VECTOR_ELT(fields, SLX_Y));
+    CSET_CDR(t, "filtering", VECTOR_ELT(fields, SLX_FILT));
+    CSET_CDR(t, "contig", VECTOR_ELT(fields, SLX_CONTIG));
+    if (withMultiplexIndex) {
+        CSET_CDR(t, "multiplexIndex",
+                 VECTOR_ELT(fields, SLX_MULTIPLEX));
+    }
+    if (withPairedReadNumber) {
+        CSET_CDR(t, "pairedReadNumber",
+                 VECTOR_ELT(fields, SLX_PAIRID));
+    }
     CEVAL_TO(s, nmspc, dataframe);
     PROTECT(dataframe);
+
     SEXP adf;
     NEW_CALL(s, t, ".SolexaExport_AlignedDataFrame", nmspc, 2);
     CSET_CDR(t, "data", dataframe);
@@ -516,12 +544,15 @@ _AlignedRead_Solexa_make(SEXP fields)
     PROTECT(adf);
 
     SEXP aln;
-    NEW_CALL(s, t, "AlignedRead", nmspc, 8);
-    CSET_CDR(t, "sread", VECTOR_ELT(fields, 5));
-    CSET_CDR(t, "quality", sfq); 
-    CSET_CDR(t, "chromosome", VECTOR_ELT(fields, 7));
-    CSET_CDR(t, "position", VECTOR_ELT(fields, 8));
-    CSET_CDR(t, "strand", VECTOR_ELT(fields, 9)); 
+    NEW_CALL(s, t, "AlignedRead", nmspc, 8 + withIds);
+    CSET_CDR(t, "sread", VECTOR_ELT(fields, SLX_SREAD));
+    CSET_CDR(t, "quality", sfq);
+    if (withIds) {
+        CSET_CDR(t, "id", VECTOR_ELT(fields, SLX_ID));
+    }
+    CSET_CDR(t, "chromosome", VECTOR_ELT(fields, SLX_CHR));
+    CSET_CDR(t, "position", VECTOR_ELT(fields, SLX_POS));
+    CSET_CDR(t, "strand", VECTOR_ELT(fields, SLX_STRAND));
     CSET_CDR(t, "alignQuality", alnq);
     CSET_CDR(t, "alignData", adf);
     CEVAL_TO(s, nmspc, aln);
@@ -532,49 +563,72 @@ _AlignedRead_Solexa_make(SEXP fields)
 
 int
 _read_solexa_export_file(const char *fname, const char *commentChar,
-						 int offset, SEXP result)
+                         int offset, SEXP result)
 {
     const int N_FIELDS = 22;
+    Rboolean 
+        withMultiplexIndex = R_NilValue != VECTOR_ELT(result, 
+                                                      SLX_MULTIPLEX),
+        withPairedReadNumber = R_NilValue != VECTOR_ELT(result, 
+                                                        SLX_PAIRID),
+        withId = R_NilValue != VECTOR_ELT(result, SLX_MACHINE);
+
     gzFile *file;
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
     int lineno = 0, irec = offset;
 
-    SEXP run = VECTOR_ELT(result, 0);
-    int *lane = INTEGER(VECTOR_ELT(result, 1)),
-        *tile = INTEGER(VECTOR_ELT(result, 2)),
-        *x = INTEGER(VECTOR_ELT(result, 3)),
-        *y = INTEGER(VECTOR_ELT(result, 4));
-	_XSnap sread = VECTOR_ELT(result, 5),
-		quality = VECTOR_ELT(result, 6);
-    SEXP chromosome = VECTOR_ELT(result, 7);
-    int *position = INTEGER(VECTOR_ELT(result, 8)),
-        *strand = INTEGER(VECTOR_ELT(result, 9)),
-        *alignQuality = INTEGER(VECTOR_ELT(result, 10)),
-        *filtering = INTEGER(VECTOR_ELT(result, 11));
-    SEXP contig = VECTOR_ELT(result, 12);
+    SEXP machine = NULL, 
+        run = VECTOR_ELT(result, SLX_RUN);
+    int *lane = INTEGER(VECTOR_ELT(result, SLX_LANE)),
+        *tile = INTEGER(VECTOR_ELT(result, SLX_TILE)),
+        *x = INTEGER(VECTOR_ELT(result, SLX_X)),
+        *y = INTEGER(VECTOR_ELT(result, SLX_Y));
+    _XSnap sread = VECTOR_ELT(result, SLX_SREAD),
+        quality = VECTOR_ELT(result, SLX_QUAL);
+    SEXP chromosome = VECTOR_ELT(result, SLX_CHR);
+    int *position = INTEGER(VECTOR_ELT(result, SLX_POS)),
+        *strand = INTEGER(VECTOR_ELT(result, SLX_STRAND)),
+        *alignQuality = INTEGER(VECTOR_ELT(result, SLX_ALIGNQUAL)),
+        *filtering = INTEGER(VECTOR_ELT(result, SLX_FILT));
+    SEXP contig = VECTOR_ELT(result, SLX_CONTIG),
+        multiplexIndex = NULL;
+    int *pairedReadNumber = NULL;
+    if (withMultiplexIndex)
+        multiplexIndex = VECTOR_ELT(result, SLX_MULTIPLEX);
+    if (withPairedReadNumber)
+        pairedReadNumber = INTEGER(VECTOR_ELT(result, SLX_PAIRID));
+    if (withId)
+        machine = VECTOR_ELT(result, SLX_MACHINE);
 
     file = _fopen(fname, "rb");
     while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
-		if (*linebuf == *commentChar) {
+        if (*linebuf == *commentChar) {
             lineno++;
             continue;
         }
 
         /* field-ify */
-		int n_fields = _mark_field_0(linebuf, elt, N_FIELDS);
-		if (n_fields != N_FIELDS) {
-			gzclose(file);
-			error("incorrect number of fields (%d) %s:%d",
-				  n_fields, fname, lineno);
-		}
+        int n_fields = _mark_field_0(linebuf, elt, N_FIELDS);
+        if (n_fields != N_FIELDS) {
+            gzclose(file);
+            error("incorrect number of fields (%d) %s:%d",
+                  n_fields, fname, lineno);
+        }
             
+        if (withId)
+            SET_STRING_ELT(machine, irec, mkChar(elt[0]));
         SET_STRING_ELT(run, irec, mkChar(elt[1]));
         lane[irec] = atoi(elt[2]);
         tile[irec] = atoi(elt[3]);
         x[irec] = atoi(elt[4]);
         y[irec] = atoi(elt[5]);
-    
-        /* 6: indexString, 7: pairedReadNumber */
+        if (withMultiplexIndex) {
+            SEXP idxString = 
+                *elt[6] == '\0' ? R_BlankString : mkChar(elt[6]);
+            SET_STRING_ELT(multiplexIndex, irec, idxString);
+        }
+        if (withPairedReadNumber)
+            pairedReadNumber[irec] = atoi(elt[7]);
         _APPEND_XSNAP(sread, elt[8]);
         _APPEND_XSNAP(quality, elt[9]);
         SET_STRING_ELT(chromosome, irec, mkChar(elt[10]));
@@ -624,54 +678,121 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
     return irec - offset;
 }
     
-SEXP
-read_solexa_export(SEXP files, SEXP sep, SEXP commentChar)
+int
+_solexa_export_make_id(SEXP result)
 {
-    static const int N_ELTS = 13;
+    const int
+        *lane = INTEGER(VECTOR_ELT(result, SLX_LANE)),
+        *tile = INTEGER(VECTOR_ELT(result, SLX_TILE)),
+        *x = INTEGER(VECTOR_ELT(result, SLX_X)),
+        *y = INTEGER(VECTOR_ELT(result, SLX_Y)),
+        *pairedReadNumber = NULL;
+    const SEXP 
+        *run = STRING_PTR(VECTOR_ELT(result, SLX_RUN)),
+        *multiplexIndex = NULL,
+        *machine = STRING_PTR(VECTOR_ELT(result, SLX_MACHINE));
+    const Rboolean 
+        withMultiplexIndex = R_NilValue != VECTOR_ELT(result, SLX_MULTIPLEX),
+        withPairedReadNumber = R_NilValue != VECTOR_ELT(result, SLX_PAIRID);
+    if (withMultiplexIndex)
+        multiplexIndex = STRING_PTR(VECTOR_ELT(result, SLX_MULTIPLEX));
+    if (withPairedReadNumber)
+        pairedReadNumber = INTEGER(VECTOR_ELT(result, SLX_PAIRID));
+
+    const int nrec = LENGTH(VECTOR_ELT(result, SLX_RUN));
+    char buf[LINEBUF_SIZE];
+    SET_VECTOR_ELT(result, SLX_ID, _NEW_XSNAP(nrec, "BString"));
+    
+    _XSnap id = VECTOR_ELT(result, SLX_ID);
+    /* FIXME: machine */
+    int n = 0;
+    for (int i = 0; i < nrec; ++i) {
+        n = snprintf(buf, LINEBUF_SIZE,
+                     "%s_%s:%d:%d:%d:%d", CHAR(machine[i]),
+                     CHAR(run[i]), lane[i], tile[i], x[i], y[i]);
+        if (withMultiplexIndex)
+            n += snprintf(buf + n, LINEBUF_SIZE - n, "#%s",
+                          CHAR(multiplexIndex[i]));
+        if (withPairedReadNumber)
+            n += snprintf(buf + n, LINEBUF_SIZE - n, "/%d",
+                          pairedReadNumber[i]);
+        if (n > LINEBUF_SIZE)
+            return -1;
+        _APPEND_XSNAP(id, buf);
+    }
+    _XSNAP_ELT(result, SLX_ID);
+    return 1;
+}
+
+SEXP
+read_solexa_export(SEXP files, SEXP sep, SEXP commentChar,
+                   SEXP withFlags)
+{
+    const int N_ELTS = SLX_ELEMENT_END;
 
     if (!IS_CHARACTER(files))
         Rf_error("'files' must be 'character()'");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1 ||
-		*(CHAR(STRING_ELT(sep, 0))) != '\t')
-        Rf_error("'sep' must be '\t'"); 
+        *(CHAR(STRING_ELT(sep, 0))) != '\t')
+        Rf_error("'sep' must be '\t'");
     /* FIXME: !nzchar(sep[1]) */
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
         Rf_error("'commentChar' must be character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
         Rf_error("'nchar(commentChar[[1]])' must be 1 but is %d",
                  LENGTH(STRING_ELT(commentChar, 0)));
+    if (!IS_LOGICAL(withFlags) || LENGTH(withFlags) != 3)
+        Rf_error("'withFlags' must be 'logical(3)'");
+    Rboolean 
+        withId = LOGICAL(withFlags)[0],
+        withMultiplexIndex = LOGICAL(withFlags)[1],
+        withPairedReadNumber = LOGICAL(withFlags)[2];
 
     int nrec = _count_lines_sum(files);
 
     SEXP result = PROTECT(NEW_LIST(N_ELTS));;
-    SET_VECTOR_ELT(result, 0, NEW_STRING(nrec)); /* run */
-    SET_VECTOR_ELT(result, 1, NEW_INTEGER(nrec)); /* lane */
-    SET_VECTOR_ELT(result, 2, NEW_INTEGER(nrec)); /* tile */
-    SET_VECTOR_ELT(result, 3, NEW_INTEGER(nrec)); /* x */
-    SET_VECTOR_ELT(result, 4, NEW_INTEGER(nrec)); /* y */
-	SET_VECTOR_ELT(result, 5, _NEW_XSNAP(nrec, "DNAString"));
-	SET_VECTOR_ELT(result, 6, _NEW_XSNAP(nrec, "BString"));
-    SET_VECTOR_ELT(result, 7, NEW_STRING(nrec));  /* chromosome */
-    SET_VECTOR_ELT(result, 8, NEW_INTEGER(nrec)); /* position */
-    SET_VECTOR_ELT(result, 9, NEW_INTEGER(nrec)); /* strand: factor */
-    SET_VECTOR_ELT(result, 10, NEW_INTEGER(nrec)); /* alignQuality */
-    SET_VECTOR_ELT(result, 11, NEW_INTEGER(nrec)); /* filtering: factor */
-    SET_VECTOR_ELT(result, 12, NEW_STRING(nrec));  /* contig */
+    if (withId)
+        SET_VECTOR_ELT(result, SLX_MACHINE, NEW_STRING(nrec));
+    SET_VECTOR_ELT(result, SLX_RUN, NEW_STRING(nrec));
+    SET_VECTOR_ELT(result, SLX_LANE, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_TILE, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_X, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_Y, NEW_INTEGER(nrec));
+    if (withMultiplexIndex)
+        SET_VECTOR_ELT(result, SLX_MULTIPLEX, NEW_STRING(nrec));
+    if (withPairedReadNumber)
+        SET_VECTOR_ELT(result, SLX_PAIRID, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_SREAD, _NEW_XSNAP(nrec, "DNAString"));
+    SET_VECTOR_ELT(result, SLX_QUAL, _NEW_XSNAP(nrec, "BString"));
+    SET_VECTOR_ELT(result, SLX_CHR, NEW_STRING(nrec));
+    SET_VECTOR_ELT(result, SLX_POS, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_STRAND, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_ALIGNQUAL, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_FILT, NEW_INTEGER(nrec));
+    SET_VECTOR_ELT(result, SLX_CONTIG, NEW_STRING(nrec));
 
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
         nrec += _read_solexa_export_file(
-            CHAR(STRING_ELT(files, i)), 
-			CHAR(STRING_ELT(commentChar, 0)),
+            CHAR(STRING_ELT(files, i)),
+            CHAR(STRING_ELT(commentChar, 0)),
             nrec, result);
     }
 
-	_XSNAP_ELT(result, 5);
-	_XSNAP_ELT(result, 6);
+    _XSNAP_ELT(result, SLX_SREAD);
+    _XSNAP_ELT(result, SLX_QUAL);
 
     SEXP strand_lvls = PROTECT(_get_strand_levels());
-    _as_factor_SEXP(VECTOR_ELT(result, 9), strand_lvls);
+    _as_factor_SEXP(VECTOR_ELT(result, SLX_STRAND), strand_lvls);
+
+    if (withId) {
+        int ok = _solexa_export_make_id(result);
+        if (ok <= 0) {
+            UNPROTECT(2);
+            Rf_error("internal error: could not make id");
+        }
+    }
 
     SEXP aln = _AlignedRead_Solexa_make(result);
     UNPROTECT(2);

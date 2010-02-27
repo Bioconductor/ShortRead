@@ -57,14 +57,14 @@ readAligned(dirPath, pattern=character(0), ...)
       follows:
 
       \describe{
-            \item{Machine}{Ignored}
+            \item{Machine}{see below}
             \item{Run number}{stored in \code{alignData}}
             \item{Lane}{stored in \code{alignData}}
             \item{Tile}{stored in \code{alignData}}
             \item{X}{stored in \code{alignData}}
             \item{Y}{stored in \code{alignData}}
-            \item{Index string}{Ignored}
-            \item{Read number}{Ignored}
+            \item{Multiplex index}{see below}
+            \item{Paired read number}{see below}
             \item{Read}{\code{sread}}
             \item{Quality}{\code{quality}}
             \item{Match chromosome}{\code{chromosome}}
@@ -80,14 +80,37 @@ readAligned(dirPath, pattern=character(0), ...)
             \item{Partner strand}{Ignored}
             \item{Filtering}{\code{alignData}}
       }
+	  
+	  The following optional arguments, set to \code{FALSE} by default,
+	  influence data input
 
-      Paired read columns are not interpreted.  The resulting
-      \code{\linkS4class{AlignedRead}} object does \emph{not} contain a
-      meaningful \code{id}; instead, use information from
-      \code{alignData} to identify reads.
+      \describe{
+        
+        \item{withMultiplexIndex}{When \code{TRUE}, include the
+          multiplex index as a column \code{multiplexIndex} in
+          \code{alignData}.}
 
-      Different interfaces to reading alignment files are described in
-      \code{\linkS4class{SolexaPath}} and \code{\linkS4class{SolexaSet}}.
+        \item{withPairedReadNumber}{When \code{TRUE}, include the paired
+          read number as a column \code{pairedReadNumber} in
+          \code{alignData}.}
+
+        \item{withId}{When \code{TRUE}, construct an identifier string
+          as
+          \sQuote{Machine_Run:Lane:Tile:X:Y#multiplexIndex/pairedReadNumber}. The
+          substrings \sQuote{#multiplexIndex} and
+          \sQuote{/pairedReadNumber} are not present if
+          \code{withMultiplexIndex=FALSE} or
+          \code{withPairedReadNumber=FALSE}.}
+
+        \item{withAll}{A convencience which, when \code{TRUE}, sets all
+          \code{with*} values to \code{TRUE}.}
+
+      }
+
+      Note that not all paired read columns are interpreted.  Different
+      interfaces to reading alignment files are described in
+      \code{\linkS4class{SolexaPath}} and
+      \code{\linkS4class{SolexaSet}}.
 
     }
 
@@ -339,9 +362,9 @@ readAligned(dirPath, pattern=character(0), ...)
 sp <- SolexaPath(system.file("extdata", package="ShortRead"))
 ap <- analysisPath(sp)
 ## ELAND_EXTENDED
-readAligned(ap, "s_2_export.txt", "SolexaExport")
+(aln0 <- readAligned(ap, "s_2_export.txt", "SolexaExport"))
 ## PhageAlign
-readAligned(ap, "s_5_.*_realign.txt", "SolexaRealign")
+(aln1 <- readAligned(ap, "s_5_.*_realign.txt", "SolexaRealign"))
 
 ## MAQ
 dirPath <- system.file('extdata', 'maq', package='ShortRead')
@@ -350,11 +373,11 @@ list.files(dirPath)
 readLines(list.files(dirPath, full.names=TRUE)[[1]], 1)
 countLines(dirPath)
 ## two files collapse into one
-readAligned(dirPath, type="MAQMapview")
+(aln2 <- readAligned(dirPath, type="MAQMapview"))
 
 ## select only chr1-5.fa, '+' strand
 filt <- compose(chromosomeFilter("chr[1-5].fa"),
                 strandFilter("+"))
-readAligned(sp, "s_2_export.txt", filter=filt)
+(aln3 <- readAligned(sp, "s_2_export.txt", filter=filt))
 }
 \keyword{manip}

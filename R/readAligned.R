@@ -119,24 +119,27 @@
 
 .SolexaExport_AlignedDataFrame <- function(data)
 {
-    AlignedDataFrame(data=data,
-                     metadata=data.frame(
-                       labelDescription=c(
-                         "Analysis pipeline run",
-                         "Flow cell lane",
-                         "Flow cell tile",
-                         "Cluster x-coordinate",
-                         "Cluster y-coordinate",
-                         "Read successfully passed filtering?",
-                         "Contig")))
+    lbls <- c(run="Analysis pipeline run",
+              lane="Flow cell lane",
+              tile="Flow cell tile",
+              x="Cluster x-coordinate",
+              y="Cluster y-coordinate",
+              filtering="Read successfully passed filtering?",
+              contig="Contig",
+              multiplexIndex="Multiplex index",
+              pairedReadNumber="Paired read number")[names(data)]
+    AlignedDataFrame(data=data, metadata=data.frame(labelDescription=lbls))
 }
 
 .readAligned_SolexaExport <-
-  function(dirPath, pattern=character(0), ..., sep="\t",
-           commentChar="#")
+  function(dirPath, pattern=character(0), ..., withAll=FALSE,
+           withId=withAll, withMultiplexIndex=withAll,
+           withPairedReadNumber=withAll,
+           sep="\t", commentChar="#")
 {
     files <- .file_names(dirPath, pattern)
-    .Call(.read_solexa_export, files, sep, commentChar)
+    .Call(.read_solexa_export, files, sep, commentChar,
+          c(withId, withMultiplexIndex, withPairedReadNumber))
 }
 
 .readAligned_Maq_ADF <- function(lst) {

@@ -59,7 +59,8 @@ SEXP read_solexa_fastq(SEXP files, SEXP withIds);
 SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 			     SEXP colIndex, SEXP colClasses, 
 			     SEXP nrows, SEXP skip, SEXP commentChar);
-SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar);
+SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar, 
+                        SEXP withFlags);
 
 /* io_bowtie.c, io_soap.c */
 

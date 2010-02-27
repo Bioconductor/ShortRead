@@ -7,6 +7,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 NEW FEATURES
 
+    o Optionally retrieve multiplex bar code, paired read number, and
+    id from SolexaExport (contribution from Nicolas Delhomme)
+
     o renew() and renewable() provide an interface to updating
     ShortRead instances
 

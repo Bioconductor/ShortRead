@@ -91,6 +91,38 @@ test_AlignedRead_readAligned_SolexaExport_filter <- function()
     .checkAlignedRead_identical(obs, exp)
 }
 
+test_AlignedRead_readAligned_SolexaExport_withWhat <- function() {
+    aln <- readAligned("./cases", "PE_export.txt.gz",
+                       type="SolexaExport", withAll=TRUE)
+    checkIdentical(400L, length(aln))
+    e0 <- c("HWUSI-EAS618_1:1:1:0:1122#AGCACGA/1",
+            "HWUSI-EAS618_1:1:1:0:843#ACCACGA/1",
+            "HWUSI-EAS618_1:1:1:4:873#ATCACGA/1",
+            "HWUSI-EAS618_1:1:1:4:480#ACCACGA/1")
+    checkIdentical(e0, as.character(id(aln)[c(1,2, 399, 400)]))
+    e1 <- structure(c(41L, 2L, 72L, 4L, 17L, 17L, 5L, 2L, 8L, 70L, 1L,
+                      2L, 1L, 1L, 1L, 37L, 1L, 3L, 2L, 1L, 1L, 70L,
+                      1L, 1L, 1L, 4L, 31L, 1L, 1L, 1L), .Dim = 30L,
+                      .Dimnames = structure(list(c("AACACGA",
+                      "AACCCGA", "ACCACGA", "ACCCCGA", "AGACCAA",
+                      "AGCACGA", "AGCCCAA", "AGCCCCA", "AGCCCGA",
+                      "ATCACGA", "ATCCCCA", "ATCCCGA", "CACCCTC",
+                      "CACGACC", "CCCCCGA", "CGACCAA", "CGACCAC",
+                      "CGCCCAA", "CGCCCCA", "CTCCCTT", "GCGCCCA",
+                      "GGACCAA", "GGACCCA", "GGACNAA", "GGCCCAA",
+                      "NNNNNNN", "TGACCAA", "TGCCCTA", "TTCCCTG",
+                      "TTCCCTT")), .Names = ""), class = "table")
+    checkIdentical(e1, table(alignData(aln)[["multiplexIndex"]]))
+
+    aln0 <- readAligned("./cases", "PE_export.txt.gz",
+                        type="SolexaExport",
+                        withId=TRUE, withMultiplexIndex=TRUE)
+    checkIdentical(sub("/1$", "", as.character(id(aln))),
+                   as.character(id(aln0)))
+    colidx <- varLabels(alignData(aln)) != "pairedReadNumber"
+    checkIdentical(alignData(aln)[, colidx], alignData(aln0))
+}
+
 test_AlignedRead_readAligned_MAQMapview <- function() {
     fl <- system.file("extdata", "maq", package="ShortRead")
     obj <- readAligned(fl, pattern=".*aln.*", type="MAQMapview")
