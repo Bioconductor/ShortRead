@@ -8,9 +8,3 @@ test_missingLaneName <- function()
              })
     checkTrue(caught)
 }
-
-test_emptyLane <- function()
-{
-    checkTrue(FALSE)
-##     checkTrue(validObject(report(qa(AlignedRead(), "foo"))))
-}

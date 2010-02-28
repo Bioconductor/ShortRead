@@ -1,9 +1,5 @@
 ## readFastq
 
-test_readFastq_errors <- function() {
-    checkTrue(FALSE)
-}
-
 test_readFastq_autoDetectType <- function() 
 {
     srq <- readFastq(file.path("cases", "sanger.fastq"))
