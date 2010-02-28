@@ -1,7 +1,7 @@
 ## .STRAND_LEVELS needs to be early, to be used in class
 ## prototypes. C-level code retrieves this value. pileup and
 ## readAligned,type=MAQMap depend on this ordering
-.STRAND_LEVELS <- c("-", "+", "*")
+.STRAND_LEVELS <- levels(strand())
 .toStrand_Solexa <- function(x)
     factor(.STRAND_LEVELS[match(x, c("R", "F"))],
            levels=.STRAND_LEVELS)

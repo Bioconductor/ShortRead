@@ -51,7 +51,7 @@ _read_bowtie(const char *fname, const char *commentChar,
         strand[irec] = _char_as_strand_int(*elt[1], fname, lineno);
         SET_STRING_ELT(chromosome, irec, mkChar(elt[2]));
         position[irec] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
-        if (strand[irec] == 1) {
+        if (strand[irec] == 2) {
             _reverseComplement(elt[4]);
             _reverse(elt[5]);
         }

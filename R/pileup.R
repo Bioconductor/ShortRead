@@ -6,7 +6,7 @@ pileup <- function (
    .Deprecated("coverage")
    stopifnot( is.factor(dir) )
    stopifnot( length(levels(dir)) == 3 &&
-             all( levels(dir) == c("-", "+", "*") ) )
+             all( levels(dir) == levels(strand()) ) )
    stopifnot( is.numeric(start) &&
              is.numeric(fraglength) && is.numeric(chrlength) 
       && is.numeric(readlength) )

@@ -63,7 +63,7 @@ _read_soap(const char *fname, const char *csep,
         SET_STRING_ELT(hitDetail, offset, mkChar(elt[10]));
         /* 1-3: id, strand, quality */
 		_APPEND_XSNAP(id, elt[0]);
-        if (strand[offset] == 1) {
+        if (strand[offset] == 2) {
             _reverseComplement(elt[1]);
             _reverse(elt[2]);
         }

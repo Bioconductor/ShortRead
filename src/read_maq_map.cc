@@ -122,7 +122,7 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
       
         /* Copy the data */
         INTEGER(start)[i] = ( read.pos >> 1 ) + 1;
-        INTEGER(dir  )[i] = !( read.pos & 0x01 ) + 1; /* '-': 1, '+': 2 */
+        INTEGER(dir  )[i] = ( read.pos & 0x01 ) + 1; /* '+': 1, '-': 2 */
         INTEGER(seq   )[i] = read.seqid + 1;
         INTEGER(aq    )[i] = read.map_qual;
         INTEGER(mm    )[i] = read.info1 & 0x0f;

@@ -641,10 +641,10 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
             strand[irec] = NA_INTEGER;
         else {
             switch(*elt[13]) {
-            case 'R':
+            case 'F':
                 strand[irec] = 1;
                 break;
-            case 'F':
+            case 'R':
                 strand[irec] = 2;
                 break;
             default:

@@ -13,7 +13,7 @@ SEXP pileup( SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir, SEXP readlen
    memset( INTEGER(res), 0, length(res) * sizeof(int) );
 
    for( i = 0; i < length(start); i++ )
-      if( INTEGER(dir)[ length(dir) == 1 ? 0 : i] == 2 ) {
+      if( INTEGER(dir)[ length(dir) == 1 ? 0 : i] == 1 ) {
          /* forward direction */
 	 end = INTEGER(start)[i] + INTEGER(fraglength)[ length(fraglength) == 1 ? 0 : i];
 	 if( end - offs > length(res) )

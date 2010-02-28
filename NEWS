@@ -3,7 +3,7 @@ CHANGES IN VERSION 1.5
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
-    o No significant user-visible changes
+    o levels(strand(aln)) is c("+", "-", "*") (was c("-", "+", "*"))
 
 NEW FEATURES
 

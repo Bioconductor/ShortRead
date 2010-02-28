@@ -97,10 +97,10 @@ _char_as_strand_int(const char c, const char *fname, const int lineno)
         strand = NA_INTEGER;
     else {
         switch (c) {
-        case '-':
+        case '+':
             strand = 1;
             break;
-        case '+':
+        case '-':
             strand = 2;
             break;
         default:
