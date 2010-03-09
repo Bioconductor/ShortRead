@@ -176,37 +176,10 @@ setMethod(srduplicated, "AlignedRead",
 ## coverage
 
 setMethod(coverage, "AlignedRead",
-    function(x, start=NA, end=NA, shift=0L, width=NULL, weight=1L, ...,
+    function(x, shift=0L, width=NULL, weight=1L, ...,
              coords=c("leftmost", "fiveprime"),
              extend=0L)
 {
-##---- remove this block when the start/end interface gets finally dropped ---
-    isSingleNA <- function(x) {is.atomic(x) && length(x) == 1 && is.na(x)}
-    if (!isSingleNA(start) || !isSingleNA(end)) {
-        if (!identical(shift, 0L) || !is.null(width)) {
-            msg <- "use only 'shift'/'width' (or 'start'/'end')"
-            .throw(SRError("UserArgumentMismatch", msg))
-        }
-        msg <- "use 'shift'/'width'  instead of 'start'/'end'"
-        .throw(SRWarn("UserArgumentMismatch", msg))
-        if (!is.numeric(start) || any(is.na(start))
-         || !is.numeric(end) || any(is.na(end))) {
-            msg <- "'start', 'end' must be named integer values"
-            .throw(SRError("UserArgumentMismatch", msg))
-        }
-        if (!all(names(start) == names(end)))
-            .throw(SRError("UserArgumentMismatch", 
-                           "not all names(start) == names(end)"))
-        shift <- 1L - start
-        width <- end + shift
-        names(shift) <- names(width) <- names(start)
-        if (any(width < 0L)) {
-            .throw(SRError("UserArgumentMismatch", 
-                           "'end' must be >= 'start' - 1"))
-        }
-    }
-##----------------------------------------------------------------------------
-
     ## Argument checking:
     chrlvls <- levels(chromosome(x))
     if (!identical(shift, 0L)) {

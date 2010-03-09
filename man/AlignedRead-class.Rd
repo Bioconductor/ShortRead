@@ -124,17 +124,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       strand slot of \code{object}.}
 
     \item{coverage}{
-      \code{signature(x = "AlignedRead", start = NA, end = NA, shift = 0L, width = NULL, weight = 1L, ..., coords = c("leftmost", "fiveprime"), extend=0L)}:
+      \code{signature(x = "AlignedRead", shift = 0L, width = NULL, weight = 1L, ..., coords = c("leftmost", "fiveprime"), extend=0L)}:
 
       Calculate coverage across reads present in \code{x}.
-
-      IMPORTANT NOTE: The interface to the \code{coverage} generic is
-      currently being migrated from "start/end" to "shift/width".  In
-      the near future, the \code{start} and \code{end} arguments will be
-      dropped and the remaining arguments will be: \code{coverage(x,
-      shift=0L, width=NULL, weight=1L, ...)}  See
-      \code{\link[IRanges]{coverage}} in the IRanges package for more
-      information.
 
       \code{shift} must be either \code{0L} or a named integer vector
       with names including all \code{levels(chromosome(x))}.
