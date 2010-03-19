@@ -99,7 +99,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{narrow}{\code{signature(x = "ShortRead", start = NA, end = NA, width = NA, use.names = TRUE)}:
       \sQuote{narrow} \code{sread} so that sequences are between
       \code{start} and \code{end} bases, according to
-      \code{\link[IRanges:IRanges-utils]{narrow}} in the \code{IRanges}
+      \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.
     }
 
