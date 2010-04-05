@@ -297,6 +297,89 @@
     .Call(.read_soap, files, qualityType, sep, commentChar)
 }
 
+.readAligned_bamWhat <- function()
+{
+    c("qname", "flag", "rname", "strand", "pos", "mapq", "seq",
+      "qual")
+}
+
+.readAligned_bam <-
+    function(dirPath, pattern=character(0), ..., 
+             param=ScanBamParam(
+               simpleCigar=TRUE,
+               reverseComplement=TRUE,
+               what=.readAligned_bamWhat()))
+{
+    files <- 
+        if (!all(grepl("^(ftp|http)://", dirPath)))
+            .file_names(dirPath, pattern)
+        else {
+            if (length(dirPath) != 1 || length(pattern) != 0) {
+                msg <- paste("ftp:// and http:// support requires",
+                             "'dirPath' as character(1),",
+                             "'pattern' as character(0)", collapse="")
+                .throw(SRError("UserArgumentMismatch", msg))
+            }
+            dirPath
+        }
+    ## FIXME: currently we only deal with cigars without indels
+    if (!missing(param)) {
+        if (bamSimpleCigar(param) != TRUE) {
+            msg <- paste("using 'TRUE' for 'bamSimpleCigar(param)'",
+                         "(skipping reads with I, D, H, S, or P in 'cigar')")
+            msg <- paste(strwrap(msg, exdent=2), collapse="\n")
+            warning(msg)
+        }
+        if (bamReverseComplement(param) != TRUE) {
+            msg <- "using 'TRUE' for 'bamReverseComplement(param)'"
+            msg <- paste(strwrap(msg, exdent=2), collapse="\n")
+            warning(msg)
+        }
+        if (!setequal(bamWhat(param), .readAligned_bamWhat()))
+        {
+            msg <- sprintf("using '%s' for 'bamWhat(param)'",
+                           paste(.readAligned_bamWhat(),
+                                 collapse="', '"))
+            msg <- paste(strwrap(msg, exdent=2), collapse="\n")
+            warning(msg)
+        }
+        param <- initialize(param, simpleCigar=TRUE,
+                            reverseComplement=TRUE,
+                            what=.readAligned_bamWhat())
+    }
+    ## handle multiple files
+    result <- lapply(files, scanBam, param=param, ...)
+
+    ulist <- function(X, ...)
+        unlist(lapply(X, lapply, "[[", ...), use.names=FALSE)
+    cxslist <- function(X, ...)
+        do.call(c, ulist(X, ...))
+    chromosome <- local({
+        X <- unlist(lapply(result, lapply, "[[", "rname"),
+                    recursive=FALSE, use.names=FALSE)
+        values <- do.call(c, lapply(X, as.character))
+        factor(values, levels=unique(unlist(lapply(X, levels))))
+    })
+    strand <- local({
+        X <- unlist(lapply(result, lapply, "[[", "strand"),
+                    recursive=FALSE, use.names=FALSE)
+        values <- do.call(c, lapply(X, as.character))
+        strand(values)
+    })
+
+    AlignedRead(sread=cxslist(result, "seq"),
+                id=BStringSet(ulist(result, "qname")),
+                quality=FastqQuality(as(cxslist(result, "qual"),
+                  "BStringSet")),
+                chromosome=chromosome, strand=strand,
+                position=ulist(result, "pos"),
+                alignQuality=NumericQuality(ulist(result, "mapq")),
+                alignData=AlignedDataFrame(
+                  data=data.frame(flag=ulist(result, "flag")),
+                  metadata=data.frame(
+                    labelDescription=c("Type of read; see ?scanBam"))))
+}
+
 .readAligned_character <-
     function(dirPath, pattern=character(0),
              type=c(
@@ -304,7 +387,7 @@
                "SolexaPrealign", "SolexaRealign",
                "SolexaResult",
                "MAQMap", "MAQMapShort", "MAQMapview",
-               "Bowtie", "SOAP"),
+               "Bowtie", "SOAP", "BAM"),
              ..., filter=srFilter())
 {
     if (missing(type))
@@ -333,7 +416,8 @@
                    MAQMapview=.readAligned_MaqMapview(
                      dirPath, pattern=pattern, ...),
                    Bowtie=.readAligned_Bowtie(dirPath, pattern, ...),
-                   SOAP=.readAligned_SOAP(dirPath, pattern, ...))
+                   SOAP=.readAligned_SOAP(dirPath, pattern, ...),
+                   BAM=.readAligned_bam)
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {

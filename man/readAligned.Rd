@@ -324,6 +324,50 @@ readAligned(dirPath, pattern=character(0), ...)
       and orientation.
 
     }
+
+    \item{\code{type="BAM"}}{
+
+      Parse BAM files produced by samtools and other third party
+      programs.  This method includes the argument
+      \code{param=ScanBamParam()}.  The \code{which} and \code{flag}
+      arguments to \code{ScanBamParam()} can be used to influence which
+      reads in the BAM file are parsed; see \code{\link{ScanBamParam}}.
+      The following values override user settings (issuing a warning if
+      contradictory values are provided):
+
+      \describe{
+
+        \item{\code{simpleCigar=TRUE}}{Reads aligned with indels are
+          ignored; this is required for representation in
+          \code{AlignedRead}.}
+
+        \item{\code{reverseComplement=TRUE}}{By default, BAM stores
+          reads as they are aligned to the reference genome, whereas
+          \code{AiignedRead} stores them as they are prior to alignment;
+          this flag converts reads from the BAM to \code{AlignedRead}
+          format.}
+
+        \item{\code{what=c("qname", "flag", "rname", "strand", "pos",
+            "mapq", "seq", "qual")}}{These BAM fields are mapped to
+          corresponding fields in \code{AlignedRead}.}
+
+      }
+
+      BAM fields are mapped to \code{AlignedRead} as:
+
+      \describe{
+
+        \item{qname}{\code{id}}
+        \item{seq}{\code{sread}}
+        \item{qual}{\code{quality}}
+        \item{strand}{\code{strand}}
+        \item{rname}{\code{chromosome}}
+        \item{pos}{\code{position}}
+        \item{mapq}{\code{alignQuality}}
+        \item{flag}{\code{alignData}}
+
+      }
+    }
   }
 }
 
@@ -338,7 +382,7 @@ readAligned(dirPath, pattern=character(0), ...)
 
 \seealso{
 
-  A \code{\linkS4class{AlignedRead}} object.
+  The \code{\linkS4class{AlignedRead}} class.
 
   Genome Analyzer Pipeline Software User Guide, Revision A, January
   2008.
@@ -351,6 +395,9 @@ readAligned(dirPath, pattern=character(0), ...)
 
   The SOAP reference manual, \url{http://soap.genomics.org.cn/soap1},
   16 December, 2008.
+
+  The BAM file format specification,
+  \url{http://samtools.sourceforge.net}.
 
 }
 

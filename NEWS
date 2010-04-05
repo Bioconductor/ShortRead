@@ -17,6 +17,9 @@ NEW FEATURES
 
     o readIntensities supports Illumina RTA '.cif' / '.cnf' files
 
+    o readAligned type="BAM" parses BAM files, extracting simple (no
+    indel) cigars
+
 BUG FIXES
 
     o readIntensities type="IparIntensity" correctly handles multiple

@@ -9,8 +9,8 @@ Description: Base classes, functions, and methods for representation of
 License: Artistic-2.0
 LazyLoad: yes
 Depends: methods, IRanges (>= 1.5.65), GenomicRanges, Biostrings (>= 2.13.52),
-         lattice
-Imports: IRanges, GenomicRanges, Biostrings, Biobase, hwriter
+         lattice, Rsamtools
+Imports: IRanges, GenomicRanges, Biostrings, Biobase, hwriter, Rsamtools
 Enhances: Rmpi, multicore
 Suggests: biomaRt
 LinkingTo: IRanges, Biostrings

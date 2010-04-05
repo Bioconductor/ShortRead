@@ -26,6 +26,9 @@ importFrom(Biostrings, BStringSet, DNAStringSet, compact,
 
 importFrom(hwriter, hwrite, hwriteImage)
 
+importFrom(Rsamtools, scanBam, ScanBamParam, bamSimpleCigar,
+           bamReverseComplement, bamWhat)
+
 exportClassPattern("^[^\\.]")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
