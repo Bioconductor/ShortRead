@@ -37,8 +37,9 @@ alphabetByCycle <-
     
 setGeneric("alphabetByCycle", signature="stringSet")
 
-setGeneric("dustyScore",
-           function(x, ...) standardGeneric("dustyScore"))
+setGeneric("dustyScore", function(x, batchSize=NA, ...)
+           standardGeneric("dustyScore"),
+           signature="x")
 
 setGeneric("srorder", function(x, ...) standardGeneric("srorder"))
 

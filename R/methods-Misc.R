@@ -8,13 +8,27 @@ setMethod(clean, "DNAStringSet", function(object, ...) {
     object[alphabetFrequency(object, baseOnly=TRUE)[,'other']==0]
 })
 
-setMethod(dustyScore, "DNAStringSet", function(x, ...)
+setMethod(dustyScore, "DNAStringSet",
+          function(x, batchSize=NA, ...)
 {
+    doDusty <- function(tripletPDict, x) {
+        tnf <- t(vcountPDict(tripletPDict, x)) - 1L
+        tnf[tnf < 0] <- 0L
+        rowSums(tnf * tnf)    
+    }
     triplets <- DNAStringSet(mkAllStrings(c("A", "C", "G", "T"), 3))
     tripletPDict <- PDict(triplets)
-    tnf <- t(vcountPDict(tripletPDict, x)) - 1L
-    tnf[tnf < 0] <- 0L
-    rowSums(tnf * tnf)    
+
+    if (is.na(batchSize) || length(x) <= batchSize)
+        return(doDusty(tripletPDict, x))
+
+    n <- as.integer(1L + length(x)) / batchSize
+    i <- seq_len(length(x))
+    i <- split(i, cut(i, n, labels=FALSE))
+
+    unlist(unname(lapply(i, function(idx, tripletPDict, x) {
+        doDusty(tripletPDict, x[idx])
+    }, tripletPDict, x)))
 })
 
 setMethod(alphabetByCycle, "BStringSet", .abc_BStringSet)

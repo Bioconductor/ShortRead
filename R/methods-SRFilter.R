@@ -190,10 +190,11 @@ srdistanceFilter <- function(subject=character(0), threshold=0L,
 }
 
 dustyFilter <-
-    function(threshold=Inf, .name="DustyFilter")
+    function(threshold=Inf, batchSize=NA, .name="DustyFilter")
 {
     .check_type_and_length(threshold, "numeric", 1)
-    srFilter(function(x) dustyScore(x) <= threshold, name=.name)
+    srFilter(function(x) dustyScore(x, batchSize) <= threshold,
+             name=.name)
 }
 
 alignQualityFilter <- function(threshold=0L,

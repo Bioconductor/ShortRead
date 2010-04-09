@@ -14,7 +14,7 @@
 }
 \usage{
 
-dustyScore(x, ...)
+dustyScore(x, batchSize=NA, ...)
 
 }
 
@@ -23,6 +23,9 @@ dustyScore(x, ...)
   \item{x}{A \code{DNAStringSet} object, or object derived from
     \code{ShortRead}, containing a collection of reads to be
     summarized.}
+
+  \item{batchSize}{\code{NA} or an \code{integer(1)} vector indicating
+  the maximum number of reads to be processed at any one time.}
 
   \item{...}{Additional arguments, not currently used.}
 
@@ -45,7 +48,12 @@ dustyScore(x, ...)
   The dust-like calculations used here are as implemented at
   \url{https://stat.ethz.ch/pipermail/bioc-sig-sequencing/2009-February/000170.html}.
   Scores range from 0 (all triplets unique) to the square of the width
-  of the longest sequence (poly-A, -C, -G, or -T). 
+  of the longest sequence (poly-A, -C, -G, or -T).
+
+  The \code{batchSize} argument can be used to reduce the memory
+  requirements of the algorithm by processing the \code{x} argument in
+  batches of the specified size. Smaller batch sizes use less memory,
+  but are computationally less efficient.
 
 }
 

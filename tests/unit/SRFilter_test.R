@@ -68,18 +68,18 @@ test_occurrenceFilter <- function()
                            occurrenceFilter(withSread=TRUE)(aln))
         })
     checkIdentical(980L, sum(occurrenceFilter(withSread=NA)(aln)))
-    checkIdentical(996L, sum(occurrenceFilter(withSread=TRUE)(aln)))
+    checkIdentical(1533L, sum(occurrenceFilter(withSread=TRUE)(aln)))
     df <- data.frame(chromosome(aln), position(aln), strand(aln))
     checkIdentical(sum(!duplicated(df)),
                    sum(occurrenceFilter(withSread=FALSE)(aln)))
 
-    checkIdentical(15L,
+    checkIdentical(26L,
                    sum(occurrenceFilter(min=5, max=10, withSread=NA)(aln)))
 
-    checkIdentical(13L,
+    checkIdentical(35L,
                    sum(occurrenceFilter(min=3, max=5, withSread=NA)(aln)))
 
-    checkIdentical(8L,
+    checkIdentical(20L,
                    sum(occurrenceFilter(min=3, max=5,
                                         duplicates="none",
                                         withSread=NA)(aln)))
@@ -152,6 +152,19 @@ test_polynFilter <- function() {
     checkIdentical(aln[obj(aln)],
                    aln[apply(alf[,1:4], 1, max) <= n])
 }
+
+test_dustyFilter <- function() {
+    checkTrue(validObject(dustyFilter()))
+    checkTrue(validObject(dustyFilter(20)))
+
+    checkTrue(validObject(lgl0 <- dustyFilter(10L)(aln)))
+    checkTrue(validObject(lgl1 <- dustyFilter(10L)(sread(aln))))
+    checkIdentical(lgl0, lgl1)
+
+    checkIdentical(lgl0, dustyFilter(10L, 100L)(aln))
+    checkIdentical(lgl0, dustyFilter(10L, 100L)(sread(aln)))
+}
+    
 
 test_srdistanceFilter <- function() {
     checkTrue(validObject(srdistanceFilter()))

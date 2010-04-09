@@ -47,7 +47,7 @@ occurrenceFilter(min=1L, max=1L,
 nFilter(threshold=0L, .name="CleanNFilter")
 polynFilter(threshold=0L, nuc=c("A", "C", "T", "G", "other"),
            .name="PolyNFilter")
-dustyFilter(threshold=Inf, .name="DustyFilter")
+dustyFilter(threshold=Inf, batchSize=NA, .name="DustyFilter")
 srdistanceFilter(subject=character(0), threshold=0L,
                  .name="SRDistanceFilter")
 alignQualityFilter(threshold=0L, .name="AlignQualityFilter")
@@ -118,6 +118,12 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
     nucleotides or the value \code{"other"} corresponding to all
     non-nucleotide symbols, e.g., \code{N}.}
 
+  \item{batchSize}{\code{NA} or an \code{integer(1)} vector indicating
+    the number of DNA sequences to be processed simultaneously by
+    \code{dustyFilter}. By default, all reads are processed
+    simultaneously. Smaller values use less memory but are
+    computationally less efficient.}
+
   \item{subject}{A \code{character()} of any length, to be used as the
     corresponding argument to \code{\link{srdistance}}.}
 
@@ -186,8 +192,11 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
 
   \code{dustyFilter} selects elements with high sequence complexity, as
   characterized by their \code{\link{dustyScore}}. This emulates the
-  \code{dust} command from \code{WindowMaker} software.
-
+  \code{dust} command from \code{WindowMaker}
+  software. Calculations can be memory intensive; use
+  \code{batchSize} to process the argument to \code{dustyFilter} in
+  batches of the specified size.
+  
   \code{srdistanceFilter} selects elements at an edit distance greater
   than \code{threshold} from all sequences in \code{subject}.
 

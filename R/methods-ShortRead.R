@@ -98,8 +98,9 @@ setMethod(clean, "ShortRead", function(object, ...) {
     object[alf[,'other'] == 0]
 })
 
-setMethod(dustyScore, "ShortRead",
-          function(x, ...) callGeneric(sread(x), ...))
+setMethod(dustyScore, "ShortRead", function(x, batchSize=NA, ...) {
+    callGeneric(sread(x), batchSize=batchSize, ...)
+})
 
 setMethod(srorder, "ShortRead", .forward_x)
 
