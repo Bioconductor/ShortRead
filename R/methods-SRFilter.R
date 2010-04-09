@@ -193,7 +193,7 @@ dustyFilter <-
     function(threshold=Inf, .name="DustyFilter")
 {
     .check_type_and_length(threshold, "numeric", 1)
-    srFilter(function(x) dustyScore(sread(x)) <= threshold, name=.name)
+    srFilter(function(x) dustyScore(x) <= threshold, name=.name)
 }
 
 alignQualityFilter <- function(threshold=0L,
