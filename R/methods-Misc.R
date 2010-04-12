@@ -145,7 +145,7 @@ setMethod(srdistance, c("DNAStringSet", "DNAStringSet"),
     list(top=top,
          distribution=data.frame(
            nOccurrences=nOccurrences,
-           nReads=nReads))
+           nReads=nReads, row.names=NULL))
 }
 
 setMethod(tables, "XStringSet", .stringset_tables)

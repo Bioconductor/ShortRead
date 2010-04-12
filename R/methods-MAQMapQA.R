@@ -40,11 +40,11 @@
            quality=rqs$x,
            density=rqs$y,
            lane=pattern,
-           type="aligned"),
+           type="aligned", row.names=NULL),
          baseQuality=data.frame(
            score=names(bqtbl),
            count=as.vector(bqtbl),
-           lane=pattern),
+           lane=pattern, row.names=NULL),
          alignQuality=data.frame(
            score=as.numeric(names(aqtbl)),
            count=as.vector(aqtbl),
@@ -53,11 +53,11 @@
            sequence=names(freqtbl$top),
            count=as.integer(freqtbl$top),
            type="aligned",
-           lane=pattern),
+           lane=pattern, row.names=NULL),
          sequenceDistribution=cbind(
            freqtbl$distribution,
            type="aligned",
-           lane=pattern),
+           lane=pattern, row.names=NULL),
          perCycle=list(
            baseCall=perCycleBaseCall,
            quality=perCycleQuality),
@@ -67,7 +67,7 @@
              tile=integer(0), lane=character(0)),
            medianReadQualityScore=data.frame(
              score=integer(), type=character(), tile=integer(),
-             lane=integer(), row.names=NULL))
+             lane=integer()))
          )
 }
 

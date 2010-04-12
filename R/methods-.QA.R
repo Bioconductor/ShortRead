@@ -12,7 +12,7 @@ setMethod(rbind, ".QA", function(..., deparse.level=NA) {
             names(l) <- nms
             l
         } else {
-            do.call(rbind, elts)
+            do.call(rbind, unname(elts))
         }
     }
     nms <- names(.srlist(lst[[1]]))

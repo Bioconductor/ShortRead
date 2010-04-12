@@ -26,7 +26,7 @@
     df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
                      Base=factor(rownames(abc)[row(abc)]),
                      Count=as.vector(abc),
-                     lane=lane)
+                     lane=lane, row.names=NULL)
     df[df$Count != 0,]
 }
 
@@ -46,7 +46,7 @@
                      Quality=q,
                      Score=as.numeric(q)-q0,
                      Count=as.vector(abc),
-                     lane=lane)
+                     lane=lane, row.names=NULL)
     df[df$Count != 0, ]
 }
 
