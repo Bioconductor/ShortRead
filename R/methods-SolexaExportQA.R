@@ -41,7 +41,7 @@
     function(dirPath, pattern, ..., type="SolexaExport",
              verbose=FALSE)
 {
-    readLbls <- c("read", "aligned", "filtered")
+    readLbls <- c("read", "filtered", "aligned")
     rpt <- readAligned(dirPath, pattern, ..., type=type)
     df <- pData(alignData(rpt))
     filterIdx <- df$filtering=="Y"

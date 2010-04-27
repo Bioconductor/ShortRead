@@ -40,7 +40,7 @@
         return(df)
     }
     abc <- apply(abc, 2:3, sum)
-    q <- factor(rownames(abc)[row(abc)])
+    q <- factor(rownames(abc)[row(abc)], levels=rownames(abc))
     q0 <- 1 + 32 * is(quality, "SFastqQuality")
     df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
                      Quality=q,
@@ -206,12 +206,10 @@
 }
 .plotCycleQuality <- function(df) 
 {
-    qnum <- as(SFastqQuality(as.character(df$Quality)), "numeric")
-    df$qtot <- qnum * df$Count
-
-    aveScore <- with(df,
-                     tapply(qtot, list(lane, Cycle), sum) /
-                     tapply(Count, list(lane, Cycle), sum))
+    aveScore <- with(df, {
+        tapply(Score * Count, list(lane, Cycle), sum) /
+            tapply(Count, list(lane, Cycle), sum)
+    })
     score <- data.frame(AverageScore=as.vector(aveScore),
                         Cycle=as.vector(col(aveScore)),
                         Lane=.laneLbl(rownames(aveScore)))
