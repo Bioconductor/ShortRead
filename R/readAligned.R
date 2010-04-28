@@ -417,7 +417,7 @@
                      dirPath, pattern=pattern, ...),
                    Bowtie=.readAligned_Bowtie(dirPath, pattern, ...),
                    SOAP=.readAligned_SOAP(dirPath, pattern, ...),
-                   BAM=.readAligned_bam)
+                   BAM=.readAligned_bam(dirPath, pattern, ...))
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {
