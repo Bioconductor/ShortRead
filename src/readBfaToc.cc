@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <errno.h>
 #include <deque>
 #include <string>
 #include <R.h>

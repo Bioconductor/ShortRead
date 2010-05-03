@@ -3,6 +3,7 @@
    Authr: Simon Anders, EBI, sanders@fs.tum.de
 */
 
+#include <cerrno>
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>
