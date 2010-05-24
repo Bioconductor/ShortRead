@@ -59,8 +59,43 @@
 }
 
 \section{Objects from the Class}{
+
   Objects from the class are created using constructors (e.g.,
   \code{\link{NumericQuality}}) named after the class name.
+
+  Defined classes are as follows:
+  \describe{
+
+    \item{QualityScore}{Virtual base class; instances cannot be
+      instantiated.}
+
+    \item{NumericQuality}{A single numeric vector, where values
+      represent quality scores on an arbitrary scale.}
+
+    \item{IntegerQuality}{A integer numeric vector, where values
+      represent quality scores on an arbitrary scale.}
+
+    \item{MatrixQuality}{A rectangular matrix of quality scores, with
+      rows representing reads and columns cycles. The content and
+      interpretation of row and column entries is arbitrary; the
+      rectangular nature implies quality scores from equal-length
+      reads.}
+
+    \item{FastqQuality}{\sQuote{fastq} encoded quality scores stored in
+      a \code{BStringSet} instance. Base qualities of a single read are
+      represented as an ASCII character string. The integer-valued
+      quality score of a single base is encoded as its ASCII equivalent
+      plus 33. The precise definition of the integer-valued quality
+      score is unspecified, but is usually a Phred score; the meaning
+      can be determined from the source of the quality scores. Multiple
+      reads are stored as a \code{BStringSet}, and so can be of varying
+      lengths.}
+
+    \item{SolexaQuality}{As with \code{FastqQuality}, but with integer
+      qualities encoded as ASCII equivalent plus 64.}
+    
+  }
+
 }
 \section{Extends}{
   Class \code{"\linkS4class{.ShortReadBase}"}, directly.
