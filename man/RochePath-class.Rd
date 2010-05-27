@@ -89,33 +89,32 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
 \section{Methods}{
   \code{RochePath} has the following methods or functions defined:
   \describe{
+
     \item{readFasta}{\code{signature(dirPath = "character",
         pattern=character(), sample = 1,  ...)}:} 
+
     \item{readFasta}{\code{signature(dirPath = "RochePath",
-        pattern=".\\.fna$", sample = 1, run = 1, ...)}: 
+        pattern=".\\.fna$", sample = 1, run = 1, ...)}: Read sequences
+      from files matching \code{list.files(dirPath, pattern)} (when
+      \code{dirPath="character"}) or
+      \code{list.files(readPath(dir)[run], pattern)[sample]}. The
+      result is a \code{DNAStringSet}.}
 
-      Read sequences from files matching \code{list.files(dirPath,
-      pattern)} (when \code{dirPath="character"}) or
-      \code{list.files(readPath(dir)[run], pattern)}, retaining reads
-      corresponding to \code{sample}. The result is a
-      \code{DNAStringSet}.}
-
-    \item{readQual}{\code{signature(dirPath = "RochePath", reads=NULL, 
-        pattern="\\.qual$", sample=1, run=1, ...)}: 
-
-      Read quality scores from files matching
-      \code{list.files(qualPath(dirPath)[run])}, corresponding to
-      \code{sample}. Non-null \code{reads} is used as an (optional)
-      template for parsing quality scores. }
+    \item{readQual}{\code{signature(dirPath = "RochePath", reads=NULL,
+        pattern="\\.qual$", sample=1, run=1, ...)}: Read quality scores
+      from files matching
+      \code{list.files(qualPath(dirPath)[run])[sample]}. Non-null
+      \code{reads} is used as an (optional) template for parsing
+      quality scores. }
 
     \item{readFastaQual}{\code{signature(dirPath = "RochePath",
-      fastaPattern = "\\.fna$", qualPattern = "\\.qual$", sample = 1,
-      run = 1)}: read
-      sequences and quality scores into a
-      \code{\linkS4class{ShortReadQ}}.}
+        fastaPattern = "\\.fna$", qualPattern = "\\.qual$", sample = 1,
+        run = 1)}: read sequences and quality scores into a
+      \code{\linkS4class{ShortReadQ}} instance.}
+
     \item{readFastaQual}{\code{signature(dirPath = "character",
-      fastaPattern = "\\.fna$", qualPattern = "\\.qual$", sample = 1,
-      run = 1)}: wrapper for method above, coercing \code{dirPath}
+        fastaPattern = "\\.fna$", qualPattern = "\\.qual$", sample = 1,
+        run = 1)}: wrapper for method above, coercing \code{dirPath}
       to a \code{RochePath} via \code{RochePath(dirPath)}.}
 
     \item{readBaseQuality}{\code{signature(dirPath = "RochePath", ...)}:
@@ -124,11 +123,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
       \code{RochePath} supports more file types.
     }
     
-    \item{read454}{
-      \code{signature(dirPath = "RochePath", ...)}:
-      Currently just a wrapper that passes its arguments on to a call to
-      \code{readFastaQual}, documented above.
-    }
+    \item{read454}{ \code{signature(dirPath = "RochePath", ...)}: Pass
+      arguments on to \code{readFastaQual}, documented above.  }
     
     \item{readPath}{\code{signature(object = "RochePath")}: return the
       contents of the \code{readPath} slot.}
