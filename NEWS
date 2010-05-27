@@ -11,6 +11,9 @@ BUG FIXES
     'filtered' labels on all elements of SolexaExportQA. Thanks
     Nicolas Delhomme for the report.
 
+    o report() failed when each read was unique. Thanks Peng Yu for
+    the report.
+
 CHANGES IN VERSION 1.5
 ----------------------
 

@@ -83,7 +83,7 @@
         nOccur <- tapply(nOccurrences, lane, c)
         cumulative <- tapply(nOccurrences*nReads, lane, function(elt) {
             cs <- cumsum(elt)
-            (cs-cs[1] + 1) / diff(range(cs))
+            (cs-cs[1] + 1) / max(1, diff(range(cs)))
         })
         lane <- tapply(lane, lane, c)
         data.frame(nOccurrences=unlist(nOccur),
@@ -95,7 +95,12 @@
                "Number of occurrences of each read (",
                log[10], ")", sep="")),
            ylab="Cumulative proportion of reads",
-           aspect=2, type="l", ...)
+           aspect=2, panel=function(x, y, ..., type) {
+               type <-
+                   if (1L == length(x)) "p"
+                   else "l"
+               panel.xyplot(x, y, ..., type=type)
+           }, ...)
 }
 .freqSequences <- function(qa, read, n=20)
 {
