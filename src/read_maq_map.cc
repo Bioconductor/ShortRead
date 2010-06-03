@@ -19,7 +19,7 @@
 
 template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
 /* Reads in the Maq map file with the given filename. If maxreads == -1, the whole file
-   is read, otherwise at most the specified number of reads. The fucntion returns a list 
+   is read, otherwise at most the specified number of reads. The function returns a list 
    (i.e., a VECSXP) with the elements listed below in eltnames, which correspond to the 
    columns of maq mapview. */
 {

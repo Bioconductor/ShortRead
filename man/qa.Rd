@@ -77,7 +77,10 @@ qa(dirPath, ...)
 }
 
 \value{
-  An object derived from class \code{\linkS4class{.QA}}
+
+  An object derived from class \code{\linkS4class{.QA}}. Values
+  contained in this object are meant for use by \code{\link{report}}
+
 }
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}

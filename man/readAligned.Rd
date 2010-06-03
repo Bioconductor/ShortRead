@@ -216,7 +216,6 @@ readAligned(dirPath, pattern=character(0), ...)
       manual, specifically
 
       \preformatted{
-
         ...each line consists of read name, chromosome, position,
         strand, insert size from the outer coordinates of a pair,
         paired flag, mapping quality, single-end mapping quality,
@@ -225,7 +224,6 @@ readAligned(dirPath, pattern=character(0), ...)
         hit, number of 0-mismatch hits of the first 24bp, number
         of 1-mismatch hits of the first 24bp on the reference,
         length of the read, read sequence and its quality.
-
       }
 
       The read name, read sequence, and quality are read as
