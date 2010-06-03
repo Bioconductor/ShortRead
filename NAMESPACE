@@ -19,8 +19,8 @@ importFrom(IRanges, append, coverage, narrow, score, start, Views,
 
 importFrom(GenomicRanges, strand)
 
-importFrom(Biostrings, BStringSet, DNAStringSet, compact,
-           alphabetFrequency, alphabet, DNA_ALPHABET,
+importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
+           compact, alphabetFrequency, alphabet, DNA_ALPHABET,
            quality, pairwiseAlignment, pattern,
            trimLRPatterns, unaligned)
 

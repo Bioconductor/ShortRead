@@ -221,9 +221,10 @@ const char *
 _get_lookup(const char *baseclass)
 {
 	ENCODE_FUNC encode = encoder(baseclass);
-	SEXP cls = PROTECT(eval(lang1(install(baseclass)), R_GlobalEnv));
+	SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
+	SEXP cls = PROTECT(eval(lang1(install(baseclass)), nmspc));
 	SEXP l = PROTECT(lang2(install("alphabet"), cls));
-	SEXP alf = PROTECT(eval(l, R_GlobalEnv));
+	SEXP alf = PROTECT(eval(l, nmspc));
 
 	char *lkup = (char *) R_alloc(256, sizeof(char));
 	int i;
@@ -236,14 +237,14 @@ _get_lookup(const char *baseclass)
 			lkup[(int) c] = encode(c);
 		}
 		l = PROTECT(lang2(install("tolower"), alf));
-		alf = PROTECT(eval(l, R_GlobalEnv));
+		alf = PROTECT(eval(l, nmspc));
 		for (i = 0; i < LENGTH(alf); ++i) {
 			char c = CHAR(STRING_ELT(alf, i))[0];
 			lkup[(int) c] = encode(c);
 		}
 		UNPROTECT(2);
 	}
-	UNPROTECT(3);
+	UNPROTECT(4);
 	return lkup;
 }
 
@@ -254,8 +255,9 @@ _get_appender(const char *baseclass)
 	sprintf(class, "%sSet", baseclass);
 	SEXP l = PROTECT(lang3(install("selectMethod"), install("c"), 
 						   mkString(class)));
-	SEXP appender = eval(l, R_GlobalEnv);
-	UNPROTECT(1);
+	SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
+	SEXP appender = eval(l, nmspc);
+	UNPROTECT(2);
 	return appender;
 }
 
@@ -268,6 +270,7 @@ _XSnap_to_XStringSet(_XSnap snap)
 
 	/* concatenate */
 	SEXP appender = PROTECT(_get_appender(buffer->baseclass));
+	SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
 	int n = LENGTH(xstringset);
 	while (n > 1) {
 		SEXP res;
@@ -276,7 +279,7 @@ _XSnap_to_XStringSet(_XSnap snap)
 			if (i != n - 1) {
 				SEXP l = lang3(appender, VECTOR_ELT(xstringset, i),
 							   VECTOR_ELT(xstringset, i + 1));
-				res = eval(l, R_GlobalEnv);
+				res = eval(l, nmspc);
 				SET_VECTOR_ELT(xstringset, i + 1, R_NilValue);
 			} else {
 				res = VECTOR_ELT(xstringset, i);
@@ -287,7 +290,7 @@ _XSnap_to_XStringSet(_XSnap snap)
 		n = i / 2;
 	}
 	
-	UNPROTECT(2);
+	UNPROTECT(3);
 	return VECTOR_ELT(xstringset, 0);
 }
 
