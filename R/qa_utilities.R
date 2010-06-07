@@ -92,7 +92,7 @@
     })
     xyplot(cumulative~log10(nOccurrences)|factor(lane), df,
            xlab=expression(paste(
-               "Number of occurrences of each read (",
+               "Number of occurrences of each sequence (",
                log[10], ")", sep="")),
            ylab="Cumulative proportion of reads",
            aspect=2, panel=function(x, y, ..., type) {
