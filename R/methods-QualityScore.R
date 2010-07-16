@@ -216,9 +216,9 @@ setMethod(show, "FastqQuality", function(object) {
 })
 
 .FastqQuality_af <-
-    function(x, as.prob=FALSE, freq=FALSE, ...) 
+    function(x, as.prob=FALSE, ...) 
 {
-    res <- callGeneric(quality(x), as.prob=as.prob, freq=freq, ...)
+    res <- callGeneric(quality(x), as.prob=as.prob, ...)
     if (is(res, "matrix")) {
         res <- res[,1+32:125, drop=FALSE]
         colnames(res) <- alphabet(x)
