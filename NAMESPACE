@@ -29,7 +29,7 @@ importFrom(hwriter, hwrite, hwriteImage)
 importFrom(Rsamtools, scanBam, ScanBamParam, bamSimpleCigar,
            bamReverseComplement, bamWhat)
 
-exportClassPattern("^[^\\.]")
+exportClassPattern("^.*$")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
               alphabet, coverage, narrow, strand, trimLRPatterns,
