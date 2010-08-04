@@ -178,7 +178,7 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   determines how reads with more than \code{max} reads are
   treated. \code{head} selects the first \code{max} reads of each set of
   duplicates, \code{tail} the last \code{max} reads, and \code{sample} a
-  random sample of \code{max} reads. \code{node} removes all reads
+  random sample of \code{max} reads. \code{none} removes all reads
   represented more than \code{max} times. The user can also provide a
   function (as used by \code{\link{tapply}}) of a single argument to
   select amongst reads.
