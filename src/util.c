@@ -322,16 +322,6 @@ _reverseComplement(char *linebuf)
 }
 
 /*
- * Convert roSeq to named XStringSet
- */
-SEXP
-_CharAEAE_to_XStringSet(CharAEAE* aeae, const char *clsName)
-{
-    RoSeqs roSeqs = new_RoSeqs_from_CharAEAE(aeae);
-    return new_XStringSet_from_RoSeqs(clsName, &roSeqs);
-}
-
-/*
  * Chenge vector class and attribute to represent factor
  */
 void

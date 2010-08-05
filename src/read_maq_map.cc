@@ -31,7 +31,6 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
     CharAEAE readid, readseq, fastq;
     int i, actnreads, j;
     maqmap1_T<max_readlen> read;
-    RoSeqs roSeqs;
 
     static const char *eltnames[] = {
         "chromosome", "position", "strand", "alignQuality",
@@ -147,12 +146,12 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
     SET_VECTOR_ELT( df, 6, errsum );
     SET_VECTOR_ELT( df, 7, nhits0 );
     SET_VECTOR_ELT( df, 8, nhits1 );
-    roSeqs = new_RoSeqs_from_CharAEAE( &readid );
-    SET_VECTOR_ELT( df, 9, new_XStringSet_from_RoSeqs( "BString",   &roSeqs ) );
-    roSeqs = new_RoSeqs_from_CharAEAE( &readseq );
-    SET_VECTOR_ELT( df, 10, new_XStringSet_from_RoSeqs( "DNAString", &roSeqs ) );
-    roSeqs = new_RoSeqs_from_CharAEAE( &fastq );
-    SET_VECTOR_ELT( df, 11, new_XStringSet_from_RoSeqs( "BString",   &roSeqs ) );
+    SET_VECTOR_ELT( df, 9, new_XRawList_from_CharAEAE( "BStringSet",
+					"BString", &readid, R_NilValue ) );
+    SET_VECTOR_ELT( df, 10, new_XRawList_from_CharAEAE( "DNAStringSet",
+					"DNAString", &readseq, R_NilValue ) );
+    SET_VECTOR_ELT( df, 11, new_XRawList_from_CharAEAE( "BStringSet",
+					"BString", &fastq, R_NilValue ) );
 
     setAttrib( seq, install( "levels" ), seqnames );
     PROTECT( klass = allocVector( STRSXP, 1 ) );

@@ -35,7 +35,6 @@ int _linebuf_skip_p(char*, gzFile*, const char*, int, const char*);
 
 int _rtrim(char *linebuf);
 void _solexa_to_IUPAC(char *linebuf);
-SEXP _CharAEAE_to_XStringSet(CharAEAE* aeae, const char *clsName);
 void _as_factor_SEXP(SEXP vec, SEXP lvls);
 void _as_factor(SEXP vec, const char **levels, const int n_lvls);
 int _count_lines_sum(SEXP files);
