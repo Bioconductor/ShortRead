@@ -27,9 +27,10 @@
 \alias{compact,ShortRead-method}
 \alias{detail,ShortRead-method}
 \alias{id,ShortRead-method}
-\alias{length,ShortRead-method}
-\alias{show,ShortRead-method}
 \alias{width,ShortRead-method}
+\alias{length,ShortRead-method}
+\alias{writeFasta,ShortRead-method}
+\alias{show,ShortRead-method}
 
 \title{"ShortRead" class for short reads}
 
@@ -42,8 +43,8 @@
 
 \section{Objects from the Class}{
 
-  Objects from this class are created by \code{readFasta}, or by calls
-  to the constructor \code{ShortRead}, as outlined below.
+  Objects from this class are created by \code{readFasta}, or by
+  calls to the constructor \code{ShortRead}, as outlined below.
 
 }
 \section{Slots}{
@@ -160,6 +161,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{detail}{\code{signature(object = "ShortRead")}: provides a
       more extensive summary of this object, displaying the first and
       last entries of \code{sread} and \code{id}.}
+    
+    \item{writeFasta}{\code{signature(object, file, ...)}: write
+      \code{object} to \code{file} in fasta format. See
+      \code{\link{writeFASTA}} for \code{...} argument values.}
+
   }
 }
 \author{Martin Morgan}

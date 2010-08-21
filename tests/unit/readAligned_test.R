@@ -84,9 +84,9 @@ test_readAligned_bam_which <- function()
                 class(aln))
     checkTrue(validObject(aln))
 
-    checkEquals(2396L, length(aln))
+    checkEquals(2397L, length(aln))
 
-    exp <- structure(c(4L, 24L, 2075L, 205L, 88L), .Dim = 5L,
+    exp <- structure(c(4L, 24L, 2076L, 205L, 88L), .Dim = 5L,
                      .Dimnames = structure(list( c("33", "34", "35",
                      "36", "40")), .Names = ""), class = "table")
     checkIdentical(exp, table(width(aln)))

@@ -47,6 +47,14 @@ setMethod(readIntensities, "SolexaPath", .readIntensities_SolexaPath)
 
 setMethod(readPrb, "SolexaPath", .readPrb_SolexaPath)
 
+
+setMethod(readFasta, "SolexaPath",
+    function(dirPath, pattern=character(0), ..., nrec=-1L, skip=0L)
+{
+    callGeneric(dirPath=analysisPath(dirPath),
+                pattern=pattern, ..., nrec=nrec, skip=skip)
+})
+
 .readFastq_SolexaPath <- function(dirPath, 
                                   pattern=".*_sequence.txt$",
                                   run, ...,

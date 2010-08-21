@@ -44,17 +44,26 @@ setMethod(pairwiseAlignment, "ShortRead",
             pairwiseAlignment(sread(pattern), subject, ...)
           })
 
-## import
+## import / export
 
 setMethod(readFasta, "character",
-    function(dirPath, pattern=character(), sample = 1, ...) 
+          function(dirPath, pattern=character(0), ...,
+                   nrec=-1L, skip=0L)
 {
-    src <- .file_names(dirPath, pattern)[sample]
-    FASTAlist <- lapply(src, read.DNAStringSet, format="fasta")
+    src <- .file_names(dirPath, pattern)
+    FASTAlist <- lapply(src, read.DNAStringSet, nrec=nrec, skip=skip)
     fasta <- do.call(c, FASTAlist)
     new("ShortRead", ...,
         sread=DNAStringSet(fasta, use.names=FALSE),
         id=BStringSet(names(fasta)))
+})
+
+setMethod(writeFasta, "ShortRead",
+          function(object, file, ...)
+{
+    dna <- sread(object)
+    names(dna) <- id(object)
+    write.XStringSet(dna, file=file, ...)
 })
 
 ## subset

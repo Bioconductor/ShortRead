@@ -5,8 +5,6 @@
 \alias{read454,RochePath-method}
 \alias{readFastaQual,RochePath-method}
 \alias{readFastaQual,character-method}
-\alias{readFasta}
-\alias{readFasta,character-method}
 \alias{readFasta,RochePath-method}
 \alias{readPath}
 \alias{readQual}
@@ -89,9 +87,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
 \section{Methods}{
   \code{RochePath} has the following methods or functions defined:
   \describe{
-
-    \item{readFasta}{\code{signature(dirPath = "character",
-        pattern=character(), sample = 1,  ...)}:} 
 
     \item{readFasta}{\code{signature(dirPath = "RochePath",
         pattern=".\\.fna$", sample = 1, run = 1, ...)}: Read sequences

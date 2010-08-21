@@ -34,10 +34,10 @@ writeFastq(object, file, mode="w", ...)
 
   \item{dirPath}{A character vector (or other object; see methods
     defined on this generic) giving the directory path (relative or
-    absolute) of FASTQ files to be read.}
+    absolute) or single file name of FASTQ files to be read.}
 
   \item{pattern}{The (\code{\link{grep}}-style) pattern describing file
-    names to be read. The default (\code{character(0)}) results in line
+    names to be read. The default (\code{character(0)}) results in
     (attempted) input of all files in the directory.}
 
   \item{object}{An object to be output in \code{fastq} format. For

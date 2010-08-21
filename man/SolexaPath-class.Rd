@@ -13,6 +13,7 @@
 \alias{readIntensities,SolexaPath-method}
 \alias{readPrb,SolexaPath-method}
 \alias{readQseq,SolexaPath-method}
+\alias{readFasta,SolexaPath-method}
 \alias{readFastq,SolexaPath-method}
 \alias{readBaseQuality,SolexaPath-method}
 \alias{readAligned,SolexaPath-method}
@@ -105,17 +106,26 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
 
     }
 
+    \item{readFasta}{
+
+      \code{signature(dirPath, pattern = character(0), ...,
+        nrec=-1L, skip=0L)}:
+
+      Use \code{analysisPath(dirPath)[run]} as the directory path(s) for
+      discovering fasta-formatted files, returning a
+      \code{\linkS4class{ShortRead}} object. The default method reads
+      \emph{all} files into a single object.}
+
     \item{readFastq}{
 
       \code{signature(dirPath = "SolexaPath", pattern = ".*_sequence.txt",
 		run, ..., qualityType="SFastqQuality")}:
 
       Use \code{analysisPath(dirPath)[run]} as the directory path(s) and
-      \code{pattern=".*_sequence.txt"} as the pattern for
-      discovering fastq-formatted files, returning a
-      \code{\linkS4class{ShortReadQ}} object. Note that the default
-      method reads \emph{all} sequence files into a single object; often
-      one will want to specify a pattern for each lane. }
+      \code{pattern=".*_sequence.txt"} as the pattern for discovering
+      fastq-formatted files, returning a \code{\linkS4class{ShortReadQ}}
+      object. The default method reads \emph{all} sequence files into a
+      single object.}
 
     \item{readBaseQuality}{
       \code{signature(dirPath = "SolexaPath", seqPattern = ".*_seq.txt", prbPattern = "s_[1-8]_prb.txt", run, ...)}: 

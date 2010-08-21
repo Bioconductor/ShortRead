@@ -16,12 +16,13 @@ RochePath <- function(experimentPath=NA_character_,
 .readFasta_RochePath <- function(dirPath,
                                  pattern = "\\.fna$",
                                  sample = 1,
-                                 run = 1, ...) {
-  dirPath <- readPath(dirPath)[run]
-  if (is.na(dirPath))
+                                 run = 1, ...,
+                                 nrec=-1L, skip=0L) {
+  dirPath <- .file_names(readPath(dirPath)[run], pattern)[sample]
+  if (any(is.na(dirPath)))
     .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                    "readPath", "dirPath"))
-  callGeneric(dirPath, ..., pattern = pattern, sample = sample)
+  callGeneric(dirPath, ..., nrec=nrec, skip=skip)
 }
 
 setMethod(readFasta, "RochePath", .readFasta_RochePath)
@@ -31,11 +32,11 @@ setMethod(readFasta, "RochePath", .readFasta_RochePath)
                                 pattern = "\\.qual$",
                                 sample = 1,
                                 run = 1, ...) {
-  dirPath <- qualPath(dirPath)[run]
-  if (is.na(dirPath))
+  dirPath <- .file_names(qualPath(dirPath)[run], pattern)[sample]
+  if (any(is.na(dirPath)))
     .throw(SRError("Input/Output", "'%s' is 'NA' in '%s'",
                    "qualPath", "dirPath"))
-  callGeneric(dirPath, ..., reads = reads, pattern = pattern, sample = sample)
+  callGeneric(dirPath, ..., reads = reads)
 }
 
 setMethod(readQual, "RochePath", .readQual_RochePath)

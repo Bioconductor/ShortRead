@@ -77,6 +77,10 @@ setGeneric("readPrb", function(dirPath, pattern=character(0), ...)
 setGeneric("ShortRead", function(sread, id, ...)
            standardGeneric("ShortRead"))
 
+setGeneric("writeFasta", function(object, file, ...)
+           standardGeneric("writeFasta"),
+           signature=signature("object"))
+
 setGeneric("ShortReadQ", function(sread, quality, id, ...)
            standardGeneric("ShortReadQ"))
 
@@ -87,8 +91,10 @@ setGeneric("writeFastq", function(object, file, mode="w", ...)
            standardGeneric("writeFastq"), signature="object")
 
 setGeneric("readFasta",
-           function(dirPath, pattern=character(0), ...)
-           standardGeneric("readFasta"))
+           function(dirPath, pattern=character(0), ...,
+                    nrec=-1L, skip=0L)
+           standardGeneric("readFasta"),
+           signature="dirPath")
 
 setGeneric("readQual",
            function(dirPath, pattern=character(0), ...)
