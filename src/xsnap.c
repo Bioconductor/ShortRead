@@ -206,14 +206,17 @@ _APPEND_XSNAP(_XSnap snap, const char *str)
 SEXP
 _to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass)
 {
-	int seq_width = LENGTH(seq);
+	char classname[40];  /* longest string should be "DNAStringSet" */
 
-	SEXP ptr = PROTECT(new_SharedVector("SharedRaw", seq));
-	SEXP xstring = PROTECT(new_XVector(baseclass, ptr, 0, seq_width));
+	if (snprintf(classname, sizeof(classname), "%sSet", baseclass)
+	    >= sizeof(classname))
+		error("ShortRead internal error in _to_XStringSet(): "
+		      "'classname' buffer too small");
 	SEXP irange = 
 		PROTECT(new_IRanges("IRanges", start, width, R_NilValue));
-	SEXP xstringset = new_XStringSet(NULL, xstring, irange);
-	UNPROTECT(3);
+	SEXP xstringset =
+		new_XRawList_from_tag(classname, baseclass, seq, irange);
+	UNPROTECT(1);
 	return xstringset;
 }
 
