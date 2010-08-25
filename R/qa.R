@@ -10,14 +10,14 @@
                                 conditionMessage(err)))
              })
     switch(type,
-           SolexaExport=.qa_SolexaExport(dirPath, pattern,
-             type="SolexaExport", ...),
+           SolexaExport=.qa_SolexaExport(dirPath, pattern, type=type,
+             ...),
            SolexaRealign=.qa_SolexaRealign(dirPath, pattern,
-             type="SolexaRealign", ...),
-           Bowtie=.qa_Bowtie(dirPath, pattern, type="Bowtie", ...),
+             type=type, ...),
+           Bowtie=.qa_Bowtie(dirPath, pattern, type=type, ...),
            MAQMap=.qa_MAQMap(dirPath, pattern, type=type, ...),
            MAQMapShort=.qa_MAQMap(dirPath, pattern, type=type, ...),
-           fastq=.qa_fastq(dirPath, pattern, type="fastq", ...))
+           fastq=.qa_fastq(dirPath, pattern, type=type, ...))
 }
 
 setMethod(qa, "character", .qa_character)
