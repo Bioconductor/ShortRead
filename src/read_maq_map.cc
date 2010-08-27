@@ -32,6 +32,8 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
     int i, actnreads, j;
     maqmap1_T<max_readlen> read;
 
+    char enc[] = { DNAencode('A'), DNAencode('C'), DNAencode('G'),
+                   DNAencode('T'), DNAencode('N') };
     static const char *eltnames[] = {
         "chromosome", "position", "strand", "alignQuality",
         "nMismatchBestHit", "nMismatchBestHit24", "mismatchQuality",
@@ -109,12 +111,12 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
       
         /* Build the read sequence and the FASTQ quality string */
         if( read.size > max_readlen )
-	   error( "Read with illegal size encountered." );
+          error( "Read with illegal size encountered." );
         for (j = 0; j < read.size; j++) {
             if (read.seq[j] == 0)
-                readseqbuf[j] = 'N';
+              readseqbuf[j] = enc[ 4 ];
             else 
-                readseqbuf[j] = "ACGT"[ read.seq[j] >> 6 & 0x03 ];
+              readseqbuf[j] = enc[ read.seq[j] >> 6 & 0x03 ];
             fastqbuf[j] = ( read.seq[j] & 0x3f ) + 33;   
         }
         readseqbuf[ read.size ] = 0;
