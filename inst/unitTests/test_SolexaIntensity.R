@@ -37,7 +37,8 @@ test_SolexaIntensity_io <- function()
 
 test_IparIntensity_io <- function()
 {
-    int <- readIntensities("./cases", type="IparIntensity",
+    src <- system.file("unitTests","cases",package="ShortRead") 
+    int <- readIntensities(src, type="IparIntensity",
                            intExtension="_int_head.txt.p",
                            nseExtension="_nse_head.txt.p",
                            posExtension="_pos_head.txt")

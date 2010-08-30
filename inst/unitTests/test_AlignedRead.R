@@ -37,8 +37,9 @@ test_AlignedRead_Bowtie <- function() {
 
 test_AlignedRead_SOAP <- function() {
     fl <- "soap.txt"
-    tbl <- read.table(file.path("./cases", fl), fill=TRUE)
-    aln <- readAligned("./cases", fl, "SOAP")
+    src <- system.file("unitTests", "cases", package="ShortRead")
+    tbl <- read.table(file.path(src, fl), fill=TRUE)
+    aln <- readAligned(src, fl, "SOAP")
     checkTrue(validObject(aln))
     checkIdentical(as.character(tbl[[1]]), as.character(id(aln)))
     strand <- as.character(strand(aln))
@@ -92,7 +93,8 @@ test_AlignedRead_readAligned_SolexaExport_filter <- function()
 }
 
 test_AlignedRead_readAligned_SolexaExport_withWhat <- function() {
-    aln <- readAligned("./cases", "PE_export.txt.gz",
+    src <- system.file("unitTests", "cases", package="ShortRead")
+    aln <- readAligned(src, "PE_export.txt.gz",
                        type="SolexaExport", withAll=TRUE)
     checkIdentical(400L, length(aln))
     e0 <- c("HWUSI-EAS618_1:1:1:0:1122#AGCACGA/1",
@@ -114,7 +116,7 @@ test_AlignedRead_readAligned_SolexaExport_withWhat <- function() {
                       "TTCCCTT")), .Names = ""), class = "table")
     checkIdentical(e1, table(alignData(aln)[["multiplexIndex"]]))
 
-    aln0 <- readAligned("./cases", "PE_export.txt.gz",
+    aln0 <- readAligned(src, "PE_export.txt.gz",
                         type="SolexaExport",
                         withId=TRUE, withMultiplexIndex=TRUE)
     checkIdentical(sub("/1$", "", as.character(id(aln))),
@@ -172,7 +174,8 @@ readAligned_maq_consistent <- function() {
 
 test_AlignedRead_readAligned_run_as_factor <- function()
 {
-    aln <- readAligned("./cases", "^s_2_export_run_as_factor.txt$",
+    src <- system.file("unitTests", "cases", package="ShortRead")
+    aln <- readAligned(src, "^s_2_export_run_as_factor.txt$",
                        "SolexaExport")
     checkIdentical(alignData(aln)[["run"]],
                    factor(rep("genome", length(aln))))
@@ -182,8 +185,9 @@ test_AlignedRead_readAligned_realign_targetpos <- function()
 {
     ## column 4 can be target:pos
     fl <- "s_2_0001_realign_head.txt"
-    tbl <- read.table(file.path("./cases", fl), fill=TRUE)
-    aln <- readAligned("./cases", fl, "SolexaRealign")
+    src <- system.file("unitTests", "cases", package="ShortRead")
+    tbl <- read.table(file.path(src, fl), fill=TRUE)
+    aln <- readAligned(src, fl, "SolexaRealign")
     checkIdentical(as.character(tbl[[1]]), as.character(sread(aln)))
     checkIdentical(tbl[[2]], quality(alignQuality(aln)))
     checkIdentical(tbl[[3]], alignData(aln)[["nMatch"]])
@@ -199,8 +203,9 @@ test_AlignedRead_readAligned_realign_threecol <- function()
 {
     ## column 4 can be target:pos
     fl <- "s_2_0001_realign_3col_head.txt"
-    tbl <- read.table(file.path("./cases", fl), fill=TRUE)
-    aln <- readAligned("./cases", fl, "SolexaRealign")
+    src <- system.file("unitTests", "cases", package="ShortRead")
+    tbl <- read.table(file.path(src, fl), fill=TRUE)
+    aln <- readAligned(src, fl, "SolexaRealign")
     checkIdentical(as.character(tbl[[1]]), as.character(sread(aln)))
     checkIdentical(tbl[[2]], quality(alignQuality(aln)))
     checkIdentical(tbl[[3]], alignData(aln)[["nMatch"]])
@@ -215,9 +220,10 @@ test_AlignedRead_readAligned_realign_threecol <- function()
 test_AlignedRead_readAligned_SolexaResult <- function()
 {
     fl <- "s_1_results_head.txt"
-    tbl <- read.table(file.path("./cases", fl), fill=TRUE,
+    src <- system.file("unitTests", "cases", package="ShortRead")
+    tbl <- read.table(file.path(src, fl), fill=TRUE,
                       col.names=paste("V", 1:12, sep=""))
-    aln <- readAligned("./cases", fl, "SolexaResult")
+    aln <- readAligned(src, fl, "SolexaResult")
     
     checkIdentical(as.character(tbl[[2]]), as.character(sread(aln)))
     chr <- tbl[[7]]

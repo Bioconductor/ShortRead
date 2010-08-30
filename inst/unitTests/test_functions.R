@@ -2,11 +2,12 @@
 
 test_readFastq_autoDetectType <- function() 
 {
-    srq <- readFastq(file.path("cases", "sanger.fastq"))
+    src <- system.file("unitTests","cases", package="ShortRead")
+    srq <- readFastq(file.path(src, "sanger.fastq"))
     checkTrue(class(quality(srq)) == "FastqQuality")
-    srq <- readFastq(file.path("cases", "solexa.fastq"))
+    srq <- readFastq(file.path(src, "solexa.fastq"))
     checkTrue(class(quality(srq)) == "SFastqQuality")
-    srq <- readFastq(file.path("cases", "solexa.fastq"),
+    srq <- readFastq(file.path(src, "solexa.fastq"),
                      qualityType="FastqQuality")
     checkTrue(class(quality(srq)) == "FastqQuality")
 }

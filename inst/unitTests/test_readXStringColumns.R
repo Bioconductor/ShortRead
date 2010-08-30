@@ -1,5 +1,6 @@
 test_readXStringColumns_toIUPAC <- function() {
-    fl <- file.path("cases/s_2_export_toIUPAC.txt")
+    src <- system.file("unitTests", "cases", package="ShortRead") 
+    fl <- file.path(src, "s_2_export_toIUPAC.txt")
 
     colClasses <- rep(list(NULL), 22)
     colClasses[9:10] <- c(sread="DNAString", quality="BString")
@@ -22,7 +23,7 @@ test_readXStringColumns_skip_nrows <- function()
     colClasses[[2]] <- "DNAString"
 
     ## single file
-    dir <- "cases"; fl <- "s_1_results_head.txt"
+    dir <- system.file("unitTests", "cases", package="ShortRead"); fl <- "s_1_results_head.txt"
     check <- function(dir, fl, skip, nrows) {
         pth <- file.path(dir, fl)
         exp <- DNAStringSet(scan(pth, what, nmax=nrows, skip=skip,
@@ -38,7 +39,7 @@ test_readXStringColumns_skip_nrows <- function()
     check(dir, fl, 100L, 100L)
 
     ## multiple files
-    dir <- "cases"; pattern <- "s_1_results_head.*txt"
+    dir <- system.file("unitTests", "cases", package="ShortRead"); pattern <- "s_1_results_head.*txt"
     mcheck <- function(dir, pattern, skip=0L, nrows=-1L) {
         fls <- list.files(dir, pattern, full=TRUE)
         exp <- vector("list",length(fls))
