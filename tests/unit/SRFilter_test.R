@@ -68,18 +68,18 @@ test_occurrenceFilter <- function()
                            occurrenceFilter(withSread=TRUE)(aln))
         })
     checkIdentical(980L, sum(occurrenceFilter(withSread=NA)(aln)))
-    checkIdentical(1533L, sum(occurrenceFilter(withSread=TRUE)(aln)))
+    checkIdentical(996L, sum(occurrenceFilter(withSread=TRUE)(aln)))
     df <- data.frame(chromosome(aln), position(aln), strand(aln))
     checkIdentical(sum(!duplicated(df)),
                    sum(occurrenceFilter(withSread=FALSE)(aln)))
 
-    checkIdentical(26L,
+    checkIdentical(15L,
                    sum(occurrenceFilter(min=5, max=10, withSread=NA)(aln)))
 
-    checkIdentical(35L,
+    checkIdentical(13L,
                    sum(occurrenceFilter(min=3, max=5, withSread=NA)(aln)))
 
-    checkIdentical(20L,
+    checkIdentical(8L,
                    sum(occurrenceFilter(min=3, max=5,
                                         duplicates="none",
                                         withSread=NA)(aln)))
