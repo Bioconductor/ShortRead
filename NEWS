@@ -21,6 +21,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o levels(strand(aln)) is c("+", "-", "*") (was c("-", "+", "*"))
 
+    o Add USE.NAMES argument to srapply, minimum length to (internal)
+    function ..reduce.
+
 NEW FEATURES
 
     o Optionally retrieve multiplex bar code, paired read number, and

@@ -12,7 +12,8 @@
 }
 
 \usage{
-srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(), verbose = FALSE)
+srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(),
+        USE.NAMES = FALSE, verbose = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -39,6 +40,10 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(), verbose = FALSE)
     \code{fapply} and summarizing this. The default reports errors in
     function evaluation as warnings, returning the remaining values as
     elements of a list. See details below for additional hints.}
+
+  \item{USE.NAMES}{If \code{TRUE} and if \code{X} is character,
+    use \code{X} as \code{names} for the result unless it had names
+    already.}
 
   \item{verbose}{Report whether evaluation is local or mpi-based; also
     forwarded to \code{FUN}, allowing detailed reports from remote

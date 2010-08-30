@@ -71,7 +71,8 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
 {
     if (verbose)
         message("qa 'fastq' pattern:", pattern)
-    qa(readFastq(dirPath, pattern, ...), pattern, verbose=verbose)
+    fq <-readFastq(dirPath, pattern, ...)
+    qa(fq, pattern, verbose=verbose)
 }
 
 .qa_fastq <-
@@ -79,9 +80,10 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
              verbose=FALSE) 
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_fastq_lane,
-                   dirPath=dirPath, type=type, ...,
-                   verbose=verbose)
+    lst <-
+        srapply(basename(fls), .qa_fastq_lane,
+                dirPath=dirPath, type=type, ...,
+                reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
     lst <- do.call(rbind, lst)
     .FastqQA(.srlist(lst))              # re-cast
 }

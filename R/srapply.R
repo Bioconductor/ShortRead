@@ -59,7 +59,7 @@
     }
 }
 
-.reduce <- function() {
+.reduce <- function(.minimum_length=0L) {
     function(lst, ...) {
         errs <- sapply(lst, is, "SRError")
         if (any(errs)) {
@@ -78,12 +78,19 @@
                           msg))
             lst <- lst[!errs]
         }
+        if (.minimum_length > length(lst))
+            .throw(SRError("ValueUnavailable",
+                           "%d elements returned; expected >=%d",
+                           length(lst), .minimum_length))
         lst
     }
 }
 
 srapply <- function(X, FUN, ...,
-                    fapply=.fapply(), reduce=.reduce(), verbose=FALSE) {
+                    fapply=.fapply(), reduce=.reduce(),
+                    USE.NAMES=FALSE, verbose=FALSE) {
     result <- fapply(X, FUN, ..., verbose=verbose)
+    if (USE.NAMES && is.character(X) && is.null(names(result)))
+        names(result) <- X
     reduce(result)
 }

@@ -77,11 +77,9 @@
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_MAQMap_lane,
                    dirPath=dirPath, type=type, ...,
-                   verbose=verbose)
-    names(lst) <- basename(fls)
+                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
     bind <- function(lst, elt)
-        do.call(rbind,
-                subListExtract(lst, elt, keep.names=FALSE))
+        do.call(rbind, subListExtract(lst, elt, keep.names=FALSE))
     lst <-
         list(readCounts=bind(lst, "readCounts"),
              baseCalls=bind(lst, "baseCalls"),

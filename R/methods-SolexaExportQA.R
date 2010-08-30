@@ -166,8 +166,7 @@
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_SolexaExport_lane,
                    dirPath=dirPath, type=type, ...,
-                   verbose=verbose)
-    names(lst) <- basename(fls)
+                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
 
     ## collapse into data frames
     bind <- function(lst, elt)

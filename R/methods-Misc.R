@@ -93,7 +93,8 @@ setMethod(srduplicated, "XStringSet", function(x, ...) {
     strings <- lapply(subject, DNAString)
     res <- srapply(strings, .srdistance, pattern=pattern,
                    distanceFunc=.srdistanceDNA, ...)
-    names(res) <- subject
+    if (length(res) == length(subject))
+        names(res) <- subject
     res
 }
 
