@@ -61,26 +61,33 @@ setMethod(readFastq, "character",
                                 conditionMessage(err)))
              })
     src <- .file_names(dirPath, pattern)
-    elts <- .Call(.read_solexa_fastq, src, withIds)
-    qualityFunc <-
-        switch(qualityType,
-               Auto={
-                   alf <- alphabetFrequency(elts[["quality"]],
-                                            collapse=TRUE)
-                   if (min(which(alf != 0)) < 59) FastqQuality
-                   else SFastqQuality
-               },
-               SFastqQuality=SFastqQuality,
-               FastqQuality=FastqQuality)
-    quality <- qualityFunc(elts[["quality"]])
-    srq <- 
-        if (withIds)
-            ShortReadQ(elts[["sread"]], quality, elts[["id"]])
-        else
-            ShortReadQ(elts[["sread"]], quality)
-    if (!missing(filter))
-        srq <- srq[filter(srq)]
-    srq
+    tryCatch({
+        elts <- .Call(.read_solexa_fastq, src, withIds)
+        qualityFunc <-
+            switch(qualityType,
+                   Auto={
+                       alf <- alphabetFrequency(elts[["quality"]],
+                                                collapse=TRUE)
+                       if (min(which(alf != 0)) < 59) FastqQuality
+                       else SFastqQuality
+                   },
+                   SFastqQuality=SFastqQuality,
+                   FastqQuality=FastqQuality)
+        quality <- qualityFunc(elts[["quality"]])
+        srq <- 
+            if (withIds)
+                ShortReadQ(elts[["sread"]], quality, elts[["id"]])
+            else
+                ShortReadQ(elts[["sread"]], quality)
+        if (!missing(filter))
+            srq <- srq[filter(srq)]
+        srq
+    }, error=function(err) {
+        .throw(SRError("Input/Output",
+                       "file(s):\n    %s\n  message: %s",
+                       paste(src, collapse="\n    "),
+                       conditionMessage(err)))
+    })
 })
 
 setMethod(writeFastq, "ShortReadQ", function(object, file, mode="w", ...) {
