@@ -76,7 +76,9 @@ test_countLines <- function() {
     nlines <- countLines(analysisPath(sp), "s_1_sequence.txt")
     exp <- 1024; names(exp) <- "s_1_sequence.txt"
     checkEquals(exp, nlines)
-    checkException(countLines(tempdir()), silent=TRUE)
+    dir <- tempfile()
+    dir.create(dir)
+    checkException(countLines(dir), silent=TRUE)
 }
 
 ## sort / order
