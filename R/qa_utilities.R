@@ -209,19 +209,41 @@
            xlab="Cycle", 
            aspect=2)
 }
+
 .plotCycleQuality <- function(df) 
 {
-    aveScore <- with(df, {
-        tapply(Score * Count, list(lane, Cycle), sum) /
-            tapply(Count, list(lane, Cycle), sum)
+ cycleStats <- with(df,
+    {
+        tapply(seq_len(nrow(df)), list(lane, Cycle), function(i)
+        {
+            ns <- boxplot.stats(rep(Score[i], Count[i]))
+            data.frame(Score=c(ns$stats, unique(ns$out)), Cycle=Cycle[i][1],
+                       Lane=lane[i][1])
+        })
     })
-    score <- data.frame(AverageScore=as.vector(aveScore),
-                        Cycle=as.vector(col(aveScore)),
-                        Lane=.laneLbl(rownames(aveScore)))
-    xyplot(AverageScore~Cycle | Lane, score,
-           ylab="Average score",
-           aspect=2)
+    newScore <- do.call(rbind,cycleStats)
+    xyplot(Score ~ Cycle | Lane, data = newScore,
+        layout = c(2, (length(unique(newScore$Lane)))/2), 
+        xlab = "Cycle", ylab = "Quality Score",
+        panel = function(x, y, ...)
+        {
+            newy <- split(y, x)
+            newx <- sort(unique(x))
+            for(i in seq_along(newy))
+            {
+                elt <- newy[[i]]
+                llines(x = newx[i], y = c(elt[1], elt[2]), lty = 2)
+                llines(x = newx[i], y = c(elt[4], elt[5]), lty = 2)
+                llines(x = newx[i], y = c(elt[2], elt[4]), lty = 1, lwd = 2)
+                lpoints(x = newx[i], y = elt[3], pch = "-", col = "black", 
+				cex = 1.5)
+                if(length(elt) > 5)
+                    lpoints(x = newx[i], y = elt[-(1:5)], pch = ".")
+            }
+        }
+    )
 }
+
 .plotMultipleAlignmentCount <-
     function(df, ...)
 {

@@ -21,6 +21,11 @@ the read might result when only some of the cycles are used for
 alignment: the cycles included in the alignment are calibrated more
 effectively than the reads excluded from the alignment.
 </p>
+<p>
+The whiskers and interquartile ranges of the boxplots are represented 
+by dashed and solid lines, respectively. The median is denoted by  
+"-" and the outliers by ".". 
+</p>
 <pre>
   perCycle &lt;- qa[["perCycle"]]
   ShortRead:::.plotCycleQuality(perCycle$quality)
