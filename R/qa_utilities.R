@@ -222,8 +222,11 @@
         })
     })
     newScore <- do.call(rbind,cycleStats)
+	if(length(unique(newScore$Lane)) > 1)
+        playout = c(2, ceiling(length(unique(newScore$Lane))/2))
+    else playout = c(1,1)
     xyplot(Score ~ Cycle | Lane, data = newScore,
-        layout = c(2, (length(unique(newScore$Lane)))/2), 
+        layout = playout, 
         xlab = "Cycle", ylab = "Quality Score",
         panel = function(x, y, ...)
         {
