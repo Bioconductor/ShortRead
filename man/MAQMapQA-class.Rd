@@ -9,8 +9,7 @@
 \description{
 
   This class contains a list-like structure with summary descriptions
-  derived from visiting one or more Solexa \sQuote{export}
-  files. 
+  derived from visiting one or more MAQMap files. 
 
 }
 

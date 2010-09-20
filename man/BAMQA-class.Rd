@@ -1,21 +1,21 @@
-\name{BowtieQA-class}
+\name{BAMQA-class}
 \docType{class}
-\alias{BowtieQA-class}
-\alias{report,BowtieQA-method}
+\alias{BAMQA-class}
+\alias{report,BAMQA-method}
 
-\title{Quality assessment summaries from Bowtie files}
+\title{Quality assessment from BAM files}
 
 \description{
 
   This class contains a list-like structure with summary descriptions
-  derived from visiting one or more Bowtie files. 
+  derived from visiting one or more BAM files.
 
 }
 
 \section{Objects from the Class}{
   
   Objects of the class are usually produced by a \code{\link{qa}}
-  method, with the argument \code{type="Bowtie"}.
+  method, with the argument \code{type="BAM"}.
 
 }
 \section{Slots}{
@@ -34,12 +34,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
 
 \section{Methods}{
   Accessor methods are inherited from the \code{\linkS4class{SRList}}
-  class. 
+  class.
   \describe{
-    \item{report}{\code{signature(x="BowtieQA", ...,
-        dest=tempfile(), type="html")}: produces an
-      html file summarizing the QA results.}
-  }
+    \item{report}{\code{signature(x="BAMQA", ..., 
+		dest=tempfile(), type="html")}: produces an 
+		html file summarizing QA results.} 
+    }
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
@@ -47,6 +47,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
   \code{\link{qa}}.
 }
 \examples{
-showClass("BowtieQA")
+showClass("BAMQA")
 }
 \keyword{classes}

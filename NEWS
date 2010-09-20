@@ -16,8 +16,19 @@ BUG FIXES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
-    o The perCycleQuality graph in the qa report now includes
+    o report() on a BAMQA object produces the same graphs and
+	statistics as a ShortReadQQA object plus an additional
+	depth of coverage plot. 
+    
+	o The perCycleQuality graph in the qa report now includes
 	boxplots for all cycles instead of just the median value. 
+
+	o A depthOfCoverage graph has been added to the qa report 
+	for BAM, Bowtie and SolexaRealign file types. 
+
+NEW FEATURES
+
+	o Add class BAMQA. qa() can now be called on BAM files.
 
 
 

@@ -9,6 +9,8 @@
     if (verbose)
         message("qa 'Bowtie' pattern:", pattern)
     rpt <- readAligned(dirPath, pattern, type, ...)
+	doc <- .qa_depthOfCoverage(rpt[occurrenceFilter(withSread=FALSE)(rpt)],
+                               pattern)
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- .qa_qdensity(quality(rpt))
@@ -54,7 +56,8 @@
              tile=integer(0), lane=character(0)),
            medianReadQualityScore=data.frame(
              score=integer(), type=character(), tile=integer(),
-             lane=integer()))
+             lane=integer())),
+		 depthOfCoverage=doc
          )
 }
 
@@ -86,7 +89,8 @@
                  list(readCounts=bind(lst, "readCounts"),
                       medianReadQualityScore=bind(
                         lst, "medianReadQualityScore"))
-             }))
+             }),
+             depthOfCoverage=bind(lst, "depthOfCoverage"))
     .BowtieQA(lst)
 }
 
@@ -97,7 +101,7 @@ setMethod(.report_html, "BowtieQA",
     dir.create(dest, recursive=TRUE)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
-             "4000-CycleSpecific.html",
+             "4000-CycleSpecific.html", "8000-DepthOfCoverage.html",
              "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
@@ -122,7 +126,10 @@ setMethod(.report_html, "BowtieQA",
                .plotCycleBaseCall(perCycle$baseCall)),
              CYCLE_QUALITY_FIGURE=.html_img(
                dest, "perCycleQuality",
-               .plotCycleQuality(perCycle$quality))
+               .plotCycleQuality(perCycle$quality)),
+             DEPTH_OF_COVERAGE_FIGURE=.html_img(
+               dest, "depthOfCoverage",
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
              )
     .report_html_do(dest, sections, values, ...)
 })

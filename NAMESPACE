@@ -7,15 +7,16 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet,
                   PairwiseAlignedXStringSet,
                   SolexaQuality, PhredQuality, XStringQuality)
 
-importClassesFrom(IRanges, RangesList)
+importClassesFrom(IRanges, RangesList, SimpleRleList)
 
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",
            pData, phenoData, varLabels, varMetadata, sampleNames,
            mkScalar)
 
-importFrom(IRanges, append, coverage, narrow, score, start, Views,
-           width, rbind, split, "%in%")
+importFrom(IRanges, append, coverage, Filter, narrow, score, start, Views,
+           width, rbind, split, "%in%", sapply, lapply, as.list, 
+		   as.vector)
 
 importFrom(GenomicRanges, strand)
 

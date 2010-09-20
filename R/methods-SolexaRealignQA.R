@@ -13,7 +13,8 @@
         message("qa 'SolexaRealign' pattern:", pattern)
     readLbls <- c("read", "aligned")
     aln <- readAligned(dirPath, pattern,..., type=type)
-
+	doc <- .qa_depthOfCoverage(aln[occurrenceFilter(withSread=FALSE)(aln)],
+                               pattern)
     df <- pData(alignData(aln))
 
     mapIdx <- alignData(aln)[["nMatch"]] == 1L
@@ -84,7 +85,9 @@
          multipleAlignment=data.frame(
            Count=as.vector(malntbl),
            Matches=as.integer(names(malntbl)),
-           lane=pattern, row.names=NULL)
+           lane=pattern, row.names=NULL),
+
+		depthOfCoverage=doc
          )
 }
 
@@ -119,7 +122,8 @@
                       medianReadQualityScore=bind(
                         lst, "medianReadQualityScore"))
              }),
-             multipleAlignment=bind(lst, "multipleAlignment"))
+             multipleAlignment=bind(lst, "multipleAlignment"),
+			 depthOfCoverage=bind(lst, "depthOfCoverage"))
         .SolexaRealignQA(lst)
 }
 
@@ -135,7 +139,7 @@ setMethod(.report_html, "SolexaRealignQA",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", 
              "6000-Alignment.html",
-             "7000-MultipleAlignment.html",
+             "7000-MultipleAlignment.html", "8000-DepthOfCoverage.html",
              "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
@@ -165,6 +169,9 @@ setMethod(.report_html, "SolexaRealignQA",
                .plotAlignQuality(qa[["alignQuality"]])),
              MULTIPLE_ALIGNMENT_COUNT_FIGURE=.html_img(
                dest, "multipleAlignmentCount",
-               .plotMultipleAlignmentCount(qa[["multipleAlignment"]])))
+               .plotMultipleAlignmentCount(qa[["multipleAlignment"]])),
+             DEPTH_OF_COVERAGE_FIGURE=.html_img(
+               dest, "depthOfCoverage",
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]])))
     .report_html_do(dest, sections, values, ...)
 })

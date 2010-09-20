@@ -17,7 +17,7 @@
 qa(dirPath, ...)
 \S4method{qa}{character}(dirPath, pattern=character(0), 
     type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", 
-           "MAQMapShort", "fastq"),
+           "MAQMapShort", "fastq", "BAM"),
     ...)
 \S4method{qa}{list}(dirPath, ...)
 }
@@ -60,8 +60,9 @@ qa(dirPath, ...)
       Solexa \code{_realign.txt} files. Use \code{Bowtie} for Bowtie
       files. Use \code{MAQMapShort} for MAQ \code{map} files produced by
       MAQ versions below 0.70 and \code{MAQMap} for more recent output.
-      Use \code{fastq} for collections of fastq-format files. Quality
-      assessment details vary depending on data source.
+      Use \code{fastq} for collections of fastq-format files. Use
+	  \code{BAM} for \code{.bam} files. Quality assessment details vary 
+	  depending on data source.
 
     }
 	
@@ -90,6 +91,7 @@ qa(dirPath, ...)
   \code{\linkS4class{SolexaExportQA}}
   \code{\linkS4class{MAQMapQA}}
   \code{\linkS4class{FastqQA}}
+  \code{\linkS4class{BAMQA}}
 }
 
 \examples{
