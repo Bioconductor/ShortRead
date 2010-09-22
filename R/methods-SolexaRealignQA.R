@@ -13,8 +13,7 @@
         message("qa 'SolexaRealign' pattern:", pattern)
     readLbls <- c("read", "aligned")
     aln <- readAligned(dirPath, pattern,..., type=type)
-	doc <- .qa_depthOfCoverage(aln[occurrenceFilter(withSread=FALSE)(aln)],
-                               pattern)
+	doc <- .qa_depthOfCoverage(aln, pattern)
     df <- pData(alignData(aln))
 
     mapIdx <- alignData(aln)[["nMatch"]] == 1L
@@ -87,7 +86,7 @@
            Matches=as.integer(names(malntbl)),
            lane=pattern, row.names=NULL),
 
-		depthOfCoverage=doc
+		 depthOfCoverage=doc
          )
 }
 
@@ -137,8 +136,7 @@ setMethod(.report_html, "SolexaRealignQA",
     fls <- c("0000-Header.html", "1000-Overview.html",
              "1100-Overview-SolexaRealign.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
-             "4000-CycleSpecific.html", 
-             "6000-Alignment.html",
+             "4000-CycleSpecific.html", "6000-Alignment.html",
              "7000-MultipleAlignment.html", "8000-DepthOfCoverage.html",
              "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")

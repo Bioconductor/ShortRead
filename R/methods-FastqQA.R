@@ -15,8 +15,6 @@
         .throw(SRError("UserArgumentMismatch",
                        "'%s' must be '%s'", "lane", "character(1)"))
     obj <- dirPath 
-  #  doc <- .qa_depthOfCoverage(obj[occurrenceFilter(withSread=FALSE)(obj)],
-  #                             lane)
     alf <- alphabetFrequency(sread(obj), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(obj), collapse=TRUE)
     rqs <- .qa_qdensity(quality(obj))
@@ -62,7 +60,6 @@
            medianReadQualityScore=data.frame(
              score=integer(), type=character(), tile=integer(),
              lane=integer(), row.names=NULL))
-		 #depthOfCoverage=doc
          )
 
     .ShortReadQQA(lst)
@@ -99,7 +96,6 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
     dir.create(dest, recursive=TRUE)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
-            # "4000-CycleSpecific.html", "8000-DepthOfCoverage.html",
              "4000-CycleSpecific.html", 
 			 "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
@@ -126,9 +122,6 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
              CYCLE_QUALITY_FIGURE=.html_img(
                dest, "perCycleQuality",
                .plotCycleQuality(perCycle$quality))
-            # DEPTH_OF_COVERAGE_FIGURE=.html_img(
-            #   dest, "depthOfCoverage",
-            #   .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
              )
     .report_html_do(dest, sections, values, ...)
 }

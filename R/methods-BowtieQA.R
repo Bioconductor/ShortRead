@@ -9,8 +9,7 @@
     if (verbose)
         message("qa 'Bowtie' pattern:", pattern)
     rpt <- readAligned(dirPath, pattern, type, ...)
-	doc <- .qa_depthOfCoverage(rpt[occurrenceFilter(withSread=FALSE)(rpt)],
-                               pattern)
+	doc <- .qa_depthOfCoverage(rpt, pattern)
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- .qa_qdensity(quality(rpt))

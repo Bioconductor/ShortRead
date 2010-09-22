@@ -4,43 +4,90 @@
     new("BAMQA", .srlist=x, ...)
 }
 
-
-
 .qa_BAM_lane <-
-   function(dirPath, pattern, ..., type="Bowtie", verbose=FALSE)
+   function(dirPath, pattern, ...,  type="BAM", verbose=FALSE)
 {
     if (verbose)
         message("qa 'BAM' pattern:", pattern)
     rpt <- readAligned(dirPath, pattern, type, ...)
     res <-  qa(rpt, pattern, verbose=verbose)
-	doc <- .qa_depthOfCoverage(rpt[occurrenceFilter(withSread=FALSE)(rpt)],
-                               pattern)
-
-    list(readCounts=res[["readCounts"]],
-         baseCalls=res[["baseCalls"]],
-         readQualityScore=res[["readQualityScore"]],
-         baseQuality=res[["baseQuality"]],
-         alignQuality=res[["alignQuality"]],
-         frequentSequences=res[["frequentSequences"]],
-         sequenceDistribution=res[["sequenceDistribution"]],
-         perCycle=res[["perCycle"]],
-         perTile=res[["perTile"]],
-		 depthOfCoverage=doc
-         )
+	doc <- .qa_depthOfCoverage(rpt, pattern)
+    c(.srlist(res), list(depthOfCoverage=doc))
 }
 
 
 .qa_BAM <-
-    function(dirPath, pattern, type="BAM",
-    	..., verbose=FALSE)
+    function(dirPath, pattern, type="BAM",..., 
+			 param=list(ScanBamParam(
+               	simpleCigar=TRUE,
+               	reverseComplement=TRUE,
+               	what=.readAligned_bamWhat())),
+			 verbose=FALSE)
+	
 {
     fls <- .file_names(dirPath, pattern)
- 	lst <- srapply(basename(fls), .qa_BAM_lane,
-                   dirPath=dirPath, type=type, ...,
-                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
-    #lst <- do.call(rbind, lst)
-    #.BAMQA(.srlist(lst))              # re-cast
-    bind <- function(lst, elt)
+	if(!missing(param)) {
+ 		## make param into a list
+        if (is.list(param) && !all(sapply(param, is, "ScanBamParam"))) {
+            msg <-  paste("All elements of the param",
+                          "argument must be ScanBamParm objects.",
+                          collapse="")
+            .throw(SRError("UserArgumentMismatch",msg))
+        }
+        else if (!is.list(param) && !is(param, "ScanBamParam")) {
+            msg <-  paste("The param argument must be a",
+                          "ScanBamParm object.",
+                          collapse="")
+            .throw(SRError("UserArgumentMismatch",msg))
+		}
+        else if (!is.list(param) && is(param, "ScanBamParam")) {
+            param <- list(param)
+		}
+
+        if (length(param) > 1L && (length(param) != length(fls))) {
+            msg <-  paste("The length of the param argument does not",
+                          "match the number of BAM files to be read.",
+                          " If more than one param is supplied there must",
+                          "be one for each file.", collapse="")
+            .throw(SRError("UserArgumentMismatch",msg))
+        }
+
+ 		## FIXME: currently we only deal with cigars without indels
+        if (any(sapply(param, bamSimpleCigar) != TRUE)) {
+            msg <- paste("using 'TRUE' for 'bamSimpleCigar(param)'",
+                "(skipping reads with I, D, H, S, or P in 'cigar')")
+            .throw(SRWarn("UserArgumentMismatch", msg))
+        }
+        if (any(sapply(param, bamReverseComplement) != TRUE)) {
+            msg <- "using 'TRUE' for 'bamReverseComplement(param)'"
+            .throw(SRWarn("UserArgumentMismatch", msg))
+        }
+        if (any(sapply(param,
+                FUN = function(x) {
+                !setequal(bamWhat(x), .readAligned_bamWhat())
+                }) == TRUE)) {
+            msg <- sprintf("using '%s' for 'bamWhat(param)'",
+                   paste(.readAligned_bamWhat(),
+                   collapse="', '"))
+            .throw(SRWarn("UserArgumentMismatch", msg))
+        }
+
+     	param <- sapply(param,
+                    	FUN = function(param) {
+                    	initialize(param, simpleCigar=TRUE,
+                    	reverseComplement=TRUE,
+                    	what=.readAligned_bamWhat())})
+
+        DF <- DataFrame(file=fls)
+        DF$param <- param
+	}
+	
+	lst <- mapply(.qa_BAM_lane, pattern=basename(DF$file), 
+				  param=DF$param, ..., MoreArgs=list(dirPath=dirPath), 
+			      SIMPLIFY=FALSE, USE.NAMES=FALSE, 
+				  verbose=verbose)
+
+	bind <- function(lst, elt)
         do.call(rbind,
                 subListExtract(lst, elt, keep.names=FALSE))
     lst <-

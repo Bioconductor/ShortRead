@@ -52,9 +52,18 @@
 
 
 .qa_depthOfCoverage <- 
-    function(alnFil, lane)
+    function(aln, lane)
 {
-    cvg <- Filter(function(x) length(x) > 0, coverage(alnFil))
+    idx <- !is.na(position(aln)) &
+        occurrenceFilter(withSread=FALSE)(aln)
+    if (0L == sum(idx)) {
+   	df <- data.frame(Coverage=character(0), Count=integer(0),
+   			         CumulativePpn=integer(0), Lane=character(0),
+   			   		 row.names=NULL)
+   	return(df)
+   } 
+    aln <- aln[idx]
+    cvg <- Filter(function(x) length(x) > 0, coverage(aln))
     if (0L == length(cvg)) {
     	df <- data.frame(Coverage=character(0), Count=integer(0),
     			         CumulativePpn=integer(0), Lane=character(0),

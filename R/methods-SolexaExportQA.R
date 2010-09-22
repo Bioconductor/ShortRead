@@ -45,8 +45,7 @@
         message("qa 'SolexaExport' pattern:", pattern)
     readLbls <- c("read", "filtered", "aligned")
     rpt <- readAligned(dirPath, pattern, ..., type=type)
-#    doc <- .qa_depthOfCoverage(rpt[occurrenceFilter(withSread=FALSE)(rpt)],
-#                               pattern)
+    doc <- .qa_depthOfCoverage(rpt, pattern)
     df <- pData(alignData(rpt))
     filterIdx <- df$filtering=="Y"
     mapIdx <- !is.na(position(rpt))
@@ -159,8 +158,8 @@
                           type=rep(readLbls, each=length(tidx)),
                           tile=as.integer(tidx),
                           lane=pattern, row.names=NULL)
-           }))
-		#depthOfCoverage=doc
+           })),
+		 depthOfCoverage=doc
          )
 }
 
@@ -195,8 +194,8 @@
                  list(readCounts=bind(lst, "readCounts"),
                       medianReadQualityScore=bind(
                         lst, "medianReadQualityScore"))
-             })
-			 #depthOfCoverage=bind(lst, "depthOfCoverage")
+             }),
+			 depthOfCoverage=bind(lst, "depthOfCoverage")
 		)
     .SolexaExportQA(lst)
 }
@@ -222,8 +221,7 @@ setMethod(.report_html, "SolexaExportQA",
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", "5000-PerTile.html",
-#             "6000-Alignment.html", "8000-DepthOfCoverage.html", 
-             "6000-Alignment.html",
+             "6000-Alignment.html", "8000-DepthOfCoverage.html", 
 			 "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
@@ -277,10 +275,10 @@ setMethod(.report_html, "SolexaExportQA",
              }),
              ALIGN_QUALITY_FIGURE=.html_img(
                dest, "alignmentQuality",
-               .plotAlignQuality(qa[["alignQuality"]]))
-             #DEPTH_OF_COVERAGE_FIGURE=.html_img(
-             #  dest, "depthOfCoverage",
-             #  .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
+               .plotAlignQuality(qa[["alignQuality"]])),
+             DEPTH_OF_COVERAGE_FIGURE=.html_img(
+               dest, "depthOfCoverage",
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
              )
     .report_html_do(dest, sections, values, ...)
 })

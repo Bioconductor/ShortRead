@@ -24,12 +24,15 @@ SIGNIFICANT USER-VISIBLE CHANGES
 	boxplots for all cycles instead of just the median value. 
 
 	o A depthOfCoverage graph has been added to the qa report 
-	for BAM, Bowtie and SolexaRealign file types. 
+	for BAM, Bowtie, SolexaExport and SolexaRealign file types. 
 
 NEW FEATURES
 
 	o Add class BAMQA. qa() can now be called on BAM files.
 
+	o The param argument in readAligned() and qa() for 
+	type="BAM" can now be a single ScanBamParam object
+	or a list of them.  
 
 
 CHANGES IN VERSION 1.5

@@ -305,10 +305,10 @@
 
 .readAligned_bam <-
     function(dirPath, pattern=character(0), ..., 
-             param=ScanBamParam(
+             param=list(ScanBamParam(
                simpleCigar=TRUE,
                reverseComplement=TRUE,
-               what=.readAligned_bamWhat()))
+               what=.readAligned_bamWhat()))) 
 {
     files <- 
         if (!all(grepl("^(ftp|http)://", dirPath)))
@@ -322,33 +322,62 @@
             }
             dirPath
         }
-    ## FIXME: currently we only deal with cigars without indels
     if (!missing(param)) {
-        if (bamSimpleCigar(param) != TRUE) {
+        ## make param into a list
+        if (is.list(param) && !all(sapply(param, is, "ScanBamParam"))) {  
+			msg <- 	paste("All elements of the param",
+						  "argument must be ScanBamParm objects.",
+					      collapse="")
+			.throw(SRError("UserArgumentMismatch",msg))
+ 		}		
+        else  if (!is.list(param) && !is(param, "ScanBamParam")) { 
+			msg <- 	paste("The param argument must be a",
+						  "ScanBamParm object.",
+					      collapse="")
+			.throw(SRError("UserArgumentMismatch",msg))
+	    }	
+        else if (!is.list(param) && is(param, "ScanBamParam")) { 
+            param <- list(param)
+	    }	
+
+        if (length(param) > 1L && (length(param) != length(files))) {
+			msg <- 	paste("The length of the param argument does not",
+						  "match the number of BAM files to be read.",
+					      " If more than one param is supplied there must",
+						  "be one for each file.", collapse="")
+			.throw(SRError("UserArgumentMismatch",msg))
+		} 
+		## FIXME: currently we only deal with cigars without indels
+        if (any(sapply(param, bamSimpleCigar) != TRUE)) {
             msg <- paste("using 'TRUE' for 'bamSimpleCigar(param)'",
-                         "(skipping reads with I, D, H, S, or P in 'cigar')")
-            msg <- paste(strwrap(msg, exdent=2), collapse="\n")
-            warning(msg)
+            	"(skipping reads with I, D, H, S, or P in 'cigar')")
+            .throw(SRWarn("UserArgumentMismatch", msg))
         }
-        if (bamReverseComplement(param) != TRUE) {
+        if (any(sapply(param, bamReverseComplement) != TRUE)) {
             msg <- "using 'TRUE' for 'bamReverseComplement(param)'"
-            msg <- paste(strwrap(msg, exdent=2), collapse="\n")
-            warning(msg)
+            .throw(SRWarn("UserArgumentMismatch", msg))
         }
-        if (!setequal(bamWhat(param), .readAligned_bamWhat()))
-        {
+        if (any(sapply(param,
+				FUN = function(x) {
+				!setequal(bamWhat(x), .readAligned_bamWhat())
+				}) == TRUE)) {
             msg <- sprintf("using '%s' for 'bamWhat(param)'",
-                           paste(.readAligned_bamWhat(),
-                                 collapse="', '"))
-            msg <- paste(strwrap(msg, exdent=2), collapse="\n")
-            warning(msg)
+                   paste(.readAligned_bamWhat(),
+                   collapse="', '"))
+            .throw(SRWarn("UserArgumentMismatch", msg))
         }
-        param <- initialize(param, simpleCigar=TRUE,
-                            reverseComplement=TRUE,
-                            what=.readAligned_bamWhat())
+		param <- sapply(param,
+				 		FUN = function(param) {
+						initialize(param, simpleCigar=TRUE,  
+                    	reverseComplement=TRUE,
+                    	what=.readAligned_bamWhat())})
+		
+		DF <- DataFrame(file=files)
+        DF$param <- param	
     }
-    ## handle multiple files
-    result <- lapply(files, scanBam, param=param, ...)
+    ## handle multiple files and params
+    result <- mapply(scanBam, file=DF$file, param=DF$param, 
+		..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
 
     ulist <- function(X, ...)
         unlist(lapply(X, lapply, "[[", ...), use.names=FALSE)
