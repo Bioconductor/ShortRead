@@ -78,9 +78,8 @@
     lst <- srapply(basename(fls), .qa_MAQMap_lane,
                    dirPath=dirPath, type=type, ...,
                    reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
-    bind <- function(lst, elt)
-        do.call(rbind, subListExtract(lst, elt, keep.names=FALSE))
-    lst <-
+    
+	lst <-
         list(readCounts=bind(lst, "readCounts"),
              baseCalls=bind(lst, "baseCalls"),
              readQualityScore=bind(lst, "readQualityScore"),

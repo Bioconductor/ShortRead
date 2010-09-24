@@ -87,9 +87,6 @@
 			      SIMPLIFY=FALSE, USE.NAMES=FALSE, 
 				  verbose=verbose)
 
-	bind <- function(lst, elt)
-        do.call(rbind,
-                subListExtract(lst, elt, keep.names=FALSE))
     lst <-
         list(readCounts=bind(lst, "readCounts"),
              baseCalls=bind(lst, "baseCalls"),

@@ -1,3 +1,10 @@
+bind <- function(lst, elt)
+{
+	do.call(rbind,
+	subListExtract(lst, elt, keep.names=FALSE))
+}
+
+
 ## qa summary
 
 .qa_qdensity <-
@@ -92,8 +99,6 @@
        	           row.names=NULL)
     })
 }
-
-
 
 
 ## report-generation

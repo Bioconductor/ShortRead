@@ -173,9 +173,6 @@
                    reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
 
     ## collapse into data frames
-    bind <- function(lst, elt)
-        do.call(rbind,
-                subListExtract(lst, elt, keep.names=FALSE))
     lst <-
         list(readCounts=bind(lst, "readCounts"),
              baseCalls=bind(lst, "baseCalls"),
