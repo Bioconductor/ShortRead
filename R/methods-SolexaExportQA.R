@@ -174,25 +174,25 @@
 
     ## collapse into data frames
     lst <-
-        list(readCounts=bind(lst, "readCounts"),
-             baseCalls=bind(lst, "baseCalls"),
-             readQualityScore=bind(lst, "readQualityScore"),
-             baseQuality=bind(lst, "baseQuality"),
-             alignQuality=bind(lst, "alignQuality"),
-             frequentSequences=bind(lst, "frequentSequences"),
-             sequenceDistribution=bind(lst, "sequenceDistribution"),
+        list(readCounts=.bind(lst, "readCounts"),
+             baseCalls=.bind(lst, "baseCalls"),
+             readQualityScore=.bind(lst, "readQualityScore"),
+             baseQuality=.bind(lst, "baseQuality"),
+             alignQuality=.bind(lst, "alignQuality"),
+             frequentSequences=.bind(lst, "frequentSequences"),
+             sequenceDistribution=.bind(lst, "sequenceDistribution"),
              perCycle=local({
                  lst <- subListExtract(lst, "perCycle")
-                 list(baseCall=bind(lst, "baseCall"),
-                      quality=bind(lst, "quality"))
+                 list(baseCall=.bind(lst, "baseCall"),
+                      quality=.bind(lst, "quality"))
              }),
              perTile=local({
                  lst <- subListExtract(lst, "perTile")
-                 list(readCounts=bind(lst, "readCounts"),
-                      medianReadQualityScore=bind(
+                 list(readCounts=.bind(lst, "readCounts"),
+                      medianReadQualityScore=.bind(
                         lst, "medianReadQualityScore"))
              }),
-			 depthOfCoverage=bind(lst, "depthOfCoverage")
+			 depthOfCoverage=.bind(lst, "depthOfCoverage")
 		)
     .SolexaExportQA(lst)
 }

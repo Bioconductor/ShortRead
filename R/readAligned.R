@@ -371,11 +371,11 @@
 						initialize(param, simpleCigar=TRUE,  
                     	reverseComplement=TRUE,
                     	what=.readAligned_bamWhat())})
-		
+    }
 		DF <- DataFrame(file=files)
         DF$param <- param	
-    }
-    ## handle multiple files and params
+    
+	## handle multiple files and params
     result <- mapply(scanBam, file=DF$file, param=DF$param, 
 		..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
 

@@ -1,4 +1,4 @@
-bind <- function(lst, elt)
+.bind <- function(lst, elt)
 {
 	do.call(rbind,
 	subListExtract(lst, elt, keep.names=FALSE))
