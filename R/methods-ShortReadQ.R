@@ -29,6 +29,47 @@ setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "missing"),
         id=BStringSet(character(length(sread))), ...)
 })
 
+setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "BStringSet"),
+    function(sread, quality, id, ...,
+             qualityType=c("Auto", "FastqQuality", "SFastqQuality"),
+             filter=srFilter(), withIds=TRUE)
+{
+    if (!missing(filter))
+        .check_type_and_length(filter, "SRFilter", NA)
+    tryCatch({
+        qualityType <- match.arg(qualityType)
+    }, error=function(err) {
+        .throw(SRError("UserArgumentMismatch", conditionMessage(err)))
+    })
+    tryCatch({
+        qualityFunc <-
+            switch(qualityType, Auto={
+                alf <- alphabetFrequency(quality, collapse=TRUE)
+                if (min(which(alf != 0)) < 59) FastqQuality
+                else SFastqQuality
+            }, SFastqQuality=SFastqQuality, FastqQuality=FastqQuality)
+        quality <- qualityFunc(quality)
+        srq <- 
+            if (withIds)
+                ShortReadQ(sread, quality, id)
+            else
+                ShortReadQ(sread, quality)
+        if (!missing(filter))
+            srq <- srq[filter(srq)]
+        srq
+    }, error=function(err) {
+        .throw(SRError("IncompatibleTypes", "message: %s",
+                       conditionMessage(err)))
+    })
+})
+
+setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "missing"),
+          function(sread, quality, id, ...)
+{
+    ShortReadQ(sread, quality, BStringSet(character(length(sread))),
+               ...)
+})
+
 setMethod(ShortReadQ, c("missing", "missing", "missing"),
           function(sread, quality, id, ...)
 {
@@ -38,50 +79,26 @@ setMethod(ShortReadQ, c("missing", "missing", "missing"),
 setAs("ShortReadQ", "QualityScaledDNAStringSet", function(from) 
 {
     q <- quality(from)
-    q <- 
-        if (is(q, "SFastqQuality"))
-            as(q, "SolexaQuality")
-        else if (is(q, "FastqQuality"))
-            as(q, "PhredQuality")
-        else
-            as(q, "XStringQuality")
+    q <-
+        if (is(q, "SFastqQuality")) as(q, "SolexaQuality")
+        else if (is(q, "FastqQuality")) as(q, "PhredQuality")
+        else as(q, "XStringQuality")
     QualityScaledDNAStringSet(sread(from), q)
 })
 
 setMethod(readFastq, "character",
     function(dirPath, pattern=character(0), ...,
-             qualityType=c("Auto", "FastqQuality", "SFastqQuality"),
-             filter=srFilter(), withIds=TRUE) 
+             withIds=TRUE)
 {
-    if (!missing(filter))
-        .check_type_and_length(filter, "SRFilter", NA)
-    tryCatch(qualityType <- match.arg(qualityType),
-             error=function(err) {
-                 .throw(SRError("UserArgumentMismatch",
-                                conditionMessage(err)))
-             })
     src <- .file_names(dirPath, pattern)
     tryCatch({
         elts <- .Call(.read_solexa_fastq, src, withIds)
-        qualityFunc <-
-            switch(qualityType,
-                   Auto={
-                       alf <- alphabetFrequency(elts[["quality"]],
-                                                collapse=TRUE)
-                       if (min(which(alf != 0)) < 59) FastqQuality
-                       else SFastqQuality
-                   },
-                   SFastqQuality=SFastqQuality,
-                   FastqQuality=FastqQuality)
-        quality <- qualityFunc(elts[["quality"]])
-        srq <- 
-            if (withIds)
-                ShortReadQ(elts[["sread"]], quality, elts[["id"]])
-            else
-                ShortReadQ(elts[["sread"]], quality)
-        if (!missing(filter))
-            srq <- srq[filter(srq)]
-        srq
+        if (withIds)
+            ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]], ...,
+                       withIds=withIds)
+        else
+            ShortReadQ(elts[["sread"]], elts[["quality"]], ...,
+                       withIds=withIds)
     }, error=function(err) {
         .throw(SRError("Input/Output",
                        "file(s):\n    %s\n  message: %s",

@@ -5,6 +5,8 @@
 \alias{ShortReadQ}
 \alias{ShortReadQ,DNAStringSet,QualityScore,BStringSet-method}
 \alias{ShortReadQ,DNAStringSet,QualityScore,missing-method}
+\alias{ShortReadQ,DNAStringSet,BStringSet,BStringSet-method}
+\alias{ShortReadQ,DNAStringSet,BStringSet,missing-method}
 \alias{ShortReadQ,missing,missing,missing-method}
 \alias{coerce,ShortReadQ,QualityScaledDNAStringSet-method}
 \alias{writeFastq,ShortReadQ-method}
@@ -62,14 +64,22 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 
   \describe{
 
-    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "QualityScore", id = "BStringSet")}:
-      Create a \code{ShortReadQ} object from reads, their quality
-      scores, and identifiers. The length of \code{id} and
-      \code{quality}must match that of \code{sread}.}
+    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "QualityScore", id = "BStringSet")}:}
+    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "BStringSet", id = "BStringSet")}:
 
-    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "QualityScore", id = "missing")}:
+      Create a \code{ShortReadQ} object from reads, their quality
+      scores, and identifiers. When \code{quality} is of class
+      \code{BStringSet}, the type of encoded quality score is inferred
+      from the letters used in the scores. The length of \code{id} and
+      \code{quality} must match that of \code{sread}.}
+
+    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "QualityScore", id = "missing")}:}
+    \item{ShortReadQ}{\code{signature(sread = "DNAStringSet", quality = "BStringSet", id = "missing")}:
+
       Create a \code{ShortReadQ} object from reads and their quality
-      scores, creating empty identifiers.}
+      scores, creating empty identifiers. When \code{quality} is of
+      class \code{BStringSet}, the type of encoded quality score is
+      inferred from the letters used in the scores. }
 
     \item{ShortReadQ}{\code{signature(sread = "missing", quality = "missing", id = "missing", ...)}:
       Create an empty \code{ShortReadQ} object.}
