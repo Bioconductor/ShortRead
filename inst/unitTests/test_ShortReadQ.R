@@ -41,6 +41,17 @@ test_ShortReadQ_constructors <- function() {
     .equals(sr, obj)
 }
 
+
+test_FastqSampler <- function()
+{
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
+    sr <- readFastq(fl)
+    ## here to re-use equality checker
+    obj <- yield(FastqSampler(fl))
+    .equals(sr, obj)
+}
+
 test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
 {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
