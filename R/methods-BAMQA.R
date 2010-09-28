@@ -12,7 +12,7 @@
     rpt <- readAligned(dirPath, pattern, type, ...)
     res <-  qa(rpt, pattern, verbose=verbose)
 	doc <- .qa_depthOfCoverage(rpt, pattern)
-    c(.srlist(res), list(depthOfCoverage=doc))
+    c(.srlist(res), list(depthOfCoverage=doc)) 
 }
 
 

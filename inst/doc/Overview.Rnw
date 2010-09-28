@@ -25,7 +25,7 @@
 
 \title{An Introduction to \Rpackage{ShortRead}}
 \author{Martin Morgan}
-\date{Modified: 8 November 2008. Compiled: \today}
+\date{Modified: 28 September 2010. Compiled: \today}
 
 \begin{document}
 
@@ -415,11 +415,25 @@ forward the results of \Rfunction{qa} to a report generator.
 <<report, eval=FALSE>>=
 report(qaSummary, dest="/path/to/report_directory")
 @ 
-%% 
+%%
 The report includes \R{} code that can be used to understand how
 \Sexpr{class(qaSummary)}-class objects can be processed; reports are
 generated as HTML suitable for browser viewing.
 
+The \R{} functions that produce the report tables and graphics are 
+internal to the package. They can be accessed through calling 
+ShortRead:::functionName where functionName is one of the functions
+listed below, organized by report section. 
+\begin{description}
+\item [] Run Summary : .ppnCount, .df2a, .laneLbl, .plotReadQuality
+\item [] Read Distribution : .plotReadOccurrences, .freqSequences
+\item [] Cycle Specific : .plotCycleBaseCall, .plotCycleQuality
+\item [] Tile Performance : .atQuantile, .colorkeyNames, .plotTileLocalCoords, .tileGeometry,
+.plotTileCounts, .plotTileQualityScore
+\item [] Alignment : .plotAlignQuality
+\item [] Multiple Alignment : .plotMultipleAlignmentCount
+\item [] Depth of Coverage : .plotDepthOfCoverage
+\end{description}
 
 \section{Using \Rpackage{ShortRead} for data exploration}
 
