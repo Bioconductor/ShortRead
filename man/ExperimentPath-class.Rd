@@ -51,8 +51,8 @@
     \item{show}{\code{signature(object = "ExperimentPath")}: briefly
       summarize the file paths of \code{object}.}
 
-    \item{detail}{\code{signature(object = "ExperimentPath")}: summarize
-      file paths of \code{object}.}
+    \item{detail}{\code{signature(x = "ExperimentPath")}: summarize
+      file paths of \code{x}.}
   }
 }
 

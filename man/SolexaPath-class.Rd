@@ -189,8 +189,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \code{experimentPath} is given in full; the remaining paths are
       identified by their leading characters.}
 
-    \item{detail}{\code{signature(object = "SolexaPath")}: summarize
-      file paths of \code{object}. All file paths are presented in
+    \item{detail}{\code{signature(x = "SolexaPath")}: summarize
+      file paths of \code{x}. All file paths are presented in
       full.}
   }
 }

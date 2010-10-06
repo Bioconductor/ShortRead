@@ -120,7 +120,7 @@ setMethod(show, "SolexaPath", function(object) {
     .show_additionalPathSlots(object)
 })
 
-setMethod(detail, "SolexaPath", function(object, ...) {
+setMethod(detail, "SolexaPath", function(x, ...) {
     callNextMethod()
-    .detail_additionalPathSlots(object)
+    .detail_additionalPathSlots(x)
 })

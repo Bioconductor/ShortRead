@@ -197,7 +197,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
     \item{show}{\code{signature(object = "AlignedRead")}: provide a
       compact display of the \code{AlignedRead}  content.}
 
-    \item{detail}{\code{signature(object = "AlignedRead")}: display
+    \item{detail}{\code{signature(x = "AlignedRead")}: display
       \code{alignData} in more detail.}
   }
 }
@@ -218,5 +218,9 @@ ltrim0 <- function(x) {
     Rle(runValue(x)[i], runLength(x)[i])
 }
 endoapply(cvg, ltrim0)
+## demonstration of show() and detail() methods
+show(aln)
+detail(aln)
 }
+
 \keyword{classes}

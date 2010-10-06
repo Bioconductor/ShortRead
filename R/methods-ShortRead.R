@@ -167,12 +167,12 @@ setMethod(show, "ShortRead", function(object) {
     cat("length:", length(object), "reads; width:", wd, "cycles\n")
 })
 
-setMethod(detail, "ShortRead", function(object, ...) {
-    cat("class: ", class(object), "\n")
+setMethod(detail, "ShortRead", function(x, ...) {
+    cat("class: ", class(x), "\n")
     cat("\nsread:\n")
-    show(sread(object))
+    show(sread(x))
     cat("\nid:\n")
-    show(id(object))
+    show(id(x))
 })
 
 ## summary

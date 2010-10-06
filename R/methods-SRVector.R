@@ -32,7 +32,7 @@ setMethod(show, "SRVector", function(object) {
     cat("vclass: ", vclass(object), "\n", sep="")
 })
 
-setMethod(detail, "SRVector", function(object) {
-    .SRList_show_class(object)
-    show(unlist(.srlist(object)))
+setMethod(detail, "SRVector", function(x) {
+    .SRList_show_class(x)
+    show(unlist(.srlist(x)))
 })

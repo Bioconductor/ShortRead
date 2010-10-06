@@ -213,9 +213,9 @@ setMethod(alphabetScore, "ShortReadQ", .forward_objq)
 
 ## show
 
-setMethod(detail, "ShortReadQ", function(object, ...) {
+setMethod(detail, "ShortReadQ", function(x, ...) {
     callNextMethod()
-    detail(quality(object))
+    detail(quality(x))
 })
 
 ## summary

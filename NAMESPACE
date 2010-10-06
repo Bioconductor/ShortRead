@@ -23,7 +23,7 @@ importFrom(GenomicRanges, strand)
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            compact, alphabetFrequency, alphabet, DNA_ALPHABET,
            quality, pairwiseAlignment, pattern,
-           trimLRPatterns, unaligned)
+           trimLRPatterns, unaligned, detail)
 
 importFrom(hwriter, hwrite, hwriteImage)
 

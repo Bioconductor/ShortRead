@@ -138,7 +138,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Roche", distance 2.
     \item{show}{\code{signature(object = "RochePath")}: Briefly
       summarize the experiment path locations.}
 
-    \item{detail}{\code{signature(object = "RochePath")}: Provide
+    \item{detail}{\code{signature(x = "RochePath")}: Provide
       additional detail on the Roche path. All file paths are presented
       in full.}
   }

@@ -81,12 +81,12 @@ setMethod(show, "SolexaSet", function(object) {
     print(laneDescription(object))
 })
 
-setMethod(detail, "SolexaSet", function(object, ...) {
+setMethod(detail, "SolexaSet", function(x, ...) {
     callNextMethod()
     cat("\n")
-    detail(solexaPath(object), ...)
+    detail(solexaPath(x), ...)
     cat("\nclass: AnnotatedDataFrame\n")
-    ld <- laneDescription(object)
+    ld <- laneDescription(x)
     cat("pData:\n")
     print(pData(ld))
     cat("varMetadata:\n")

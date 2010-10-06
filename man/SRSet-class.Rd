@@ -73,7 +73,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{show}{\code{signature(object = "SRSet")}: display the contents
       of this object.}
 
-    \item{detail}{\code{signature(object = "SRSet")}: provide more
+    \item{detail}{\code{signature(x = "SRSet")}: provide more
       extensive information on the object.}
   }
 }

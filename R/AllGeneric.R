@@ -125,10 +125,6 @@ setGeneric("clean", function(object, ...) standardGeneric("clean"))
 setGeneric("srdistance", function(pattern, subject, ...)
            standardGeneric("srdistance"), signature=c("pattern", "subject"))
 
-detail <- function(object, ...) show(object)
-
-setGeneric("detail")
-
 setGeneric("alphabetScore",
            function(object, ...) standardGeneric("alphabetScore"))
 

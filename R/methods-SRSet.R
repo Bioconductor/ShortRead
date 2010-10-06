@@ -58,12 +58,12 @@ setMethod(show, "SRSet", function(object) {
         sep="")
 })
 
-setMethod(detail, "SRSet", function(object, ...) {
+setMethod(detail, "SRSet", function(x, ...) {
     callNextMethod()
     cat("\nsourcePath\n")
-    detail(sourcePath(object), ...)
+    detail(sourcePath(x), ...)
     cat("\nphenoData\n")
-    pd <- phenoData(object)
+    pd <- phenoData(x)
     cat("pData:\n")
     print(pData(pd))
     cat("varMetadata:\n")

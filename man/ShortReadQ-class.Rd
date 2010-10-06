@@ -146,7 +146,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
 	  \code{lane} to identify the object and returning an instance of
 	  \code{\linkS4class{ShortReadQQA}}. See \code{\link{qa}}}
 
-    \item{detail}{\code{signature(object = "ShortReadQ")}: display the
+    \item{detail}{\code{signature(x = "ShortReadQ")}: display the
 	  first and last entries of each of \code{sread}, \code{id}, and
 	  \code{quality} entries of \code{object}.}
   }

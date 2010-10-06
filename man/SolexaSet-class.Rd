@@ -69,7 +69,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       summarize the experiment path and lane description of the Solexa
       set. }
 
-    \item{detail}{\code{signature(object = "SolexaSet")}: Provide
+    \item{detail}{\code{signature(x = "SolexaSet")}: Provide
       additional detail on the Solexa set, including the content of
       \code{solexaPath} and the \code{pData} and \code{varMetadata} of
       \code{laneDescription}.}

@@ -14,7 +14,7 @@ setMethod(show,
           })
 
 setMethod(detail,
-          signature=signature(object=".ShortReadBase"),
-          function(object, ...) {
-              cat("class: ", class(object), "\n", sep="")
+          signature=signature(x=".ShortReadBase"),
+          function(x, ...) {
+              cat("class: ", class(x), "\n", sep="")
           })

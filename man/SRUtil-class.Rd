@@ -181,7 +181,7 @@
       informative summary of the object content, including the length of
       the list represented by \code{object}.}
 
-    \item{detail}{\code{signature(object = "SRList")}: display a more
+    \item{detail}{\code{signature(x = "SRList")}: display a more
       extensive version of the object, as one might expect from printing
       a standard list in R.}
 
@@ -196,7 +196,7 @@
       informative summary of the object content, e.g., the vector class
       (\code{vclass}) and length.}
 
-    \item{detail}{\code{signature(object = "SRVector")}: display a more
+    \item{detail}{\code{signature(x = "SRVector")}: display a more
       extensive version of the object, as one might expect from a
       printing a standard R list.}
 
