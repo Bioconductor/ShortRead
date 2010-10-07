@@ -10,9 +10,11 @@
     if (verbose)
         message("qa 'BAM' pattern:", pattern)
     rpt <- readAligned(dirPath, pattern, type, ...)
-    res <-  qa(rpt, pattern, verbose=verbose)
 	doc <- .qa_depthOfCoverage(rpt, pattern)
-    c(.srlist(res), list(depthOfCoverage=doc)) 
+    # adapter contamination is computed in qa() 
+    res <-  qa(rpt, pattern, ..., verbose=verbose)
+    c(.srlist(res), 
+		list(depthOfCoverage=doc)) 
 }
 
 
@@ -78,12 +80,12 @@
                     	reverseComplement=TRUE,
                     	what=.readAligned_bamWhat())})
 
+	}
         DF <- DataFrame(file=fls)
         DF$param <- param
-	}
-	
+
 	lst <- mapply(.qa_BAM_lane, pattern=basename(DF$file), 
-				  param=DF$param, ..., MoreArgs=list(dirPath=dirPath), 
+				  param=DF$param, MoreArgs=list(dirPath=dirPath, ...), 
 			      SIMPLIFY=FALSE, USE.NAMES=FALSE, 
 				  verbose=verbose)
 
@@ -106,7 +108,8 @@
                       medianReadQualityScore=.bind(
                         lst, "medianReadQualityScore"))
              }),
-             depthOfCoverage=.bind(lst, "depthOfCoverage")
+             depthOfCoverage=.bind(lst, "depthOfCoverage"),
+             adapterContamination=.bind(lst, "adapterContamination")
 		)
     .BAMQA(lst)
 }
@@ -121,7 +124,7 @@
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", "8000-DepthOfCoverage.html",
-			 "9999-Footer.html")
+			 "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
@@ -148,7 +151,10 @@
                .plotCycleQuality(perCycle$quality)),
              DEPTH_OF_COVERAGE_FIGURE=.html_img(
                dest, "depthOfCoverage",
-               .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
+			 ADAPTER_CONTAMINATION=hwrite(
+			   .ppnCount(qa[["adapterContamination"]]),
+			   border=NULL)
              )
     .report_html_do(dest, sections, values, ...)
 }

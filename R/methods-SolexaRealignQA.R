@@ -6,14 +6,16 @@
 ## qa
 
 .qa_SolexaRealign_lane <-
-    function(dirPath, pattern, ..., type="SolexaExport",
+    function(dirPath, pattern, ..., type="SolexaRealign",
              verbose=FALSE)
 {
     if (verbose)
         message("qa 'SolexaRealign' pattern:", pattern)
     readLbls <- c("read", "aligned")
-    aln <- readAligned(dirPath, pattern,..., type=type)
+    #aln <- readAligned(dirPath, pattern,..., type=type)
+    aln <- readAligned(dirPath, pattern, type=type, ...)
 	doc <- .qa_depthOfCoverage(aln, pattern)
+    ac <- .qa_adapterContamination(aln, pattern, ...)
     df <- pData(alignData(aln))
 
     mapIdx <- alignData(aln)[["nMatch"]] == 1L
@@ -86,19 +88,21 @@
            Matches=as.integer(names(malntbl)),
            lane=pattern, row.names=NULL),
 
-		 depthOfCoverage=doc
+		 depthOfCoverage=doc,
+		 adapterContamination=ac
          )
 }
 
 .qa_SolexaRealign <-
     function(dirPath, pattern, type="SolexaRealign", ...,
-             verbose=FALSE)
+			 verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_SolexaRealign_lane,
                    dirPath=dirPath, type=type, ...,
-                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
-    ## collapse into data frames
+				   reduce=.reduce(1), verbose=verbose, 
+				   USE.NAMES=TRUE)
+
     lst <-
         list(readCounts=.bind(lst, "readCounts"),
              baseCalls=.bind(lst, "baseCalls"),
@@ -119,7 +123,9 @@
                         lst, "medianReadQualityScore"))
              }),
              multipleAlignment=.bind(lst, "multipleAlignment"),
-			 depthOfCoverage=.bind(lst, "depthOfCoverage"))
+			 depthOfCoverage=.bind(lst, "depthOfCoverage"),
+			 adapterContamination=.bind(lst, "adapterContamination")
+		)
         .SolexaRealignQA(lst)
 }
 
@@ -135,7 +141,7 @@ setMethod(.report_html, "SolexaRealignQA",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", "6000-Alignment.html",
              "7000-MultipleAlignment.html", "8000-DepthOfCoverage.html",
-             "9999-Footer.html")
+             "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
@@ -167,6 +173,11 @@ setMethod(.report_html, "SolexaRealignQA",
                .plotMultipleAlignmentCount(qa[["multipleAlignment"]])),
              DEPTH_OF_COVERAGE_FIGURE=.html_img(
                dest, "depthOfCoverage",
-               .plotDepthOfCoverage(qa[["depthOfCoverage"]])))
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
+    		 ADAPTER_CONTAMINATION=hwrite(
+               .ppnCount(qa[["adapterContamination"]]),
+               border=NULL)
+		)
+
     .report_html_do(dest, sections, values, ...)
 })

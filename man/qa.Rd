@@ -42,6 +42,19 @@ qa(dirPath, ...)
 	\code{fapply} can be used to influence how evaluation occurs when
 	this function is run with the \pkg{Rmpi} or \pkg{multicore}
 	packages; see \code{\link{srapply}}.}
+
+	\itemize{
+		\item \emph{Lpattern}: A character vector or XString object to be 
+     	matched to the left end of a sequence. If either \code{Lpattern} 
+     	or \code{Rpattern} are provided, \code{trimLRPatterns} is invoked to 
+     	produce a measure of adapter contamination. The mismatch rate for 
+     	left matching is 0.1. See also \code{Rpattern}.
+	
+    	\item \emph{Rpattern}: A character vector or XString object to be 
+     	matched to the right end of a sequence with a mismatch rate of 0.2. 
+     	See also \code{Lpattern}.
+	}
+	
 }
 
 \details{

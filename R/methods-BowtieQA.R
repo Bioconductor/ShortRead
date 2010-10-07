@@ -4,12 +4,14 @@
 }
 
 .qa_Bowtie_lane <-
-    function(dirPath, pattern, ..., type="Bowtie", verbose=FALSE)
+    function(dirPath, pattern, ..., type="Bowtie", 
+			 verbose=FALSE)
 {
     if (verbose)
         message("qa 'Bowtie' pattern:", pattern)
     rpt <- readAligned(dirPath, pattern, type, ...)
 	doc <- .qa_depthOfCoverage(rpt, pattern)
+    ac <- .qa_adapterContamination(rpt, pattern, ...)
     alf <- alphabetFrequency(sread(rpt), baseOnly=TRUE, collapse=TRUE)
     bqtbl <- alphabetFrequency(quality(rpt), collapse=TRUE)
     rqs <- .qa_qdensity(quality(rpt))
@@ -56,17 +58,20 @@
            medianReadQualityScore=data.frame(
              score=integer(), type=character(), tile=integer(),
              lane=integer())),
-		 depthOfCoverage=doc
+		 depthOfCoverage=doc,
+		 adapterContamination=ac
          )
 }
 
 .qa_Bowtie <-
-    function(dirPath, pattern, type="Bowtie", ..., verbose=FALSE)
+    function(dirPath, pattern, type="Bowtie", ..., 
+			 verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_Bowtie_lane,
                    dirPath=dirPath, type=type, ...,
-                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
+				   reduce=.reduce(1), verbose=verbose, 
+				   USE.NAMES=TRUE)
     
 	lst <-
         list(readCounts=.bind(lst, "readCounts"),
@@ -87,7 +92,9 @@
                       medianReadQualityScore=.bind(
                         lst, "medianReadQualityScore"))
              }),
-             depthOfCoverage=.bind(lst, "depthOfCoverage"))
+             depthOfCoverage=.bind(lst, "depthOfCoverage"),
+             adapterContamination=.bind(lst, "adapterContamination")
+		)
     .BowtieQA(lst)
 }
 
@@ -99,7 +106,7 @@ setMethod(.report_html, "BowtieQA",
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", "8000-DepthOfCoverage.html",
-             "9999-Footer.html")
+             "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
@@ -126,7 +133,10 @@ setMethod(.report_html, "BowtieQA",
                .plotCycleQuality(perCycle$quality)),
              DEPTH_OF_COVERAGE_FIGURE=.html_img(
                dest, "depthOfCoverage",
-               .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
+             ADAPTER_CONTAMINATION=hwrite(
+               .ppnCount(qa[["adapterContamination"]]),
+               border=NULL)
              )
     .report_html_do(dest, sections, values, ...)
 })

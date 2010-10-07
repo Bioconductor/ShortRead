@@ -44,8 +44,10 @@
     if (verbose)
         message("qa 'SolexaExport' pattern:", pattern)
     readLbls <- c("read", "filtered", "aligned")
-    rpt <- readAligned(dirPath, pattern, ..., type=type)
+    #rpt <- readAligned(dirPath, pattern, ..., type=type)
+    rpt <- readAligned(dirPath, pattern, type, ...)
     doc <- .qa_depthOfCoverage(rpt, pattern)
+    ac <- .qa_adapterContamination(rpt, pattern, ...)
     df <- pData(alignData(rpt))
     filterIdx <- df$filtering=="Y"
     mapIdx <- !is.na(position(rpt))
@@ -159,18 +161,20 @@
                           tile=as.integer(tidx),
                           lane=pattern, row.names=NULL)
            })),
-		 depthOfCoverage=doc
+		 depthOfCoverage=doc,
+		 adapterContamination=ac
          )
 }
 
 .qa_SolexaExport <-
     function(dirPath, pattern, type="SolexaExport", ...,
-             verbose=FALSE)
+  			 verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_SolexaExport_lane,
                    dirPath=dirPath, type=type, ...,
-                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
+				   reduce=.reduce(1), verbose=verbose, 
+				   USE.NAMES=TRUE)
 
     ## collapse into data frames
     lst <-
@@ -192,7 +196,8 @@
                       medianReadQualityScore=.bind(
                         lst, "medianReadQualityScore"))
              }),
-			 depthOfCoverage=.bind(lst, "depthOfCoverage")
+			 depthOfCoverage=.bind(lst, "depthOfCoverage"),
+			 adapterContamination=.bind(lst, "adapterContamination")
 		)
     .SolexaExportQA(lst)
 }
@@ -219,7 +224,7 @@ setMethod(.report_html, "SolexaExportQA",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", "5000-PerTile.html",
              "6000-Alignment.html", "8000-DepthOfCoverage.html", 
-			 "9999-Footer.html")
+			 "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     perTile <- qa[["perTile"]]
@@ -275,7 +280,10 @@ setMethod(.report_html, "SolexaExportQA",
                .plotAlignQuality(qa[["alignQuality"]])),
              DEPTH_OF_COVERAGE_FIGURE=.html_img(
                dest, "depthOfCoverage",
-               .plotDepthOfCoverage(qa[["depthOfCoverage"]]))
+               .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
+             ADAPTER_CONTAMINATION=hwrite(
+               .ppnCount(qa[["adapterContamination"]]),
+               border=NULL)
              )
     .report_html_do(dest, sections, values, ...)
 })

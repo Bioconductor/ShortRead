@@ -10,8 +10,8 @@
                                 conditionMessage(err)))
              })
     switch(type,
-           SolexaExport=.qa_SolexaExport(dirPath, pattern, type=type,
-             ...),
+           SolexaExport=.qa_SolexaExport(dirPath, pattern, 
+       		 type=type, ...),
            SolexaRealign=.qa_SolexaRealign(dirPath, pattern,
              type=type, ...),
            Bowtie=.qa_Bowtie(dirPath, pattern, type=type, ...),

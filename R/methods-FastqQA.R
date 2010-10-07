@@ -20,6 +20,7 @@
     rqs <- .qa_qdensity(quality(obj))
     freqtbl <- tables(sread(obj))
     abc <- alphabetByCycle(obj)
+    ac <- .qa_adapterContamination(obj, lane, ...)
     perCycleBaseCall <- .qa_perCycleBaseCall(abc, lane)
     perCycleQuality <- .qa_perCycleQuality(abc, quality(obj), lane)
     lst <- list(readCounts=data.frame(
@@ -59,7 +60,9 @@
              tile=integer(0), lane=character(0)),
            medianReadQualityScore=data.frame(
              score=integer(), type=character(), tile=integer(),
-             lane=integer(), row.names=NULL))
+             lane=integer(), row.names=NULL)),
+ 		 adapterContamination=ac
+
          )
 
     .ShortReadQQA(lst)
@@ -68,23 +71,25 @@
 setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
 
 .qa_fastq_lane <-
-    function(dirPath, pattern, ..., type="fastq", verbose=FALSE)
+    function(dirPath, pattern, ..., type="fastq", 
+			 verbose=FALSE)
 {
     if (verbose)
         message("qa 'fastq' pattern:", pattern)
     fq <-readFastq(dirPath, pattern, ...)
-    qa(fq, pattern, verbose=verbose)
+    qa(fq, pattern, ..., verbose=verbose)
 }
 
 .qa_fastq <-
     function(dirPath, pattern, type="fastq", ...,
-             verbose=FALSE) 
+			 verbose=FALSE) 
 {
     fls <- .file_names(dirPath, pattern)
     lst <-
         srapply(basename(fls), .qa_fastq_lane,
                 dirPath=dirPath, type=type, ...,
-                reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
+			 	reduce=.reduce(1), verbose=verbose, 
+				USE.NAMES=TRUE)
     lst <- do.call(rbind, lst)
     .FastqQA(.srlist(lst))              # re-cast
 }
@@ -97,7 +102,7 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", 
-			 "9999-Footer.html")
+			 "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
@@ -121,7 +126,11 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
                .plotCycleBaseCall(perCycle$baseCall)),
              CYCLE_QUALITY_FIGURE=.html_img(
                dest, "perCycleQuality",
-               .plotCycleQuality(perCycle$quality))
+               .plotCycleQuality(perCycle$quality)),
+             ADAPTER_CONTAMINATION=hwrite(
+               .ppnCount(qa[["adapterContamination"]]),
+               border=NULL)
+
              )
     .report_html_do(dest, sections, values, ...)
 }

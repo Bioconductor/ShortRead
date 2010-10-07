@@ -100,6 +100,27 @@
     })
 }
 
+.qa_adapterContamination <-
+    function(aln, lane, ..., Lpattern = "", Rpattern = "")
+{
+	if(missing(Lpattern) && missing(Rpattern)) {
+		df <- data.frame(lane=lane, 
+						 contamination=NA,
+						 row.names=NULL)
+		return(df)
+	}
+    ifelse(!missing(Lpattern), 
+		Lmismatch <- ceiling(0.1 * length(Lpattern)), Lmismatch <- 0)
+    ifelse(!missing(Rpattern), 
+		Rmismatch <- ceiling(0.2 * length(Rpattern)), Rmismatch <- 0)
+    trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),  
+					   	  max.Lmismatch=Lmismatch, 
+					   	  max.Rmismatch=Rmismatch, ranges=TRUE)
+    ac <- length(which(width(trim) != width(aln))) / length(id(aln))
+	data.frame(lane=lane, contamination=ac, row.names=NULL)
+}
+
+
 
 ## report-generation
 
