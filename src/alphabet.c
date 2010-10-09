@@ -226,6 +226,11 @@ typedef struct {
     cachedCharSeq ref;
 } XSort;
 
+typedef int XSEQ_SORT_FUN(const void *, const void*);
+
+XSEQ_SORT_FUN compare_cachedCharSeq;
+XSEQ_SORT_FUN stable_compare_cachedCharSeq;
+
 int
 compare_cachedCharSeq(const void *a, const void *b)
 {
@@ -238,6 +243,20 @@ compare_cachedCharSeq(const void *a, const void *b)
     return res == 0 ? diff : res;
 }
 
+int
+stable_compare_cachedCharSeq(const void *a, const void *b)
+{
+    const cachedCharSeq ra = ((const XSort*) a)->ref;
+    const cachedCharSeq rb = ((const XSort*) b)->ref;
+
+    const int diff = ra.length - rb.length;
+    size_t len = diff < 0 ? ra.length : rb.length;
+    int res = memcmp(ra.seq, rb.seq, len);
+    if ((0 == res) && (0 == diff))
+        res = ((const XSort*) a)->offset - ((const XSort*) b)->offset;
+    return res == 0 ? diff : res;
+}
+
 void
 _alphabet_order(cachedXStringSet cache, XSort *xptr, const int len)
 {
@@ -247,7 +266,7 @@ _alphabet_order(cachedXStringSet cache, XSort *xptr, const int len)
         xptr[i].offset=i;
         xptr[i].ref = get_cachedXStringSet_elt(&cache, i);
     }
-    qsort(xptr, len, sizeof(XSort), compare_cachedCharSeq);
+    qsort(xptr, len, sizeof(XSort), stable_compare_cachedCharSeq);
 }
 
 SEXP

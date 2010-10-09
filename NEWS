@@ -25,6 +25,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o An adapterContamination measure has been added to the qa report for BAM,
     Bowtie, SolexaExport, SolexaRealign and Fastq file types.
 
+    o srorder is now stable (the original order of identical is
+    preservered).
+
 NEW FEATURES
 
     o Add class BAMQA. qa() can now be called on BAM files.
@@ -33,7 +36,7 @@ NEW FEATURES
     type="BAM" can now be a single ScanBamParam object
     or a list of them.  
 
-	o FastqSampler can be used to draw samples from a fastq file.
+    o FastqSampler can be used to draw samples from a fastq file.
 
 CHANGES IN VERSION 1.5
 ----------------------
