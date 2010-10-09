@@ -367,7 +367,7 @@
     }
 
     ## handle multiple files and params
-    result <- mapply(scanBam, file=file, param=param,
+    result <- mapply(scanBam, file=files, param=param,
         ..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
 
     ulist <- function(X, ...)
