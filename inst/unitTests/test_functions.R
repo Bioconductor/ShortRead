@@ -117,7 +117,7 @@ test_mark_field <- function() {
         doexp(s, strsplit(unlist(strsplit(s, "\n")), "\t"), fl)
     }
     doexp <- function(s, exp, fl) {
-        writeLines(s, fl)
+        writeChar(s, fl)
         res <- .Call("_mark_field_test", fl, "\t", c(2L, 3L),
                      PACKAGE="ShortRead")
         checkIdentical(exp, res)
@@ -136,7 +136,7 @@ test_mark_field <- function() {
           list(c("a","",""), c("d","e","f")),
           fl)
 
-    writeLines("", fl)
+    writeChar("\n", fl)
     res <- .Call("_mark_field_test", fl, "\t", c(1L,1L),
                  PACKAGE="ShortRead")
     checkIdentical(list(""), res)
