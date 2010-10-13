@@ -87,21 +87,6 @@
           if (0 != length(buf)) .add(raw(), TRUE)
           .self
       },
-      init = function(con, n=0L,
-          reader=.binReader, readerBlockSize=1e8,
-          recParser=.fixedBinRecSampler, recSeperator = charToRaw('\n'),
-          verbose=FALSE)
-       {
-           "initialize the sampler"
-           con <<- con
-           n <<- as.integer(n)
-           reader <<- reader
-           readerBlockSize <<- readerBlockSize
-           recParser <<- recParser
-           recSeperator <<- recSeperator
-           verbose <<- verbose
-           .self
-       },
       reset = function() {
           "reopen the connection and reset sample"
           if (verbose) .sampler_msg("sampler$reset")
@@ -155,9 +140,12 @@ FastqSampler <-
         stop("'n' must be finite and >= 0")
     if (is.character(con))
         con <- file(con)
-    f <- .FastqSampler$new()
-    f$init(con=con, n=n, readerBlockSize=readerBlockSize,
-           recSeperator=charToRaw("\n@"), verbose=verbose)
+    f <- .FastqSampler$new(con=con, n=n,
+                           reader=.binReader,
+                           readerBlockSize=readerBlockSize,
+                           recParser=.fixedBinRecSampler,
+                           recSeperator=charToRaw("\n@"),
+                           verbose=verbose)
 }
 
 setGeneric("yield", function(x, ...) standardGeneric("yield"))
