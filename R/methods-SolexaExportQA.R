@@ -44,7 +44,6 @@
     if (verbose)
         message("qa 'SolexaExport' pattern:", pattern)
     readLbls <- c("read", "filtered", "aligned")
-    #rpt <- readAligned(dirPath, pattern, ..., type=type)
     rpt <- readAligned(dirPath, pattern, type, ...)
     doc <- .qa_depthOfCoverage(rpt, pattern)
     ac <- .qa_adapterContamination(rpt, pattern, ...)

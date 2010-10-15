@@ -1,7 +1,7 @@
 .bind <- function(lst, elt)
 {
-	do.call(rbind,
-	subListExtract(lst, elt, keep.names=FALSE))
+    do.call(rbind,
+    subListExtract(lst, elt, keep.names=FALSE))
 }
 
 
@@ -58,81 +58,86 @@
 }
 
 
-.qa_depthOfCoverage <- 
+.qa_depthOfCoverage <-
     function(aln, lane)
 {
-    idx <- !is.na(position(aln)) &
-        occurrenceFilter(withSread=FALSE)(aln)
+    idx <- !is.na(position(aln)) & occurrenceFilter(withSread=FALSE)(aln)
     if (0L == sum(idx)) {
-   	df <- data.frame(Coverage=character(0), Count=integer(0),
-   			         CumulativePpn=integer(0), Lane=character(0),
-   			   		 row.names=NULL)
-   	return(df)
-   } 
+        df <- data.frame(Coverage=character(0), Count=integer(0),
+                         CumulativePpn=integer(0), Lane=character(0),
+                         row.names=NULL)
+        return(df)
+    }
     aln <- aln[idx]
-    cvg <- Filter(function(x) length(x) > 0, coverage(aln))
+    cv <- coverage(aln)
+    cvg <- Filter(function(x) length(x) > 0, cv)
     if (0L == length(cvg)) {
-    	df <- data.frame(Coverage=character(0), Count=integer(0),
-    			         CumulativePpn=integer(0), Lane=character(0),
-    			   		 row.names=NULL)
-    	return(df)
-    } 
- 
+        df <- data.frame(Coverage=character(0), Count=integer(0),
+                         CumulativePpn=integer(0), Lane=character(0),
+                         row.names=NULL)
+        return(df)
+    }
+
     ## Each chromosome
     count <-
         do.call(rbind, lapply(seq_len(length(cvg)), function(i, cvg) {
         x <- cvg[[i]]
         res <- tapply(runLength(x), runValue(x), sum)
         data.frame(Coverage=as.numeric(names(res)),
-                       Count=as.numeric(res),
-                       Seqname=names(cvg)[[i]], row.names=NULL)
+                   Count=as.numeric(res),
+                   Seqname=names(cvg)[[i]], row.names=NULL)
         }, cvg))
 
     ## Entire lane, non-zero coverage
-    df <- 
-    	with(count[count$Coverage!=0,], {
+    df <-
+        with(count[count$Coverage!=0,], {
         res <- tapply(as.numeric(Count), Coverage, sum)
         count <- as.vector(res)
-       	data.frame(Coverage=as.numeric(names(res)), Count= count,
-       	           CumulativePpn=cumsum(count) / sum(count),
-       	           Lane=lane,
-       	           row.names=NULL)
+        data.frame(Coverage=as.numeric(names(res)), Count= count,
+                   CumulativePpn=cumsum(count) / sum(count),
+                   Lane=lane,
+                   row.names=NULL)
     })
 }
 
 .qa_adapterContamination <-
     function(aln, lane, ..., Lpattern = "", Rpattern = "")
 {
-	if(missing(Lpattern) && missing(Rpattern)) {
-		df <- data.frame(lane=lane, 
-						 contamination=NA,
-						 row.names=NULL)
-		return(df)
-	}
-    ifelse(!missing(Lpattern), 
-		Lmismatch <- ceiling(0.1 * length(Lpattern)), Lmismatch <- 0)
-    ifelse(!missing(Rpattern), 
-		Rmismatch <- ceiling(0.2 * length(Rpattern)), Rmismatch <- 0)
-    trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),  
-					   	  max.Lmismatch=Lmismatch, 
-					   	  max.Rmismatch=Rmismatch, ranges=TRUE)
+if(missing(Lpattern) && missing(Rpattern)) {
+    df <- data.frame(lane=lane, contamination="not run", row.names=NULL)
+    return(df)
+}
+    ifelse(!missing(Lpattern),
+        Lmismatch <- ceiling(0.1 * length(Lpattern)), Lmismatch <- 0)
+    ifelse(!missing(Rpattern),
+        Rmismatch <- ceiling(0.2 * length(Rpattern)), Rmismatch <- 0)
+    trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
+                           max.Lmismatch=Lmismatch,
+                           max.Rmismatch=Rmismatch, ranges=TRUE)
     ac <- length(which(width(trim) != width(aln))) / length(id(aln))
-	data.frame(lane=lane, contamination=ac, row.names=NULL)
+    data.frame(lane=lane, contamination=ac, row.names=NULL)
 }
 
 
 
 ## report-generation
 
-.ppnCount <- function(m) {
-    ## scale subsequent columns to be proportions of 
+.ppnCount <- function(m)
+{
+    ## if adapterContamination not run
+    if(is.factor(m[,-1]))
+        return(m)
+    else {
+    ## scale subsequent columns to be proportions of
     ## first column
-    m[,-1] <- round(1000 * m[,-1] / ifelse(is.na(m[,1]), 1, m[,1])) / 1000
-    m
+        m[,-1] <- round(1000 * m[,-1] / ifelse(is.na(m[,1]), 1, m[,1])) / 1000
+        return(m)
+    }
 }
+
 .df2a <- function(df, fmt="%.3g")
 {
-    a <- 
+    a <-
         if (nrow(df) == 1)
             as.data.frame(lapply(df, sprintf, fmt=fmt))
         else
@@ -140,8 +145,11 @@
     row.names(a) <- rownames(df)
     a
 }
+
 .laneLbl <- function(lane) sub("s_(.*)_.*", "\\1", lane)
-.plotReadQuality <- function(df) {
+
+.plotReadQuality <- function(df)
+{
     df$lane <- .laneLbl(df$lane)
     xyplot(density~quality|lane, df,
            type="l",
@@ -149,7 +157,9 @@
            ylab="Proportion of reads",
            aspect=2)
 }
-.plotReadOccurrences <- function(df, ...) {
+
+.plotReadOccurrences <- function(df, ...)
+{
     df$lane <- .laneLbl(df$lane)
     df <- with(df, {
         nOccur <- tapply(nOccurrences, lane, c)
@@ -174,6 +184,7 @@
                panel.xyplot(x, y, ..., type=type)
            }, ...)
 }
+
 .freqSequences <- function(qa, read, n=20)
 {
     cnt <- qa[["readCounts"]]
@@ -183,7 +194,9 @@
     head(df1[order(df1$count, decreasing=TRUE),
              c("sequence", "count", "lane")], n)
 }
-.plotAlignQuality <- function(df) {
+
+.plotAlignQuality <- function(df)
+{
     df$lane <- .laneLbl(df$lane)
     xyplot(count~score|lane, df,
            type="l",
@@ -198,7 +211,8 @@
            aspect=2)
 }
 
-.plotTileLocalCoords <- function(tile, nrow) {
+.plotTileLocalCoords <- function(tile, nrow)
+{
     row <- 1 + (tile - 1) %% nrow
     col <- 1 + floor((tile -1) / nrow)
     row[col%%2==0] <- nrow + 1 - row[col%%2==0]
@@ -213,7 +227,8 @@
     at
 }
 
-.colorkeyNames <- function(at, fmt) {
+.colorkeyNames <- function(at, fmt)
+{
     paste(names(at), " (", sprintf(fmt, at), ")", sep="")
 }
 
@@ -232,7 +247,7 @@
            })
 }
 
-.plotTileCounts <- 
+.plotTileCounts <-
     function(df, nrow=.tileGeometry(df$tile)[[1]])
 {
     df <- df[!is.na(df$count),]
@@ -248,7 +263,8 @@
               colorkey=list(labels=.colorkeyNames(at, "%d")),
               aspect=2)
 }
-.plotTileQualityScore <- 
+
+.plotTileQualityScore <-
     function(df, nrow=.tileGeometry(df$tile)[[1]])
 {
     df <- df[!is.na(df$score),]
@@ -264,25 +280,26 @@
               colorkey=list(labels=.colorkeyNames(at, "%.2f")),
               aspect=2)
 }
+
 .plotCycleBaseCall <- function(df) {
     col <- rep(c("red", "blue"), 2)
     lty <- rep(1:2, each=2)
     df <- df[df$Base != "N",]
     df$lane <- .laneLbl(df$lane)
     df$Base <- factor(df$Base)
-    xyplot(log10(Count)~as.integer(Cycle)|lane, 
-           group=factor(Base), 
-           df[with(df, order(lane, Base, Cycle)),], 
+    xyplot(log10(Count)~as.integer(Cycle)|lane,
+           group=factor(Base),
+           df[with(df, order(lane, Base, Cycle)),],
            type="l", col=col, lty=lty,
-           key=list(space="top", 
+           key=list(space="top",
              lines=list(col=col, lty=lty),
              text=list(lab=levels(df$Base)),
              columns=length(levels(df$Base))),
-           xlab="Cycle", 
+           xlab="Cycle",
            aspect=2)
 }
 
-.plotCycleQuality <- function(df) 
+.plotCycleQuality <- function(df)
 {
  cycleStats <- with(df,
     {
@@ -294,11 +311,11 @@
         })
     })
     newScore <- do.call(rbind,cycleStats)
-	if(length(unique(newScore$Lane)) > 1)
+    if(length(unique(newScore$Lane)) > 1)
         playout = c(2, ceiling(length(unique(newScore$Lane))/2))
     else playout = c(1,1)
     xyplot(Score ~ Cycle | Lane, data = newScore,
-        layout = playout, 
+        layout = playout,
         xlab = "Cycle", ylab = "Quality Score",
         panel = function(x, y, ...)
         {
@@ -310,8 +327,8 @@
                 llines(x = newx[i], y = c(elt[1], elt[2]), lty = 2)
                 llines(x = newx[i], y = c(elt[4], elt[5]), lty = 2)
                 llines(x = newx[i], y = c(elt[2], elt[4]), lty = 1, lwd = 2)
-                lpoints(x = newx[i], y = elt[3], pch = "-", col = "black", 
-				cex = 1.5)
+                lpoints(x = newx[i], y = elt[3], pch = "-", col = "black",
+                cex = 1.5)
                 if(length(elt) > 5)
                     lpoints(x = newx[i], y = elt[-(1:5)], pch = ".")
             }
@@ -329,10 +346,10 @@
 
 
 .plotDepthOfCoverage <-
-	function(df, ...)
+    function(df, ...)
 {
-	xyplot(CumulativePpn~Coverage | Lane, df, type="b", pch=20,
-       scales=list(x=list(log=TRUE)),
-       ylab="Cumulative Proportion of Nucleotides", aspect=2, ...)
+    xyplot(CumulativePpn~Coverage | Lane, df, type="b", pch=20,
+           scales=list(x=list(log=TRUE)),
+           ylab="Cumulative Proportion of Nucleotides", aspect=2, ...)
 }
 

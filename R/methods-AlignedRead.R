@@ -1,6 +1,7 @@
 ###
 
-.AlignedRead_validity <- function(object) {
+.AlignedRead_validity <- function(object)
+{
     msg <- NULL
     len <- length(sread(object))
     slts <- c("chromosome", "position", "strand", "alignQuality")
@@ -61,7 +62,7 @@ setMethod(strand, "AlignedRead",
 ## coerce
 
 setAs("PairwiseAlignedXStringSet", "AlignedRead",
-      function(from, to) 
+      function(from, to)
 {
     pat <- pattern(from)
     quality <- character()
@@ -104,14 +105,16 @@ setMethod("[", c("AlignedRead", "missing", "ANY"),
 setMethod("[", c("AlignedRead", "ANY", "ANY"),
           function(x, i, j, ..., drop=NA) .subset_err())
 
-.AlignedRead_subset <- function(x, i, j, ..., drop=TRUE) {
+.AlignedRead_subset <- function(x, i, j, ..., drop=TRUE)
+{
     if (nargs() != 2) .subset_err()
     initialize(x, sread=sread(x)[i], id=id(x)[i],
                quality=quality(x)[i],
                chromosome=factor(chromosome(x)[i]),
                position=position(x)[i], strand=strand(x)[i],
                alignQuality=alignQuality(x)[i],
-               alignData=alignData(x)[i,]) }
+               alignData=alignData(x)[i,])
+}
 
 setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
@@ -159,7 +162,7 @@ setMethod("%in%", c("AlignedRead", "RangesList"),
 ## srorder, etc; srsort picked up by generic
 
 setMethod(srorder, "AlignedRead",
-          function(x, ..., withSread=TRUE) 
+          function(x, ..., withSread=TRUE)
 {
     if (withSread)
         order(chromosome(x), strand(x), position(x), srorder(sread(x)))
@@ -192,6 +195,13 @@ setMethod(coverage, "AlignedRead",
              extend=0L)
 {
     ## Argument checking:
+
+    if(all(is.na(chromosome(x)) == TRUE)) {
+        .throw(SRError("UserArgumentMismatch",
+                       "chromosome names are all 'NA' see %s",
+                       '?"AlignedRead-class"'))
+    }
+
     chrlvls <- levels(chromosome(x))
     if (!identical(shift, 0L)) {
         if (!is.numeric(shift)) {
@@ -199,7 +209,7 @@ setMethod(coverage, "AlignedRead",
                            "if '%s' is not 0L, then it must be a vector of integer values\n  see %s",
                            "shift", '?"AlignedRead-class"'))
         }
-        if (!all(chrlvls %in% names(shift))) { 
+        if (!all(chrlvls %in% names(shift))) {
             .throw(SRError("UserArgumentMismatch",
                            "'names(%s)' (or 'names(%s)') mismatch with 'levels(chromosome(x))'\n  see %s",
                            "shift", "start", '?"AlignedRead-class"'))
@@ -234,7 +244,7 @@ setMethod(coverage, "AlignedRead",
     }
     tryCatch(coords <- match.arg(coords),
         error=function(err) {
-            vals <- formals(sys.function(sys.parent(4)))[["coords"]]
+            vals <- formals(sys.function(sys.parent(4)))[["cvg"]]
             .throw(SRError("UserArgumentMismatch",
                            "'%s' must be one of '%s'\n  see %s", "coords",
                            paste(eval(vals), collapse="' '"),
@@ -251,7 +261,7 @@ setMethod(coverage, "AlignedRead",
     if (coords == "leftmost") {
         rstart <- position(x) -
             ifelse(strand(x) == "+", 0L, extend)
-        rend <- position(x) + width(x) - 1L + 
+        rend <- position(x) + width(x) - 1L +
             ifelse(strand(x) == "+", extend, 0L)
     } else {
         rstart <- position(x) -

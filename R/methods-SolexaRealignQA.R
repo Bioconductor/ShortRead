@@ -12,7 +12,6 @@
     if (verbose)
         message("qa 'SolexaRealign' pattern:", pattern)
     readLbls <- c("read", "aligned")
-    #aln <- readAligned(dirPath, pattern,..., type=type)
     aln <- readAligned(dirPath, pattern, type=type, ...)
 	doc <- .qa_depthOfCoverage(aln, pattern)
     ac <- .qa_adapterContamination(aln, pattern, ...)

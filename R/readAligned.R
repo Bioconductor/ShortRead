@@ -18,7 +18,7 @@
 .readAligned_SolexaAlign <-
     function(dirPath, pattern=character(0), ...,
              quote="", sep="", comment.char="#", header=FALSE,
-			 Lpattern="", Rpattern="")
+             Lpattern="", Rpattern="")
 {
     csvClasses <- xstringClasses <-
         list(sequence="DNAString", alignQuality="integer",
