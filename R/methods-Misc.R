@@ -22,11 +22,11 @@ setMethod(dustyScore, "DNAStringSet",
     if (is.na(batchSize) || length(x) <= batchSize)
         return(doDusty(tripletPDict, x))
 
-    n <- as.integer(1L + length(x)) / batchSize
+    n <- as.integer(1L + length(x) / batchSize)
     i <- seq_len(length(x))
     i <- split(i, cut(i, n, labels=FALSE))
 
-    unlist(unname(lapply(i, function(idx, tripletPDict, x) {
+    unlist(unname(srapply(i, function(idx, tripletPDict, x, ...) {
         doDusty(tripletPDict, x[idx])
     }, tripletPDict, x)))
 })
