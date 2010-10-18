@@ -53,7 +53,7 @@
           samp <- res[["sampled"]]
           if (flush) {
               buf <<- raw()
-              if (runif(1L) < 1 / tot_n) # sample buf?
+              if (tot_n > n && runif(1L) < 1 / tot_n) # sample buf?
                   samp <- samp[-length(samp)]
           } else {
               len <- length(samp)
