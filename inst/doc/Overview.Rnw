@@ -420,7 +420,7 @@ The report includes \R{} code that can be used to understand how
 \Sexpr{class(qaSummary)}-class objects can be processed; reports are
 generated as HTML suitable for browser viewing.
 
-The \R{} functions that produce the report tables and graphics are 
+The functions that produce the report tables and graphics are 
 internal to the package. They can be accessed through calling 
 ShortRead:::functionName where functionName is one of the functions
 listed below, organized by report section. 
@@ -433,6 +433,7 @@ listed below, organized by report section.
 \item [] Alignment : .plotAlignQuality
 \item [] Multiple Alignment : .plotMultipleAlignmentCount
 \item [] Depth of Coverage : .plotDepthOfCoverage
+\item [] Adapter Contamination : .ppnCount
 \end{description}
 
 \section{Using \Rpackage{ShortRead} for data exploration}
