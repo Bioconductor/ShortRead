@@ -73,10 +73,23 @@
                    what=.readAligned_bamWhat())
     }
 
-    lst <- mapply(.qa_BAM_lane, pattern=basename(fls),
-        param=param, MoreArgs=list(dirPath=dirPath, ...),
-        SIMPLIFY=FALSE, USE.NAMES=FALSE,
-        verbose=verbose)
+   # lst <- mapply(.qa_BAM_lane, pattern=basename(fls),
+   #     param=param, MoreArgs=list(dirPath=dirPath, ...),
+   #     SIMPLIFY=FALSE, USE.NAMES=FALSE,
+   #     verbose=verbose)
+
+   findex <- seq_len(length(fls))
+   ifelse(length(param) != length(fls), lparam <- rep(param, length(fls)),
+        lparam <- param)
+   lst <-
+       srapply(findex,
+               function(findex, dirpath, fls, lparam, ...)
+               {
+                   .qa_BAM_lane(dirPath=dirPath, pattern=basename(fls[findex]),
+                   param=lparam[[findex]], ...)
+               }, dirPath, fls, lparam, ..., reduce=.reduce(1),
+               USE.NAMES=FALSE, verbose=verbose)
+
 
     lst <-
         list(readCounts=.bind(lst, "readCounts"),
