@@ -369,15 +369,6 @@
     ## handle multiple files and params
     result <- mapply(scanBam, file=files, param=param,
         ..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
-
-#    findex <- seq_len(length(files))
-#    ifelse(length(param) != length(files), lparam <- rep(param, length(files)),
-#        lparam <- param)
-#    result <- srapply(findex,
-#                      function(findex, files, lparam, ...) {
-#                         scanBam(files[findex], param=lparam[[findex]], ...)
-#                      }, files, lparam, ..., reduce=.reduce(1), USE.NAMES=FALSE)
-
     ulist <- function(X, ...)
         unlist(lapply(X, lapply, "[[", ...), use.names=FALSE)
     cxslist <- function(X, ...)

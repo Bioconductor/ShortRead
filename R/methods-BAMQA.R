@@ -9,9 +9,11 @@
 {
     if (verbose)
         message("qa 'BAM' pattern:", pattern)
-    rpt <- readAligned(dirPath, pattern, type, ...)
+    rpt <- readAligned(dirPath, 
+                       pattern=paste(pattern,"$",sep=""), 
+                       type, ...)
     doc <- .qa_depthOfCoverage(rpt, pattern)
-    # adapter contamination is computed in qa()
+    ## adapter contamination is computed in qa()
     res <-  qa(rpt, pattern, ..., verbose=verbose)
     c(.srlist(res), list(depthOfCoverage=doc))
 }
@@ -72,11 +74,6 @@
                    reverseComplement=TRUE,
                    what=.readAligned_bamWhat())
     }
-
-   # lst <- mapply(.qa_BAM_lane, pattern=basename(fls),
-   #     param=param, MoreArgs=list(dirPath=dirPath, ...),
-   #     SIMPLIFY=FALSE, USE.NAMES=FALSE,
-   #     verbose=verbose)
 
    findex <- seq_len(length(fls))
    ifelse(length(param) != length(fls), lparam <- rep(param, length(fls)),

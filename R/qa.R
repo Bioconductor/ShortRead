@@ -11,9 +11,9 @@
              })
     switch(type,
            SolexaExport=.qa_SolexaExport(dirPath, pattern, 
-       		 type=type, ...),
+               type=type, ...),
            SolexaRealign=.qa_SolexaRealign(dirPath, pattern,
-             type=type, ...),
+               type=type, ...),
            Bowtie=.qa_Bowtie(dirPath, pattern, type=type, ...),
            MAQMap=.qa_MAQMap(dirPath, pattern, type=type, ...),
            MAQMapShort=.qa_MAQMap(dirPath, pattern, type=type, ...),

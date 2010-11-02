@@ -61,7 +61,7 @@
            medianReadQualityScore=data.frame(
              score=integer(), type=character(), tile=integer(),
              lane=integer(), row.names=NULL)),
- 		 adapterContamination=ac
+         adapterContamination=ac
 
          )
 
@@ -72,7 +72,7 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
 
 .qa_fastq_lane <-
     function(dirPath, pattern, ..., type="fastq", 
-			 verbose=FALSE)
+        verbose=FALSE)
 {
     if (verbose)
         message("qa 'fastq' pattern:", pattern)
@@ -82,14 +82,14 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
 
 .qa_fastq <-
     function(dirPath, pattern, type="fastq", ...,
-			 verbose=FALSE) 
+        verbose=FALSE) 
 {
     fls <- .file_names(dirPath, pattern)
     lst <-
         srapply(basename(fls), .qa_fastq_lane,
                 dirPath=dirPath, type=type, ...,
-			 	reduce=.reduce(1), verbose=verbose, 
-				USE.NAMES=TRUE)
+                reduce=.reduce(1), verbose=verbose, 
+                USE.NAMES=TRUE)
     lst <- do.call(rbind, lst)
     .FastqQA(.srlist(lst))              # re-cast
 }
@@ -102,7 +102,7 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", 
-			 "9000-AdapterContamination.html", "9999-Footer.html")
+             "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
