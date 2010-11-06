@@ -4,7 +4,6 @@
     subListExtract(lst, elt, keep.names=FALSE))
 }
 
-
 ## qa summary
 
 .qa_qdensity <-
@@ -18,7 +17,6 @@
         class(pseudo) <- "density"
         pseudo
     }
-
 }
 
 .qa_perCycleBaseCall <-
@@ -57,7 +55,6 @@
     df[df$Count != 0, ]
 }
 
-
 .qa_depthOfCoverage <-
     function(aln, lane)
 {
@@ -89,8 +86,7 @@
         }, cvg))
 
     ## Entire lane, non-zero coverage
-    df <-
-        with(count[count$Coverage!=0,], {
+    with(count[count$Coverage!=0,], {
         res <- tapply(as.numeric(Count), Coverage, sum)
         count <- as.vector(res)
         data.frame(Coverage=as.numeric(names(res)), Count= count,
@@ -103,22 +99,20 @@
 .qa_adapterContamination <-
     function(aln, lane, ..., Lpattern = "", Rpattern = "")
 {
-if(missing(Lpattern) && missing(Rpattern)) {
-    df <- data.frame(lane=lane, contamination="not run", row.names=NULL)
-    return(df)
-}
-    ifelse(!missing(Lpattern),
-        Lmismatch <- ceiling(0.1 * length(Lpattern)), Lmismatch <- 0)
-    ifelse(!missing(Rpattern),
-        Rmismatch <- ceiling(0.2 * length(Rpattern)), Rmismatch <- 0)
+    if (missing(Lpattern) && missing(Rpattern)) {
+        df <- data.frame(lane=lane, contamination="Not run", row.names=NULL)
+        return(df)
+    }
+    Lmismatch <-
+        ifelse(!missing(Lpattern), ceiling(0.1 * length(Lpattern)), 0)
+    Rmismatch <- 
+        ifelse(!missing(Rpattern), ceiling(0.2 * length(Rpattern)), 0)
     trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
                            max.Lmismatch=Lmismatch,
                            max.Rmismatch=Rmismatch, ranges=TRUE)
     ac <- length(which(width(trim) != width(aln))) / length(id(aln))
     data.frame(lane=lane, contamination=ac, row.names=NULL)
 }
-
-
 
 ## report-generation
 
