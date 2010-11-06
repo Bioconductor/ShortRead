@@ -122,10 +122,9 @@
                         lst, "medianReadQualityScore"))
              }),
              multipleAlignment=.bind(lst, "multipleAlignment"),
-			 depthOfCoverage=.bind(lst, "depthOfCoverage"),
-			 adapterContamination=.bind(lst, "adapterContamination")
-		)
-        .SolexaRealignQA(lst)
+             depthOfCoverage=.bind(lst, "depthOfCoverage"),
+             adapterContamination=.bind(lst, "adapterContamination"))
+    .SolexaRealignQA(lst)
 }
 
 ## report
@@ -173,10 +172,9 @@ setMethod(.report_html, "SolexaRealignQA",
              DEPTH_OF_COVERAGE_FIGURE=.html_img(
                dest, "depthOfCoverage",
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
-    		 ADAPTER_CONTAMINATION=hwrite(
+             ADAPTER_CONTAMINATION=hwrite(
                .ppnCount(qa[["adapterContamination"]]),
-               border=NULL)
-		)
+               border=NULL))
 
     .report_html_do(dest, sections, values, ...)
 })

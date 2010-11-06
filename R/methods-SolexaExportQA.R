@@ -160,20 +160,19 @@
                           tile=as.integer(tidx),
                           lane=pattern, row.names=NULL)
            })),
-		 depthOfCoverage=doc,
-		 adapterContamination=ac
-         )
+         depthOfCoverage=doc,
+         adapterContamination=ac)
 }
 
 .qa_SolexaExport <-
     function(dirPath, pattern, type="SolexaExport", ...,
-  			 verbose=FALSE)
+             verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
     lst <- srapply(basename(fls), .qa_SolexaExport_lane,
                    dirPath=dirPath, type=type, ...,
-				   reduce=.reduce(1), verbose=verbose, 
-				   USE.NAMES=TRUE)
+                   reduce=.reduce(1), verbose=verbose, 
+                   USE.NAMES=TRUE)
 
     ## collapse into data frames
     lst <-
@@ -195,9 +194,8 @@
                       medianReadQualityScore=.bind(
                         lst, "medianReadQualityScore"))
              }),
-			 depthOfCoverage=.bind(lst, "depthOfCoverage"),
-			 adapterContamination=.bind(lst, "adapterContamination")
-		)
+             depthOfCoverage=.bind(lst, "depthOfCoverage"),
+             adapterContamination=.bind(lst, "adapterContamination"))
     .SolexaExportQA(lst)
 }
 
@@ -222,8 +220,8 @@ setMethod(.report_html, "SolexaExportQA",
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
              "4000-CycleSpecific.html", "5000-PerTile.html",
-             "6000-Alignment.html", "8000-DepthOfCoverage.html", 
-			 "9000-AdapterContamination.html", "9999-Footer.html")
+             "6000-Alignment.html", "8000-DepthOfCoverage.html",
+             "9000-AdapterContamination.html", "9999-Footer.html")
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     perTile <- qa[["perTile"]]
@@ -282,7 +280,6 @@ setMethod(.report_html, "SolexaExportQA",
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
              ADAPTER_CONTAMINATION=hwrite(
                .ppnCount(qa[["adapterContamination"]]),
-               border=NULL)
-             )
+               border=NULL))
     .report_html_do(dest, sections, values, ...)
 })
