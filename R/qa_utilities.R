@@ -293,13 +293,31 @@
            aspect=2)
 }
 
+.fivenum <-
+    function(rle)
+{
+    n <- length(rle)
+    n4 <- floor((n + 3)/2)/2
+    d <- c(1, n4, (n + 1)/2, n + 1 - n4, n)
+    0.5 * as.numeric(rle[floor(d)] + rle[ceiling(d)])
+}
+
+.boxplot.stats <-
+    function(score, count, coef=1.5)
+{
+    x <- Rle(score, count)
+    stats <- .fivenum(x)
+    iqr <- diff(stats[c(2, 4)])
+    out <- x < (stats[2L] - coef * iqr) | x > (stats[4L] + coef * iqr)
+    list(stats = stats, out = runValue(x[out]))
+}
+
 .plotCycleQuality <- function(df)
 {
- cycleStats <- with(df,
-    {
+    cycleStats <- with(df, {
         tapply(seq_len(nrow(df)), list(lane, Cycle), function(i)
         {
-            ns <- boxplot.stats(rep(Score[i], Count[i]))
+            ns <- .boxplot.stats(Score[i], Count[i])
             data.frame(Score=c(ns$stats, unique(ns$out)), Cycle=Cycle[i][1],
                        Lane=lane[i][1])
         })
