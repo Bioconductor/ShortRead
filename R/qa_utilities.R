@@ -205,14 +205,6 @@
            aspect=2)
 }
 
-.plotTileLocalCoords <- function(tile, nrow)
-{
-    row <- 1 + (tile - 1) %% nrow
-    col <- 1 + floor((tile -1) / nrow)
-    row[col%%2==0] <- nrow + 1 - row[col%%2==0]
-    list(row=as.integer(row), col=as.factor(col))
-}
-
 .atQuantile <- function(x, breaks)
 {
     at <- unique(quantile(x, breaks))
@@ -230,6 +222,7 @@
 {
     n <- as.character(max(tileIndicies))
     switch(n,
+           "68"=c(8, 4),
            "100"=c(50, 2),
            "120"=c(60, 2),
            "300"=c(100, 3),
@@ -241,10 +234,24 @@
            })
 }
 
+.plotTileLocalCoords <- function(tile, nrow)
+{
+    if (nrow == 8) {
+        ## HiSeq
+        row <- tile %% 20
+        col <- floor(tile / 20) %% 4 + 1L
+    } else {
+        row <- 1 + (tile - 1) %% nrow
+        col <- 1 + floor((tile -1) / nrow)
+        row[col%%2==0] <- nrow + 1 - row[col%%2==0]
+    }
+    list(row=as.integer(row), col=as.factor(col))
+}
+
 .plotTileCounts <-
     function(df, nrow=.tileGeometry(df$tile)[[1]])
 {
-    df <- df[!is.na(df$count),]
+    df <- df[df$count != 0,]
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
     at <- .atQuantile(df$count, seq(0, 1, .1))

@@ -41,8 +41,10 @@
 
 <p>
   Low count numbers in the same tile across runs of the same flow cell
-  may indicate instrumentation issues.
+  may indicate instrumentation issues. HiSeq: columns are upper swaths 1 and 2,
+  and lower swaths 1 and 2, respectively.
 </p>
+
 <pre>
   ShortRead:::.plotTileCounts(readCnt[readCnt$type=="read",])
 </pre>
@@ -56,7 +58,8 @@ represent the break points of the quantized values.
 </p>
 
 <p>
-Often, quality and count show an inverse relation.
+  Often, quality and count show an inverse relation. HiSeq: columns
+  are upper swaths 1 and 2, and lower swaths 1 and 2, respectively.
 </p>
 <pre>
   qscore <- perTile[["medianReadQualityScore"]]
