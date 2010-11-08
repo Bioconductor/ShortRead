@@ -118,14 +118,13 @@
 
 .ppnCount <- function(m)
 {
-    ## if adapterContamination not run
-    if(is.factor(m[,-1]))
-        return(m)
-    else {
-    ## scale subsequent columns to be proportions of
-    ## first column
-        m[,-1] <- round(1000 * m[,-1] / ifelse(is.na(m[,1]), 1, m[,1])) / 1000
-        return(m)
+    if(is.null(m) || is.factor(m[,-1])) {
+        "Not available."
+    } else {
+        ## scale subsequent columns to be proportions of first column
+        m[,-1] <-
+            round(1000 * m[,-1] / ifelse(is.na(m[,1]), 1, m[,1])) / 1000
+        m
     }
 }
 
@@ -367,6 +366,8 @@
 .plotDepthOfCoverage <-
     function(df, ...)
 {
+    if (is.null(df))
+        return(NULL)
     xyplot(CumulativePpn~Coverage | Lane, df, type="b", pch=20,
            scales=list(x=list(log=TRUE)),
            ylab="Cumulative Proportion of Nucleotides", aspect=2, ...)

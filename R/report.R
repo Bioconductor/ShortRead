@@ -80,6 +80,8 @@ setMethod(.report_pdf, "character",
 .html_img <-
     function(dir, file, fig, ...)
 {
+    if (is.null(fig))
+        return(hwrite("Not available."))
     jpegFile <- paste(file, "jpg", sep=".")
     pdfFile <- paste(file, "pdf", sep=".")
     imgDir <- file.path(dir, "image")
