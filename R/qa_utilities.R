@@ -106,7 +106,7 @@
     Lmismatch <-
         if (missing(Lpattern)) 0L else ceiling(0.1 * length(Lpattern))
     Rmismatch <-
-        if (missing(Rpattern)) 0L else ceiling(0.1 * length(Rpattern))
+        if (missing(Rpattern)) 0L else ceiling(0.2 * length(Rpattern))
     trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
                            max.Lmismatch=Lmismatch,
                            max.Rmismatch=Rmismatch, ranges=TRUE)
