@@ -22,15 +22,15 @@ report(x, ..., dest=tempfile(), type="html")
 
   \item{\dots}{Additional arguments used by specific methods.
 
-	All methods with \code{type="html"} support the argument
+    All methods with \code{type="html"} support the argument
     \code{cssFile}, which is a named, length 1 character vector. The
     value is a path to a CSS file to be incorporated into the report
     (e.g., \code{system.file("template", "QA.css",
     package="ShortRead")}). The name of \code{cssFile} is the name of
     the CSS file as seen by the html report (e.g., \dQuote{QA.css}).
 
-	See specific methods for details on additional \code{\dots}
-	arguments.}
+    See specific methods for details on additional \code{\dots}
+    arguments.}
 
   \item{dest}{The output destination for the final report. For
     \code{type="html"} this is a directory; for (deprecated)
@@ -46,44 +46,38 @@ report(x, ..., dest=tempfile(), type="html")
   \describe{
 
     \item{\code{x="BAMQA", ..., dest=tempfile(), type="html"}}{
-	  Produce an HTML-based report from an object of class
+    Produce an HTML-based report from an object of class
           \code{\linkS4class{BAMQA}}.}
 
     \item{\code{x="BowtieQA", ..., dest=tempfile(), type="html"}}{
-	  Produce an HTML-based report from an object of class
+    Produce an HTML-based report from an object of class
           \code{\linkS4class{BowtieQA}}.}
 
     \item{\code{x="FastqQA", ..., dest=tempfile(), type="html"}}{
-	  Produce an HTML-based report from an object of class
-      \code{\linkS4class{FastqQA}}.
-	}
+    Produce an HTML-based report from an object of class
+      \code{\linkS4class{FastqQA}}.}
 
     \item{\code{x="MAQMapQA", ..., dest=tempfile(), type="html"}}{
-	  Produce an HTML-based report from an object of class
-      \code{\linkS4class{MAQMapQA}}.
-	}
+    Produce an HTML-based report from an object of class
+      \code{\linkS4class{MAQMapQA}}.}
 
     \item{\code{x="SolexaExportQA", ..., dest=tempfile(), type="html"}}{
-	  Produce an HTML-based report from an object of class
-      \code{\linkS4class{SolexaExportQA}}.
-	}
+    Produce an HTML-based report from an object of class
+      \code{\linkS4class{SolexaExportQA}}.}
 
     \item{\code{x="SolexaExportQA", ..., dest=tempfile(), type="pdf"}}{
-	  (Deprecated) Produce an PDF report from an object of class
-      \code{\linkS4class{SolexaExportQA}}.
-	}
+         (Deprecated) Produce an PDF report from an object of class
+      \code{\linkS4class{SolexaExportQA}}.}
 
     \item{\code{x="SolexaPath", ..., dest=tempfile(), type="html"}}{
-	  Produce an HTML report by first visiting all \code{_export.txt}
+    Produce an HTML report by first visiting all \code{_export.txt}
       files in the \code{analysisPath} directory of \code{x} to create a
-      \code{SolexaExportQA} instance.
-	}
+      \code{SolexaExportQA} instance.}
 
     \item{\code{x="SolexaPath", ..., dest=tempfile(), type="pdf"}}{
-	  (Deprecated) Produce an PDF report by first visiting all
+        (Deprecated) Produce an PDF report by first visiting all
       \code{_export.txt} files in the \code{analysisPath} directory of
-      \code{x} to create a \code{SolexaExportQA} instance.
-	}
+      \code{x} to create a \code{SolexaExportQA} instance.}
 
     \item{
       \code{x="ANY", ..., dest=tempfile(), type="ANY"}

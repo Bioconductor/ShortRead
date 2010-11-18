@@ -13,7 +13,7 @@
 }
 
 \section{Objects from the Class}{
-  
+
   Objects of the class are usually produced by a \code{\link{qa}}
   method, with the argument \code{type="BAM"}.
 
@@ -37,8 +37,8 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".QA", distance 2.
   class.
   \describe{
     \item{report}{\code{signature(x="BAMQA", ..., 
-		dest=tempfile(), type="html")}: produces an 
-		html file summarizing QA results.} 
+                        dest=tempfile(), type="html")}: produces an 
+                        html file summarizing QA results.} 
     }
 }
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
