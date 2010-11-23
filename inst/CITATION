@@ -1,0 +1,23 @@
+citEntry(entry="article",
+         title = paste( "ShortRead: a Bioconductor package for input, quality",
+            "assessment and exploration of high-throughput sequence data" ),
+         author = personList( as.person("Martin Morgan" ),
+                              as.person("Simon Anders" ),
+                              as.person("Michael Lawrence" ),
+                              as.person("Patrick Aboyoun" ),
+                              as.person("Hervé Pagès" ),
+                              as.person("Robert Gentleman" ) ),
+         year = 2009,
+         journal = "Bioinformatics",
+         volume = "25",
+         pages = "2607-2608",
+         doi = "10.1093/bioinformatics/btp450",
+         url = "http://dx.doi.org10.1093/bioinformatics/btp450",
+         
+         textVersion = 
+         paste("M. Morgan, S. Anders, M. Lawrence, P. Aboyoun, H. Pagès,", 
+               "and R. Gentleman (2009): \"ShortRead: a Bioconductor package",
+               "for input, quality assessment and exploration of",
+               "high-throughput sequence data\".", 
+               "Bioinformatics 25:2607-2608. " ) )
+
