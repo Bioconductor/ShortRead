@@ -60,7 +60,8 @@ IntegerQuality <- function(quality=integer(0)) {
   if (!is.null(reads)) { ## a lot faster if the reads are known
     nums <- scan(file, integer(0), n = sum(width(reads)),
                  comment.char = ">")
-    scores <- split(nums, rep(seq_len(length(reads)), width(reads)))
+    inds <- seq_len(length(reads))
+    scores <- split(nums, factor(rep(inds, width(reads)), inds))
   } else {
       qual <- readFASTA(file, strip.desc=TRUE)
       scores <- lapply(strsplit(subListExtract(qual, "seq", TRUE), " +"),
