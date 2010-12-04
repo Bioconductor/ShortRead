@@ -68,7 +68,8 @@ positionFilter <-
     .check_type_and_length(min, "numeric", 1)
     .check_type_and_length(max, "numeric", 1)
     srFilter(function(x) {
-        position(x) >= min & position(x) <= max
+        !is.na(position(x)) & position(x) >= min &
+            position(x) <= max
     }, name=.name)
 }
 
