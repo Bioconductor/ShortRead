@@ -151,11 +151,14 @@ setMethod(trimLRPatterns, c(subject="ShortRead"),
               0, max.Rmismatch = 0, with.Lindels = FALSE, with.Rindels
               = FALSE, Lfixed = TRUE, Rfixed = TRUE, ranges = FALSE)
 {
-    ranges <-
+    ret <-
         callGeneric(Lpattern, Rpattern, sread(subject), max.Lmismatch,
                     max.Rmismatch, with.Lindels, with.Rindels, Lfixed,
                     Rfixed, ranges=TRUE)
-    narrow(subject, start(ranges), end(ranges))
+    if (ranges)
+        ret
+    else 
+        narrow(subject, start(ret), end(ret))
 })
 
 ## show
