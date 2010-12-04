@@ -138,9 +138,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       \code{\link[Biostrings:trimLRPatterns]{trimLRPatterns}}. Classes
       derived from \code{ShortRead} (e.g., \code{\link{ShortReadQ}},
       \code{\link{AlignedRead}}) have corresponding base quality scores
-      trimmed, too. A user-supplied argument \code{ranges} is ignored by
-      this method; the class of the return object is the same as the
-      class of \code{subject}.}
+      trimmed, too. The class of the return object is the same as the
+      class of \code{subject}, except when \code{ranges=TRUE} when the
+      return value is the ranges to use to trim 'subject'.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortRead")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component
