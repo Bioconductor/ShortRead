@@ -1,0 +1,152 @@
+%% Usage:
+%% 
+%%   Define variables
+%% 
+%%     srq: list of ShortReadQuality instances
+
+\documentclass{article}
+
+\begin{document}
+<<setup>>=
+library(lattice)
+@ 
+
+<<read-widths,fig=TRUE>>=
+## distribution of read widths, plot 1
+df <- cbind(do.call(rbind, lapply(srq, function(sr) {
+    data.frame(CummulativeProportion=seq_len(length(sr)) / length(sr),
+               Width=sort(width(sr)))
+})), Sample=rep(names(srq), sapply(srq, length)))
+print(xyplot(CummulativeProportion ~ Width, group=Sample, df,
+             panel=function(...) {
+                 panel.grid(h=-1,v=-1)
+                 panel.xyplot(...)
+             }, type="l", auto.key=TRUE))
+@ 
+
+<<read-qualities, fig=TRUE>>=
+## distribution of read qualities
+df <- cbind(do.call(rbind, lapply(srq, function(sr) {
+    data.frame(CummulativeProportion=seq_len(length(sr)) / length(sr),
+               Quality=sort(alphabetScore(sr) / width(sr)))
+})), Sample=rep(names(srq), sapply(srq, length)))
+print(xyplot(CummulativeProportion ~ Quality, group=Sample, df,
+             panel=function(...) {
+                 panel.grid(h=-1,v=-1)
+                 panel.xyplot(...)
+             }, type="l", auto.key=TRUE))
+@ 
+
+<<read-quality-vs-width-1, fig=TRUE>>=
+## distribution of average base quality as a function of read width
+df <- cbind(do.call(rbind, lapply(srq, function(sr) {
+    data.frame(AlphabetScore=alphabetScore(sr),
+               Width=width(sr))
+})), Sample=rep(names(srq), sapply(srq, length)))
+print(xyplot(log(AlphabetScore) - log(Width) ~ Width|Sample, df,
+             pch=".", cex=2, layout=c(1, 2)))
+@ 
+
+<<read-quality-vs-width-2, fig=TRUE>>=
+print(xyplot(AlphabetScore/Width~Width,df, pch=".", cex=1,
+             subset=Sample=="Zone2",
+             panel=function(x, y, ...) {
+                 panel.xyplot(x, y, ...)
+                 panel.abline(v=quantile(x, c(.025, .975)))
+             }))
+@ 
+
+<<quality-by-cycle-1, fig=TRUE>>=
+## how does quality change by cycle, for the 12 longest categories of
+## width (e.g., average quality for the N=221 reads with width 282)
+l0 <- lapply(srq, function(sr) {
+    tbl <- table(width(sr))
+    top <- tbl[order(tbl, decreasing=TRUE)][1:12]
+    wd <- as.integer(names(top))
+    scores <- lapply(wd, function(w, q) {
+        colMeans(as(q[width(q)==w], "matrix"))
+    }, quality(sr))
+    lbls <- paste(names(top), " (N = ", top, ")", sep="")
+    data.frame(Cycle=unlist(lapply(wd, seq_len)),
+               AverageQuality=unlist(scores),
+               ReadLength=rep(lbls, wd))
+})
+df <- cbind(do.call(rbind, l0),
+            Sample=rep(names(srq), sapply(l0, nrow)))
+print(xyplot(AverageQuality ~ Cycle | ReadLength,
+             df[df$Sample=="Zone1",], pch="+"))
+@ 
+
+<<quality-by-cycle-2, fig=TRUE>>=
+print(xyplot(AverageQuality ~ Cycle | ReadLength,
+             df[df$Sample=="Zone2",], pch="+"))
+@ 
+
+We want to extract the data for some of the patients for an initial
+analysis. There are several levels of filtering.
+ 
+\textbf{Total read length}: Most reads are longer than 200 nucleotides
+($>99\%$). We can filter out shorter ones using the 'min.width'
+argument. There seems to be some correlation between read length and
+species and we need to make sure at some point that we are not
+filtering out a particular species by this process.
+
+<<read-length-filter, fig=TRUE>>=
+df <- data.frame(Width=unlist(lapply(srq, width)),
+                 Sample=rep(names(srq), sapply(srq, length)))
+idx <- with(df, Width > 200 & Width < 300)
+print(densityplot(~Width, group=Sample, df[idx,],
+                  plot.points=FALSE, auto.key=TRUE))
+sapply(srq, function(sr) sum(width(sr)>200)/length(sr))
+@ 
+
+\textbf{Read quality}: There's a pretty steep drop in quality values
+for the last 10 nucleotides or so. We can clip the tails of each read
+by a certain number of nucleotides using the 'clipTail' argument. The
+default is not to do any clipping at all (clipTail=0)
+
+<<read-quality-filter, fig=TRUE>>=
+l0 <- lapply(srq, function(sr) {
+    ss <- sr[width(sr)>200]
+    tmp <- narrow(ss, width(ss)-200)
+    m <- as(quality(tmp), "matrix")
+    data.frame(Quality=colMeans(m), Cycle=seq_len(ncol(m)))
+})
+df <- cbind(do.call(rbind, l0),
+            Sample=rep(names(srq), sapply(l0, nrow)))
+print(xyplot(Quality~Cycle|Sample, df, panel=function(...) {
+    panel.xyplot(...)
+    panel.abline(v=190, col="red")
+}))
+@ 
+
+The \textbf{average quality score} is indicative of bad reads. We can use
+a fixed cutoff through the 'min.logscore' argument. Note that we use
+the log difference rather than the average here. The default value of
+3.5 is rather arbitrary for now.
+
+<<ave-score, fig=TRUE>>=
+l0 <- lapply(srq, function(sr) log(alphabetScore(sr)) - log(width(sr)))
+df <- data.frame(AverageScore=unlist(l0, use.names=FALSE),
+                 Sample=rep(names(srq), sapply(l0, length)))
+print(densityplot(~AverageScore, group=Sample, df, panel=function(...) {
+    panel.densityplot(...)
+    panel.abline(v=3.5, col="red")
+}, auto.key=TRUE, plot.points=FALSE,))
+@ 
+
+\textbf{Primer Presence}: use the 'primer' argument to provide the
+primer sequence for which we want to filter.  Only reads that contain
+this primer are of bacterial origin. The 'max.mismatch' argument can
+be used to allow for non-perfect matching of the primer sequence.  The
+default is to look for perfect matches only (max.mismatch=0) About 95\%
+of the reads contain the primer.
+
+<<primer-presence>>=
+sapply(srq, function(sr) {
+    cnt <- vcountPattern(primers[["bacReverse"]], sread(sr), fixed=FALSE)
+    sum(cnt > 0) / length(sr)
+})
+@ 
+
+\end{document}
