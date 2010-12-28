@@ -103,14 +103,10 @@
         df <- data.frame(lane=lane, contamination="Not run", row.names=NULL)
         return(df)
     }
-    Lmismatch <-
-        if (missing(Lpattern)) 0L else ceiling(0.1 * length(Lpattern))
-    Rmismatch <-
-        if (missing(Rpattern)) 0L else ceiling(0.2 * length(Rpattern))
     trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
-                           max.Lmismatch=Lmismatch,
-                           max.Rmismatch=Rmismatch, ranges=TRUE)
-    ac <- length(which(width(trim) != width(aln))) / length(id(aln))
+                           max.Lmismatch=0.1, max.Rmismatch=0.2, 
+                           ranges=TRUE)
+    ac <- length(which(width(trim) < (width(aln) - 9))) / length(id(aln))
     data.frame(lane=lane, contamination=ac, row.names=NULL)
 }
 
