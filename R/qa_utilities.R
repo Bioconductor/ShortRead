@@ -97,16 +97,18 @@
 }
 
 .qa_adapterContamination <-
-    function(aln, lane, ..., Lpattern = "", Rpattern = "")
+    function(aln, lane, ..., Lpattern="", Rpattern="",
+             max.Lmismatch=.1, max.Rmismatch=.2)
 {
     if (missing(Lpattern) && missing(Rpattern)) {
         df <- data.frame(lane=lane, contamination="Not run", row.names=NULL)
         return(df)
     }
     trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
-                           max.Lmismatch=0.1, max.Rmismatch=0.2, 
+                           max.Lmismatch=max.Lmismatch, 
+                           max.Rmismatch=max.Rmismatch, 
                            ranges=TRUE)
-    ac <- length(which(width(trim) < (width(aln) - 9))) / length(id(aln))
+    ac <- sum(width(trim) < (width(aln) - 9)) / length(trim)
     data.frame(lane=lane, contamination=ac, row.names=NULL)
 }
 
