@@ -158,5 +158,5 @@
     .report_html_do(dest, sections, values, ...)
 }
 
-setMethod(.report_html, "BAMQA", .report_html_BAMQA)
+setMethod(report_html, "BAMQA", .report_html_BAMQA)
 

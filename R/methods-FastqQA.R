@@ -135,6 +135,6 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
     .report_html_do(dest, sections, values, ...)
 }
 
-setMethod(.report_html, "ShortReadQQA", .report_html_ShortReadQA)
-setMethod(.report_html, "FastqQA", .report_html_ShortReadQA)
+setMethod(report_html, "ShortReadQQA", .report_html_ShortReadQA)
+setMethod(report_html, "FastqQA", .report_html_ShortReadQA)
 

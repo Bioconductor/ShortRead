@@ -101,7 +101,7 @@
     .MAQMapQA(lst)
 }
 
-setMethod(.report_html, "MAQMapQA",
+setMethod(report_html, "MAQMapQA",
           function(x, dest, type, ...)
 {
     qa <- x                             # mnemonic alias

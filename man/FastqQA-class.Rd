@@ -4,6 +4,8 @@
 \alias{FastqQA-class}
 \alias{ShortReadQQA-class}
 \alias{report,FastqQA-method}
+\alias{report_html,ShortReadQQA-method}
+\alias{report_html,FastqQA-method}
 
 \title{Quality assessment of fastq files and ShortReadQ objects}
 

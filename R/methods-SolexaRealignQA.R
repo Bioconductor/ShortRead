@@ -129,7 +129,7 @@
 
 ## report
 
-setMethod(.report_html, "SolexaRealignQA",
+setMethod(report_html, "SolexaRealignQA",
           function (x, dest, type, ...)
 {
     qa <- x                             # mnemonic alias

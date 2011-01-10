@@ -2,6 +2,7 @@
 \docType{class}
 \alias{BAMQA-class}
 \alias{report,BAMQA-method}
+\alias{report_html,BAMQA-method}
 
 \title{Quality assessment from BAM files}
 

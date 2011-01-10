@@ -166,7 +166,7 @@ setGeneric("qa", function(dirPath, ...) standardGeneric("qa"))
 report <-
     function (x, ..., dest = tempfile(), type="html")
 {
-    func <- switch(type, html=.report_html, pdf=.report_pdf,
+    func <- switch(type, html=report_html, pdf=.report_pdf,
                    .report_any)
     func(x, dest, type, ...)
 }
@@ -181,8 +181,8 @@ setGeneric("report", signature="x")
                    "report", type, class(x)))
 }
 
-setGeneric(".report_html", function(x, dest, type, ...)
-           standardGeneric(".report_html"),
+setGeneric("report_html", function(x, dest, type, ...)
+           standardGeneric("report_html"),
            signature="x", useAsDefault=.report_any)
 
 setGeneric(".report_pdf", function(x, dest, type, ...)

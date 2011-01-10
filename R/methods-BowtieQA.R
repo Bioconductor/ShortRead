@@ -98,7 +98,7 @@
     .BowtieQA(lst)
 }
 
-setMethod(.report_html, "BowtieQA",
+setMethod(report_html, "BowtieQA",
           function(x, dest, type, ...)
 {
     qa <- x                             # mnemonic alias

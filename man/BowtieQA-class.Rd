@@ -2,6 +2,7 @@
 \docType{class}
 \alias{BowtieQA-class}
 \alias{report,BowtieQA-method}
+\alias{report_html,BowtieQA-method}
 
 \title{Quality assessment summaries from Bowtie files}
 

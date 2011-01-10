@@ -3,6 +3,7 @@
 \alias{MAQMapQA}
 \alias{MAQMapQA-class}
 \alias{report,MAQMapQA-method}
+\alias{report_html,MAQMapQA-method}
 
 \title{Quality assessment summaries from MAQ map files}
 

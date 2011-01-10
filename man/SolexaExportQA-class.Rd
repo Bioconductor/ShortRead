@@ -4,6 +4,8 @@
 \alias{SolexaExportQA-class}
 \alias{SolexaRealignQA-class}
 \alias{report,SolexaExportQA-method}
+\alias{report_html,SolexaExportQA-method}
+\alias{report_html,SolexaRealignQA-method}
 \alias{show,SolexaExportQA-method}
 
 \title{Quality assessment summaries from Solexa export and realign files}

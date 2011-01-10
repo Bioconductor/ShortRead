@@ -1,6 +1,7 @@
 \name{report}
 \alias{report}
 \alias{report,ANY-method}
+\alias{report_html}
 
 \title{Summarize quality assessment results into a report}
 
@@ -14,6 +15,7 @@
 
 \usage{
 report(x, ..., dest=tempfile(), type="html")
+report_html(x, dest, type, ...)
 }
 
 \arguments{
@@ -42,6 +44,10 @@ report(x, ..., dest=tempfile(), type="html")
 }
 
 \details{
+  \code{report_html} is meant for use by package authors wishing to add
+  methods for creating HTML reports; users should always invoke
+  \code{report}.
+  
   The following methods are defined:
   \describe{
 

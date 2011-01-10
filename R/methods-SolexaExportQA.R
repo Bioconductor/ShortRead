@@ -212,7 +212,7 @@ setMethod(.report_pdf, "SolexaExportQA",
     res
 })
 
-setMethod(.report_html, "SolexaExportQA",
+setMethod(report_html, "SolexaExportQA",
           function (x, dest, type, ...)
 {
     qa <- x                             # mnemonic alias
