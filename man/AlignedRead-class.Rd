@@ -13,6 +13,7 @@
 \alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
 \alias{coerce,AlignedRead,RangesList-method}
 \alias{coerce,AlignedRead,GRanges-method}
+\alias{coerce,AlignedRead,RangedData-method}
 \alias{chromosome,AlignedRead-method}
 \alias{position,AlignedRead-method}
 \alias{strand,AlignedRead-method}
@@ -104,13 +105,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \code{signature(from = "PairwiseAlignedXStringSet", to = "AlignedRead")}:
 
 	  \code{signature(from = "AlignedRead", to = "RangesList")}:
+          \code{signature(from = "AlignedRead", to = "RangedData")}:
           \code{signature(from = "AlignedRead", to = "GRanges")}:
       
       Invoke these methods with, e.g., \code{as(from, "AlignedRead")}
       to coerce objects of class \code{from} to class
       \code{"AlignedRead"}.
 	  
-	  Coercion from AlignedRead to \link[IRanges]{RangesList} or
+      Coercion from AlignedRead to \link[IRanges]{RangesList},
+          \link[IRanges]{RangedData} or
 	  \link[GenomicRanges]{GRanges} assumes that
 	  \code{position(from)} uses a \sQuote{leftmost} (see
 	  \code{coverage} on this page) coordinate

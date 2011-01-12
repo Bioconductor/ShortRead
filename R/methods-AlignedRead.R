@@ -90,8 +90,21 @@ setAs("AlignedRead", "GRanges", function(from)
     wd <- width(from)
     std <- strand(from)
     notNA <- !(is.na(chr) | is.na(pos) | is.na(wd) | is.na(std))
-    GRanges(chr[notNA], IRanges(pos[notNA], width=wd[notNA]), std[notNA],
-            pData(alignData(from))[notNA,])
+    GRanges(chr[notNA],
+            IRanges(pos[notNA], width=wd[notNA]), std[notNA],
+            id = id(from)[notNA], pData(alignData(from))[notNA,,drop=FALSE])
+})
+
+setAs("AlignedRead", "RangedData", function(from)
+{
+  chr <- chromosome(from)
+  pos <- position(from)
+  wd <- width(from)
+  std <- strand(from)
+  notNA <- !(is.na(chr) | is.na(pos) | is.na(wd) | is.na(std))
+  GRanges(IRanges(pos[notNA], width=wd[notNA]), space = chr[notNA],
+          id = id(from)[notNA], strand = std[notNA],
+          pData(alignData(from))[notNA,,drop=FALSE])
 })
 
 ## subset
