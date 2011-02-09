@@ -5,6 +5,9 @@ NEW FEATURES
 
     o Support for HiSeq tile layout
 
+    o Track reads passing filters, including across logical filter
+    operations
+
 CHANGES IN VERSION 1.7
 ----------------------
 

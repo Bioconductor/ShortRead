@@ -56,6 +56,12 @@ setClass("SRFilter",
            name="ScalarCharacter"),
          validity=.srValidity)
 
+setClass("SRFilterResult",
+         contains=c("logical", ".SRUtil"),
+         representation=representation(
+           name="ScalarCharacter",
+           stats="data.frame"))
+
 ## Intensity
 
 setClass("IntensityMeasure", contains=".ShortReadBase",

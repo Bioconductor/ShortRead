@@ -19,8 +19,8 @@ test_uniqueFilter <- function() {
                            chromosome=c("chr1", "chr1"),
                            position=c(1L, 1L),
                            strand=rep(strand("+"), 2))
-        checkIdentical(c(TRUE, FALSE), uniqueFilter(withSread=FALSE)(aln))
-        checkIdentical(c(TRUE, FALSE), uniqueFilter(withSread=TRUE)(aln))
+        checkTrue(all(c(TRUE, FALSE) == uniqueFilter(withSread=FALSE)(aln)))
+        checkTrue(all(c(TRUE, FALSE) == uniqueFilter(withSread=TRUE)(aln)))
         aln <- AlignedRead(DNAStringSet(character(4)),
                            chromosome=rep(c("chr1", "chr2"), each=2),
                            position=rep(1:2, 2),
@@ -39,17 +39,17 @@ test_occurrenceFilter <- function()
                        chromosome=c("chr1", "chr1"),
                        position=c(1L, 1L),
                        strand=rep(strand("+"), 2))
-    checkIdentical(c(TRUE, FALSE), occurrenceFilter(withSread=TRUE)(aln))
-    checkIdentical(c(TRUE, FALSE), occurrenceFilter(withSread=FALSE)(aln))
-    checkIdentical(c(TRUE, FALSE), occurrenceFilter(withSread=NA)(aln))
+    checkTrue(all(c(TRUE, FALSE) == occurrenceFilter(withSread=TRUE)(aln)))
+    checkTrue(all(c(TRUE, FALSE) == occurrenceFilter(withSread=FALSE)(aln)))
+    checkTrue(all(c(TRUE, FALSE) == occurrenceFilter(withSread=NA)(aln)))
 
     aln <- AlignedRead(DNAStringSet(c("A", "T")),
                        chromosome=c("chr1", "chr1"),
                        position=c(1L, 1L),
                        strand=rep(strand("+"), 2))
-    checkIdentical(c(TRUE, TRUE), occurrenceFilter(withSread=TRUE)(aln))
-    checkIdentical(c(TRUE, FALSE), occurrenceFilter(withSread=FALSE)(aln))
-    checkIdentical(c(TRUE, TRUE), occurrenceFilter(withSread=NA)(aln))
+    checkTrue(all(c(TRUE, TRUE) == occurrenceFilter(withSread=TRUE)(aln)))
+    checkTrue(all(c(TRUE, FALSE) == occurrenceFilter(withSread=FALSE)(aln)))
+    checkTrue(all(c(TRUE, TRUE) == occurrenceFilter(withSread=NA)(aln)))
 
     aln <- AlignedRead(DNAStringSet(character(4)),
                        chromosome=rep(c("chr1", "chr2"), each=2),
@@ -57,15 +57,15 @@ test_occurrenceFilter <- function()
                        strand=rep(strand("+"), 4))
     checkTrue(all(occurrenceFilter(withSread=FALSE)(aln)))
     checkTrue(all(occurrenceFilter(withSread=TRUE)(aln)))
-    checkIdentical(c(TRUE, FALSE, FALSE, FALSE),
-                   occurrenceFilter(withSread=NA)(aln))
+    checkTrue(all(c(TRUE, FALSE, FALSE, FALSE) == 
+                   occurrenceFilter(withSread=NA)(aln)))
 
     sp <- SolexaPath(system.file("extdata", package="ShortRead"))
     aln <- readAligned(analysisPath(sp), "s_2_export.txt", "SolexaExport")
     if (exists("uniqueFilter", where=getNamespace("ShortRead")))
         suppressWarnings({
-            checkIdentical(uniqueFilter(withSread=TRUE)(aln),
-                           occurrenceFilter(withSread=TRUE)(aln))
+            checkTrue(all(uniqueFilter(withSread=TRUE)(aln) ==
+                           occurrenceFilter(withSread=TRUE)(aln)))
         })
     checkIdentical(980L, sum(occurrenceFilter(withSread=NA)(aln)))
     checkIdentical(996L, sum(occurrenceFilter(withSread=TRUE)(aln)))

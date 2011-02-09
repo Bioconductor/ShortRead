@@ -1,22 +1,32 @@
-setMethod(.srValidity, "SRFilter", function(object) {
+setMethod(.srValidity, "SRFilter", function (object) {
     msg <- NULL
     fmls <- formals(object)
-    if (length(fmls) != 1 || names(fmls)[[1]] != "x") {
+    if (length(fmls) != 1 || names(fmls)[[1]] != "x")
         msg <- c(msg, paste("'filter' must have one argument, 'x'"))
-    }
     if (is.null(msg)) TRUE else msg
 })
 
 setMethod(srFilter, "missing", function(fun, name, ...) {
-    name <- mkScalar(as.character(name))
-    new("SRFilter", function(x) !logical(length(x)),
-        name=name, ...)
+    srFilter(function(x) !logical(length(x)), name=name, ...)
 })
-          
+         
 setMethod(srFilter, "function",
           function(fun, name, ...) 
 {
     name <- mkScalar(as.character(name))
+    fmls <- formals(fun)
+    if (length(fmls) != 1 || names(fmls)[[1]] != "x")
+        .throw(SRError("UserArgumentMismatch",
+                       "'filter' must have one argument, 'x'"))
+
+    env <- new.env(parent=environment(fun))
+    env[[".stats"]] <- NULL
+    fun <- eval(substitute(function(x) {
+        res <- FUN(x)
+        SRFilterResult(res, NAME)
+    }, list(FUN=fun, NAME=name)))
+    environment(fun) <- env
+
     new("SRFilter", fun, name=name, ...)
 })
 
@@ -24,9 +34,7 @@ setMethod(srFilter, "SRFilter", function(fun, name, ...) {
     slot(fun, ".Data")
 })
 
-setMethod(name, "SRFilter", function(x, ...) {
-    slot(x, "name")
-})
+setMethod(name, "SRFilter", function(x, ...) slot(x, "name"))
 
 .getAlphabetFrequency <- function(x, ...)
 {
@@ -214,14 +222,16 @@ alignDataFilter <- function(expr=expression(),
              name=.name)
 }
 
-compose <- function(filt, ..., .name) {
+compose <-
+    function(filt, ..., .name)
+{
     lst <- if (missing(filt)) list(...) else list(filt, ...)
     for (`filt, ...` in lst)
         .check_type_and_length(`filt, ...`, "SRFilter", NA)
     if (missing(.name))
         .name <- paste(sapply(lst, name), collapse=" o ")
     srFilter(function(x) {
-        .idx <- !logical(length(x))
+        .idx <- SRFilterResult(!logical(length(x)))
         for (elt in rev(lst))
             .idx <- .idx & elt(x)
         .idx
