@@ -5,7 +5,7 @@
 ## QualityScore
 
 .QualityScore_subset <- function(x, i, j, ..., drop=TRUE) {
-    if (nargs() != 2) .subset_err()
+    if (0L != length(list(...))) .subset_err()
     initialize(x, quality=quality(x)[i])
 }
 
@@ -13,7 +13,7 @@ setMethod("[", c("QualityScore", "ANY", "missing"),
           .QualityScore_subset)
 
 .QualityScore_subset2 <- function(x, i, j, ...) {
-    if (nargs() != 2) .subset_err()
+    if (0L != length(list(...))) .subset_err()
     quality(x)[[i]]
 }
 
@@ -87,7 +87,7 @@ MatrixQuality <- function(quality=new("matrix")) {
 }
 
 .MatrixQuality_subset <- function(x, i, j, ..., drop=FALSE) {
-    if (nargs() != 2) .subset_err()
+    if (0L != length(list(...))) .subset_err()
     initialize(x, quality=quality(x)[i,, drop=FALSE])
 }
 
@@ -95,7 +95,7 @@ setMethod("[", c("MatrixQuality", "ANY", "missing"),
           .MatrixQuality_subset)
 
 .MatrixQuality_subset2 <- function(x, i, j, ...) {
-    if (nargs() != 2) .subset_err()
+    if (0L != length(list(...))) .subset_err()
     quality(x)[i,]
 }
 

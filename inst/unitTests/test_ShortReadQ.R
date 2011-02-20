@@ -86,8 +86,9 @@ test_ShortReadQ_subset <- function() {
 
     checkException(obj[,1], silent=TRUE)
     checkException(obj[1,1], silent=TRUE)
-    checkException(obj[1,], silent=TRUE)
-    checkException(obj[1,], silent=TRUE)
+    checkIdentical(2L, length(obj[1:2,]))
+    checkIdentical(2L, length(obj[1:2,drop=TRUE]))
+    checkIdentical(2L, length(obj[1:2,,drop=TRUE]))
 }
 
 test_ShortReadQ_narrow <- function() {
