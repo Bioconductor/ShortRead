@@ -282,7 +282,7 @@
 .plotCycleBaseCall <- function(df) {
     col <- rep(c("red", "blue"), 2)
     lty <- rep(1:2, each=2)
-    df <- df[df$Base != "N",]
+    df <- df[df$Base != "N" & df$Base != "-",]
     df$lane <- .laneLbl(df$lane)
     df$Base <- factor(df$Base)
     xyplot(log10(Count)~as.integer(Cycle)|lane,
