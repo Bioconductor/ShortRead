@@ -31,30 +31,30 @@ qa(dirPath, ...)
     for details of available methods.}
 
   \item{pattern}{A character vector limiting the files in \code{dirPath}
-	to be processed, as with \code{\link{list.files}}. Care should be
-	taken to specify pattern to avoid reading unintended files.}
+    to be processed, as with \code{\link{list.files}}. Care should be
+    taken to specify pattern to avoid reading unintended files.}
 
   \item{type}{The type of file being parsed; must be a character vector
-	of length 1, selected from one of the types enumerated in the
-	parameter.}
+    of length 1, selected from one of the types enumerated in the
+    parameter.}
 
-  \item{\dots}{Additional arguments used by methods. For instance,
-	\code{fapply} can be used to influence how evaluation occurs when
-	this function is run with the \pkg{Rmpi} or \pkg{multicore}
-	packages; see \code{\link{srapply}}.}
+  \item{\dots}{Additional arguments used by methods. 
 
-	\itemize{
-		\item \emph{Lpattern}: A character vector or XString object to be 
-     	matched to the left end of a sequence. If either \code{Lpattern} 
-     	or \code{Rpattern} are provided, \code{trimLRPatterns} is invoked to 
-     	produce a measure of adapter contamination. The mismatch rate for 
-     	left matching is 0.1. See also \code{Rpattern}.
-	
-    	\item \emph{Rpattern}: A character vector or XString object to be 
-     	matched to the right end of a sequence with a mismatch rate of 0.2. 
-     	See also \code{Lpattern}.
-	}
-	
+    \describe{
+
+      \item{\code{fapply}, \code{reduce}:}{Influence how evaluation
+        occurs when this function is run with the \pkg{Rmpi} or
+        \pkg{multicore} packages; see \code{\link{srapply}}.}
+
+      \item{\code{Lpattern}, \code{Rpattern}:}{A character vector or
+        XString object to be matched to the left end of a sequence. If
+        either \code{Lpattern} or \code{Rpattern} are provided,
+        \code{trimLRPatterns} is invoked to produce a measure of adapter
+        contamination. The mismatch rate for left matching is 0.1. See
+        also \code{Rpattern}.}
+
+    }
+  }
 }
 
 \details{
@@ -74,17 +74,17 @@ qa(dirPath, ...)
       files. Use \code{MAQMapShort} for MAQ \code{map} files produced by
       MAQ versions below 0.70 and \code{MAQMap} for more recent output.
       Use \code{fastq} for collections of fastq-format files. Use
-	  \code{BAM} for \code{.bam} files. Quality assessment details vary 
-	  depending on data source.
+      \code{BAM} for \code{.bam} files. Quality assessment details vary 
+      depending on data source.
 
     }
-	
+    
     \item{\code{qa,list-method}}{
 
-	  \code{dirPath} is a list of objects, all of the same class and
-	  typically derived from \code{ShortReadQ}, on which quality
-	  assessment is performed. All elements of the list must have names,
-	  and these should be unique.
+      \code{dirPath} is a list of objects, all of the same class and
+      typically derived from \code{ShortReadQ}, on which quality
+      assessment is performed. All elements of the list must have names,
+      and these should be unique.
 
     }
   }
