@@ -237,9 +237,14 @@ readAligned(sp, "s_2_export.txt", filter=filt)
 xy <- alignDataFilter(expression(abs(x-500) > 200 & abs(y-500) > 200))
 aln[xy(aln)]
 
-# both filters
+# both filters as a single filter
 chr5xy <- compose(filt, xy)
 aln[chr5xy(aln)]
+
+# both filters as a collection
+filters <- filt + xy
+subsetByFilter(aln, filters)
+summary(filters, aln)
 
 # read, chromosome, strand, position tuples occurring exactly once
 aln[occurrenceFilter(withSread=TRUE, duplicates="none")(aln)]

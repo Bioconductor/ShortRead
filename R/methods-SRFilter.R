@@ -243,3 +243,25 @@ setMethod(show, "SRFilter", function(object) {
     cat("name:", name(object), "\n")
     cat("use srFilter(object) to see filter\n")
 })
+
+setAs("SRFilter", "FilterRules", function(from) {
+  exprs <- list(from)
+  names(exprs) <- name(from)
+  FilterRules(exprs)
+})
+
+setMethod("+", c("SRFilter", "SRFilter"), function(e1, e2) {
+  as(e1, "FilterRules") + as(e2, "FilterRules")
+})
+
+setMethod("+", c("FilterRules", "SRFilter"), function(e1, e2) {
+  e1 + as(e2, "FilterRules")
+})
+
+setMethod("+", c("SRFilter", "FilterRules"), function(e1, e2) {
+  as(e1, "FilterRules") + e2 
+})
+
+setMethod("+", c("FilterRules", "FilterRules"), function(e1, e2) {
+  c(e1, e2) 
+})

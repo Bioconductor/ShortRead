@@ -6,6 +6,12 @@
 \alias{name,SRFilter-method}
 \alias{show,SRFilter-method}
 
+\alias{+,SRFilter,SRFilter-method}
+\alias{+,FilterRules,SRFilter-method}
+\alias{+,SRFilter,FilterRules-method}
+\alias{+,FilterRules,FilterRules-method}
+\alias{coerce,SRFilter,FilterRules-method}
+
 \title{"SRFilter" for representing functions operating on ShortRead objects}
 \description{
 
@@ -68,6 +74,15 @@ Class \code{"\linkS4class{PossibleMethod}"}, by class "function", distance 2.
       summary of the filter
     }
 
+    \item{coerce}{\code{signature(from = "SRFilter", to =
+        "FilterRules")}: Coerce a filter to a
+      \code{\link[IRanges]{FilterRules}} object of length one.
+    }
+
+    \item{+}{\code{signature(e1 = "SRFilter" or "FilterRules", e2 =
+        "SRFilter" or "FilterRules")}: Combine filters into a
+      single \code{\link[IRanges]{FilterRules}} object.
+    }
   }
 }
 
