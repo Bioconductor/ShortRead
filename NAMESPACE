@@ -38,7 +38,7 @@ exportClassPattern("^.*$")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
               alphabet, coverage, narrow, strand, trimLRPatterns,
-              width, append, rbind, "%in%")
+              width, append, rbind, "%in%", c)
 
 export(pData, phenoData, varLabels, varMetadata)
 

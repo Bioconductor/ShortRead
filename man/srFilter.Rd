@@ -242,7 +242,7 @@ chr5xy <- compose(filt, xy)
 aln[chr5xy(aln)]
 
 # both filters as a collection
-filters <- filt + xy
+filters <- c(filt, xy)
 subsetByFilter(aln, filters)
 summary(filters, aln)
 
