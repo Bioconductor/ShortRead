@@ -8,8 +8,9 @@
 \description{
 
   Import files containing aligned reads into an internal representation
-  of the alignments, sequences, and quality scores. Methods read all
-  files into a single R object.
+  of the alignments, sequences, and quality scores. Most methods (see
+  \sQuote{details} for exceptions) read all files into a single R
+  object.
 
 }
 \usage{
@@ -200,14 +201,16 @@ readAligned(dirPath, pattern=character(0), ...)
     \item{\code{type="MAQMap", records=-1L}}{Parse binary \code{map}
       files produced by MAQ. See details in the next section. The
       \code{records} option determines how many lines are read;
-      \code{-1L} (the default) means that all records are input.}
+      \code{-1L} (the default) means that all records are input. For
+      \code{type="MAQMap"}, \code{dir} and \code{pattern} must match a
+      single file.}
 
     \item{\code{type="MAQMapShort", records=-1L}}{The same as
       \code{type="MAQMap"} but for map files made with Maq prior to
       version 0.7.0. (These files use a different maximum read length
       [64 instead of 128], and are hence incompatible with newer Maq map
-      files.)}
-
+      files.). For \code{type="MAQMapShort"}, \code{dir} and
+      \code{pattern} must match a single file.}
 
     \item{\code{type="MAQMapview"}}{
 

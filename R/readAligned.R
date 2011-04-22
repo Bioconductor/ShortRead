@@ -168,11 +168,11 @@
 })
 
 .maqmap_file_list_error <-
-    function(files)
+    function(files, type)
 {
     .throw(SRError("UserArgumentMismatch",
                    "%s for '%s' must match 1 file, got\n  %s",
-                   "'dirPath', 'pattern'", "MAQMap",
+                   "'dirPath', 'pattern'", type,
                    paste(files, collapse="\n  ")))
 }
 
@@ -181,7 +181,7 @@
 {
     files <- .file_names(dirPath, pattern)
     if (length(files) > 1)
-        .maqmap_file_list_error(files)
+        .maqmap_file_list_error(files, "MAQMapShort")
     lst <- .Call(.read_maq_map, files, as.integer(records), FALSE)
     AlignedRead(sread=lst[["readSequence"]],
                 id=lst[["readId"]],
@@ -198,16 +198,7 @@
 {
     files <- .file_names(dirPath, pattern)
     if (length(files) > 1)
-        .maqmap_file_list_error(files)
-    if (!.maqmap_warning_seen()) {
-        msg <- paste("API change: The type 'MAQMap' now reads map files produced",
-                     "with at least version 0.7.0 of Maq. Before version 0.99.3 of the",
-                     "ShortRead package, this type was for reading map files produced by",
-                     "Maq up to version 0.6.x. If you still use the old Maq version, change",
-                     "the type argument to 'MAQMapShort'. [This warning will disappear in a",
-                     "future version of ShortRead.]")
-        warning( paste(strwrap(msg, indent=2, exdent=2), collapse="\n") )
-    }
+        .maqmap_file_list_error(files, "MAQMap")
     lst <- .Call(.read_maq_map, files, as.integer(records), TRUE)
     AlignedRead(sread=lst[["readSequence"]],
                 id=lst[["readId"]],
