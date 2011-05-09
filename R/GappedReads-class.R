@@ -13,8 +13,37 @@ setClass("GappedReads",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Getters.
+###
+
+setGeneric("qseq", function(x) standardGeneric("qseq"))
+
+setMethod("qseq", "GappedReads", function(x) x@qseq)
+
+### Overriding "qwidth" method for GappedAlignments objects with a faster
+### method.
+setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
+
+.valid.GappedReads.qseq <- function(x)
+{
+    x_qseq <- qseq(x)
+    if (class(x_qseq) != "DNAStringSet" || !is.null(names(x_qseq)))
+        return("'qseq(x)' must be an unnamed DNAStringSet instance")
+    if (length(x_qseq) != length(cigar(x)))
+        return("'qseq(x)' and 'cigar(x)' must have the same length")
+    if (!identical(width(x_qseq), cigarToQWidth(cigar(x))))
+        return(paste("'width(qseq(x))' and 'cigarToQWidth(cigar(x))'",
+                     "must be identical"))
+    NULL
+}
+
+setValidity2("GappedReads", .valid.GappedReads.qseq,
+             where=asNamespace("ShortRead"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,11 +90,6 @@ readGappedReads <- function(file, format="BAM", ...)
     }
     stop("only BAM format is supported for now")
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
-###
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
