@@ -7,7 +7,8 @@ setClass("GappedReads",
     contains="GappedAlignments",
     representation(
         qseq="DNAStringSet"
-        ## TODO: Maybe add the read quality, and mismatch information
+        ## TODO: Maybe add the read quality, and mismatch information, read
+        ## id.
     )
 )
 
