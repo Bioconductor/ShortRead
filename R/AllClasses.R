@@ -3,7 +3,7 @@
 ## readAligned,type=MAQMap depend on this ordering
 .STRAND_LEVELS <- levels(strand())
 .toStrand_Solexa <- function(x)
-    factor(.STRAND_LEVELS[match(x, c("R", "F"))],
+    factor(.STRAND_LEVELS[match(x, c("F", "R"))],
            levels=.STRAND_LEVELS)
 
 .srValidity <- function(object) TRUE

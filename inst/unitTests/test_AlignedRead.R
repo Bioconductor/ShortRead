@@ -191,6 +191,7 @@ test_AlignedRead_readAligned_realign_targetpos <- function()
     checkIdentical(as.character(tbl[[1]]), as.character(sread(aln)))
     checkIdentical(tbl[[2]], quality(alignQuality(aln)))
     checkIdentical(tbl[[3]], alignData(aln)[["nMatch"]])
+    checkIdentical(table(tbl[[5]])[["F"]], table(strand(aln))[["+"]])
     chr <- sub(":.*", "", tbl[[4]])
     chr[nchar(chr)==0] <- NA
     checkIdentical(factor(chr), chromosome(aln))
