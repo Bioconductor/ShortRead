@@ -37,7 +37,6 @@
 \alias{coerce,FastqQuality,matrix-method}
 \alias{coerce,FastqQuality,PhredQuality-method}
 \alias{narrow,FastqQuality-method}
-\alias{compact,FastqQuality-method}
 \alias{srsort,FastqQuality-method}
 \alias{srorder,FastqQuality-method}
 \alias{srrank,FastqQuality-method}
@@ -210,10 +209,6 @@
       \code{start} and \code{end} bases, according to
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.}
-
-    \item{compact}{\code{signature(x = "FastqQuality", ...)}:
-	  reduce the space (memory) occupied by \code{x}, if
-	  possible.}
 
     \item{srorder}{\code{signature(x = "FastqQuality")}:}
     \item{srrank}{\code{signature(x = "FastqQuality")}:}

@@ -140,12 +140,6 @@ setMethod(narrow, "ShortRead",
                sread=narrow(sread(x), start, end, width, use.names))
 })
 
-setMethod(compact, "ShortRead",
-    function(x, ...)
-{
-    initialize(x, id=callGeneric(id(x)), sread=callGeneric(sread(x)))
-})
-
 setMethod(trimLRPatterns, c(subject="ShortRead"),
     function (Lpattern = "", Rpattern = "", subject, max.Lmismatch =
               0, max.Rmismatch = 0, with.Lindels = FALSE, with.Rindels

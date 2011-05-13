@@ -24,7 +24,6 @@
 \alias{[,ShortRead,ANY,missing,ANY-method}
 \alias{append,ShortRead,ShortRead,missing-method}
 \alias{narrow,ShortRead-method}
-\alias{compact,ShortRead-method}
 \alias{detail,ShortRead-method}
 \alias{id,ShortRead-method}
 \alias{width,ShortRead-method}
@@ -103,10 +102,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.
     }
-
-    \item{compact}{\code{signature(x = "ShortRead", ...)}:
-	  reduce the space (memory) occupied by \code{x}, if
-	  possible.}
 
     \item{length}{\code{signature(x = "ShortRead")}: returns a
       \code{integer(1)} vector describing the number of reads in this

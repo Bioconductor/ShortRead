@@ -22,7 +22,6 @@
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
 \alias{append,ShortReadQ,ShortReadQ,missing-method}
 \alias{narrow,ShortReadQ-method}
-\alias{compact,ShortReadQ-method}
 \alias{qa,ShortReadQ-method}
 \alias{detail,ShortReadQ-method}
 
@@ -125,10 +124,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       are between \code{start} and \code{end} bases, according to
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.}
-
-    \item{compact}{\code{signature(x = "ShortReadQ", ...)}:
-	  reduce the space (memory) occupied by \code{x}, if
-	  possible.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component,
