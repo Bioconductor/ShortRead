@@ -6,14 +6,14 @@
 }
 
 .fixedBinRecSampler <-
-    function(buf, bin, sep, n, tot_n)
+    function(buf, bin, n, tot_n)
     ## sample c('buf', 'bin') records in proportion to their
     ## reprentation, returning a list() of raw() sampled records + new
     ## buf
 {
     bin <- c(buf, bin)
     env <- new.env(parent=emptyenv())
-    env[["rec_n"]] <- rec_n <- .Call(.sampler_rec_counter, bin, sep)
+    env[["rec_n"]] <- rec_n <- .Call(.sampler_rec_counter, bin)
     if (1L >= rec_n) {
         env[["sampled"]] <- list(bin)
         return(env)
@@ -28,7 +28,7 @@
         samp <- sort(sample(rec_n, rbinom(1L, trials, p)))
     }
     env[["sampled"]] <-
-        .Call(.sampler_rec_parser, bin, sep, c(samp, rec_n + 1L))
+        .Call(.sampler_rec_parser, bin, c(samp, rec_n + 1L))
     env
 }
 
@@ -36,7 +36,7 @@
     fields = list(
       con = "ANY",
       reader = "function", readerBlockSize = "integer",
-      recParser = "function", recSeperator = "raw",
+      recParser = "function",
       n = "integer", saved_n = "integer", tot_n = "integer",
       records = "list", buf="raw",
       verbose = "logical"),
@@ -49,11 +49,11 @@
       .add = function(bin, flush=FALSE) {
           ".add (incomplete) 'bin'ary stream, possibly .flush'ing buffer"
           if (verbose) .sampler_msg("sampler$.add")
-          res <- recParser(buf, bin, recSeperator, n, tot_n)
+          res <- recParser(buf, bin, n, tot_n)
           samp <- res[["sampled"]]
           if (flush) {
               buf <<- raw()
-              if (tot_n > n && runif(1L) < 1 / tot_n) # sample buf?
+              if (tot_n > n && runif(1L) > 1 / tot_n) # sample buf?
                   samp <- samp[-length(samp)]
           } else {
               len <- length(samp)
@@ -144,7 +144,6 @@ FastqSampler <-
                            reader=.binReader,
                            readerBlockSize=readerBlockSize,
                            recParser=.fixedBinRecSampler,
-                           recSeperator=charToRaw("\n@"),
                            verbose=verbose)
 }
 

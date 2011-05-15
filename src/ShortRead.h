@@ -96,8 +96,8 @@ SEXP readBfaToc(SEXP bfa_filename);
 
 /* sampler */
 
-SEXP sampler_rec_counter(SEXP buffer, SEXP recsep);
-SEXP sampler_rec_parser(SEXP buffer, SEXP recsep, SEXP sample);
+SEXP sampler_rec_counter(SEXP buffer);
+SEXP sampler_rec_parser(SEXP buffer, SEXP sample);
 SEXP sampler_as_fastq(SEXP records);
 
 #ifdef __cplusplus

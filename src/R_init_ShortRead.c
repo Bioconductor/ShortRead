@@ -28,8 +28,8 @@ static const R_CallMethodDef callMethods[] = {
     /* readBfaToc */
     {".readBfaToc", (DL_FUNC) &readBfaToc, 1},
     /* sampler */
-    {".sampler_rec_counter", (DL_FUNC) &sampler_rec_counter, 2},
-    {".sampler_rec_parser", (DL_FUNC) &sampler_rec_parser, 3},
+    {".sampler_rec_counter", (DL_FUNC) &sampler_rec_counter, 1},
+    {".sampler_rec_parser", (DL_FUNC) &sampler_rec_parser, 2},
     {".sampler_as_fastq", (DL_FUNC) &sampler_as_fastq, 1},
     {NULL, NULL, 0}
 };
