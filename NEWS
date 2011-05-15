@@ -6,6 +6,8 @@ BUG FIXES
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand
     inforamtion
 
+    o FastqSampler segfaulted on some files
+
 CHANGES IN VERSION 1.9
 ----------------------
 
