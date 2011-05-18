@@ -108,6 +108,12 @@ qa(dirPath, ...)
 }
 
 \examples{
+
+sp <- SolexaPath(system.file("extdata", package = "ShortRead"))
+qa1 <- qa(sp)
+fq <- file.path(analysisPath(sp), pattern="s_1_sequence.txt")
+qa2 <- qa(readFastq(fq), basename(fq))  # name fastq files
+
 showMethods("qa", where=getNamespace("ShortRead"))
 }
 

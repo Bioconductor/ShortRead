@@ -91,8 +91,7 @@
         count <- as.vector(res)
         data.frame(Coverage=as.numeric(names(res)), Count= count,
                    CumulativePpn=cumsum(count) / sum(count),
-                   Lane=lane,
-                   row.names=NULL)
+                   Lane=lane, row.names=NULL)
     })
 }
 
@@ -156,12 +155,13 @@
         nOccur <- tapply(nOccurrences, lane, c)
         cumulative <- tapply(nOccurrences*nReads, lane, function(elt) {
             cs <- cumsum(elt)
-            (cs-cs[1] + 1) / max(1, diff(range(cs)))
+            (cs-cs[1] + 1) / (diff(range(cs)) + 1L)
         })
         lane <- tapply(lane, lane, c)
         data.frame(nOccurrences=unlist(nOccur),
                    cumulative=unlist(cumulative),
-                   lane=unlist(lane))
+                   lane=unlist(lane),
+                   row.names=NULL)
     })
     xyplot(cumulative~log10(nOccurrences)|factor(lane), df,
            xlab=expression(paste(
