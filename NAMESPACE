@@ -22,7 +22,7 @@ importFrom(methods, Ops)
 
 importMethodsFrom(IRanges, Ops)
 
-importFrom(GenomicRanges, strand)
+importFrom(GenomicRanges, strand, GappedAlignments)
 
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            alphabetFrequency, alphabet, DNA_ALPHABET,

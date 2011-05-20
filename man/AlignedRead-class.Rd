@@ -12,8 +12,9 @@
 \alias{append,AlignedRead,AlignedRead,missing-method}
 \alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
 \alias{coerce,AlignedRead,RangesList-method}
-\alias{coerce,AlignedRead,GRanges-method}
 \alias{coerce,AlignedRead,RangedData-method}
+\alias{coerce,AlignedRead,GRanges-method}
+\alias{coerce,AlignedRead,GappedAlignments-method}
 \alias{chromosome,AlignedRead-method}
 \alias{position,AlignedRead-method}
 \alias{strand,AlignedRead-method}
@@ -107,6 +108,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \code{signature(from = "AlignedRead", to = "RangesList")}:
           \code{signature(from = "AlignedRead", to = "RangedData")}:
           \code{signature(from = "AlignedRead", to = "GRanges")}:
+          \code{signature(from = "AlignedRead", to = "GappedAlignments")}:
       
       Invoke these methods with, e.g., \code{as(from, "AlignedRead")}
       to coerce objects of class \code{from} to class

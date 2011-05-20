@@ -83,6 +83,18 @@ setAs("AlignedRead", "RangesList", function(from)
     split(IRanges(start=pos[notNA], width=wd[notNA]), chr[notNA])
 })
 
+setAs("AlignedRead", "RangedData", function(from)
+{
+  chr <- chromosome(from)
+  pos <- position(from)
+  wd <- width(from)
+  std <- strand(from)
+  notNA <- !(is.na(chr) | is.na(pos) | is.na(wd) | is.na(std))
+  GRanges(IRanges(pos[notNA], width=wd[notNA]), space = chr[notNA],
+          id = id(from)[notNA], strand = std[notNA],
+          pData(alignData(from))[notNA,,drop=FALSE])
+})
+
 setAs("AlignedRead", "GRanges", function(from)
 {
     chr <- chromosome(from)
@@ -95,16 +107,14 @@ setAs("AlignedRead", "GRanges", function(from)
             id = id(from)[notNA], pData(alignData(from))[notNA,,drop=FALSE])
 })
 
-setAs("AlignedRead", "RangedData", function(from)
+setAs("AlignedRead", "GappedAlignments", function(from)
 {
-  chr <- chromosome(from)
-  pos <- position(from)
-  wd <- width(from)
-  std <- strand(from)
-  notNA <- !(is.na(chr) | is.na(pos) | is.na(wd) | is.na(std))
-  GRanges(IRanges(pos[notNA], width=wd[notNA]), space = chr[notNA],
-          id = id(from)[notNA], strand = std[notNA],
-          pData(alignData(from))[notNA,,drop=FALSE])
+    if (length(from) == 0L)
+        cigar <- character(0)
+    else
+        cigar <- paste(width(from), "M", sep="")
+    GappedAlignments(rname=chromosome(from), pos=position(from),
+                     cigar=cigar, strand=strand(from))
 })
 
 ## subset
