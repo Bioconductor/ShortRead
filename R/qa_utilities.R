@@ -310,24 +310,28 @@
         })
 
     Lane  <- .laneLbl(df$lane)
-    pal <- brewer.pal(3, "Set2")
+    pal <- c("#66C2A5", "#FC8D62") # brewer.pal(3, "Set2")[1:2]
+    lvlPal <- c("#F5F5F5", "black" )
+    rng <- range(df$Count)
+    at <- seq(rng[1], rng[2], length.out=512)
     layout <- 
         if (length(unique(Lane)) > 1)
             c(2, ceiling(length(unique(Lane)) / 2))
         else c(1, 1)
 
     xyplot(Score ~ Cycle | Lane, df,
-           panel=function(x, y, z, ..., subscripts) {
+           panel=function(x, y, z, ..., groups, subscripts) {
                z <- df$Count[subscripts]
                mean <- calc_means(x, y, z)
                qtiles <- calc_quantile(x, y, z)
                sxi <- sort(unique(x))
-
+               panel.levelplot(x, y, z, subscripts=TRUE, at=at,
+                               col.regions=colorRampPalette(lvlPal))
                llines(sxi, mean, type="l", col=pal[[1]], lwd=1)
                llines(sxi, sapply(qtiles, "[[", 1),
                       type="l", col=pal[[2]], lwd=1, lty=3)
                llines(sxi, sapply(qtiles, "[[", 2),
-                      type="l", col=pal[[2]], lwd=2)
+                      type="l", col=pal[[2]], lwd=1)
                llines(sxi, sapply(qtiles, "[[", 3),
                       type="l", col=pal[[2]], lwd=1, lty=3)
            }, ..., layout=layout, ylab="Quality Score")

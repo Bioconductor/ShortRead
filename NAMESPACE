@@ -9,6 +9,8 @@ importClassesFrom(Biostrings, BStringSet, DNAStringSet,
 
 importClassesFrom(IRanges, RangesList, SimpleRleList)
 
+importFrom(grDevices, colorRampPalette)
+
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",
            pData, phenoData, varLabels, varMetadata, sampleNames,
