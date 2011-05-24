@@ -297,59 +297,40 @@
            aspect=2)
 }
 
-.fivenum <-
-    function(rle)
+.plotCycleQuality <-
+    function(df, ...)
 {
-    n <- length(rle)
-    n4 <- floor((n + 3)/2)/2
-    d <- c(1, n4, (n + 1)/2, n + 1 - n4, n)
-    0.5 * as.numeric(rle[floor(d)] + rle[ceiling(d)])
-}
+    calc_means <- function(x, y, z)
+        rowsum(y * z, x) / rowsum(z, x)
 
-.boxplot.stats <-
-    function(score, count, coef=1.5)
-{
-    x <- Rle(score, count)
-    stats <- .fivenum(x)
-    iqr <- diff(stats[c(2, 4)])
-    out <- x < (stats[2L] - coef * iqr) | x > (stats[4L] + coef * iqr)
-    list(stats = stats, out = runValue(x[out]))
-}
-
-.plotCycleQuality <- function(df)
-{
-    cycleStats <- with(df, {
-        tapply(seq_len(nrow(df)), list(lane, Cycle), function(i)
-        {
-            ns <- .boxplot.stats(Score[i], Count[i])
-            data.frame(Score=c(ns$stats, unique(ns$out)), Cycle=Cycle[i][1],
-                       Lane=lane[i][1])
+    calc_quantile <- function(x, y, z, q=c(.25, .5, .75))
+        by(list(y, z), x, function(x) {
+            scoreRle <- Rle(x[[1]], x[[2]])
+            quantile(scoreRle, q)
         })
-    })
-    newScore <- do.call(rbind,cycleStats)
-    if(length(unique(newScore$Lane)) > 1)
-        playout = c(2, ceiling(length(unique(newScore$Lane))/2))
-    else playout = c(1,1)
-    xyplot(Score ~ Cycle | Lane, data = newScore,
-        layout = playout,
-        xlab = "Cycle", ylab = "Quality Score",
-        panel = function(x, y, ...)
-        {
-            newy <- split(y, x)
-            newx <- sort(unique(x))
-            for(i in seq_along(newy))
-            {
-                elt <- newy[[i]]
-                llines(x = newx[i], y = c(elt[1], elt[2]), lty = 2)
-                llines(x = newx[i], y = c(elt[4], elt[5]), lty = 2)
-                llines(x = newx[i], y = c(elt[2], elt[4]), lty = 1, lwd = 2)
-                lpoints(x = newx[i], y = elt[3], pch = "-", col = "black",
-                cex = 1.5)
-                if(length(elt) > 5)
-                    lpoints(x = newx[i], y = elt[-(1:5)], pch = ".")
-            }
-        }
-    )
+
+    Lane  <- .laneLbl(df$lane)
+    pal <- brewer.pal(3, "Set2")
+    layout <- 
+        if (length(unique(Lane)) > 1)
+            c(2, ceiling(length(unique(Lane)) / 2))
+        else c(1, 1)
+
+    xyplot(Score ~ Cycle | Lane, df,
+           panel=function(x, y, z, ..., subscripts) {
+               z <- df$Count[subscripts]
+               mean <- calc_means(x, y, z)
+               qtiles <- calc_quantile(x, y, z)
+               sxi <- sort(unique(x))
+
+               llines(sxi, mean, type="l", col=pal[[1]], lwd=1)
+               llines(sxi, sapply(qtiles, "[[", 1),
+                      type="l", col=pal[[2]], lwd=1, lty=3)
+               llines(sxi, sapply(qtiles, "[[", 2),
+                      type="l", col=pal[[2]], lwd=2)
+               llines(sxi, sapply(qtiles, "[[", 3),
+                      type="l", col=pal[[2]], lwd=1, lty=3)
+           }, ..., layout=layout, ylab="Quality Score")
 }
 
 .plotMultipleAlignmentCount <-
