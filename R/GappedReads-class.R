@@ -6,9 +6,9 @@
 setClass("GappedReads",
     contains="GappedAlignments",
     representation(
+        qname="BStringSet",
         qseq="DNAStringSet"
-        ## TODO: Maybe add the read quality, and mismatch information, read
-        ## id.
+        ## TODO: Maybe add the read quality? mismatch information?
     )
 )
 
@@ -16,6 +16,10 @@ setClass("GappedReads",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
+
+setGeneric("qname", function(x) standardGeneric("qname"))
+
+setMethod("qname", "GappedReads", function(x) x@qname)
 
 setGeneric("qseq", function(x) standardGeneric("qseq"))
 
@@ -30,6 +34,16 @@ setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
 ### Validity.
 ###
 
+.valid.GappedReads.qname <- function(x)
+{
+    x_qname <- qname(x)
+    if (class(x_qname) != "BStringSet" || !is.null(names(x_qname)))
+        return("'qname(x)' must be an unnamed BStringSet instance")
+    if (length(x_qname) != length(cigar(x)))
+        return("'qname(x)' and 'cigar(x)' must have the same length")
+    NULL
+}
+
 .valid.GappedReads.qseq <- function(x)
 {
     x_qseq <- qseq(x)
@@ -43,7 +57,13 @@ setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
     NULL
 }
 
-setValidity2("GappedReads", .valid.GappedReads.qseq,
+.valid.GappedReads <- function(x)
+{
+    c(.valid.GappedReads.qname(x),
+      .valid.GappedReads.qseq(x))
+}
+
+setValidity2("GappedReads", .valid.GappedReads,
              where=asNamespace("ShortRead"))
 
 
@@ -52,13 +72,14 @@ setValidity2("GappedReads", .valid.GappedReads.qseq,
 ###
 
 GappedReads <- function(rname=Rle(factor()), pos=integer(0),
-                        cigar=character(0), strand=NULL, qseq=DNAStringSet(),
+                        cigar=character(0), strand=NULL,
+                        qname=BStringSet(), qseq=DNAStringSet(),
                         seqlengths=NULL)
 {
     galn <- GappedAlignments(rname=rname, pos=pos,
                              cigar=cigar, strand=strand,
                              seqlengths=seqlengths)
-    new("GappedReads", galn, qseq=qseq)
+    new("GappedReads", galn, qname=qname, qseq=qseq)
 }
 
 readGappedReads <- function(file, format="BAM", ...)
@@ -125,6 +146,7 @@ setMethod("[", "GappedReads",
             stop("invalid subscript type")
         }
         x <- callNextMethod()
+        x@qname <- x@qname[i]
         x@qseq <- x@qseq[i]
         x
     }

@@ -107,14 +107,20 @@ setAs("AlignedRead", "GRanges", function(from)
             id = id(from)[notNA], pData(alignData(from))[notNA,,drop=FALSE])
 })
 
-setAs("AlignedRead", "GappedAlignments", function(from)
+setAs("AlignedRead", "GappedReads", function(from)
 {
     if (length(from) == 0L)
         cigar <- character(0)
     else
         cigar <- paste(width(from), "M", sep="")
-    GappedAlignments(rname=chromosome(from), pos=position(from),
-                     cigar=cigar, strand=strand(from))
+    GappedReads(rname=chromosome(from), pos=position(from),
+                cigar=cigar, strand=strand(from),
+                qname=id(from), qseq=sread(from))
+})
+
+setAs("AlignedRead", "GappedAlignments", function(from)
+{
+    as(as(from, "GappedReads"), "GappedAlignments")
 })
 
 ## subset
