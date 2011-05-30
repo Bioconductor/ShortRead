@@ -1,6 +1,7 @@
 \name{trimTails}
 \alias{trimTails}
 \alias{trimTails,BStringSet-method}
+\alias{trimTails,XStringQuality-method}
 
 \title{Trim tails of reads based on nucleotide qualities}
 
@@ -14,7 +15,9 @@
 \usage{
 trimTails(object, ..., ranges=FALSE)
 
-\S4method{trimTails}{BStringSet}(object, k, a, successive=FALSE, ..., ranges=FALSE)
+\S4method{trimTails}{BStringSet}(object, k, a, successive=FALSE, ...,
+    alphabet, ranges=FALSE)
+\S4method{trimTails}{XStringQuality}(object, k, a, successive=FALSE, ..., ranges=FALSE)
 
 }
 
@@ -37,6 +40,11 @@ trimTails(object, ..., ranges=FALSE)
     failed and subsequent letters are removed.}
 
   \item{\dots}{Additional arguments, perhaps used by methods.}
+
+  \item{alphabet}{\code{character()} (ordered low to high) letters on
+    which quality scale is measured. Usually supplied internally (user
+    does not need to specify). If missing, then set to ASCII characters
+    0-127.}
 
   \item{ranges}{\code{logical(1)} indicating whether the trimmed object,
     or only the ranges satisfying the trimming condition, be returned.}

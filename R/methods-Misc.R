@@ -154,9 +154,11 @@ setMethod(tables, "XStringSet", .stringset_tables)
 ## trimTails
 
 setMethod(trimTails, "BStringSet",
-    function(object, k, a, successive=FALSE, ..., ranges=FALSE)
+    function(object, k, a, successive=FALSE, ..., alphabet,
+             ranges=FALSE)
 {
-    alphabet <- sapply(as.raw(0:127), rawToChar)
+    if (missing(alphabet))
+        alphabet <- sapply(as.raw(0:127), rawToChar)
     tryCatch({
         k <- as.integer(k)
         if (1L != length(k) || k < 0L)
@@ -181,4 +183,12 @@ setMethod(trimTails, "BStringSet",
     })
     if (ranges) IRanges(1, ends)
     else narrow(object, 1L, ends)[0L != ends]
+})
+
+setMethod(trimTails, "XStringQuality",
+    function(object, k, a, successive=FALSE, ..., ranges=FALSE)
+{
+    rng <- .Call(object, k, a, successive, ..., ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, 1L, end(rng))[0L != width(rng)]
 })
