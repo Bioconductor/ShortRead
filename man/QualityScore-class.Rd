@@ -37,6 +37,7 @@
 \alias{coerce,FastqQuality,matrix-method}
 \alias{coerce,FastqQuality,PhredQuality-method}
 \alias{narrow,FastqQuality-method}
+\alias{trimTails,FastqQuality-method}
 \alias{srsort,FastqQuality-method}
 \alias{srorder,FastqQuality-method}
 \alias{srrank,FastqQuality-method}
@@ -209,6 +210,14 @@
       \code{start} and \code{end} bases, according to
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.}
+
+    \item{trimTails}{\code{signature(object="FastqQuality", k="integer",
+	a="character", successive=FALSE, ..., ranges=FALSE)}: trim
+      trailing scores if \code{k} scores fall below the quality encoded
+      by \code{a}. If \code{successive=FALSE}, the k'th failing score
+      and all subseqent scores are trimmed. If \code{successive=TRUE},
+      failing scores must occur successively; the sequence is trimmed
+      from the first of the successive failing score.}
 
     \item{srorder}{\code{signature(x = "FastqQuality")}:}
     \item{srrank}{\code{signature(x = "FastqQuality")}:}
