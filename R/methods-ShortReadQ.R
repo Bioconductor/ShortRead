@@ -204,6 +204,15 @@ setMethod(alphabetByCycle, "ShortReadQ", .abc_ShortReadQ)
 
 setMethod(alphabetScore, "ShortReadQ", .forward_objq)
 
+setMethod(trimTails, "ShortReadQ",
+    function(object, k, a, successive=FALSE, ..., ranges=FALSE)
+{
+    rng <- callGeneric(quality(quality(object)), k, a, successive,
+                       ..., ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, 1L, end(rng))[0L != width(rng)]
+})
+
 ## show
 
 setMethod(detail, "ShortReadQ", function(x, ...) {

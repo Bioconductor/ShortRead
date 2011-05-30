@@ -22,6 +22,7 @@
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
 \alias{append,ShortReadQ,ShortReadQ,missing-method}
 \alias{narrow,ShortReadQ-method}
+\alias{trimTails,ShortReadQ-method}
 \alias{qa,ShortReadQ-method}
 \alias{detail,ShortReadQ-method}
 
@@ -119,11 +120,21 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       append the \code{sread}, \code{quality} and \code{id} slots of
       \code{values} after the corresponding fields of \code{x}.}
 
-    \item{narrow}{\code{signature(x = "ShortReadQ", start = NA, end = NA, width = NA, use.names = TRUE)}:
-      \sQuote{narrow} \code{sread} and \code{quality} so that sequences
-      are between \code{start} and \code{end} bases, according to
+    \item{narrow}{\code{signature(x = "ShortReadQ", start = NA, end =
+      NA, width = NA, use.names = TRUE)}: narrow \code{sread} and
+      \code{quality} so that sequences are between \code{start} and
+      \code{end} bases, according to
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.}
+
+    \item{trimTails}{\code{signature(object="ShortReadQ", k="integer",
+	a="character", successive=FALSE, ..., ranges=FALSE)}: trim
+      trailing nucleotides if \code{k} nucleotides fall below the
+      quality encoded by \code{a}. If \code{successive=FALSE}, the k'th
+      failing nucleotide and all subseqent nucleotides are trimmed. If
+      \code{successive=TRUE}, failing nucleotides must occur
+      successively; the sequence is trimmed from the first of the
+      successive failing nucleotides.}
 
     \item{alphabetByCycle}{\code{signature(stringSet = "ShortReadQ")}:
       Apply \code{\link{alphabetByCycle}} to the \code{sread} component,
@@ -135,15 +146,15 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
     \item{alphabetScore}{\code{signature(object = "ShortReadQ")}:
       See \code{\link{alphabetScore}} for details.}
 
-	\item{qa}{\code{signature(dirPath = "ShortReadQ", lane="character",
-		..., verbose=FALSE)}:
-	  Perform quality assessment on the \code{ShortReadQ} object using
-	  \code{lane} to identify the object and returning an instance of
-	  \code{\linkS4class{ShortReadQQA}}. See \code{\link{qa}}}
+    \item{qa}{\code{signature(dirPath = "ShortReadQ", lane="character",
+	..., verbose=FALSE)}:
+      Perform quality assessment on the \code{ShortReadQ} object using
+      \code{lane} to identify the object and returning an instance of
+      \code{\linkS4class{ShortReadQQA}}. See \code{\link{qa}}}
 
     \item{detail}{\code{signature(x = "ShortReadQ")}: display the
-	  first and last entries of each of \code{sread}, \code{id}, and
-	  \code{quality} entries of \code{object}.}
+      first and last entries of each of \code{sread}, \code{id}, and
+      \code{quality} entries of \code{object}.}
   }
 }
 
@@ -161,5 +172,10 @@ showMethods(class="ShortReadQ", where=getNamespace("ShortRead"),
             inherit=FALSE)
 showMethods(class="ShortRead", where=getNamespace("ShortRead"),
             inherit=FALSE)
+
+sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
+quality(rfq)
+quality(trimTails(rfq, 2, "H", successive=TRUE))
 }
 \keyword{classes}

@@ -1,8 +1,11 @@
 #include "ShortRead.h"
+#include "trim.h"
 
 static const R_CallMethodDef callMethods[] = {
     /* util.c */
     {".count_lines", (DL_FUNC) &count_lines, 1},
+    /* trim.c */
+    {".trimTails", (DL_FUNC) &trim_tails, 4},
     /* io.c */
     {".read_prb_as_character", (DL_FUNC) &read_prb_as_character, 2},
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 2},

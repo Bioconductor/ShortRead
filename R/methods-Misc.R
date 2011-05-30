@@ -150,3 +150,35 @@ setMethod(srdistance, c("DNAStringSet", "DNAStringSet"),
 }
 
 setMethod(tables, "XStringSet", .stringset_tables)
+
+## trimTails
+
+setMethod(trimTails, "BStringSet",
+    function(object, k, a, successive=FALSE, ..., ranges=FALSE)
+{
+    alphabet <- sapply(as.raw(0:127), rawToChar)
+    tryCatch({
+        k <- as.integer(k)
+        if (1L != length(k) || k < 0L)
+            stop("'k' must be integer(1) >= 0L")
+        a <- as.character(a)
+        if (1L != length(a) || 1L != nchar("A"))
+            stop("'", a, "' must satsify 'nchar(a) == 1L'")
+        if (!a %in% alphabet)
+            stop("'", a, "' must be a character with encoding < 128")
+        successive <- as.logical(successive)
+        if (1L != length(successive) || is.na(successive))
+            stop("'successive' must be logical(1), not NA")
+    }, error=function(err) {
+        .throw(SRError("UserArgumentMismatch", conditionMessage(err)))
+    })
+    tryCatch({
+        a_map <- rev(cumsum(rev(alphabet==a))) # '1' if < a
+        names(a_map) <- alphabet
+        ends <- .Call(.trimTails, object, k, a_map, successive)
+    }, error=function(err) {
+        .throw(SRError("InternalError", conditionMessage(err)))
+    })
+    if (ranges) IRanges(1, ends)
+    else narrow(object, 1L, ends)[0L != ends]
+})

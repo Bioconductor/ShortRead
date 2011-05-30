@@ -1,6 +1,10 @@
 CHANGES IN VERSION 1.11
 -----------------------
 
+NEW FEATURES
+
+    o trimTails to trim low quality trailing nucleotides
+
 BUG FIXES
 
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand
