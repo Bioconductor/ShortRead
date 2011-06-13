@@ -298,7 +298,7 @@
 }
 
 .plotCycleQuality <-
-    function(df, ...)
+    function(df, ..., strip=FALSE, strip.left=TRUE)
 {
     calc_means <- function(x, y, z)
         rowsum(y * z, x) / rowsum(z, x)
@@ -314,10 +314,9 @@
     lvlPal <- c("#F5F5F5", "black" )
     rng <- range(df$Count)
     at <- seq(rng[1], rng[2], length.out=512)
-    layout <- 
-        if (length(unique(Lane)) > 1)
-            c(2, ceiling(length(unique(Lane)) / 2))
-        else c(1, 1)
+    np <- length(unique(Lane))
+    nrow <- ceiling(np / 3)
+    layout <- c(ceiling(np/nrow), nrow)
 
     xyplot(Score ~ Cycle | Lane, df,
            panel=function(x, y, z, ..., groups, subscripts) {
@@ -334,7 +333,8 @@
                       type="l", col=pal[[2]], lwd=1)
                llines(sxi, sapply(qtiles, "[[", 3),
                       type="l", col=pal[[2]], lwd=1, lty=3)
-           }, ..., layout=layout, ylab="Quality Score")
+           }, ..., layout=layout, ylab="Quality Score",
+           strip=strip, strip.left=strip.left)
 }
 
 .plotMultipleAlignmentCount <-
