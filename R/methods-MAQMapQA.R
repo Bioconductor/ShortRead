@@ -114,12 +114,10 @@ setMethod(report_html, "MAQMapQA",
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
-        list(PPN_COUNT=hwrite(
-               .ppnCount(qa[["readCounts"]]),
-               border=NULL),
-             BASE_CALL_COUNT=hwrite(
-               .df2a(qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])),
-               border=NULL),
+        list(PPN_COUNT=.html_img(
+               dest, "readCount", .plotReadCount(qa)),
+             BASE_CALL_COUNT=.html_img(
+               dest, "baseCalls", .plotNucleotideCount(qa)),
              READ_QUALITY_FIGURE=.htmlReadQuality(
                dest, "readQuality", qa, "aligned"),
              READ_OCCURRENCES_FIGURE=.htmlReadOccur(

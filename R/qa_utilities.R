@@ -113,6 +113,9 @@
 
 ## report-generation
 
+.dnaCol <-                 # brewer.pal(6, "Paired")[c(2, 4, 3, 1, 6)]
+    c("#1F78B4", "#33A02C", "#B2DF8A", "#A6CEE3", "#E31A1C")
+
 .ppnCount <- function(m)
 {
     if(is.null(m) || is.factor(m[,-1])) {
@@ -134,6 +137,36 @@
             sapply(df, sprintf, fmt=fmt)
     row.names(a) <- rownames(df)
     a
+}
+
+.plotReadCount <-
+    function(qa, ...)
+{
+    df <- qa[["readCounts"]]
+    df1 <- data.frame(Count=unlist(df),
+                      Sample=rownames(df)[row(df)],
+                      Census=factor(names(df)[col(df)],
+                        levels=names(df)))
+    col <- .dnaCol[c(1, 4, 2)]
+    dotplot(Sample~Count, group=Census, df1,
+            type="b", pch=20, col=col,
+            key=list(space="top", lines=list(col=rev(col)),
+              text=list(rev(names(df))), columns=ncol(df)))
+}
+
+.plotNucleotideCount <-
+    function(qa, ...)
+{
+    df <- qa[["baseCalls"]]
+    alph <- df / rowSums(df)
+    df1 <- data.frame(Frequency=unlist(alph),
+                      Sample=rownames(alph)[row(alph)],
+                      Nucleotide=factor(names(alph)[col(alph)],
+                        levels=c("A", "C", "G", "T", "N")))
+    dotplot(Sample~Frequency, group=Nucleotide, df1,
+            type="b", pch=20,  col=.dnaCol,
+            key=list(space="top", lines=list(col=.dnaCol),
+              text=list(lab=names(df)), columns=ncol(df)))
 }
 
 .laneLbl <- function(lane) sub("s_(.*)_.*", "\\1", lane)
@@ -280,17 +313,15 @@
 }
 
 .plotCycleBaseCall <- function(df) {
-    col <- rep(c("red", "blue"), 2)
-    lty <- rep(1:2, each=2)
+    col <- .dnaCol[1:4]
     df <- df[df$Base != "N" & df$Base != "-",]
     df$lane <- .laneLbl(df$lane)
     df$Base <- factor(df$Base)
     xyplot(log10(Count)~as.integer(Cycle)|lane,
            group=factor(Base),
            df[with(df, order(lane, Base, Cycle)),],
-           type="l", col=col, lty=lty,
-           key=list(space="top",
-             lines=list(col=col, lty=lty),
+           type="l", col=col,
+           key=list(space="top", lines=list(col=col),
              text=list(lab=levels(df$Base)),
              columns=length(levels(df$Base))),
            xlab="Cycle",

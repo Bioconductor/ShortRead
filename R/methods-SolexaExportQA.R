@@ -227,12 +227,10 @@ setMethod(report_html, "SolexaExportQA",
     perTile <- qa[["perTile"]]
     readCnt <- perTile[["readCounts"]]
     values <-
-        list(PPN_COUNT=hwrite(
-               .ppnCount(qa[["readCounts"]]),
-               border=NULL),
-             BASE_CALL_COUNT=hwrite(
-               .df2a(qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])),
-               border=NULL),
+        list(PPN_COUNT=.html_img(
+               dest, "readCount", .plotReadCount(qa)),
+             BASE_CALL_COUNT=.html_img(
+               dest, "baseCalls", .plotNucleotideCount(qa)),
              READ_QUALITY_FIGURE=.htmlReadQuality(
                dest, "readQuality", qa),
              READ_OCCURRENCES_FIGURE=.htmlReadOccur(

@@ -143,12 +143,10 @@ setMethod(report_html, "SolexaRealignQA",
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
-        list(PPN_COUNT=hwrite(
-               .ppnCount(qa[["readCounts"]]),
-               border=NULL),
-             BASE_CALL_COUNT=hwrite(
-               .df2a(qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])),
-               border=NULL),
+        list(PPN_COUNT=.html_img(
+               dest, "readCount", .plotReadCount(qa)),
+             BASE_CALL_COUNT=.html_img(
+               dest, "baseCalls", .plotNucleotideCount(qa)),
              READ_QUALITY_FIGURE=.html_NA(),
              READ_OCCURRENCES_FIGURE=.htmlReadOccur(
                dest, "readOccurences", qa),

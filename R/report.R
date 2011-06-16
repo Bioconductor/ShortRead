@@ -82,13 +82,15 @@ setMethod(.report_pdf, "character",
 {
     if (is.null(fig))
         return(hwrite("Not available."))
-    jpegFile <- paste(file, "jpg", sep=".")
+
+    imgFile <- paste(file, "jpg", sep=".")
     pdfFile <- paste(file, "pdf", sep=".")
     imgDir <- file.path(dir, "image")
     if (!file.exists(imgDir))
         dir.create(imgDir)
 
-    jpeg(file.path(imgDir, jpegFile), ...)
+    img <- if (capabilities("png")) png else jpeg
+    img(file.path(imgDir, imgFile), ...)
     print(fig)
     dev.off()
 
@@ -96,7 +98,7 @@ setMethod(.report_pdf, "character",
     print(fig)
     dev.off()
 
-    hwriteImage(file.path(".", "image", jpegFile),
+    hwriteImage(file.path(".", "image", imgFile),
                 link=file.path(".", "image", pdfFile))
 }
 

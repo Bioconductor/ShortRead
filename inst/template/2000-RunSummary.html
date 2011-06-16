@@ -9,7 +9,7 @@
   million reads, with up to 95&#37; passing pre-defined filters.
 </p>
 <pre>
-  ShortRead:::.ppnCount(qa[["readCounts"]])
+  ShortRead:::.plotReadCount(qa)
 </pre>
 @PPN_COUNT@
 
@@ -18,7 +18,7 @@
   reflect the frequencies of the regions sequenced.
 </p>
 <pre>
-  qa[["baseCalls"]] / rowSums(qa[["baseCalls"]])
+  ShortRead:::.plotNucleotideCount(qa)
 </pre> 
 @BASE_CALL_COUNT@
 
