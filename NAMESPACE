@@ -22,6 +22,10 @@ importFrom(IRanges, append, coverage, Filter, narrow, score, start,
            Views, width, rbind, split, "%in%", sapply, lapply, as.list, 
            as.vector)
 
+importFrom(lattice, dotplot, histogram, levelplot, llines,
+           panel.abline, panel.histogram, panel.levelplot,
+           panel.xyplot, xyplot)
+
 importFrom(methods, Ops)
 
 importMethodsFrom(IRanges, Ops)
