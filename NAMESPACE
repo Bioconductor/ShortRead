@@ -36,7 +36,7 @@ importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
 importFrom(hwriter, hwrite, hwriteImage)
 
 importFrom(Rsamtools, scanBam, ScanBamParam, bamSimpleCigar,
-           bamReverseComplement, bamWhat)
+           bamReverseComplement, bamWhat, isOpen)
 
 exportClassPattern("^.*$")
 
