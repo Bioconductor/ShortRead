@@ -110,7 +110,7 @@
                  panel=function(...) {
                      panel.xyplot(...)
                      panel.grid(h=0, v=-1)
-                     panel.abline(a=0, b=0, alpha=0.3)
+                     panel.abline(a=0, b=0, col="grey")
                  })
 
     ## annotation here
@@ -119,10 +119,9 @@
 
 .multicoverage_viewer <- function(sp, ...)
 {
-    lty <- rep(seq_len(length(levels(sp$group)) / 2), times=2)
-    # lty is wrong
-    f <- unique(unlist(lapply(strsplit(l, ": "), "[[",2)))
-    col <- c(rep("#66C2A5", length(f)), rep("#FC8D62", length(f)))
+    lv <- length(levels(sp$group))/2
+    lty <- rep(seq_len(lv), times=2)
+    col <- c(rep("#66C2A5", lv) , rep("#FC8D62", lv))
     cv <- xyplot(data ~ pos, data=sp, group=group, type="s",
                  col=col, lty=lty,
                  ylab="Coverage", xlab="Coordinate",
@@ -132,6 +131,7 @@
                  panel=function(...) {
                      panel.xyplot(...)
                      panel.grid(h=0, v=-1)
+                     panel.abline(a=0, b=0, col="grey")
                  })
     SpTrellis(trellis=sv)
 }

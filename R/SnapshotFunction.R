@@ -70,7 +70,7 @@ viewer <- function(x, ...) x@viewer
 
 .multifine_coverage <-
     SnapshotFunction(reader=.multifine_coverage_reader,
-                     viewer=.coverage_viewer,
+                     viewer=.multicoverage_viewer,
                      limits=c(50L, 10000L))
 
 
