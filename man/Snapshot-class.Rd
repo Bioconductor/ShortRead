@@ -3,7 +3,7 @@
 \Rdversion{1.1}
 \docType{class}
 
-%Constructor:
+% Constructor:
 \alias{Snapshot}
 \alias{Snapshot,character,GRanges-method}
 \alias{Snapshot,character,missing-method}
@@ -31,6 +31,7 @@
 \alias{zoom}
 \alias{zoom,Snapshot-method}
 
+\title{Class \code{"Snapshot"}}
 
 \description{
 
@@ -137,7 +138,6 @@ Snapshot(files, range, ...)
   }
 }
 
-\keyword{classes}
 \section{Fields}{
   \describe{
     \item{\code{.debug}:}{Object of class \code{function} to display
@@ -189,8 +189,6 @@ Snapshot(files, range, ...)
 \examples{
 fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
 s <- Snapshot(fl)
-
-
 
 }
 
