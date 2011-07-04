@@ -3,19 +3,39 @@
 \Rdversion{1.1}
 \docType{class}
 
-\alias{Snapshot-class}
+%Constructor:
 \alias{Snapshot}
 \alias{Snapshot,character,GRanges-method}
 \alias{Snapshot,character,missing-method}
+
+% Accessors:
+\alias{files}
+\alias{files,Snapshot-method}
+\alias{functions}
+\alias{functions,Snapshot-method}
 \alias{show,Snapshot-method}
+\alias{view}
+\alias{view,Snapshot-method}
 \alias{vrange}
 \alias{vrange,Snapshot-method}
-\title{Class "Snapshot"}
+
+% methods: 
+\alias{pan}
+\alias{pan,Snapshot-method}
+\alias{togglefun}
+\alias{togglefun,Snapshot-method}
+\alias{togglep}
+\alias{togglep,Snapshot-method}
+\alias{togglez}
+\alias{togglez,Snapshot-method}
+\alias{zoom}
+\alias{zoom,Snapshot-method}
+
 
 \description{
 
   A \code{\linkS4class{Snapshot}}-class to visualize genomic data from 
-  BAM files.
+  BAM files with zoom and pan functionalities.
 
 }
 
@@ -55,53 +75,112 @@ Snapshot(files, range, ...)
 
 }
 
-\section{Fields}{
-  Fields are documented for developer use. Fields starting with
-  \sQuote{.} are meant to be private (used internally only)
 
+\section{Constructor}{
   \describe{
-    \item{\code{.debug}:}{Object of class \code{function}.}
-    \item{\code{.auto_display}:}{Object of class \code{logical}.}
-    \item{\code{.range}:}{Object of class \code{GRanges}.}
-    \item{\code{.zin}:}{Object of class \code{logical}.}
-    \item{\code{.pright}:}{Object of class \code{logical}.}
-    \item{\code{.data}:}{Object of class \code{data.frame}. A data.frame
-      holding the Genomic data to be visualized.}
-    \item{\code{.data_dirty}:}{Object of class \code{logical}.}
-    \item{\code{.initial_functions}:}{Object of class
-      \code{SnapshotFunctionList}. A list of functions that are used for
-      reading data from the file}
-    \item{\code{.current_function}:}{Object of class
-      \code{character}. Name of the current function being used by the
-      file to read data.}
+    \item{}{
+       \code{Snapshot(files, param, ..., functions,
+       currentFunction)}: Creates a Snapshot object. If
+       \code{currentFunction} is not specified, default \code{functions}
+       are used to evaluate imported recored and to view the coverage
+       on selected range.
+
+       \describe{
+          \item{\code{files}:}{A character vector naming the BAM files
+             to be imported. If multiple files, sum of coverage is
+             returned (see \code{.data} field)  and visualized.}
+          \item{\code{params}:}{A \code{GRanges} or missing object
+             specifying which records are to be imported and viewed.}
+          \item{\code{functions}:}{A \code{SnapshotFunction} object
+             which records are to be evaluated and visualized.}
+          \item{\code{currentFunction}:}{A character vector naming the
+             function that the records are to be immediately evaluated.}
+          \item{\code{\ldots}:}{Optional arguments.}
+       }
+    }
+  }
+}
+
+\section{Methods}{
+  \describe{
+    \item{zoom}{\code{signature(x = "Snapshot")}: Zoom (in or out) the
+       current plot. } 
+    \item{pan}{\code{signature(x = "Snapshot")}: Pan (right or left)
+       the current plot. } 
+    \item{togglefun}{\code{signature(x = "Snapshot")}: Toggle the current
+       functions which imported records are to be immediately evaluated.  }
+    \item{togglep}{\code{signature(x = "Snapshot")}: Toggle the panning
+       effects.}
+    \item{togglez}{\code{signature(x = "Snapshot")}: Toggle the zooming 
+       effects.} 
+  }
+}
+
+\section{Accessors}{
+   \describe{
+     \item{show}{\code{signature(object = "Snapshot")}: Display a
+       \code{Snapshot} object. }
+
+     \item{files}{\code{signature(x = "Snapshot")}: Get the \code{files}
+       field (object of class \code{BamFileList}) of a \code{Snapshot} object.}
+
+     \item{functions}{\code{signature(x = "Snapshot")}: Get the
+       \code{functions} field (object of \code{SnapshotFunctionList}) of a
+       \code{Snapshot} object.}
+
+     \item{view}{\code{signature(x = "Snapshot")}: Get the \code{view}
+       field (object of \code{SpTrellis}) of a \code{Snapshot} object.}
+
+     \item{vrange}{\code{signature(x = "Snapshot")}: Get the
+       \code{.range} field (object of \code{GRanges}) of a \code{Snapshot}
+       object. }
+  }
+}
+
+\keyword{classes}
+\section{Fields}{
+  \describe{
+    \item{\code{.debug}:}{Object of class \code{function} to display
+    messages while in debug mode }
+    \item{\code{.auto_display}:}{Object of class \code{logical} to
+       automatically disply the coverage plot. }
+    \item{\code{.range}:}{Object of class \code{GRanges} indicating
+      which ranges of records to be imported from BAM fiels. }
+    \item{\code{.zin}:}{Object of class \code{logical} indicating
+      whether the current zooming effect is zoom in. }
+    \item{\code{.pright}:}{Object of class \code{logical} indicating
+      whether the current panning effect is right. }
+    \item{\code{.data}:}{Object of class \code{data.frame} containing
+      coverage a position is represented for each strand and BAM file.}
+    \item{\code{.data_dirty}:}{Object of class \code{logical}
+      indicating whether to re-evaluate the imported records. }
+    \item{\code{.initial_functions}:}{Object of class 
+       \code{SnapshotFunctionList} available by the \code{Snapshot} object. }
+    \item{\code{.current_function}:}{Object of class \code{character}
+      of the function the imported recored are currently evaluated and
+      visualized.}
     \item{\code{functions}:}{Object of class
-      \code{SnapshotFunctionList}. A list of functions that are used for
-      reading data.}
-   \item{\code{files}:}{Object of class \code{BamFileList}. Bam files
-     from which data is to be read}
-    \item{\code{view}:}{Object of class \code{SpTrellis}. A trellis
-      object for storing the current plot information.}
+      \code{SnapshotFunctionList} of customized functions to evaluate
+       and visualize the imported records. }
+    \item{\code{files}:}{Object of class \code{BamFileList} to be imported. }
+    \item{\code{view}:}{Object of class \code{SpTrellis} that is
+    essentially a reference class wrapper of \code{Trellis} objects.  }
   }
 }
 
 \section{Class-Based Methods}{
   \describe{
-    \item{\code{initialize(...,functions, currentFunction, .range,
-        .auto_display, .debug)}:}{ Called during object creation with values
-      to initialize fields}
-
-    \item{\code{set_range(range)}:}{.}
-    \item{\code{display()}:}{.}
-    \item{\code{.initialize_currentFunction()}:}{.}
-    \item{\code{.change_current_function()}:}{.}
-    \item{\code{.check_currentFunction()}:}{.}
-    \item{\code{.update_data()}:}{.}
-    \item{\code{.update_range()}:}{.}
-    \item{\code{.initial_range()}:}{.}
-    \item{\code{.stop()}:}{.}
-    \item{\code{.message()}:}{.}
+    \item{\code{display()}:}{Display the current \code{Snapshot} object. }
+    \item{\code{pan()}:}{Pan (right or left) the current plot. }
+    \item{\code{zoom()}:}{Zoom (in or out) the current plot. }
+    % \item{\code{set_range(range)}:}{ ~~ }
+    \item{\code{toggle(zoom, pan, currentFunction)}:}{Toggle zooming,
+    panning effects or the currentFuction in which the imported
+    records are to be evaluated and visualized.}
+    % \item{\code{initialize(..., functions, currentFunction, .range, .auto_display, .debug)}:}{ ~~ }
   }
 }
+
 
 \author{Chao-Jen \url{cwon2@fhcrc.org}}
 
@@ -110,6 +189,8 @@ Snapshot(files, range, ...)
 \examples{
 fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
 s <- Snapshot(fl)
+
+
 
 }
 
