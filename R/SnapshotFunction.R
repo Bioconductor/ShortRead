@@ -4,29 +4,33 @@ setClass("SnapshotFunction",
         viewer="function", 
         limits="integer"))
 
-SnapshotFunction <-function(reader, viewer, limits, ...)
+SnapshotFunction <-
+    function(reader, viewer, limits, ...)
 {
     if (missing(limits) || length(limits) != 2)
         stop("limits must have length 2")
     if ((limits[2] - limits[1]) < 50)
         stop("limits[2] -  limits[1] must be greater than 50 bps")
 
-    
     new("SnapshotFunction", reader=reader, viewer=viewer,
         limits=as.integer(limits), ...)
 }
 
+reader <- function(x, ...) x@reader
+viewer <- function(x, ...) x@viewer
+limits <- function(x, ...) x@limits
+
 setMethod(show, "SnapshotFunction", function(object) 
 {
-    cat("class:", class(object))
-    cat("\n")
+    cat("class:", class(object), "\n")
     cat("reader:\n")
-    print(head(object@reader))
+    print(head(reader(object)))
     cat("...\n\n")
     cat("viewer:\n")
-    print(head(object@viewer))
+    print(head(viewer(object)))
     cat("...\n\n")
-    cat(sprintf("limits: min. %.0f to max. %.0f bps", object@limits[1], object@limits[2]), "\n")
+    cat(sprintf("limits: min. %.0f to max. %.0f bps",
+                limits(object)[1], limits(object)[2]), "\n")
 })
 
 ## SnapshotFunctionList
@@ -55,10 +59,6 @@ setMethod(SnapshotFunctionList, "SnapshotFunction",
     new("SnapshotFunctionList", listData=funs)
 })
 
-reader <- function(x, ...) x@reader
-limits <- function(x, ...) x@limits
-viewer <- function(x, ...) x@viewer
-
 .fine_coverage <-
     SnapshotFunction(reader=.fine_coverage_reader,
                      viewer=.coverage_viewer, limits=c(50L, 10000L))
@@ -72,6 +72,3 @@ viewer <- function(x, ...) x@viewer
     SnapshotFunction(reader=.multifine_coverage_reader,
                      viewer=.multicoverage_viewer,
                      limits=c(50L, 10000L))
-
-
-

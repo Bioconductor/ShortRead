@@ -210,13 +210,3 @@ setMethod(show, "Snapshot", function(object)
     if (object$.auto_display)
         object$display()
 })
-
-
-
-
-
-
-
-
-
-
