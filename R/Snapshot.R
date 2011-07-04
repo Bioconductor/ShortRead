@@ -182,14 +182,68 @@ setMethod(Snapshot, c("character", "missing"),
     .Snapshot$new(files=files, ...)
 })
 
-
-## interface: should be methods
-setGeneric("files", function(x, ...) standardGeneric("files"))
+## accessors
+if (is.null(getGeneric("files")))
+    setGeneric("files", function(x, ...) standardGeneric("files"))
 setMethod("files", "Snapshot", function(x)  x$files)
+
 
 setGeneric("vrange", function(x, ...) standardGeneric("vrange"))
 setMethod("vrange", "Snapshot", function(x) x$.range )
 
+setGeneric("functions", function(x, ...) standardGeneric("functions"))
+setMethod("functions", "Snapshot", function(x) x$functions)
+
+if (is.null(getGeneric("view")))
+  setGeneric("view", function(x, ...) standardGeneric("view"))
+
+setMethod("view", "Snapshot", function(x) x$view)
+
+## interface
+setGeneric("togglez", function(x, ...) standardGeneric("togglez"))
+setMethod("togglez", "Snapshot", function(x)
+{
+    x$toggle(zoom=TRUE)
+    invisible(x)
+})
+
+setGeneric("togglep", function(x, ...) standardGeneric("togglep"))
+setMethod("togglep", "Snapshot",  function(x)
+{
+    x$toggle(pan=TRUE)
+    invisible(x)
+})
+
+setGeneric("togglefun", function(x, name, ...) standardGeneric("togglefun"))
+setMethod("togglefun", "Snapshot",  function(x, name)
+{
+    if (!missing(name)) {
+        x$toggle(currentFunction=name)
+        invisible(x)
+    }
+})
+
+setGeneric("zoom", function(x, range, ...) standardGeneric("zoom"))
+setMethod("zoom", "Snapshot",  function(x, range)
+{
+    if (!missing(range))
+        ## FIXME: must be able to tell whether .currentFunction is appropriate
+        x$set_range(range) 
+    else
+        x$zoom()
+    x$display()
+    ## FIXME: invisible return TRUE on success, FALSE otherwise
+})
+
+setGeneric("pan", function(x, ...) standardGeneric("pan"))
+setMethod("pan", "Snapshot", function(x)
+{
+    x$pan()
+    x$display()
+    ## FIXME: return TRUE on success, FALSE otherwise
+})
+
+## show
 setMethod(show, "Snapshot", function(object) 
 {
     cat("class:", class(object), "\n")
