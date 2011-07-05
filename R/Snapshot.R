@@ -12,6 +12,8 @@
       .data_dirty="logical",
       .initial_functions="SnapshotFunctionList",
       .current_function="character",
+      ## annotation track 
+      annTrack="ANY",
       ## more-or-less public
       functions="SnapshotFunctionList",
       files="BamFileList",
@@ -56,7 +58,7 @@
             reader(.self$functions[[.self$.current_function]])(.self)
         .self$.data_dirty <- FALSE
         .self$view <-
-            viewer(.self$functions[[.self$.current_function]])(.self$.data)
+            viewer(.self$functions[[.self$.current_function]])(.self)
 
         .debug("update_data view limits %.0f-%.0f",
                .self$view$get.x.limits()[1],
@@ -95,6 +97,7 @@
         .self$.data_dirty <- TRUE
         invisible()
     },
+                  
     .initialize_currentFunction=function() 
     {
         if (width(.self$.range) <
@@ -102,8 +105,9 @@
             currentFunction <- "fine_coverage"
         else currentFunction <- "coarse_coverage"
     },
+                  
     initialize=function(..., functions=SnapshotFunctionList(), currentFunction,
-                        .range, .auto_display=TRUE, .debug=FALSE)
+                        .range, .auto_display=TRUE, .debug=FALSE, annTrack)
     {
         callSuper(...)
         .self$.debug <- if (.debug) .message else function(...) {}
@@ -118,6 +122,10 @@
             .stop("open BamFile failed: %s", conditionMessage(err))
         })
 
+        .self$annTrack <-
+            if (missing(annTrack)) NULL
+            else annTrack
+        
         .self$.range <- 
             if (missing(.range)) .initial_range()
             else .range
@@ -144,20 +152,69 @@
             .self$display()
             .self
     },
-    set_range=function(range) 
+                  
+    set_range=function(range)
     {
         .self$.range <- range
         .self$.current_function <- .self$.initialize_currentFunction()
         .self$.data_dirty <- TRUE
         .self$.update_data()
     },
-    display=function() 
+                  
+    display=function()
     {
         .debug("display")
         if (.data_dirty)
             .self$.update_data()
         print(.self$view$view())
-    })
+    },
+
+    toggle=function(zoom=FALSE, pan=FALSE, currentFunction)
+    {
+          .self$.debug("toggle: zoom %s; pan %s; fun %s",
+                       if (.self$.zin) "in" else "out",
+                       if (.self$.pright) "right" else "left",
+                       .self$.current_function)
+          if (zoom)
+              .self$.zin <- !.self$.zin
+          if (pan)
+              .self$.pright <- !.self$.pright
+          
+          if (!missing(currentFunction)) {
+              if (!currentFunction %in% names(.self$functions))
+                  .stop("toggle unknown function '%s'", currentFunction)
+              if (currentFunction != .self$.current_function) {
+                 .self$.change_current_function(currentFunction)
+                 if (.self$.data_dirty) .self$.update_data()
+                 #.self$data_dirty <- TRUE
+                 #.self$update_data()
+                
+              }
+          }
+          .self
+    },
+
+    zoom=function()
+    {
+          .debug("zoom: %s", if (.self$.zin) "in" else "out")
+          if (.self$.zin)
+              .self$view$zoomin()
+          else
+              .self$view$zoomout()
+          .self$.update_range()
+          .self
+    },                  
+
+    pan=function() {
+          .debug("pan: %s", if (.self$.pright) "right" else "left")
+          if (.self$.pright)
+              .self$view$shiftr()
+          else
+              .self$view$shiftl()
+          .self$.update_range()
+          .self
+    }
+)
 
 ## Constructors
 
@@ -193,6 +250,12 @@ setMethod("vrange", "Snapshot", function(x) x$.range )
 
 setGeneric("functions", function(x, ...) standardGeneric("functions"))
 setMethod("functions", "Snapshot", function(x) x$functions)
+
+setGeneric("annTrack", function(x, ...) standardGeneric("annTrack"))
+setMethod("annTrack", "Snapshot", function(x) x$annTrack)
+
+.getData <- function(x) x$.data
+.currentFunction <- function(x) x$.current_function
 
 if (is.null(getGeneric("view")))
   setGeneric("view", function(x, ...) standardGeneric("view"))
