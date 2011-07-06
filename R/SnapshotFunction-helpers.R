@@ -225,7 +225,7 @@
                     levels=snames)
     cvg <- data.frame(data=c(lst[["+"]], -lst[["-"]]),
                       group=group,
-                      pos = start(ir))
+                      pos = (start(ir)+end(ir))/2)
     xyplot(data ~ pos, data=cvg, groups=group, type="h", col=col,
            xlab=NULL, ylab=NULL,
            scales=list(y=list(alternating=2, tick.number=3,tck=c(0,1)),

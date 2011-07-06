@@ -93,7 +93,9 @@ Snapshot(files, range, ...)
       the current plot. }
     
     \item{togglefun}{\code{signature(x = "Snapshot")}: Toggle the current
-       functions which imported records are to be immediately evaluated.}
+       functions which imported records are to be immediately
+       evaluated. Note that the active range will be changed to the
+       current active window.}
 
     \item{togglep}{\code{signature(x = "Snapshot")}: Toggle the panning
       effects.}

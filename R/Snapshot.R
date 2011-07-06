@@ -83,7 +83,8 @@
     },
     .change_current_function=function(currentFunction) 
     {
-        'check whether to change the currentFunction'
+        'check whether currentFunction should be change according to the window'
+        'if yes, change .current_function and make .data_dirty TRUE'
         lms <- limits(.self$functions[[currentFunction]])
         wd <- .self$view$get.x.limits()[2] - .self$view$get.x.limits()[1]
         if (wd <= lms[1])
@@ -185,7 +186,14 @@
                   .stop("toggle unknown function '%s'", currentFunction)
               if (currentFunction != .self$.current_function) {
                  .self$.change_current_function(currentFunction)
-                 if (.self$.data_dirty) .self$.update_data()
+                 if (.self$.data_dirty) {
+                     #.self$.update_range()
+                     # just update .range here instead of using .update_range()
+                     lim <- .self$view$get.x.limits()
+                     start(.self$.range) <- lim[1]
+                     end(.self$.range) <- lim[2]
+                     .self$.update_data()
+                 }
                  #.self$data_dirty <- TRUE
                  #.self$update_data()
                 
