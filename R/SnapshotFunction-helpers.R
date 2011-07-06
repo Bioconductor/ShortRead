@@ -41,7 +41,7 @@
 
 .coarse_coverage_reader <- function(x)
 {
-    nbins <- 10000L
+    nbins <- 5000L
     rng <- vrange(x)
     wd <- width(rng)
     lst <- lapply(as.list(files(x)), function(fl) {
@@ -96,12 +96,28 @@
 
 .update_viewer <- function(x, cv)
 {
+    ## subset annTrack and validate anntrack
+    anntrack <- annTrack(x)
+    rng <- vrange(x) 
+    if (any(seqnames(anntrack)@values %in% seqlevels(which)))
+        gr <- keepSeqlevels(anntrack, seqlevels(vrange(x)))
+    else  {
+        message("SnapshotFunction-helper: seqname of 'annTrack' does not match to the imported range. Annotation track will not be plotted.")
+        return(NULL)
+    }
+
+    ## if anntrack has no elementMetada value, then return NULL
+    if (ncol(values(anntrack)) < 1) {
+        message("SnapshotFunction-helper: at least one column of 'annTrack' elementMetadata is required. Annotation track will not be plotted.")
+        return(NULL)
+    }
+    
     # x: a Snapshot instance
     if (.currentFunction(x) == "coarse_coverage") 
-        ann <- .coarse_annviewer(annTrack(x), vrange(x))
+        ann <- .coarse_annviewer(gr, rng)
 
     if (.currentFunction(x) %in% c("fine_coverage", "multifine_coverage"))
-        ann <- .fine_annviewer(annTrack(x))
+        ann <- .fine_annviewer(gr)
 
     ann$x.limits <- cv$x.limits
     update(c(cv, ann), x.same=TRUE, layout=c(1,2),
@@ -110,7 +126,7 @@
                        x=list(rot=45, tck=c(1,0), tick.number=20)), 
            par.setting=list(layout.heights=list(panel=c(2,1))))
 }
-    
+     
 ## viewers
 .coverage_viewer <- function(x)
 {
@@ -133,7 +149,10 @@
                      panel.abline(a=0, b=0, col="grey")
                  })
  
-    if (!is.null(annTrack(x))) cv <- .update_viewer(x, cv)
+    if (!is.null(annTrack(x))) {
+        ud <- .update_viewer(x, cv)
+        if (!is.null(ud)) cv <- ud
+    }  
         
     SpTrellis(trellis=cv)   
 }
@@ -157,8 +176,11 @@
                      panel.grid(h=-1, v=20)
                      panel.abline(a=0, b=0, col="grey")
                  })
+    if (!is.null(annTrack(x))) {
+        ud <- .update_viewer(x, cv)
+        if (!is.null(ud)) cv <- ud
+    }  
 
-    if (!is.null(annTrack(x))) cv <- .update_viewer(x, cv)
     SpTrellis(trellis=sv)
 }
 
@@ -176,7 +198,7 @@
         ltext(x=xm, y=y, genenames, cex=0.45, pos=3)
         lsegments(x0=x, y0=y, x1=x1, y1=y, col=myCol, alpha=0.5)
     }
-    ann <- xyplot(y ~ x, genenames=values(gr)[[1]],
+    ann <- xyplot(y ~ x, genenames=as.character(values(gr)[[1]]),
                   x1=x1, xm=xm, panel=mypanel,
                   xlab=NULL, ylab=NULL,
                   scales=list(y=list(tick.number=0, labels=NULL)),
@@ -192,7 +214,7 @@
     ## gr: GRanges for tracks
     ## x:  range of an Snapshot instance
     col <- c("#66C2A5", "#FC8D62")
-    nbins=10000L
+    nbins=5000L
     interval <- seq.int(start(rng), end(rng), length.out=nbins)
     l <- length(interval)
     ir <- IRanges(start=interval[1:(l-1)], end=interval[2:l])

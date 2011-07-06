@@ -18,6 +18,8 @@
 \alias{view,Snapshot-method}
 \alias{vrange}
 \alias{vrange,Snapshot-method}
+\alias{annTrack}
+\alias{annTrack,Snapshot-method}
 
 % methods: 
 \alias{pan}
@@ -66,6 +68,11 @@ Snapshot(files, range, ...)
 	 visualization. The default chooses a function based on the
 	 scale at which the data is being visualized.}
 
+       \item{annTrack:}{Annotation track. If built-in visulization
+         functions are to be used, \code{annTrack} should be a
+         \code{GRanges} instance and the first column of its
+         elementMeatdata would be used to annotate the range.}
+       
        \item{.auto_display:}{logical(1) indicating whether the
 	 visualization is to be updated when \code{show} is invoked.}
 
@@ -77,41 +84,20 @@ Snapshot(files, range, ...)
 }
 
 
-\section{Constructor}{
-  \describe{
-    \item{}{
-       \code{Snapshot(files, param, ..., functions,
-       currentFunction)}: Creates a Snapshot object. If
-       \code{currentFunction} is not specified, default \code{functions}
-       are used to evaluate imported recored and to view the coverage
-       on selected range.
-
-       \describe{
-          \item{\code{files}:}{A character vector naming the BAM files
-             to be imported. If multiple files, sum of coverage is
-             returned (see \code{.data} field)  and visualized.}
-          \item{\code{params}:}{A \code{GRanges} or missing object
-             specifying which records are to be imported and viewed.}
-          \item{\code{functions}:}{A \code{SnapshotFunction} object
-             which records are to be evaluated and visualized.}
-          \item{\code{currentFunction}:}{A character vector naming the
-             function that the records are to be immediately evaluated.}
-          \item{\code{\ldots}:}{Optional arguments.}
-       }
-    }
-  }
-}
-
 \section{Methods}{
   \describe{
     \item{zoom}{\code{signature(x = "Snapshot")}: Zoom (in or out) the
-       current plot. } 
+      current plot. }
+    
     \item{pan}{\code{signature(x = "Snapshot")}: Pan (right or left)
-       the current plot. } 
+      the current plot. }
+    
     \item{togglefun}{\code{signature(x = "Snapshot")}: Toggle the current
-       functions which imported records are to be immediately evaluated.  }
+       functions which imported records are to be immediately evaluated.}
+
     \item{togglep}{\code{signature(x = "Snapshot")}: Toggle the panning
-       effects.}
+      effects.}
+    
     \item{togglez}{\code{signature(x = "Snapshot")}: Toggle the zooming 
        effects.} 
   }
@@ -159,6 +145,10 @@ Snapshot(files, range, ...)
     \item{\code{.current_function}:}{Object of class \code{character}
       of the function the imported recored are currently evaluated and
       visualized.}
+    \item{\code{annTrack}:}{Default to \code{NULL} if not intended to
+       visulize the annotation track. If default visulization
+       function(s) is intended to be used to plot the annotation,
+       \code{annTrack} has to be a \code{GRanges} instance.}   
     \item{\code{functions}:}{Object of class
       \code{SnapshotFunctionList} of customized functions to evaluate
        and visualize the imported records. }
@@ -189,6 +179,30 @@ Snapshot(files, range, ...)
 \examples{
 fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
 s <- Snapshot(fl)
+
+# methods
+zoom(s) # zoom in
+pan(s)  # pan right
+togglez(s) # change direction of zooming
+zoom(s) # zoom out
+togglep(s) # change direction of panning
+pan(s)
+
+# accessors
+functions(s)
+vrange(s)
+show(s)
+
+# Import specific ranges of records
+which <- GRanges("seq1", IRanges(500, 1730))
+s2 <- Snapshot(fl, range=which)
+
+# multiple BAM files
+
+# visulize annotation track
+# prepare gr
+# s <- Snapshot(f1, range=which, annTrack=gr)
+# annTrack(s)
 
 }
 
