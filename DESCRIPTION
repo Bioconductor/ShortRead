@@ -9,19 +9,15 @@ Description: Base classes, functions, and methods for representation of
 License: Artistic-2.0
 LazyLoad: yes
 Depends: methods, IRanges (>= 1.11.2), GenomicRanges, Biostrings (>= 2.19.0),
-         lattice, Rsamtools (>= 1.5.21), latticExtra
+         lattice, Rsamtools (>= 1.5.21), latticeExtra
 Imports: IRanges, GenomicRanges, Biostrings, Biobase, hwriter, Rsamtools,
-         zlibbioc, latticeExtra
+         zlibbioc, lattice
 Enhances: Rmpi, multicore
 Suggests: biomaRt, RUnit
 LinkingTo: IRanges, Biostrings
 biocViews: DataImport, Sequencing, HighThroughputSequencing, 
            QualityControl
-Collate: SnapshotFunction-helpers.R
-         SnapshotFunction.R
-         SpTrellis.R
-         Snapshot.R
-         AllClasses.R
+Collate: AllClasses.R
          AllGenerics.R
          AllUtilities.R
          GappedReads-class.R
@@ -66,6 +62,10 @@ Collate: SnapshotFunction-helpers.R
          readXStringColumns.R
          renew.R
          report.R
+	 SnapshotFunction-helpers.R
+         SnapshotFunction.R
+         SpTrellis.R
+         Snapshot.R
          srapply.R
          test_ShortRead_package.R
 

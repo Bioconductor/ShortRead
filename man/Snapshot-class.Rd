@@ -172,7 +172,7 @@ Snapshot(files, range, ...)
 }
 
 
-\author{Chao-Jen \url{cwon2@fhcrc.org}}
+\author{Martin Morgan and Chao-Jen Wong \email{cwon2@fhcrc.org}}
 
 \seealso{\code{\link{SpTrellis}}}
 

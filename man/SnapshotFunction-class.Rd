@@ -66,7 +66,7 @@ limits(x, ...)
   }
 }
 
-\author{Chao-Jen \url{cwon2@fhcrc.org}}
+\author{Martin Morgan and Chao-Jen Wong}
 
 \seealso{\code{\link{Snapshot}}}
 

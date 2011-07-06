@@ -99,7 +99,7 @@
     ## subset annTrack and validate anntrack
     anntrack <- annTrack(x)
     rng <- vrange(x) 
-    if (any(seqnames(anntrack)@values %in% seqlevels(which)))
+    if (any(seqnames(anntrack)@values %in% seqlevels(rng)))
         gr <- keepSeqlevels(anntrack, seqlevels(vrange(x)))
     else  {
         message("SnapshotFunction-helper: seqname of 'annTrack' does not match to the imported range. Annotation track will not be plotted.")
