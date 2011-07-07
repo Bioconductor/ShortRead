@@ -185,9 +185,9 @@ s <- Snapshot(fl)
 # methods
 zoom(s) # zoom in
 pan(s)  # pan right
-togglez(s) # change direction of zooming
+togglez(s) # change effect of zooming
 zoom(s) # zoom out
-togglep(s) # change direction of panning
+togglep(s) # chage effect of panning
 pan(s)
 
 # accessors
@@ -231,6 +231,12 @@ file <- system.file("extdata", "SRR002051.chrI-V.bam",
 
 s <- Snapshot(file, range=which, annTrack=gr)
 annTrack(s)
+zoom(s, range=GRanges("chrI", IRanges(7e4, 7e4+8000)))
+
+togglez(s) ## zoom out
+zoom(s)
+
+pan(s)
 
 }
 

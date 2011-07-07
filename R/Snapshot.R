@@ -4,7 +4,8 @@
       .debug="function", 
       .auto_display="logical",
       ## ranges
-      .range="GRanges", 
+      .range="GRanges",
+      .orig.range="GRanges",
       .zin="logical", 
       .pright="logical",
       ## data
@@ -12,6 +13,7 @@
       .data_dirty="logical",
       .initial_functions="SnapshotFunctionList",
       .current_function="character",
+      .using_initial_functions="logical",
       ## annotation track 
       annTrack="ANY",
       ## more-or-less public
@@ -65,6 +67,22 @@
                .self$view$get.x.limits()[2])
         .self
     },
+
+    .expand_active_range=function() {
+        activelim <- c(start(.self$.range), end(.self$.range))
+        viewlim <- .self$view$get.x.limits()
+        orginlim <- c(start(.self$.orig.range), end(.self$.orig.range))
+        flag <- (viewlim[1] < activelim[1]) & (viewlim[2] > activelim[2])
+        
+        return(flag)
+    },
+                  
+    .is.initial_function=function()
+    {
+         .self$.using_initial_functions <-
+             any(.self$.current_function %in% names(.self$.initial_functions))
+    },
+                  
     .check_currentFunction=function(currentFunction) 
     {
         if (missing(currentFunction))
@@ -132,33 +150,50 @@
             if (missing(.range)) .initial_range()
             else .range
 
-            .self$.initial_functions <-
-                SnapshotFunctionList(fine_coverage=.fine_coverage,
-                                     coarse_coverage=.coarse_coverage,
-                                     multifine_coverage=.multifine_coverage)
+        .self$.orig.range <- .self$.range
+        
+        .self$.initial_functions <-
+            SnapshotFunctionList(fine_coverage=.fine_coverage,
+                                 coarse_coverage=.coarse_coverage,
+                                 multifine_coverage=.multifine_coverage)
 
-            .self$functions <- c(.self$.initial_functions, functions)
-
+        .self$functions <- c(.self$.initial_functions, functions)
+         
             ## initialize current function
-            if (!missing(currentFunction)) {
-                if (!currentFunction %in% names(.self$functions))
-                    .stop("'%s' not in SnapshotFunctionList",
+         if (!missing(currentFunction)) {
+             if (!currentFunction %in% names(.self$functions))
+                 .stop("'%s' not in SnapshotFunctionList",
                           currentFunction)
-                .self$.check_currentFunction(currentFunction)
-            } else { 
+                 .self$.check_currentFunction(currentFunction)
+         } else { 
                 currentFunction <- .self$.initialize_currentFunction()
-            }
-            .self$.current_function <- currentFunction
-            .self$.data_dirty <- TRUE
-            .self$.update_data()
-            .self$display()
-            .self
+         }
+        
+        .self$.current_function <- currentFunction
+        .self$.is.initial_function() # assign .self$using.initial_function
+        .self$.data_dirty <- TRUE
+        .self$.update_data()
+        .self$display()
+        .self
     },
                   
     set_range=function(range)
-    {
+    {   'resetting the active range, called when setting zoom(..., range=)'
+        # seqlevel must be the same
+        if (!all(seqlevels(range) %in% seqlevels(.self$.range)))
+           .stop("The seqlevel '%s' does not match that of the active data",
+                 seqlevels(range))
+        # check the range is within the original range
+        if ((start(range) < start(.self$.orig.range)) |
+                (end(range) > end(.self$.orig.range)))
+            .stop("Please make sure the range argument are defining the regions within the limits of the original range.")
         .self$.range <- range
-        .self$.current_function <- .self$.initialize_currentFunction()
+        
+        .self$.is.initial_function()
+        ## find appropriate reader/viewer if initial functions are in used
+        if (.self$.using_initial_functions)
+            .self$.current_function <- .self$.initialize_currentFunction()
+        
         .self$.data_dirty <- TRUE
         .self$.update_data()
     },
@@ -185,19 +220,15 @@
           if (!missing(currentFunction)) {
               if (!currentFunction %in% names(.self$functions))
                   .stop("toggle unknown function '%s'", currentFunction)
+              .self$is.initial_function()  # update .using_initial_functions
               if (currentFunction != .self$.current_function) {
                  .self$.change_current_function(currentFunction)
                  if (.self$.data_dirty) {
-                     #.self$.update_range()
-                     # just update .range here instead of using .update_range()
                      lim <- .self$view$get.x.limits()
                      start(.self$.range) <- lim[1]
                      end(.self$.range) <- lim[2]
                      .self$.update_data()
                  }
-                 #.self$data_dirty <- TRUE
-                 #.self$update_data()
-                
               }
           }
           .self
@@ -208,19 +239,59 @@
           .debug("zoom: %s", if (.self$.zin) "in" else "out")
           if (.self$.zin)
               .self$view$zoomin()
-          else
-              .self$view$zoomout()
-          .self$.update_range()
+          else { ## zoom out
+              if (.expand_active_range()) {
+                  ## expend the active range and .update_data()
+                  activelim <- c(start(.self$.range), end(.self$.range))
+                  center <- mean(activelim)
+                  width <- diff(activelim)
+                  newrange <- c(max(start(.self$.orig.range), center-width),
+                                min(end(.self$.orig.range), center+width))
+                  range <- .self$.range
+                  start(range) <- newrange[1]
+                  end(range) <- newrange[2]
+                  .self$set_range(range)
+              }
+              else
+                  .self$view$zoomout()
+          }
+          #.self$.update_range()
           .self
     },                  
 
     pan=function() {
           .debug("pan: %s", if (.self$.pright) "right" else "left")
-          if (.self$.pright)
-              .self$view$shiftr()
-          else
-              .self$view$shiftl()
-          .self$.update_range()
+          if (.self$.pright) { ## shift right
+              if (.expand_active_range()) {
+                  activelim <- c(start(.self$.range), end(.self$.range))
+                  origlim <- c(start(.self$.orig.range), end(.self$.orig.range))
+                  by <- 0.8 * diff(activelim)
+                  margin <- 50
+                  newrange <- c(min(activelim[1]+by, origlim[2]-margin),
+                                min(activelim[2]+by, origlim[2]))
+                  range <- .self$.range
+                  start(range) <- newrange[1]
+                  end(range) <- newrange[2]
+                  .self$set_range(range)
+              }  
+              else .self$view$shiftr()
+          }
+          else { ## shift left
+              if (.expand_active_range()) {
+                  activelim <- c(start(.self$.range), end(.self$.range))
+                  origlim <- c(start(.self$.orig.range), end(.self$.orig.range))
+                  by <- 0.8 * diff(activelim)
+                  margin <- 50
+                  newrange <- c(max(activelim[1]-by, origlim[1]),
+                                max(activelim[2]-by, origlim[1]+margin))
+                  range <- .self$.range
+                  start(range) <- newrange[1]
+                  end(range) <- newrange[2]
+                  .self$set_range(range)
+              }
+              else .self$view$shiftl()
+          }    
+          #.self$.update_range()
           .self
     }
 )
@@ -321,6 +392,9 @@ setMethod(show, "Snapshot", function(object)
     cat("class:", class(object), "\n")
     with(object, {
         cat("file(s):", names(files), "\n")
+        cat("Orginal range:",
+            sprintf("%s:%d-%d", seqlevels(.orig.range), start(.orig.range),
+                    end(.orig.range)), "\n")
         cat("active range:",
             sprintf("%s:%d-%d", seqlevels(.range), start(.range),
                     end(.range)), "\n")
