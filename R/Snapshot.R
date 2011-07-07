@@ -81,6 +81,7 @@
                   wd, lms[2])
         invisible()
     },
+                  
     .change_current_function=function(currentFunction) 
     {
         'check whether currentFunction should be change according to the window'

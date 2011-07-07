@@ -201,10 +201,36 @@ s2 <- Snapshot(fl, range=which)
 
 # multiple BAM files
 
+#
 # visulize annotation track
-# prepare gr
-# s <- Snapshot(f1, range=which, annTrack=gr)
-# annTrack(s)
+#
+library(GenomicFeatures)
+
+getAnnGR <- function(txdb, which) {
+    ex <- exonsBy(txdb, by="gene")
+    sn <- keepSeqlevels(ex, seqlevels(which))
+    r <- range(sn)
+    gr <- r@unlistData
+    values(gr)[["gene_id"]] <- rep.int(names(r), times=elementLengths(r))
+    gr
+}
+
+txdbFile <- system.file("extdata", "sacCer2_sgdGene.sqlite",
+                    package="yeastNagalakshmi")
+# txdb <- makeTranscriptDbFromUCSC(genome="sacCer2",
+#                                  tablename="sgdGene")
+txdb <- loadFeatures(txdbFile)
+which <-  GRanges("chrI", IRanges(1, 2e5))
+gr <- getAnnGR(txdb, which)
+## note that the first column of the elementMetadata annotates of the
+## range of the elements.
+gr
+
+file <- system.file("extdata", "SRR002051.chrI-V.bam",
+                    package="yeastNagalakshmi")
+
+s <- Snapshot(file, range=which, annTrack=gr)
+annTrack(s)
 
 }
 
