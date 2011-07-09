@@ -1,4 +1,7 @@
 \name{trimTails}
+\alias{trimTailw}
+\alias{trimTailw,BStringSet-method}
+\alias{trimTailw,XStringQuality-method}
 \alias{trimTails}
 \alias{trimTails,BStringSet-method}
 \alias{trimTails,XStringQuality-method}
@@ -8,12 +11,16 @@
 \description{
 
   Short read quality typically deteriorates as cycle number
-  progresses. This generic removes trailing nucleotides whose quality
+  progresses. These generics removes trailing nucleotides whose quality
   falls below a specified threshold.
 
 }
 \usage{
-trimTails(object, ..., ranges=FALSE)
+trimTailw(object, k, a, halfwidth, ..., ranges=FALSE)
+trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
+
+\S4method{trimTailw}{BStringSet}(object, k, a, halfwidth, ..., alphabet, ranges=FALSE)
+\S4method{trimTailw}{XStringQuality}(object, k, a, halfwidth, ..., ranges=FALSE)
 
 \S4method{trimTails}{BStringSet}(object, k, a, successive=FALSE, ...,
     alphabet, ranges=FALSE)
@@ -33,6 +40,10 @@ trimTails(object, ..., ranges=FALSE)
   \item{a}{\code{character(1)} with \code{nchar(a) == 1L} giving the
     letter at or below which a nucleotide is marked as failing.}
 
+  \item{halfwidth}{The half width (cycles before or after the current;
+    e.g., a half-width of 5 would span 5 + 1 + 5 cycles) in which
+    qualities are assessed.}
+
   \item{successive}{\code{logical(1)} indicating whether failures can
     occur anywhere in the sequence, or must be successive. If
     \code{successive=FALSE}, then the k'th failed letter and subsequent
@@ -48,6 +59,24 @@ trimTails(object, ..., ranges=FALSE)
 
   \item{ranges}{\code{logical(1)} indicating whether the trimmed object,
     or only the ranges satisfying the trimming condition, be returned.}
+
+}
+
+\details{
+
+  \code{trimTailw} starts at the left-most nucleotide, tabulating the
+  number of cycles in a window of \code{2 * halfwidth + 1} surrounding
+  the current nucleotide with quality scores that fall at or below
+  \code{a}. The read is trimmed at the first nucleotide for which this
+  number \code{>= k}. The quality of the first or last nucleotide is
+  used to represent portions of the window that extend beyond the
+  sequence.
+
+  \code{trimTails} starts at the left-most nucleotide and accumulates
+  cycles for which the quality score is at or below \code{a}. The read
+  is trimmed at the first location where this number \code{>= k}. With
+  \code{successive=TRUE}, failing qualities must occur in strict
+  succession.
 
 }
 

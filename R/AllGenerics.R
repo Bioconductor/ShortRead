@@ -121,8 +121,12 @@ setGeneric("readQseq", function(dirPath, pattern=character(0), ...,
 setGeneric("length")
 
 setGeneric("trimTails",
-           function(object, ..., ranges=FALSE)
+           function(object, k, a, successive=FALSE, ..., ranges=FALSE)
            standardGeneric("trimTails"), signature="object")
+
+setGeneric("trimTailw",
+           function(object, k, a, halfwidth, ..., ranges=FALSE)
+           standardGeneric("trimTailw"), signature="object")
 
 setGeneric("clean", function(object, ...) standardGeneric("clean"))
 

@@ -153,6 +153,46 @@ setMethod(tables, "XStringSet", .stringset_tables)
 
 ## trimTails
 
+setMethod(trimTailw, "BStringSet",
+    function(object, k, a, halfwidth, ..., alphabet, ranges=FALSE)
+{
+    if (missing(alphabet))
+        alphabet <- sapply(as.raw(0:127), rawToChar)
+    tryCatch({
+        k <- as.integer(k)
+        if (1L != length(k) || k < 0L)
+            stop("'k' must be integer(1) >= 0L")
+        a <- as.character(a)
+        if (1L != length(a) || 1L != nchar("A"))
+            stop("'", a, "' must satsify 'nchar(a) == 1L'")
+        if (!a %in% alphabet)
+            stop("'", a, "' must be a character with encoding < 128")
+        halfwidth <- as.integer(halfwidth)
+        if (1L != length(halfwidth) || halfwidth <= 0)
+            stop("'halfwidth' must be > 0")
+    }, error=function(err) {
+        .throw(SRError("UserArgumentMismatch", conditionMessage(err)))
+    })
+    tryCatch({
+        a_map <- rev(cumsum(rev(alphabet==a))) # '1' if < a
+        names(a_map) <- alphabet
+        ends <- .Call(.trimTailw, object, k, a_map, halfwidth)
+    }, error=function(err) {
+        .throw(SRError("InternalError", conditionMessage(err)))
+    })
+    if (ranges) IRanges(1, ends)
+    else narrow(object, 1L, ends)[0L != ends]
+})
+
+setMethod(trimTailw, "XStringQuality",
+    function(object, k, a, halfwidth, ..., ranges=FALSE)
+{
+    rng <- callGeneric(as(object, "BStringSet"), k, a, halfwidth, ...,
+                       ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, 1L, end(rng))[0L != width(rng)]
+})
+
 setMethod(trimTails, "BStringSet",
     function(object, k, a, successive=FALSE, ..., alphabet,
              ranges=FALSE)

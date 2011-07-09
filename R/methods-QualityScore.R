@@ -244,6 +244,15 @@ setMethod(alphabetScore, "SFastqQuality", .SFastqQuality_ascore)
 
 setMethod(alphabetScore, "FastqQuality", .FastqQuality_ascore)
 
+setMethod(trimTailw, "FastqQuality",
+    function(object, k, a, halfwidth, ..., ranges=FALSE)
+{
+    rng <- callGeneric(quality(object), k, a, halfwidth, ...,
+                       alphabet=alphabet(object), ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, 1L, end(rng))[0L != width(rng)]
+})
+
 setMethod(trimTails, "FastqQuality",
     function(object, k, a, successive=FALSE, ..., ranges=FALSE)
 {

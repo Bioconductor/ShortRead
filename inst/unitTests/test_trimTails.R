@@ -34,3 +34,24 @@ test_trimTails_XStringQuality <- function()
     .check(.qq(rfq), .qb(trimTails(qual, 1, "!")))
     .check(BStringSet(), .qb(trimTails(qual, 1, "]")))
 }
+
+
+test_trimTailw <- function()
+{
+    b <- BStringSet("BBBBBB")
+    checkIdentical(BStringSet(), trimTailw(b, 1L, "C", 3L))
+    checkIdentical(BStringSet(), trimTailw(b, 1L, "B", 3L))
+    checkIdentical(b, trimTailw(b, 1L, "A", 3L))
+    checkIdentical(BStringSet(), trimTailw(b, 3L, "C", 1L))
+    checkIdentical(b, trimTailw(b, 4L, "C", 1L))
+
+    b <- BStringSet("DDDBBBBB")
+    checkIdentical(BStringSet("DDD"), trimTailw(b, 2L, "C", 1L))
+    checkIdentical(BStringSet("DD"), trimTailw(b, 1L, "C", 1L))
+    checkIdentical(BStringSet("D"), trimTailw(b, 1L, "C", 2L))
+    checkIdentical(BStringSet(), trimTailw(b, 1L, "C", 3L))
+
+    b <- BStringSet("DDDBDBBBB")
+    checkIdentical(BStringSet("DDDBD"), trimTailw(b, 2L, "C", 1L))
+    checkIdentical(BStringSet("DDDBDB"), trimTailw(b, 4L, "C", 2L))
+}

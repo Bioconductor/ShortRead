@@ -22,6 +22,7 @@
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
 \alias{append,ShortReadQ,ShortReadQ,missing-method}
 \alias{narrow,ShortReadQ-method}
+\alias{trimTailw,ShortReadQ-method}
 \alias{trimTails,ShortReadQ-method}
 \alias{qa,ShortReadQ-method}
 \alias{detail,ShortReadQ-method}
@@ -126,6 +127,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       \code{end} bases, according to
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.}
+
+    \item{trimTailw}{\code{signature(object="ShortReadQ", k="integer",
+	a="character", halfwidth="integer", ..., ranges=FALSE)}:
+      trim trailing nucleotides when a window of width 2 * halfwidth + 1
+      contains \code{k} or more quality scores falling at or below
+      \code{a}.}
 
     \item{trimTails}{\code{signature(object="ShortReadQ", k="integer",
 	a="character", successive=FALSE, ..., ranges=FALSE)}: trim

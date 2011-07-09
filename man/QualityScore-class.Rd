@@ -37,6 +37,7 @@
 \alias{coerce,FastqQuality,matrix-method}
 \alias{coerce,FastqQuality,PhredQuality-method}
 \alias{narrow,FastqQuality-method}
+\alias{trimTailw,FastqQuality-method}
 \alias{trimTails,FastqQuality-method}
 \alias{srsort,FastqQuality-method}
 \alias{srorder,FastqQuality-method}
@@ -210,6 +211,12 @@
       \code{start} and \code{end} bases, according to
       \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
       package.}
+
+    \item{trimTailw}{\code{signature(object="FastqQuality", k="integer",
+	a="character", halfwidth="integer", ..., ranges=FALSE)}:
+      trim trailing nucleotides when a window of width 2 * halfwidth + 1
+      contains \code{k} or more quality scores falling at or below
+      \code{a}.}
 
     \item{trimTails}{\code{signature(object="FastqQuality", k="integer",
 	a="character", successive=FALSE, ..., ranges=FALSE)}: trim
