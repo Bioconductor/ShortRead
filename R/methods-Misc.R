@@ -188,7 +188,8 @@ setMethod(trimTails, "BStringSet",
 setMethod(trimTails, "XStringQuality",
     function(object, k, a, successive=FALSE, ..., ranges=FALSE)
 {
-    rng <- .Call(object, k, a, successive, ..., ranges=TRUE)
+    rng <- callGeneric(as(object, "BStringSet"), k, a, successive, ...,
+                       ranges=TRUE)
     if (ranges) rng
     else narrow(object, 1L, end(rng))[0L != width(rng)]
 })

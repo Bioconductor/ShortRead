@@ -28,8 +28,9 @@ test_trimTails_QualityScore <- function()
 test_trimTails_XStringQuality <- function()
 {
     .qq <- function(x) quality(quality(x))
+    .qb <- function(x) as(x, "BStringSet")
     qual <- as(quality(rfq), "PhredQuality")
-    checkTrue(validObject(trimTails(rfq, 1, "H")))
-    .check(.qq(rfq), .qq(trimTails(rfq, 1, " ")))
-    .check(BStringSet(), .qq(trimTails(rfq, 1, "]")))
+    checkTrue(validObject(trimTails(qual, 1, "H")))
+    .check(.qq(rfq), .qb(trimTails(qual, 1, "!")))
+    .check(BStringSet(), .qb(trimTails(qual, 1, "]")))
 }
