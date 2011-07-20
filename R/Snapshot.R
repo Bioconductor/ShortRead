@@ -40,18 +40,23 @@
         h <- h[1]
         GRanges(names(h), IRanges(1, h))
     },
-    .update_range=function() 
-    {
-        lim <- pmax(1L, .self$view$get.x.limits())
-        if (lim[1] < start(.self$.range)) {
+
+    .update_range=function(lim) {
+        if (lim[2] < lim[1])
+            .stop("The end of range must be greater than the start of the range.") 
+        if (lim[1] >= start(.self$.orig.range)) {
             start(.self$.range) <- lim[1]
-            .self$.data_dirty <- TRUE
-        }
-        if (lim[2] > end(.self$.range)) {
+           .self$.data_dirty <- TRUE
+       } else
+           .stop("Please make sure the range argument are defining the regions within the limits of the original range.")
+        if (lim[2] <= end(.self$.orig.range)) {
             end(.self$.range) <- lim[2]
             .self$.data_dirty <- TRUE
-        }
+        } else
+             .stop("Please make sure the range argument are defining the regions within the limits of the original range.")
+        invisible()
     },
+                  
     .update_data=function() 
     {
         .debug("update_data .current_function='%s'",
@@ -68,19 +73,18 @@
         .self
     },
 
-    .expand_active_range=function() {
-        activelim <- c(start(.self$.range), end(.self$.range))
-        viewlim <- .self$view$get.x.limits()
-        orginlim <- c(start(.self$.orig.range), end(.self$.orig.range))
-        flag <- (viewlim[1] < activelim[1]) & (viewlim[2] > activelim[2])
-        
-        return(flag)
+    .get.active_region=function() {
+        'get the start and end of the active region'
+        c(start(.self$.range), end(.self$.range))
     },
-                  
+
     .is.initial_function=function()
     {
+        'check if initial reader/viwer function is currently in used:TRUE/FALSE'
+        'assign result to .using_initial_functions'
          .self$.using_initial_functions <-
-             any(.self$.current_function %in% names(.self$.initial_functions))
+             any(.self$.current_function %in%
+                 names(.self$.initial_functions)[1:2])
     },
                   
     .check_currentFunction=function(currentFunction) 
@@ -102,8 +106,9 @@
                   
     .change_current_function=function(currentFunction) 
     {
-        'check whether currentFunction should be change according to the window'
-        'if yes, change .current_function and make .data_dirty TRUE'
+        'Determine whether currentFunction should be change according to the
+         size of the active region. This function is used by togglefun()' 
+        'If yes, change .current_function and make .data_dirty TRUE'
         lms <- limits(.self$functions[[currentFunction]])
         wd <- .self$view$get.x.limits()[2] - .self$view$get.x.limits()[1]
         if (wd <= lms[1])
@@ -116,6 +121,80 @@
         .self$.current_function=currentFunction
         .self$.data_dirty <- TRUE
         invisible()
+    },
+
+    .zoom_in_xlim=function(){
+        'get x limits for zoom in'
+        lim <- .self$view$get.x.limits()
+        center <- mean(.self$view$trellis$x.limits)
+        width <- (lim[2] - lim[1])/2
+        if (width > 1)
+            xlim <- c(center - width/2, center + width/2)
+        else xlim <- lim
+    },
+                  
+    .zoom_out_xlim=function() {
+        'get x limits for zoom out'
+        lim <- .self$view$get.x.limits()
+        center <- mean(lim)
+        width <- diff(lim)
+        xlim <-  c(max(start(.self$.orig.range), center-width),
+                   min(end(.self$.orig.range), center+width))
+    },
+                  
+    .pleft_xlim=function() {
+        'get x limits for pan left'
+        margin <- 50
+        lim <- .self$view$get.x.limits()
+        by <- 0.8 * diff(lim)
+        xlim <- c(max(lim[1] - by, start(.self$.orig.range)),
+                  max(lim[2] - by, start(.self$.orig.range) + margin))
+        ## if xlim is between the gap of the limits of .self$range
+        ## that of the trellis object limits (.self$view$trellis$orig.x.limits
+        xlim <- c(min(end(.self$.orig.range)-margin, xlim[1]),
+                  min(end(.self$.orig.range), xlim[2]))
+    },
+                  
+    .pright_xlim=function() {
+        'get x limits for pan right'
+        margin <- 50
+        lim <- .self$view$get.x.limits()
+        by <- 0.8 * diff(lim)
+        xlim <- c(min(lim[1]+by, end(.self$.orig.range) - margin),
+                  min(lim[2]+by, end(.self$.orig.range)))
+        ## if xlim is between the gap of the limits of .self$range
+        ## that of the trellis object limits (.self$view$trellis$orig.x.limits
+        xlim <- c(max(start(.self$.orig.range), xlim[1]),
+                  max(start(.self$.orig.range)+margin, xlim[2]))
+    },
+                  
+    .reset_active_range=function(xlim) {
+       'determine wether to reset active range. used by pan and zoom out'
+       win <- .self$view$trellis$orig.x.limits
+       f1 <- xlim[1] < min(start(.self$.range), win[1])
+       f2 <- xlim[2] > end(.self$.range, win[2])
+       any(f1,f2)
+    },
+    
+    .switch_ini_currentFunction=function(xlim) {
+        'determine wether to switch viewer functions (TRUE/FALSE).
+         used only when the current function is one of default functions
+         (fine_coverage or coarse_coverage)'
+        
+        sw <- FALSE
+        
+        win <-(xlim[2] - xlim[1]) <
+                   limits(.self$.initial_functions[["fine_coverage"]])[2]
+        fine <- .self$.current_function == "fine_coverage"
+        if (win) {
+            # limits within fine_coverage limit and viewer is coarse
+            if (!fine) sw <- TRUE
+        } else {
+            # limits over fine_coverage limit and viewer is fine
+            if (fine) sw <- TRUE
+        }
+        
+        return(sw)  
     },
                   
     .initialize_currentFunction=function() 
@@ -179,16 +258,14 @@
                   
     set_range=function(range)
     {   'resetting the active range, called when setting zoom(..., range=)'
+        'also used for determine the best fit SnapshotFunctions if the initial
+         functions are in used.'
         # seqlevel must be the same
         if (!all(seqlevels(range) %in% seqlevels(.self$.range)))
            .stop("The seqlevel '%s' does not match that of the active data",
                  seqlevels(range))
-        # check the range is within the original range
-        if ((start(range) < start(.self$.orig.range)) |
-                (end(range) > end(.self$.orig.range)))
-            .stop("Please make sure the range argument are defining the regions within the limits of the original range.")
-        .self$.range <- range
         
+        .self$.update_range(c(start(range), end(range)))
         .self$.is.initial_function()
         ## find appropriate reader/viewer if initial functions are in used
         if (.self$.using_initial_functions)
@@ -220,13 +297,12 @@
           if (!missing(currentFunction)) {
               if (!currentFunction %in% names(.self$functions))
                   .stop("toggle unknown function '%s'", currentFunction)
-              .self$is.initial_function()  # update .using_initial_functions
+
               if (currentFunction != .self$.current_function) {
                  .self$.change_current_function(currentFunction)
                  if (.self$.data_dirty) {
                      lim <- .self$view$get.x.limits()
-                     start(.self$.range) <- lim[1]
-                     end(.self$.range) <- lim[2]
+                     .update_range(lim)
                      .self$.update_data()
                  }
               }
@@ -237,19 +313,30 @@
     zoom=function()
     {
           .debug("zoom: %s", if (.self$.zin) "in" else "out")
-          if (.self$.zin)
+          if (.self$.zin) {
+              ## zoom in
+              .self$.is.initial_function()
+              if (.self$.using_initial_functions) {
+                  # check if need to switch viewer
+                  xlim <- .self$.zoom_in_xlim()
+                  if (.self$.switch_ini_currentFunction(xlim)) {
+                      range <- .self$.range
+                      start(range) <- xlim[1]
+                      end(range) <- xlim[2]
+                      .self$set_range(range)
+                  } else # if don't need to swith viewer
+                      .self$view$zoomin()
+              } else # if not using fine_coverage or coarse_coverage
               .self$view$zoomin()
+          }
           else { ## zoom out
-              if (.expand_active_range()) {
+              xlim <- .self$.zoom_out_xlim()
+              if (.reset_active_range(xlim)) { 
                   ## expend the active range and .update_data()
-                  activelim <- c(start(.self$.range), end(.self$.range))
-                  center <- mean(activelim)
-                  width <- diff(activelim)
-                  newrange <- c(max(start(.self$.orig.range), center-width),
-                                min(end(.self$.orig.range), center+width))
                   range <- .self$.range
-                  start(range) <- newrange[1]
-                  end(range) <- newrange[2]
+                  start(range) <- xlim[1]
+                  end(range) <- xlim[2]
+                  #find appropriate read/viwer funcs
                   .self$set_range(range)
               }
               else
@@ -262,36 +349,21 @@
     pan=function() {
           .debug("pan: %s", if (.self$.pright) "right" else "left")
           if (.self$.pright) { ## shift right
-              if (.expand_active_range()) {
-                  activelim <- c(start(.self$.range), end(.self$.range))
-                  origlim <- c(start(.self$.orig.range), end(.self$.orig.range))
-                  by <- 0.8 * diff(activelim)
-                  margin <- 50
-                  newrange <- c(min(activelim[1]+by, origlim[2]-margin),
-                                min(activelim[2]+by, origlim[2]))
-                  range <- .self$.range
-                  start(range) <- newrange[1]
-                  end(range) <- newrange[2]
-                  .self$set_range(range)
+              xlim <- .self$.pright_xlim()
+              if (.reset_active_range(xlim)) {
+                  .update_range(xlim)
+                  .self$.update_data()
               }  
               else .self$view$shiftr()
           }
           else { ## shift left
-              if (.expand_active_range()) {
-                  activelim <- c(start(.self$.range), end(.self$.range))
-                  origlim <- c(start(.self$.orig.range), end(.self$.orig.range))
-                  by <- 0.8 * diff(activelim)
-                  margin <- 50
-                  newrange <- c(max(activelim[1]-by, origlim[1]),
-                                max(activelim[2]-by, origlim[1]+margin))
-                  range <- .self$.range
-                  start(range) <- newrange[1]
-                  end(range) <- newrange[2]
-                  .self$set_range(range)
+              xlim <- .self$.pleft_xlim()
+              if (.reset_active_range(xlim)) {
+                  .update_range(xlim)
+                  .self$.update_data()
               }
               else .self$view$shiftl()
           }    
-          #.self$.update_range()
           .self
     }
 )
