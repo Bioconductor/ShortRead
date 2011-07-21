@@ -8,7 +8,8 @@
         positive <- rowSums(positive)
     if (is.matrix(negative))
         negative <- rowSums(negative)
-    pos <- seq.int(start(range), end(range),
+    delta <- (end(range)-start(range))/(length(positive)-1)
+    pos <- seq.int(start(range)+delta/2, by=delta,
                    length.out=length(positive))
     snames <- c("positive", "negative")
     group <- factor(rep(snames, each=length(positive)),
@@ -44,19 +45,21 @@
     nbins <- 5000L
     rng <- vrange(x)
     wd <- width(rng)
+    breaks <- seq(start(rng), end(rng), length.out=nbins)
+    
     lst <- lapply(as.list(files(x)), function(fl) {
         param <- ScanBamParam(which=rng, what=c("pos", "strand"))
         starts <- scanBam(fl, param=param)[[1]]
         bins <- with(starts, {
             lapply(split(pos, strand)[1:2], function(elt) {
-                if (length(elt)) cut(elt, breaks=nbins, labels=FALSE)
+                if (length(elt)) cut(elt, breaks=breaks, labels=FALSE)
                 else integer()
             })
         })
-        lapply(bins, tabulate, nbins)
+        lapply(bins, tabulate, length(breaks)-1) #nbins = breaks-1
     })
     .coverage_as_dataframe(lst, rng)
-}
+} 
 
 .multifine_coverage_reader <- function(x)
 {  
