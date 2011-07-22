@@ -72,3 +72,8 @@ setMethod(SnapshotFunctionList, "SnapshotFunction",
     SnapshotFunction(reader=.multifine_coverage_reader,
                      viewer=.multicoverage_viewer,
                      limits=c(50L, 10000L))
+
+.multicoarse_coverage <-
+    SnapshotFunction(reader=.multicoarse_coverage_reader,
+                     viewer=.multicoverage_viewer,
+                     limits=c(10000L,.Machine$integer.max))

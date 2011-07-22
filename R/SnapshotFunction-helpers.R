@@ -1,27 +1,6 @@
-
-## readers 
-.coverage_as_dataframe <- function(lst, range)
+## get coverage for fine and coarse view
+.get_fine_coverage <- function(x)
 {
-    positive <- sapply(lst, "[[", "+")
-    negative <- sapply(lst, "[[", "-")
-    if (is.matrix(positive))
-        positive <- rowSums(positive)
-    if (is.matrix(negative))
-        negative <- rowSums(negative)
-    delta <- (end(range)-start(range))/(length(positive)-1)
-    pos <- seq.int(start(range)+delta/2, by=delta,
-                   length.out=length(positive))
-    snames <- c("positive", "negative")
-    group <- factor(rep(snames, each=length(positive)),
-                    levels=snames)
-    data.frame(data=c(positive, -negative),
-               group=group,
-               pos=pos)
-}
-
-.fine_coverage_reader <- function(x)
-{   ## x: a Snapshot instance
-    ## create a plot of coverage, separate lines for each file
     rng <- vrange(x)
     wd <- width(rng)
     cvg <- function(aln) {
@@ -29,7 +8,6 @@
             numeric(wd)
         else
             as.numeric(coverage(aln, shift=-start(rng)+1, width=wd))
-            #as.numeric(coverage(aln, width=wd))
     }
     lst <- lapply(as.list(files(x)), function(fl) {
         aln <- readBamGappedAlignments(fl, which=rng)
@@ -37,16 +15,14 @@
         list(`+`=cvg(aln[strand(aln)=="+"]),
              `-`=cvg(aln[strand(aln)=="-"]))
     })
-    .coverage_as_dataframe(lst, rng)
 }
 
-.coarse_coverage_reader <- function(x)
+.get_coarse_coverage <- function(x)
 {
     nbins <- 5000L
     rng <- vrange(x)
     wd <- width(rng)
     breaks <- seq(start(rng), end(rng), length.out=nbins)
-    
     lst <- lapply(as.list(files(x)), function(fl) {
         param <- ScanBamParam(which=rng, what=c("pos", "strand"))
         starts <- scanBam(fl, param=param)[[1]]
@@ -58,43 +34,102 @@
         })
         lapply(bins, tabulate, length(breaks)-1) #nbins = breaks-1
     })
-    .coverage_as_dataframe(lst, rng)
-} 
+}
 
-.multifine_coverage_reader <- function(x)
-{  
-    rng <- vrange(x)
-    wd <- width(rng)
-    cvg <- function(aln) {
-        if (!length(aln))
-            numeric(wd)
-        else
-            as.numeric(coverage(aln, shift=-start(rng)+1, width=wd))
-    }
-    lst <- lapply(as.list(files(x)), function(fl) {
-        aln <- readBamGappedAlignments(fl, which=rng)
-        seqlevels(aln) <- seqlevels(rng)
-        list(`+`=cvg(aln[strand(aln)=="+"]),
-             `-`=cvg(aln[strand(aln)=="-"]))
-    })
-
+.coverage_as_dataframe <- function(lst, range, resolution.fine=TRUE)
+{
     positive <- sapply(lst, "[[", "+")
     negative <- sapply(lst, "[[", "-")
+    if (is.matrix(positive))
+        positive <- rowSums(positive)
+    if (is.matrix(negative))
+        negative <- rowSums(negative)
+
+    if (resolution.fine)
+        pos <- seq.int(start(range), end(range), length.out=length(positive))
+    else { ## center the pos at the bin
+        delta <- (end(range)-start(range))/(length(positive))
+        pos <- seq.int(start(range)+delta/2, by=delta,
+                       length.out=length(positive))
+    }
     
-    pos <- rep(seq.int(start(rng), end(rng)), length(2*length(lst)))
+    snames <- c("positive", "negative")
+    group <- factor(rep(snames, each=length(positive)),
+                    levels=snames)
+    data.frame(data=c(positive, -negative),
+               group=group,
+               pos=pos)
+}
+
+
+.multiFile_coverage_as_dataframe <- function(lst, range, resolution.fine=TRUE)
+{   print("here") ## debugging
+    wd <- width(range)
+    positive <- sapply(lst, "[[", "+")
+    negative <- sapply(lst, "[[", "-")
+    nPoints <- length(lst[[1]][[1]])
+    if (resolution.fine)
+        pos <- rep(seq.int(start(range), end(range)), 2*length(lst))
+    else {
+        nIntervals <- length(lst[[1]][[1]])
+        delta <- (end(range)-start(range))/(nPoints)
+        p <- seq.int(start(range)+delta/2, by=delta, length.out=nPoints)
+        pos <- rep(p, times=2*length(lst))
+    }
+    #pos <- rep(seq.int(start(range), end(range)), length(2*length(lst)))
 
     snames <- c("positive", "negative")
     strand <- rep(snames, each=length(positive))
     fnames <- names(lst)
-    file <- rep(do.call(cbind, lapply(names(lst), rep, wd)), 2)
+
+    ## FIXME: what if the base file names are the same
+    if (length(unique(fnames))==1)
+        fnames <- paste(1:length(fnames), fnames, sep="-")
+                
+    file <- rep(do.call(cbind, lapply(fnames, rep, nPoints)), 2)
     group <-
         factor(paste(strand, file, sep=": "))
 #               levels=c(paste(snames[1], fnames, sep=": "),
 #                        paste(snames[2], fnames, sep=": "))
-
                #levels=paste(rep(fnames, each=2), snames))
+    print("end") ## debugging
     data.frame(data=c(positive, -negative),
                pos=pos, group=group)
+}
+
+
+################### readers #######################
+.fine_coverage_reader <- function(x)
+{   ## x: a Snapshot instance
+    ## create a plot of coverage as sum of coverage of all the files
+    lst <- .get_fine_coverage(x)
+    rng <- vrange(x)
+    .coverage_as_dataframe(lst, rng, resolution.fine=TRUE)
+}
+
+.coarse_coverage_reader <- function(x)
+{   ## x: a Snapshot instance
+    ## create a plot of coverage as sum of coverage of all the files
+    lst <- .get_coarse_coverage(x)
+    rng <- vrange(x)
+    .coverage_as_dataframe(lst, rng, resolution.fine=FALSE)
+} 
+
+.multifine_coverage_reader <- function(x)  
+{   ## x: a Sanpshot instance
+    ## create a plot of coverage, separate lines for each file
+    lst <- .get_fine_coverage(s)
+    rng <- vrange(x)
+ 
+    .multiFile_coverage_as_dataframe(lst, rng, resolution.fine=TRUE)
+}
+
+.multicoarse_coverage_reader <- function(x)
+{   ## x: a Sanpshot instance
+    ## create a plot of coverage, separate lines for each file
+    lst <- .get_coarse_coverage(x)
+    rng <- vrange(x)
+    .multiFile_coverage_as_dataframe(lst, rng, resolution.fine=FALSE)
 }
 
 .update_viewer <- function(x, cv)
@@ -162,10 +197,10 @@
 
 .multicoverage_viewer <- function(x, ...)
 {   ## x: a Snapshot instance
-    sp <- .getData(x) $#x$.data
+    sp <- .getData(x) #x$.data
     lv <- length(levels(sp$group))/2
     lty <- rep(seq_len(lv), times=2)
-    col <- c(rep("#66C2A5", lv) , rep("#FC8D62", lv))
+    col <- c(rep("#FC8D62", lv) , rep("#66C2A5", lv))
     cv <- xyplot(data ~ pos, data=sp, group=group, type="s",
                  col=col, lty=lty,
                  ylab="Coverage", xlab="Coordinate",
@@ -184,7 +219,7 @@
         if (!is.null(ud)) cv <- ud
     }  
 
-    SpTrellis(trellis=sv)
+    SpTrellis(trellis=cv)
 }
 
 ### default annotation track viewer

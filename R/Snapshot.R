@@ -228,13 +228,14 @@
         .self$.range <- 
             if (missing(.range)) .initial_range()
             else .range
-
+ 
         .self$.orig.range <- .self$.range
         
         .self$.initial_functions <-
             SnapshotFunctionList(fine_coverage=.fine_coverage,
                                  coarse_coverage=.coarse_coverage,
-                                 multifine_coverage=.multifine_coverage)
+                                 multifine_coverage=.multifine_coverage,
+                                 multicoarse_coverage=.multicoarse_coverage)
 
         .self$functions <- c(.self$.initial_functions, functions)
          
