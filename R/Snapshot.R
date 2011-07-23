@@ -366,7 +366,17 @@
               else .self$view$shiftl()
           }    
           .self
-    }
+    },
+                  
+    restore=function()
+   {
+       f1 <- start(.self$.range)==start(.self$.orig.range)
+       f2 <- end(.self$.range)==end(.self$.orig.range)
+       if (all(f1, f2))#original range is the same as active range
+           .self$view$restore()
+       else
+          .self$set_range(.self$.orig.range) 
+   }
 )
 
 ## Constructors
@@ -380,6 +390,15 @@ setMethod(Snapshot, c("character", "GRanges"),
     if (is.null(names(files)))
         names(files) <- basename(files)
     files <- BamFileList(files)
+    .Snapshot$new(files=files, .range=range, ...)
+})
+
+setMethod(Snapshot, c("BamFileList", "GRanges"),
+    function(files, range, ...)
+{
+    if (is.null(names(files))) 
+        names(files) <- basename(sapply(files@listData, function(fl) path(fl)))
+
     .Snapshot$new(files=files, .range=range, ...)
 })
 

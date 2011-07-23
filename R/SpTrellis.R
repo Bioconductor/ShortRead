@@ -136,8 +136,15 @@ setOldClass("trellis")
     },
     current = function() 
     {
-        print(trellis)
-    })
+        print(.self$trellis)
+    },
+    restore = function()
+    {
+        .self$trellis$x.limits <- .self$trellis$orig.x.limits
+        ## .self$trellis
+    }
+
+                   )
 
 SpTrellis <- function(trellis, debug_enabled=FALSE) 
 {   

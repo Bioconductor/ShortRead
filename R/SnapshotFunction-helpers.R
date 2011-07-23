@@ -63,7 +63,7 @@
 
 
 .multiFile_coverage_as_dataframe <- function(lst, range, resolution.fine=TRUE)
-{   print("here") ## debugging
+{ 
     wd <- width(range)
     positive <- sapply(lst, "[[", "+")
     negative <- sapply(lst, "[[", "-")
@@ -92,7 +92,6 @@
 #               levels=c(paste(snames[1], fnames, sep=": "),
 #                        paste(snames[2], fnames, sep=": "))
                #levels=paste(rep(fnames, each=2), snames))
-    print("end") ## debugging
     data.frame(data=c(positive, -negative),
                pos=pos, group=group)
 }
@@ -151,7 +150,7 @@
     }
     
     # x: a Snapshot instance
-    if (.currentFunction(x) == "coarse_coverage") 
+    if (.currentFunction(x) %in% c("coarse_coverage", "multicoarse_coverage"))
         ann <- .coarse_annviewer(gr, rng)
 
     if (.currentFunction(x) %in% c("fine_coverage", "multifine_coverage"))
