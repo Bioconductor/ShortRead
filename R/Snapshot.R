@@ -126,11 +126,14 @@
     .zoom_in_xlim=function(){
         'get x limits for zoom in'
         lim <- .self$view$get.x.limits()
-        center <- mean(.self$view$trellis$x.limits)
+        center <- mean(lim)
         width <- (lim[2] - lim[1])/2
-        if (width > 1)
-            xlim <- c(center - width/2, center + width/2)
+        if (width > 50)
+            xlim <- c(max(start(.self$.orig.range), center - width/2),
+                      min(end(.self$.orig.range), center + width/2))
         else xlim <- lim
+
+        xlim[1] <- max(start(.self$orig.range), xlim[2])
     },
                   
     .zoom_out_xlim=function() {
