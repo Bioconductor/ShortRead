@@ -132,8 +132,6 @@
             xlim <- c(max(start(.self$.orig.range), center - width/2),
                       min(end(.self$.orig.range), center + width/2))
         else xlim <- lim
-
-        xlim[1] <- max(start(.self$orig.range), xlim[2])
     },
                   
     .zoom_out_xlim=function() {
@@ -488,7 +486,7 @@ setMethod(show, "Snapshot", function(object)
     with(object, {
         cat("file(s):", names(files), "\n")
         cat("Orginal range:",
-            sprintf("%s:%d-%d", seqleveds(.orig.range), start(.orig.range),
+            sprintf("%s:%d-%d", seqlevels(.orig.range), start(.orig.range),
                     end(.orig.range)), "\n")
         cat("active range:",
             sprintf("%s:%d-%d", seqlevels(.range), start(.range),
