@@ -96,7 +96,7 @@ setOldClass("trellis")
         invisible()
 
     },
-    zi = function(by=NULL) {
+    zi = function(by) {
         'zoom in 50%, change x.limits'
          center <- mean(.self$trellis$x.limits)
          width <- (.self$trellis$x.limits[2] - .self$trellis$x.limits[1])/2
@@ -109,12 +109,12 @@ setOldClass("trellis")
          invisible()
 
     },
-    left = function(by=NULL) 
+    left = function(by) 
     {
         'shift x.limits 80% to the left'
         margin <- 50
          
-        if (is.null(by)) ## 80% to the left
+        #if (is.missing(by)) ## 80% to the left
             by <- 0.8 * (.self$trellis$x.limits[2] - .self$trellis$x.limits[1])
         
         .debug("shift left for %.0f bps", by)
@@ -131,7 +131,7 @@ setOldClass("trellis")
     {
         'shift x.limits 80% to the right'
          margin <- 50 #pbs
-         if (is.null(by)) ## 80% to the left
+         #if (is.null(by)) ## 80% to the left
              by <- 0.8 * (.self$trellis$x.limits[2] - .self$trellis$x.limits[1])
          .debug("shift right for %s bps", by)
          .self$trellis$x.limits[1] <- min(.self$trellis$x.limits[1] + by,
@@ -152,8 +152,7 @@ setOldClass("trellis")
     {
         print(.self$trellis)
     }
-
-                   )
+)
 
 SpTrellis <- function(trellis, debug_enabled=FALSE) 
 {   
@@ -162,7 +161,10 @@ SpTrellis <- function(trellis, debug_enabled=FALSE)
 }
 
 setMethod("update", "SpTrellis", function(object, ...)
-          update(object$trellis, ...))
+{
+    tr <- update(object$trellis, ...)
+    SpTrellis(tr)
+})
 
 setMethod("show", "SpTrellis", function(object) {
     cat("class:", class(object), "\n")
