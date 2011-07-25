@@ -329,9 +329,9 @@
                       end(range) <- xlim[2]
                       .self$set_range(range)
                   } else # if don't need to swith viewer
-                      .self$view$zoomin()
+                      .self$view$zi()
               } else # if not using fine_coverage or coarse_coverage
-              .self$view$zoomin()
+              .self$view$zi()
           }
           else { ## zoom out
               xlim <- .self$.zoom_out_xlim()
@@ -344,7 +344,7 @@
                   .self$set_range(range)
               }
               else
-                  .self$view$zoomout()
+                  .self$view$zo()
           }
           #.self$.update_range()
           .self
@@ -358,7 +358,7 @@
                   .update_range(xlim)
                   .self$.update_data()
               }  
-              else .self$view$shiftr()
+              else .self$view$right()
           }
           else { ## shift left
               xlim <- .self$.pleft_xlim()
@@ -366,7 +366,7 @@
                   .update_range(xlim)
                   .self$.update_data()
               }
-              else .self$view$shiftl()
+              else .self$view$left()
           }    
           .self
     },
@@ -488,7 +488,7 @@ setMethod(show, "Snapshot", function(object)
     with(object, {
         cat("file(s):", names(files), "\n")
         cat("Orginal range:",
-            sprintf("%s:%d-%d", seqlevels(.orig.range), start(.orig.range),
+            sprintf("%s:%d-%d", seqleveds(.orig.range), start(.orig.range),
                     end(.orig.range)), "\n")
         cat("active range:",
             sprintf("%s:%d-%d", seqlevels(.range), start(.range),

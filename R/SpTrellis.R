@@ -81,7 +81,7 @@ setOldClass("trellis")
         trellis$x.limits <<- trellis$orig.x.limits
         print(trellis)
     },
-    zoomout = function() 
+    zo = function(by=NULL) 
     {
         'zoom out'
         center <- mean(.self$trellis$x.limits)
@@ -93,8 +93,10 @@ setOldClass("trellis")
         .self$trellis$x.limits <- xlim
         .debug("current x limits [%.0f, %.0f]", .self$get.x.limits()[1],
                         .self$get.x.limits()[2])
+        invisible()
+
     },
-    zoomin = function() {
+    zi = function(by=NULL) {
         'zoom in 50%, change x.limits'
          center <- mean(.self$trellis$x.limits)
          width <- (.self$trellis$x.limits[2] - .self$trellis$x.limits[1])/2
@@ -104,23 +106,28 @@ setOldClass("trellis")
          .self$trellis$x.limits <- xlim
          .debug("current x limits [%.0f, %.0f]", 
                 .self$get.x.limits()[1], .self$get.x.limits()[2])
+         invisible()
+
     },
-    shiftl = function(by=NULL) 
+    left = function(by=NULL) 
     {
         'shift x.limits 80% to the left'
         margin <- 50
          
-       if (is.null(by)) ## 80% to the left
-           by <- 0.8 * (.self$trellis$x.limits[2] - .self$trellis$x.limits[1])
-           .debug("shift left for %.0f bps", by)
-           .self$trellis$x.limits[1] <- max(.self$trellis$x.limits[1] - by,
-                                       .self$trellis$orig.x.limits[1])
-           .self$trellis$x.limits[2] <- max(.self$trellis$x.limits[2] - by,
+        if (is.null(by)) ## 80% to the left
+            by <- 0.8 * (.self$trellis$x.limits[2] - .self$trellis$x.limits[1])
+        
+        .debug("shift left for %.0f bps", by)
+        .self$trellis$x.limits[1] <- max(.self$trellis$x.limits[1] - by,
+                                   .self$trellis$orig.x.limits[1])
+        .self$trellis$x.limits[2] <- max(.self$trellis$x.limits[2] - by,
                                         .self$trellis$orig.x.limits[1] + margin)
-           .debug("current x limits [%.0f, %.0f]", .self$get.x.limits()[1],
-                  .self$get.x.limits()[2])
+        .debug("current x limits [%.0f, %.0f]", .self$get.x.limits()[1],
+               .self$get.x.limits()[2])
+        invisible()
+
     },
-    shiftr = function(by=NULL) 
+    right = function(by=NULL) 
     {
         'shift x.limits 80% to the right'
          margin <- 50 #pbs
@@ -133,15 +140,17 @@ setOldClass("trellis")
                                      .self$trellis$orig.x.limits[2])
          .debug("current x limits [%.0f, %.0f]", .self$get.x.limits()[1],
                 .self$get.x.limits()[2])
-    },
-    current = function() 
-    {
-        print(.self$trellis)
+         invisible()
+
     },
     restore = function()
     {
         .self$trellis$x.limits <- .self$trellis$orig.x.limits
-        ## .self$trellis
+        invisible()
+    },
+    display = function()
+    {
+        print(.self$trellis)
     }
 
                    )
@@ -151,7 +160,58 @@ SpTrellis <- function(trellis, debug_enabled=FALSE)
     .SpTrellis$new(trellis = trellis, .debug_enabled=debug_enabled)
 
 }
-            
+
+setMethod("update", "SpTrellis", function(object, ...)
+          update(object$trellis, ...))
+
+setMethod("show", "SpTrellis", function(object) {
+    cat("class:", class(object), "\n")
+    with(object, {
+        cat("region:", trellis$orig.x.limits, "\n") 
+        cat("viewing window:", get.x.limits(),"\n")
+    })
+    object$display()
+})
+
+if (is.null(getGeneric("zi")))
+    setGeneric("zi", function(x, ...) standardGeneric("zi"))
+setMethod("zi", "SpTrellis", function(x, by=5)
+{
+  x$zi(by)
+  x$display()
+})
+
+if (is.null(getGeneric("zo")))
+    setGeneric("zo", function(x, ...) standardGeneric("zo"))
+setMethod("zo", "SpTrellis", function(x, by=5)
+{
+    x$zo(by)
+    x$display()
+})    
+
+if (is.null(getGeneric("right")))
+    setGeneric("right", function(x, ...) standardGeneric("right"))
+setMethod("right", "SpTrellis", function(x, by=5)
+{
+    x$right(by)
+    x$display()
+})
+
+if (is.null(getGeneric("left")))
+    setGeneric("left", function(x, ...) standardGeneric("left"))
+setMethod("left", "SpTrellis", function(x, by=5)
+{
+    x$left(by)
+    x$display()
+})
+
+if (is.null(getGeneric("restore")))
+    setGeneric("restore", function(x, ...) standardGeneric("restore"))
+setMethod("restore", "SpTrellis", function(x)
+{
+    x$restore()
+    x$display()
+})       
                     
                    
                    
