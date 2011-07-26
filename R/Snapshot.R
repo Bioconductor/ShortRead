@@ -18,6 +18,7 @@
       annTrack="ANY",
       ## more-or-less public
       functions="SnapshotFunctionList",
+      ignore.strand="logical",
       files="BamFileList",
       view="SpTrellis"))
 
@@ -207,6 +208,7 @@
     },
                   
     initialize=function(..., functions=SnapshotFunctionList(), currentFunction,
+                        ignore.strand=FALSE,
                         .range, .auto_display=TRUE, .debug=FALSE, annTrack)
     {
         callSuper(...)
@@ -249,7 +251,8 @@
          } else { 
                 currentFunction <- .self$.initialize_currentFunction()
          }
-        
+
+        .self$ignore.strand <- ignore.strand
         .self$.current_function <- currentFunction
         .self$.is.initial_function() # assign .self$using.initial_function
         .self$.data_dirty <- TRUE
@@ -427,6 +430,9 @@ setMethod("functions", "Snapshot", function(x) x$functions)
 setGeneric("annTrack", function(x, ...) standardGeneric("annTrack"))
 setMethod("annTrack", "Snapshot", function(x) x$annTrack)
 
+setGeneric("ignore.strand", function(x, ...) standardGeneric("ignore.strand"))
+setMethod("ignore.strand", "Snapshot", function(x) x$ignore.strand)
+
 .getData <- function(x) x$.data
 .currentFunction <- function(x) x$.current_function
 
@@ -478,6 +484,7 @@ setMethod("pan", "Snapshot", function(x)
     x$display()
     ## FIXME: return TRUE on success, FALSE otherwise
 })
+
 
 ## show
 setMethod(show, "Snapshot", function(object) 

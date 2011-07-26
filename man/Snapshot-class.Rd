@@ -200,7 +200,7 @@ which <- GRanges("seq1", IRanges(500, 1730))
 s2 <- Snapshot(fl, range=which)
 
 # multiple BAM files
-
+s3 <- Snapshot(c(fl, fl), currentFunction="multifine_coverage") 
 #
 # visulize annotation track
 #
@@ -238,6 +238,11 @@ zoom(s)
 
 pan(s)
 
+## mulitple files: define currentFunction
+## Note if width(which) < 10,000, use "multifine_coverage". 
+## Otherwise use "multicoarse_coverage
+s <- Snapshot(c(file, file), range=which, 
+              currentFunction="multicoarse_coverage")
 }
 
 \keyword{classes}

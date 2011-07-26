@@ -8,7 +8,7 @@ Tools to visualize genomic data
 Use \code{Snapshot}-class to visulatize a specific region of genomic data
 }
 \usage{
-spViewPerGene(GRL, name, files, multi.lines = FALSE, ...)
+spViewPerGene(GRL, name, files, ignore.strand=FALSE, multi.lines = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +20,8 @@ spViewPerGene(GRL, name, files, multi.lines = FALSE, ...)
 
   \item{files}{Charactor() or \code{BamFileList} specifying the file(s)
     to be visuliazed.}
+  
+  \item{ignore.strand}{Logical(1) indicating whether to ignore the strand of the    genomic data.}
 
   \item{multi.lines}{Logical(1) inidicating whether to see multiple
     files on different panels. If \code{FALSE}, }
