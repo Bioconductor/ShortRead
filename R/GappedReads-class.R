@@ -6,7 +6,6 @@
 setClass("GappedReads",
     contains="GappedAlignments",
     representation(
-        qname="BStringSet",
         qseq="DNAStringSet"
         ## TODO: Maybe add the read quality? mismatch information?
     )
@@ -16,10 +15,6 @@ setClass("GappedReads",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters.
 ###
-
-setGeneric("qname", function(x) standardGeneric("qname"))
-
-setMethod("qname", "GappedReads", function(x) x@qname)
 
 setGeneric("qseq", function(x) standardGeneric("qseq"))
 
@@ -33,16 +28,6 @@ setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
-
-.valid.GappedReads.qname <- function(x)
-{
-    x_qname <- qname(x)
-    if (class(x_qname) != "BStringSet" || !is.null(names(x_qname)))
-        return("'qname(x)' must be an unnamed BStringSet instance")
-    if (length(x_qname) != length(cigar(x)))
-        return("'qname(x)' and 'cigar(x)' must have the same length")
-    NULL
-}
 
 .valid.GappedReads.qseq <- function(x)
 {
@@ -59,8 +44,7 @@ setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
 
 .valid.GappedReads <- function(x)
 {
-    c(.valid.GappedReads.qname(x),
-      .valid.GappedReads.qseq(x))
+    .valid.GappedReads.qseq(x)
 }
 
 setValidity2("GappedReads", .valid.GappedReads,
@@ -73,21 +57,23 @@ setValidity2("GappedReads", .valid.GappedReads,
 
 GappedReads <- function(rname=Rle(factor()), pos=integer(0),
                         cigar=character(0), strand=NULL,
-                        qname=BStringSet(), qseq=DNAStringSet(),
-                        seqlengths=NULL)
+                        qseq=DNAStringSet(),
+                        names=NULL, seqlengths=NULL)
 {
     galn <- GappedAlignments(rname=rname, pos=pos,
                              cigar=cigar, strand=strand,
-                             seqlengths=seqlengths)
-    new("GappedReads", galn, qname=qname, qseq=qseq)
+                             names=names, seqlengths=seqlengths)
+    new("GappedReads", galn, qseq=qseq)
 }
 
-readGappedReads <- function(file, format="BAM", ...)
+readGappedReads <- function(file, format="BAM", use.names=FALSE, ...)
 {
     if (!isSingleString(file))
         stop("'file' must be a single string")
     if (!isSingleString(format))
         stop("'format' must be a single string")
+    if (!isTRUEorFALSE(use.names))
+        stop("'use.names' must be TRUE or FALSE")
     dotargs <- list(...)
     if (length(dotargs) != 0L && is.null(names(dotargs)))
         stop("extra arguments must be named")
@@ -104,7 +90,7 @@ readGappedReads <- function(file, format="BAM", ...)
         } else {
             which <- RangesList()
         }
-        args <- c(list(file=file, index=index),
+        args <- c(list(file=file, index=index, use.names=use.names),
                   dotargs,
                   list(which=which))
         ans <- do.call(readBamGappedReads, args)
@@ -146,7 +132,6 @@ setMethod("[", "GappedReads",
             stop("invalid subscript type")
         }
         x <- callNextMethod()
-        x@qname <- x@qname[i]
         x@qseq <- x@qseq[i]
         x
     }
