@@ -80,8 +80,8 @@ s <- SpTrellis(cv)
 s
 zi(s)
 zi(s)
-right(s)
 left(s)
+right(s)
 zo(s)
 restore(s)
 

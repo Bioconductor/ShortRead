@@ -66,6 +66,7 @@ Collate: AllClasses.R
          SnapshotFunction.R
          SpTrellis.R
          Snapshot.R
+ 	 spViewPerGene.R
          srapply.R
          test_ShortRead_package.R
 
