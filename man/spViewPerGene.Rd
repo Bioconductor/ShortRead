@@ -35,6 +35,14 @@ spViewPerGene(GRL, name, files, multi.lines = FALSE, ...)
 }
 \examples{
 library(GenomicFeatures)
+txdbFile <- system.file("extdata", "sacCer2_sgdGene.sqlite",
+                         package="yeastNagalakshmi")
+txdb <- loadFeatures(txdbFile)
+grl <- exonsBy(txdb, by="gene")
+file <- system.file("extdata", "SRR002051.chrI-V.bam",
+                         package="yeastNagalakshmi")
+s <- spViewPerGene(GRL=grl, name="YAL001C", files=file)
+
 
 }
 
