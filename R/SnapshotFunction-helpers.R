@@ -155,7 +155,8 @@
 {
     ## subset annTrack and validate anntrack
     anntrack <- annTrack(x)
-    rng <- vrange(x) 
+    rng <- vrange(x)
+    ignore.strand <- ignore.strand(x)
     if (any(seqnames(anntrack)@values %in% seqlevels(rng)))
         gr <- keepSeqlevels(anntrack, seqlevels(vrange(x)))
     else  {
@@ -171,10 +172,10 @@
     
     # x: a Snapshot instance
     if (.currentFunction(x) %in% c("coarse_coverage", "multicoarse_coverage"))
-        ann <- .coarse_annviewer(gr, rng)
+        ann <- .coarse_annviewer(gr, rng, ignore.strand)
 
     if (.currentFunction(x) %in% c("fine_coverage", "multifine_coverage"))
-        ann <- .fine_annviewer(gr)
+        ann <- .fine_annviewer(gr, ignore.strand)
 
     ann$x.limits <- cv$x.limits
     update(c(cv, ann), x.same=TRUE, layout=c(1,length(cv$packet.sizes)+1),
@@ -275,14 +276,17 @@
 }
 
 ### default annotation track viewer
-.fine_annviewer <- function(gr)
+.fine_annviewer <- function(gr, ignore.strand)
 {   ## how to get the window
     x <- start(gr)
     x1 <- end(gr)
     xm <- (x+x1)/2
     y <- rep(c(-1.4, -0.7, 0, 0.7, 1.4), length.out=length(x))
+    
     col <- c("#66C2A5", "#FC8D62")
-    myCol <- col[as.numeric(strand(gr)@values)]
+    myCol <- if (ignore.strand) col[1]
+             else col[as.numeric(strand(gr)@values)]
+    
     mypanel <- function(x,y, genenames, x1, ...) {
         panel.xyplot(x,y, ..., col="transparent")
         ltext(x=xm, y=y, genenames, cex=0.45, pos=3)
@@ -299,28 +303,44 @@
     ann
 }
 
-.coarse_annviewer <- function(gr, rng)
+.coarse_annviewer <- function(gr, rng, ignore.strand)
 {
     ## gr: GRanges for tracks
-    ## x:  range of an Snapshot instance
+    ## rng:  range of an Snapshot instance
     col <- c("#66C2A5", "#FC8D62")
     nbins=5000L
     interval <- seq.int(start(rng), end(rng), length.out=nbins)
     l <- length(interval)
     ir <- IRanges(start=interval[1:(l-1)], end=interval[2:l])
-    lst <- list("+" = countOverlaps(ir, ranges(gr[strand(gr)=="+"])),
-                "-" = countOverlaps(ir, ranges(gr[strand(gr)=="-"])))
-    snames <- c("positive", "negative")
-    group <- factor(rep(snames, each=length(lst[[1]])),
+    annview <- 
+    if (!ignore.strand) {
+        lst <- list("+" = countOverlaps(ir, ranges(gr[strand(gr)=="+"])),
+                    "-" = countOverlaps(ir, ranges(gr[strand(gr)=="-"])))
+        snames <- c("positive", "negative")
+        group <- factor(rep(snames, each=length(lst[[1]])),
                     levels=snames)
-    cvg <- data.frame(data=c(lst[["+"]], -lst[["-"]]),
-                      group=group,
-                      pos = (start(ir)+end(ir))/2)
-    xyplot(data ~ pos, data=cvg, groups=group, type="h", col=col,
+        cvg <- data.frame(data=c(lst[["+"]], -lst[["-"]]),
+                          group=group,
+                          pos = (start(ir)+end(ir))/2)
+        xyplot(data ~ pos, data=cvg, groups=group, col=col)
+    } else {
+        lst <-  countOverlaps(ir, ranges(gr))
+        cvg <- data.frame(data=lst, pos=(start(ir)+end(ir))/2)
+        xyplot(data ~ pos, data=cvg, col=col[1])
+    }
+    
+    update(annview, type="h",
            xlab=NULL, ylab=NULL,
            scales=list(y=list(alternating=2, tick.number=3,tck=c(0,1)),
                        x=list(tck=c(0,0), labels=NULL)),
            par.settings=
                    list(axis.text=list(alpha=0.5), axis.line=list(alpha=0.5))
            )
+#    xyplot(data ~ pos, data=cvg, groups=group, type="h", col=col,
+#           xlab=NULL, ylab=NULL,
+#           scales=list(y=list(alternating=2, tick.number=3,tck=c(0,1)),
+#                       x=list(tck=c(0,0), labels=NULL)),
+#           par.settings=
+#                   list(axis.text=list(alpha=0.5), axis.line=list(alpha=0.5))
+#           )
 }
