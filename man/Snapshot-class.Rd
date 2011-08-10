@@ -179,31 +179,34 @@ Snapshot(files, range, ...)
 \seealso{\code{\link{SpTrellis}}}
 
 \examples{
-fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
-s <- Snapshot(fl)
+## Import specific ranges of records
+file <- system.file("extdata", "SRR002051.chrI-V.bam",
+                    package="yeastNagalakshmi")
+which <-  GRanges("chrI", IRanges(1, 2e5))
+s <- Snapshot(file, range=which)
 
-# methods
+## methods
 zoom(s) # zoom in
+## zoom in to a specific region
+zoom(s, range=GRanges("chrI", IRanges(7e4, 7e4+8000)))
 pan(s)  # pan right
 togglez(s) # change effect of zooming
 zoom(s) # zoom out
 togglep(s) # chage effect of panning
 pan(s)
 
-# accessors
+## accessors
 functions(s)
 vrange(s)
 show(s)
+ignore.strand(s)
 
-# Import specific ranges of records
-which <- GRanges("seq1", IRanges(500, 1730))
-s2 <- Snapshot(fl, range=which)
+## ignore strand
+s <- Snapshot(file, range=which, ignore.strand=TRUE)
 
-# multiple BAM files
-s3 <- Snapshot(c(fl, fl), currentFunction="multifine_coverage") 
-#
-# visulize annotation track
-#
+##
+## visulize annotation track
+##
 library(GenomicFeatures)
 
 getAnnGR <- function(txdb, which) {
@@ -226,9 +229,6 @@ gr <- getAnnGR(txdb, which)
 ## range of the elements.
 gr
 
-file <- system.file("extdata", "SRR002051.chrI-V.bam",
-                    package="yeastNagalakshmi")
-
 s <- Snapshot(file, range=which, annTrack=gr)
 annTrack(s)
 zoom(s, range=GRanges("chrI", IRanges(7e4, 7e4+8000)))
@@ -238,11 +238,13 @@ zoom(s)
 
 pan(s)
 
-## mulitple files: define currentFunction
-## Note if width(which) < 10,000, use "multifine_coverage". 
-## Otherwise use "multicoarse_coverage
-s <- Snapshot(c(file, file), range=which, 
-              currentFunction="multicoarse_coverage")
+
+## mulitple BAM files: define currentFunction
+
+## Note if width(which) < 10,000, use multifine_coverage. 
+## Otherwise use multicoarse_coverage
+#s <- Snapshot(c(file, file), range=which, 
+#              currentFunction="multicoarse_coverage")
 }
 
 \keyword{classes}
