@@ -68,22 +68,43 @@
 }
 
 
-.multiFile_coverage_as_dataframe <- function(lst, range, ignore.strand=FALSE,
+.multiFile_coverage_as_dataframe <- function(lst, range, fac=NULL,
+                                             ignore.strand=FALSE,
                                              resolution.fine=TRUE)
-{ 
+{
+  
     wd <- width(range)
     positive <- sapply(lst, "[[", "+")
     negative <- sapply(lst, "[[", "-")
     nPoints <- length(lst[[1]][[1]])
+
+    if (is.null(fac)) {
+        ## phenolev as file names (must be unique)
+        fnames <- names(lst)
+        if (length(unique(fnames))!=length(fnames)) # conform the uniquenss
+            fnames <- paste(1:length(fnames), fnames, sep="-")
+        phenolev <- c(do.call(cbind, lapply(fnames, rep, nPoints)))
+    } else {
+        ## take means of the coverate on each level factor
+        cvlst <- lapply(levels(fac), function(lev) {
+                  ps <- rowMeans(positive[, fac == lev, drop=FALSE])
+                  ng <- rowMeans(negative[, fac == lev, drop=FALSE])
+                  list("+"=ps, "-"=ng)
+        })
+        names(cvlst) <- levels(fac)
+        positive <- sapply(cvlst, "[[", "+")
+        negative <- sapply(cvlst, "[[", "-")
+        phenolev <- c(do.call(cbind, lapply(names(cvlst), rep, nPoints)))
+    }
+
+    ## define position
     if (resolution.fine)
-        #pos <- rep(seq.int(start(range), end(range)), 2*length(lst))
+
         pos <- seq.int(start(range), end(range))
-    else {
+    else { # position should be in the middle of the bin
         nIntervals <- length(lst[[1]][[1]])
         delta <- (end(range)-start(range))/(nPoints)
         pos <- seq.int(start(range)+delta/2, by=delta, length.out=nPoints)
-        #p <- seq.int(start(range)+delta/2, by=delta, length.out=nPoints)
-        #pos <- rep(p, times=2*length(lst))
     }
 
     fnames <- names(lst)
@@ -92,23 +113,16 @@
     file <- c(do.call(cbind, lapply(fnames, rep, nPoints)))
 
     if (ignore.strand) {
-        data.frame(data=c(positive+negative), pos=pos, levels=file)
+        data.frame(data=c(positive+negative), pos=pos, levels=phenolev)
     } else {
         snames <- c("positive", "negative")
         strand <- rep(snames, each=length(positive))
         file <- rep(file, 2)
         data.frame(data=c(positive, -negative),
-                   pos=pos, group=strand, levels=file)                 
-#        group <-
-#            factor(paste(strand, file, sep=": "))
-#        data.frame(data=c(positive, -negative),
-#                   pos=pos, group=group)
-  }
+                   pos=pos, group=strand, levels=phenolev)                 
 
-
-    
+    }
 }
-
 
 ################### readers #######################
 .fine_coverage_reader <- function(x)
@@ -137,8 +151,13 @@
     lst <- .get_fine_coverage(x)
     rng <- vrange(x)
     ignore.strand <- ignore.strand(x)
+    
+    if (length(fac(x)) )
+        gfac <- values(files(x))[[fac(x)]]
+    else gfac <- NULL
+        
     .multiFile_coverage_as_dataframe(lst, rng, ignore.strand=ignore.strand,
-                                     resolution.fine=TRUE)
+                                     fac=gfac, resolution.fine=TRUE)
 }
 
 .multicoarse_coverage_reader <- function(x)
@@ -147,8 +166,13 @@
     lst <- .get_coarse_coverage(x)
     rng <- vrange(x)
     ignore.strand <- ignore.strand(x)
+    
+    if (length(fac(x)) )
+        gfac <- values(files(x))[[fac(x)]]
+    else gfac <- NULL
+    
     .multiFile_coverage_as_dataframe(lst, rng, ignore.strand=ignore.strand,
-                                     resolution.fine=FALSE)
+                                     fac=gfac, resolution.fine=FALSE)
 }
 
 .update_viewer <- function(x, cv)
@@ -171,18 +195,22 @@
     }
     
     # x: a Snapshot instance
-    if (.currentFunction(x) %in% c("coarse_coverage", "multicoarse_coverage"))
+    if (.currentFunction(x) %in% c("coarse_coverage", "multicoarse_coverage")) 
         ann <- .coarse_annviewer(gr, rng, ignore.strand)
 
     if (.currentFunction(x) %in% c("fine_coverage", "multifine_coverage"))
         ann <- .fine_annviewer(gr, ignore.strand)
 
+    strip.label <- c(dimnames(cv)$levels, "annotation track")
+    npacket <- length(cv$packet.sizes)
     ann$x.limits <- cv$x.limits
-    update(c(cv, ann), x.same=TRUE, layout=c(1,length(cv$packet.sizes)+1),
+    
+    update(c(cv, ann), x.same=TRUE, layout=c(1,npacket+1),
            xlab=NULL, ylab=NULL,
+           strip=strip.custom(factor.levels=strip.label),
            scales=list(y=list(alternating=2, tck=c(0,1)),
                        x=list(rot=45, tck=c(1,0), tick.number=20)), 
-           par.setting=list(layout.heights=list(panel=c(2,1))))
+           par.setting=list(layout.heights=list(panel=c(rep(2,npacket),1))))
 }
      
 ## viewers
@@ -207,21 +235,8 @@
                      panel.xyplot(...)
                      panel.grid(h=-1, v=20)
                      panel.abline(a=0, b=0, col="grey")
-                 })
-    #cv <- xyplot(data ~ pos, data=sp, group=group, type="s",
-    #             col=col, 
-    #             ylab="Coverage", xlab="Coordinate",
-    #             #key=list(space="top", column=2, cex=0.8,
-    #             #         lines=list(lty=lty, col=col),
-    #             #         text=list(levels(sp$group))),
-    #             scales=list(y=list(tck=c(1,0)),
-    #                         x=list(rot=45, tck=c(1,0), tick.number=20)),
-    #             panel=function(...) {
-    #                 panel.xyplot(...)
-    #                 panel.grid(h=-1, v=20)
-    #                 panel.abline(a=0, b=0, col="grey")
-    #             })
-    
+                   })
+                     
     if (!is.null(annTrack(x))) {
         ud <- .update_viewer(x, cv)
         if (!is.null(ud)) cv <- ud
@@ -238,7 +253,7 @@
     col <- c("#FC8D62", "#66C2A5")
     #col <- c(rep("#FC8D62", lv) , rep("#66C2A5", lv))
     if (ignore.strand(x)) 
-        cv <- xyplot(data ~ pos | levels, data=sp, col=col[1])
+        cv <- xyplot(data ~ pos | levels, data=sp, col=col[2])
     else
         cv <- xyplot(data ~ pos | levels, data=sp, group=group, col=col)
     cv <- update(cv, type="s", #lty=lty,
@@ -246,27 +261,15 @@
                  layout=c(1, length(levels(factor(sp$levels)))),
                  scales=list(y=list(tck=c(1,0)),
                              x=list(rot=45, tck=c(1,0), tick.number=20)),
-                 key=list(space="top", column=2, cex=0.8,
-                          lines=list(lty=lty, col=col),
-                          text=list(levels(sp$group))),
+                 #key=list(space="top", column=2, cex=0.8,
+                 #         lines=list(lty=lty, col=col),
+                 #         text=list(levels(sp$group))),
                  panel=function(...) {
                      panel.xyplot(...)
                      panel.grid(h=-1, v=20)
                      panel.abline(a=0, b=0, col="grey")
                  })
-    #cv <- xyplot(data ~ pos, data=sp, group=group, type="s",
-    #             col=col, lty=lty,
-    #             ylab="Coverage", xlab="Coordinate",
-    #             scales=list(y=list(tck=c(1,0)),
-    #                         x=list(rot=45, tck=c(1,0), tick.number=20)),
-    #             key=list(space="top", column=2, cex=0.8,
-    #                      lines=list(lty=lty, col=col),
-    #                      text=list(levels(sp$group))),
-    #             panel=function(...) {
-    #                 panel.xyplot(...)
-    #                 panel.grid(h=-1, v=20)
-    #                panel.abline(a=0, b=0, col="grey")
-    #             })
+  
     if (!is.null(annTrack(x))) {
         ud <- .update_viewer(x, cv)
         if (!is.null(ud)) cv <- ud
@@ -336,11 +339,5 @@
            par.settings=
                    list(axis.text=list(alpha=0.5), axis.line=list(alpha=0.5))
            )
-#    xyplot(data ~ pos, data=cvg, groups=group, type="h", col=col,
-#           xlab=NULL, ylab=NULL,
-#           scales=list(y=list(alternating=2, tick.number=3,tck=c(0,1)),
-#                       x=list(tck=c(0,0), labels=NULL)),
-#           par.settings=
-#                   list(axis.text=list(alpha=0.5), axis.line=list(alpha=0.5))
-#           )
+
 }

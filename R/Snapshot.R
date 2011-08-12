@@ -14,12 +14,13 @@
       .initial_functions="SnapshotFunctionList",
       .current_function="character",
       .using_initial_functions="logical",
+      ## more-or-less public
       ## annotation track 
       annTrack="ANY",
-      ## more-or-less public
       functions="SnapshotFunctionList",
       ignore.strand="logical",
       files="BamFileList",
+      fac="character",
       view="SpTrellis"))
 
 
@@ -206,10 +207,27 @@
             currentFunction <- "fine_coverage"
         else currentFunction <- "coarse_coverage"
     },
-                  
+ 
+    .initialize_fac=function(fac) {
+        ## initialize fac and values(.self$fiels)[[.self$fac]]
+        .self$fac <- fac
+        if (is.null(.self$files)) .self$fac <- character(0L)
+        
+        if (length(.self$fac) & !is.null(values(.self$files)))   {
+            if (length(.self$fac) > 1) .self$fac <- .self$fac[1]
+            if (!(.self$fac %in% names(values(.self$files))))
+                ## not sure why cannot use values(.self$files)
+                .stop("'%s' is not a column of elementMetadata in the 'files'
+                      input arguement", .self$fac)
+            
+            values(.self$files)[[.self$fac]] <-
+                factor(values(.self$files)[[.self$fac]])
+        }
+    },
+        
     initialize=function(..., functions=SnapshotFunctionList(), currentFunction,
-                        ignore.strand=FALSE,
-                        .range, .auto_display=TRUE, .debug=FALSE, annTrack)
+                        ignore.strand=FALSE, fac=character(0L), annTrack=NULL,
+                        .range, .auto_display=TRUE, .debug=FALSE)
     {
         callSuper(...)
         .self$.debug <- if (.debug) .message else function(...) {}
@@ -224,10 +242,6 @@
             .stop("open BamFile failed: %s", conditionMessage(err))
         })
 
-        .self$annTrack <-
-            if (missing(annTrack)) NULL
-            else annTrack
-        
         .self$.range <- 
             if (missing(.range)) .initial_range()
             else .range
@@ -243,15 +257,17 @@
         .self$functions <- c(.self$.initial_functions, functions)
          
             ## initialize current function
-         if (!missing(currentFunction)) {
-             if (!currentFunction %in% names(.self$functions))
-                 .stop("'%s' not in SnapshotFunctionList",
-                          currentFunction)
-                 .self$.check_currentFunction(currentFunction)
-         } else { 
-                currentFunction <- .self$.initialize_currentFunction()
-         }
+        if (!missing(currentFunction)) {
+            if (!currentFunction %in% names(.self$functions))
+                .stop("'%s' is not in SnapshotFunctionList",
+                         currentFunction)
+                .self$.check_currentFunction(currentFunction)
+        } else { 
+               currentFunction <- .self$.initialize_currentFunction()
+        }
 
+        .self$.initialize_fac(fac) ## initialize fac and fix values(.self$fiels)
+        .self$annTrack <- annTrack   
         .self$ignore.strand <- ignore.strand
         .self$.current_function <- currentFunction
         .self$.is.initial_function() # assign .self$using.initial_function
@@ -402,6 +418,10 @@ setMethod(Snapshot, c("BamFileList", "GRanges"),
 {
     if (is.null(names(files))) 
         names(files) <- basename(sapply(files@listData, function(fl) path(fl)))
+    ## duplicate names is not preferred
+    fnames <- names(files)
+    if (length(unique(fnames))!=length(fnames))
+        names(files) <- paste(1:length(fnames), fnames, sep="-")
 
     .Snapshot$new(files=files, .range=range, ...)
 })
@@ -433,6 +453,10 @@ setMethod("annTrack", "Snapshot", function(x) x$annTrack)
 setGeneric("ignore.strand", function(x, ...) standardGeneric("ignore.strand"))
 setMethod("ignore.strand", "Snapshot", function(x) x$ignore.strand)
 
+setGeneric("fac", function(x, ...) standardGeneric("fac"))
+setMethod("fac", "Snapshot", function(x) x$fac)
+
+## private functions
 .getData <- function(x) x$.data
 .currentFunction <- function(x) x$.current_function
 

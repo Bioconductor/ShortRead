@@ -48,7 +48,8 @@ Snapshot(files, range, ...)
 
 \arguments{
 
-  \item{files}{A character() specifying the file(s) to be visualized.}
+  \item{files}{A character() or \code{BamFileList} specifying the file(s)
+    to be visualized.} 
 
   \item{range}{A \code{\link{GRanges}} object specifing the range to be
     visualized.}
@@ -72,7 +73,13 @@ Snapshot(files, range, ...)
          functions are to be used, \code{annTrack} should be a
          \code{GRanges} instance and the first column of its
          elementMeatdata would be used to annotate the range.}
-       
+
+       \item{fac:}{Character(1) indicating which factor used for
+          grouping the sample files. The factor should be included in
+          the elementMetadata of \code{files}, otherwise ignored. Used
+          only to visualize multiple files.
+	}
+	
        \item{.auto_display:}{logical(1) indicating whether the
 	 visualization is to be updated when \code{show} is invoked.}
 
@@ -231,6 +238,7 @@ gr
 
 s <- Snapshot(file, range=which, annTrack=gr)
 annTrack(s)
+## zoom in to an interesting region
 zoom(s, range=GRanges("chrI", IRanges(7e4, 7e4+8000)))
 
 togglez(s) ## zoom out
@@ -240,11 +248,26 @@ pan(s)
 
 
 ## mulitple BAM files: define currentFunction
+## Resolution does not automatically switch for views of multiple
+## files. It is important to note if width(which) < 10,000, use
+## multifine_coverage.  Otherwise use multicoarse_coverage
+file <- system.file("extdata", "SRR002051.chrI-V.bam",
+                    package="yeastNagalakshmi")
+which <-  GRanges("chrI", IRanges(1, 2e5))
+s <- Snapshot(c(file, file), range=which, 
+              currentFunction="multicoarse_coverage")
 
-## Note if width(which) < 10,000, use multifine_coverage. 
-## Otherwise use multicoarse_coverage
-#s <- Snapshot(c(file, file), range=which, 
-#              currentFunction="multicoarse_coverage")
+## grouping files and view by 'multicoarse_coverage'
+bfiles <- BamFileList(c(file, file))
+values(bfiles) <- DataFrame(sampleGroup=factor(c("normal", "tumor")))
+s <- Snapshot(bfiles, range=which, 
+              currentFunction="multicoarse_coverage", fac="sampleGroup")
+
+## grouping files and view by 'multifine_coverage'
+which <- GRanges("chrI", IRanges(7e4, 7e4+8000))
+s <- Snapshot(bfiles, range=which, 
+              currentFunction="multifine_coverage", fac="sampleGroup")
+
 }
 
 \keyword{classes}
