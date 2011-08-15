@@ -130,6 +130,9 @@ Snapshot(files, range, ...)
      \item{vrange}{\code{signature(x = "Snapshot")}: Get the
        \code{.range} field (object of \code{GRanges}) of a \code{Snapshot}
        object. }
+
+     \item{getTrellis}{\code{signature(x = "Snapshot")}: Get the
+       \code{trellis} object, a field of the \code{SpTrellis} object.
   }
 }
 
@@ -186,7 +189,9 @@ Snapshot(files, range, ...)
 \seealso{\code{\link{SpTrellis}}}
 
 \examples{
-## Import specific ranges of records
+
+## example 1: Importing specific ranges of records
+
 file <- system.file("extdata", "SRR002051.chrI-V.bam",
                     package="yeastNagalakshmi")
 which <-  GRanges("chrI", IRanges(1, 2e5))
@@ -207,13 +212,16 @@ functions(s)
 vrange(s)
 show(s)
 ignore.strand(s)
+view(s) ## extract the spTrellis object
+getTrellis(s) ## extract the trellis object
 
-## ignore strand
+## example 2: ignore strand
 s <- Snapshot(file, range=which, ignore.strand=TRUE)
 
 ##
-## visulize annotation track
+## example 3: visulizing annotation track
 ##
+
 library(GenomicFeatures)
 
 getAnnGR <- function(txdb, which) {
@@ -246,8 +254,9 @@ zoom(s)
 
 pan(s)
 
+## example 4, 5, 6: muliple BAM files with 'multicoarse_covarage'
+## and 'mutifine_coverage' view.
 
-## mulitple BAM files: define currentFunction
 ## Resolution does not automatically switch for views of multiple
 ## files. It is important to note if width(which) < 10,000, use
 ## multifine_coverage.  Otherwise use multicoarse_coverage
@@ -260,6 +269,7 @@ s <- Snapshot(c(file, file), range=which,
 ## grouping files and view by 'multicoarse_coverage'
 bfiles <- BamFileList(c(file, file))
 values(bfiles) <- DataFrame(sampleGroup=factor(c("normal", "tumor")))
+values(bfiles)
 s <- Snapshot(bfiles, range=which, 
               currentFunction="multicoarse_coverage", fac="sampleGroup")
 

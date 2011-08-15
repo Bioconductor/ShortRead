@@ -43,8 +43,14 @@ txdb <- loadFeatures(txdbFile)
 grl <- exonsBy(txdb, by="gene")
 file <- system.file("extdata", "SRR002051.chrI-V.bam",
                          package="yeastNagalakshmi")
-s <- spViewPerGene(GRL=grl, name="YAL001C", files=file)
+s <- spViewPerFeature(GRL=grl, name="YAL001C", files=file)
 
+## multi-files
+bfiles <- BamFileList(c(file, file))
+values(bfiles) <- DataFrame(sampleGroup=factor(c("normal", "tumor")))
+values(bfiles)
+s <- spViewPerFeature(GRL=grl, name="YAL001C",
+                      files=bfiles, multi.levels=TRUE, fac="sampleGroup")
 
 }
 

@@ -211,7 +211,7 @@
     .initialize_fac=function(fac) {
         ## initialize fac and values(.self$fiels)[[.self$fac]]
         .self$fac <- fac
-        if (is.null(.self$files)) .self$fac <- character(0L)
+        if (is.null(values(.self$files))) .self$fac <- character(0L)
         
         if (length(.self$fac) & !is.null(values(.self$files)))   {
             if (length(.self$fac) > 1) .self$fac <- .self$fac[1]
@@ -455,6 +455,9 @@ setMethod("ignore.strand", "Snapshot", function(x) x$ignore.strand)
 
 setGeneric("fac", function(x, ...) standardGeneric("fac"))
 setMethod("fac", "Snapshot", function(x) x$fac)
+
+setGeneric("getTrellis", function(x, ...) standardGeneric("getTrellis"))
+setMethod("getTrellis", "Snapshot", function(x) x$view$trellis)
 
 ## private functions
 .getData <- function(x) x$.data

@@ -207,7 +207,8 @@
     
     update(c(cv, ann), x.same=TRUE, layout=c(1,npacket+1),
            xlab=NULL, ylab=NULL,
-           strip=strip.custom(factor.levels=strip.label),
+           strip=if (!is.null(dimnames(cv)$levels))
+                    strip.custom(factor.levels=strip.label),
            scales=list(y=list(alternating=2, tck=c(0,1)),
                        x=list(rot=45, tck=c(1,0), tick.number=20)), 
            par.setting=list(layout.heights=list(panel=c(rep(2,npacket),1))))

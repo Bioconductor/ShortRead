@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: Classes and methods for high-throughput short-read sequencing data.
-Version: 1.11.32
+Version: 1.11.33
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 Description: Base classes, functions, and methods for representation of
@@ -62,9 +62,9 @@ Collate: AllClasses.R
          readXStringColumns.R
          renew.R
          report.R
+         SpTrellis.R
 	 SnapshotFunction-helpers.R
          SnapshotFunction.R
-         SpTrellis.R
          Snapshot.R
  	 spViewPerGene.R
          srapply.R
