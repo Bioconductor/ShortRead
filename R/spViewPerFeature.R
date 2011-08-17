@@ -25,7 +25,7 @@ spViewPerFeature <- function(GRL,
     .checkClass(fac, "character")
     
     if (!(name %in% names(GRL)))
-        stop(sprintf("name '%s' element does not exist", name))
+        stop(sprintf("element named '%s' does not exist", name))
     
     gr <- GRL[[name]]
     gr <- keepSeqlevels(gr, as.character(seqnames(gr)@values))
