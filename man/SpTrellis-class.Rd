@@ -8,12 +8,17 @@
 \alias{SpTrellis}
 
 % methods:
-\alias{zi, SpTrellis-method}
-\alias{zo, SpTrellis-method}
-\alias{right, SpTrellis-method}
-\alias{left, SpTrellis-method}
-\alias{restore, SpTrellis-method}
-\alias{show, Sptrellis-method}
+\alias{zi}
+\alias{zi,SpTrellis-method}
+\alias{zo}
+\alias{zo,SpTrellis-method}
+\alias{right}
+\alias{right,SpTrellis-method}
+\alias{left}
+\alias{left,SpTrellis-method}
+\alias{restore}
+\alias{restore,SpTrellis-method}
+\alias{show,SpTrellis-method}
 
 \title{Class "SpTrellis"}
 

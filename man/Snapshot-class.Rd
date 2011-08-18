@@ -3,10 +3,12 @@
 \Rdversion{1.1}
 \docType{class}
 
+\alias{Snapshot-class}
 % Constructor:
 \alias{Snapshot}
 \alias{Snapshot,character,GRanges-method}
 \alias{Snapshot,character,missing-method}
+\alias{Snapshot,BamFileList,GRanges-method}
 
 % Accessors:
 \alias{files}
@@ -20,6 +22,12 @@
 \alias{vrange,Snapshot-method}
 \alias{annTrack}
 \alias{annTrack,Snapshot-method}
+\alias{fac}
+\alias{fac,Snapshot-method}
+\alias{getTrellis}
+\alias{getTrellis,Snapshot-method}
+\alias{ignore.strand}
+\alias{ignore.strand,Snapshot-method}
 
 % methods: 
 \alias{pan}
@@ -85,10 +93,10 @@ Snapshot(files, range, ...)
 
        \item{.debug}{logical(1) indicating whether debug messages are to
 	 be printed.}
-
    }}
-
 }
+
+
 
 
 \section{Methods}{
@@ -132,7 +140,7 @@ Snapshot(files, range, ...)
        object. }
 
      \item{getTrellis}{\code{signature(x = "Snapshot")}: Get the
-       \code{trellis} object, a field of the \code{SpTrellis} object.
+       \code{trellis} object, a field of the \code{SpTrellis} object.}
   }
 }
 

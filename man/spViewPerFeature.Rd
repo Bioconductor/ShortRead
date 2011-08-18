@@ -1,5 +1,5 @@
-\name{spViewPerGene}
-\alias{spViewPerGene}
+\name{spViewPerFeature}
+\alias{spViewPerFeature}
 
 \title{
 Tools to visualize genomic data
