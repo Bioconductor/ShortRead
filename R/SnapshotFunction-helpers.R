@@ -9,12 +9,12 @@
         else
             as.numeric(coverage(aln, shift=-start(rng)+1, width=wd))
     }
-    lst <- lapply(as.list(files(x)), function(fl) {
-        aln <- readBamGappedAlignments(fl, which=rng)
+    lst <- lapply(as.list(files(x)), function(fl, param) {
+        aln <- readBamGappedAlignments(fl, param=param)
         seqlevels(aln) <- seqlevels(rng)
         list(`+`=cvg(aln[strand(aln)=="+"]),
              `-`=cvg(aln[strand(aln)=="-"]))
-    })
+    }, param=ScanBamParam(which=rng))
 }
 
 .get_coarse_coverage <- function(x)
@@ -224,7 +224,7 @@
     col <- c("#66C2A5", "#FC8D62")
 
     if (!ignore.strand(x)) 
-        cv <- xyplot(data ~ pos, data=sp, group=group, col=col)
+        cv <- xyplot(data ~ pos, data=sp, group=sp$group, col=col)
     else
         cv <- xyplot(data ~ pos, data=sp, col=col[1])
     
@@ -256,7 +256,7 @@
     if (ignore.strand(x)) 
         cv <- xyplot(data ~ pos | levels, data=sp, col=col[2])
     else
-        cv <- xyplot(data ~ pos | levels, data=sp, group=group, col=col)
+        cv <- xyplot(data ~ pos | levels, data=sp, group=sp$group, col=col)
     cv <- update(cv, type="s", #lty=lty,
                  ylab="Coverage", xlab="Coordinate",
                  layout=c(1, length(levels(factor(sp$levels)))),

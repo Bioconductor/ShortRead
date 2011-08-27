@@ -15,7 +15,7 @@
 \alias{qwidth,GappedReads-method}
 
 % Subsetting:
-\alias{[,GappedReads-method}
+\alias{[,GappedReads,ANY,ANY-method}
 
 % Combining:
 \alias{c,GappedReads-method}
@@ -52,9 +52,9 @@
       argument. The \code{use.names} argument and any extra argument are
       passed to the back-end function.
       Only the BAM format is supported for now. Its back-end is the
-      \code{\link[Rsamtools]{readGappedReads}} function defined
+      \code{\link[Rsamtools]{readBamGappedReads}} function defined
       in the Rsamtools package.
-      See \code{?\link[Rsamtools]{readGappedReads}} for more information
+      See \code{?\link[Rsamtools]{readBamGappedReads}} for more information
       (you might need to install and load the Rsamtools package first).
     }
   }

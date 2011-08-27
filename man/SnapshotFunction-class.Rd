@@ -8,7 +8,7 @@
 \alias{show,SnapshotFunction-method}
 \alias{SnapshotFunctionList-class}
 \alias{SnapshotFunctionList}
-\alias{SnapshotFunctionList,Snapshot-method}
+\alias{SnapshotFunctionList,SnapshotFunction-method}
 \alias{SnapshotFunctionList,ANY-method}
 \alias{reader}
 \alias{viewer}

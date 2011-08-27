@@ -140,9 +140,9 @@ FastqSampler <-
         stop("'n' must be finite and >= 0")
     if (is.character(con))
         con <- file(con)
-    f <- .FastqSampler$new(con=con, n=n,
+    f <- .FastqSampler$new(con=con, n=as.integer(n),
                            reader=.binReader,
-                           readerBlockSize=readerBlockSize,
+                           readerBlockSize=as.integer(readerBlockSize),
                            recParser=.fixedBinRecSampler,
                            verbose=verbose)
 }
