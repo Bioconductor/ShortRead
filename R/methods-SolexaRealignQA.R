@@ -132,7 +132,7 @@
 setMethod(report_html, "SolexaRealignQA",
           function (x, dest, type, ...)
 {
-    qa <- x                             # mnemonic alias
+    qa <- .qa_sampleKey(x)
     dir.create(dest, recursive=TRUE)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "1100-Overview-SolexaRealign.html",
@@ -143,7 +143,8 @@ setMethod(report_html, "SolexaRealignQA",
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
-        list(PPN_COUNT=.html_img(
+        list(SAMPLE_KEY=hwrite(qa[["keyValue"]], border=0),
+             PPN_COUNT=.html_img(
                dest, "readCount", .plotReadCount(qa)),
              BASE_CALL_COUNT=.html_img(
                dest, "baseCalls", .plotNucleotideCount(qa)),
@@ -152,11 +153,11 @@ setMethod(report_html, "SolexaRealignQA",
                dest, "readOccurences", qa),
              FREQUENT_SEQUENCES_READ=hwrite(
                .freqSequences(qa, "read"),
-               border=NULL),
+               border=0),
              FREQUENT_SEQUENCES_FILTERED=.html_NA(),
              FREQUENT_SEQUENCES_ALIGNED=hwrite(
                .freqSequences(qa, "aligned"),
-               border=NULL),
+               border=0),
              CYCLE_BASE_CALL_FIGURE=.html_img(
                dest, "perCycleBaseCall",
                .plotCycleBaseCall(perCycle$baseCall)),
@@ -172,7 +173,7 @@ setMethod(report_html, "SolexaRealignQA",
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
              ADAPTER_CONTAMINATION=hwrite(
                .ppnCount(qa[["adapterContamination"]]),
-               border=NULL))
+               border=0))
 
     .report_html_do(dest, sections, values, ...)
 })

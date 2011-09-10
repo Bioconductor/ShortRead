@@ -56,7 +56,7 @@ setMethod(.report_pdf, "character",
                         "'%s' must be named character(1)",
                         "cssFile"))
     htmlFile <- file.path(destDir, "index.html")
-    biocFile <- "bioclogo-small.jpg"
+    biocFile <- "bioclogo-small.gif"
     values <-
         c(list(CSS=names(cssFile), DATE=date(),
                VERSION=packageDescription("ShortRead")$Version),
@@ -78,7 +78,7 @@ setMethod(.report_pdf, "character",
 .html_NA <- function() "<pre>NA</pre>"
 
 .html_img <-
-    function(dir, file, fig, ...)
+    function(dir, file, fig, ..., width=750, height=750)
 {
     if (is.null(fig))
         return(hwrite("Not available."))
@@ -90,7 +90,7 @@ setMethod(.report_pdf, "character",
         dir.create(imgDir)
 
     img <- if (capabilities("png")) png else jpeg
-    img(file.path(imgDir, imgFile), ...)
+    img(file.path(imgDir, imgFile), ..., width=width, height=height)
     print(fig)
     dev.off()
 

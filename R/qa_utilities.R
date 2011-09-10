@@ -6,6 +6,47 @@
 
 ## qa summary
 
+.qa_sampleKey <- function(qa)
+    ## use numbers to represent samples, updating all elements of 
+{
+    value <-rownames(qa[["readCounts"]])
+    kv <- data.frame(Key=factor(seq_along(value),
+                       levels=seq_along(value)),
+                     row.names=value)
+    lst <- c(list(keyValue=kv), Map(function(elt, nm, kv) {
+        switch(nm,
+               readCounts=,
+               baseCalls={
+                   rownames(elt) <- kv[rownames(elt), "Key"]
+                   elt
+               },
+               readQualityScore=,
+               baseQuality=,
+               alignQuality=,
+               frequentSequences=,
+               sequenceDistribution=,
+               adapterContamination={
+                   elt$lane <- kv[elt$lane, "Key"]
+                   elt
+               },
+               depthOfCoverage={
+                   elt$Lane <- kv[elt$Lane, "Key"]
+                   elt
+               },
+               perCycle=,
+               perTile={
+                   Map(function(elt, nm, kv) {
+                       elt$lane <- kv[elt$lane, "Key"]
+                       elt
+                   }, elt, names(elt), MoreArgs=list(kv))
+               },{
+                   msg <- sprintf("unhandled QA element '%s'", nm)
+                   .throw(SRError("InternalError", msg))
+               })
+    }, .srlist(qa), names(qa), MoreArgs=list(kv)))
+    initialize(qa, .srlist=lst)
+}
+
 .qa_qdensity <-
     function(quality)
 {
@@ -144,7 +185,7 @@
 {
     df <- qa[["readCounts"]]
     df1 <- data.frame(Count=unlist(df),
-                      Sample=rownames(df)[row(df)],
+                      Sample=factor(rownames(df), levels=rownames(df)),
                       Census=factor(names(df)[col(df)],
                         levels=names(df)))
     col <- .dnaCol[c(1, 4, 2)]
@@ -160,7 +201,7 @@
     df <- qa[["baseCalls"]]
     alph <- df / rowSums(df)
     df1 <- data.frame(Frequency=unlist(alph),
-                      Sample=rownames(alph)[row(alph)],
+                      Sample=factor(rownames(alph), levels=rownames(alph)),
                       Nucleotide=factor(names(alph)[col(alph)],
                         levels=c("A", "C", "G", "T", "N")))
     dotplot(Sample~Frequency, group=Nucleotide, df1,
@@ -169,21 +210,25 @@
               text=list(lab=names(df)), columns=ncol(df)))
 }
 
-.laneLbl <- function(lane) sub("s_(.*)_.*", "\\1", lane)
-
-.plotReadQuality <- function(df)
+.plotReadQuality <- function(df, ..., strip=FALSE)
 {
-    df$lane <- .laneLbl(df$lane)
+    xmin <- min(df$quality)
+    ymax <- max(df$density)
     xyplot(density~quality|lane, df,
            type="l",
            xlab="Average (calibrated) base quality",
            ylab="Proportion of reads",
-           aspect=2)
+           aspect=2,
+           panel=function(..., subscripts) {
+               lbl <- as.character(unique(df$lane[subscripts]))
+               ltext(xmin, ymax, lbl, adj=c(0, 1))
+               panel.xyplot(...)
+           },
+           strip=FALSE)
 }
 
-.plotReadOccurrences <- function(df, ...)
+.plotReadOccurrences <- function(df, ..., strip=FALSE)
 {
-    df$lane <- .laneLbl(df$lane)
     df <- with(df, {
         nOccur <- tapply(nOccurrences, lane, c)
         cumulative <- tapply(nOccurrences*nReads, lane, function(elt) {
@@ -196,17 +241,20 @@
                    lane=unlist(lane),
                    row.names=NULL)
     })
+    xmax <- log10(max(df$nOccurrences))
     xyplot(cumulative~log10(nOccurrences)|factor(lane), df,
            xlab=expression(paste(
                "Number of occurrences of each sequence (",
                log[10], ")", sep="")),
            ylab="Cumulative proportion of reads",
-           aspect=2, panel=function(x, y, ..., type) {
+           aspect=2, panel=function(x, y, ..., subscripts, type) {
+               lbl <- unique(df$lane[subscripts])
+               ltext(xmax, .05, lbl, adj=c(1, 0))
                type <-
                    if (1L == length(x)) "p"
                    else "l"
                panel.xyplot(x, y, ..., type=type)
-           }, ...)
+           }, ..., strip=strip)
 }
 
 .freqSequences <- function(qa, read, n=20)
@@ -215,13 +263,14 @@
     df <- qa[["frequentSequences"]]
     df1 <- df[df$type==read,]
     df1[["ppn"]] <- df1[["count"]] / cnt[df1[["lane"]], read]
-    head(df1[order(df1$count, decreasing=TRUE),
-             c("sequence", "count", "lane")], n)
+    df <- head(df1[order(df1$count, decreasing=TRUE),
+                   c("sequence", "count", "lane")], n)
+    rownames(df) <- NULL
+    df
 }
 
 .plotAlignQuality <- function(df)
 {
-    df$lane <- .laneLbl(df$lane)
     xyplot(count~score|lane, df,
            type="l",
            prepanel=function(x, y, ...) {
@@ -285,7 +334,6 @@
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
     at <- .atQuantile(df$count, seq(0, 1, .1))
-    df$lane <- .laneLbl(df$lane)
     levelplot(cut(count, at)~col*row|lane, df,
               main="Read count (percentile rank)",
               xlab="Tile x-coordinate",
@@ -302,7 +350,6 @@
     xy <- .plotTileLocalCoords(df$tile, nrow)
     df[,names(xy)] <- xy
     at <- .atQuantile(df$score, seq(0, 1, .1))
-    df$lane <- .laneLbl(df$lane)
     levelplot(cut(score, at)~col*row|lane, df,
               main="Read quality (percentile rank)",
               xlab="Tile x-coordinate",
@@ -312,24 +359,29 @@
               aspect=2)
 }
 
-.plotCycleBaseCall <- function(df) {
+.plotCycleBaseCall <- function(df, ..., strip=FALSE) {
     col <- .dnaCol[1:4]
     df <- df[df$Base != "N" & df$Base != "-",]
-    df$lane <- .laneLbl(df$lane)
     df$Base <- factor(df$Base)
+    xmax <- max(df$Cycle)
+    ymax <- log10(max(df$Count))
     xyplot(log10(Count)~as.integer(Cycle)|lane,
            group=factor(Base),
            df[with(df, order(lane, Base, Cycle)),],
+           panel=function(..., subscripts) {
+               lbl <- as.character(unique(df$lane[subscripts]))
+               ltext(xmax, ymax, lbl, adj=c(1, 1))
+               panel.xyplot(..., subscripts=subscripts)
+           },
            type="l", col=col,
            key=list(space="top", lines=list(col=col),
              text=list(lab=levels(df$Base)),
              columns=length(levels(df$Base))),
-           xlab="Cycle",
-           aspect=2)
+           xlab="Cycle", aspect=2, strip=strip, ...)
 }
 
 .plotCycleQuality <-
-    function(df, ..., strip=FALSE, strip.left=TRUE)
+    function(df, ..., strip=FALSE, strip.left=FALSE)
 {
     calc_means <- function(x, y, z)
         rowsum(y * z, x) / rowsum(z, x)
@@ -340,17 +392,20 @@
             quantile(scoreRle, q)
         })
 
-    Lane  <- .laneLbl(df$lane)
+    Lane  <- df$lane
     pal <- c("#66C2A5", "#FC8D62") # brewer.pal(3, "Set2")[1:2]
     lvlPal <- c("#F5F5F5", "black" )
     rng <- range(df$Count)
     at <- seq(rng[1], rng[2], length.out=512)
     np <- length(unique(Lane))
-    nrow <- ceiling(np / 3)
+    nrow <- ceiling(np / 4)
     layout <- c(ceiling(np/nrow), nrow)
+    ymin <- min(df$Score)
 
     xyplot(Score ~ Cycle | Lane, df,
-           panel=function(x, y, z, ..., groups, subscripts) {
+           panel=function(x, y, ..., subscripts) {
+               lbl <- as.character(unique(df$lane[subscripts]))
+               ltext(1, ymin, lbl, adj=c(0, 0))
                z <- df$Count[subscripts]
                mean <- calc_means(x, y, z)
                qtiles <- calc_quantile(x, y, z)
@@ -364,26 +419,32 @@
                       type="l", col=pal[[2]], lwd=1)
                llines(sxi, sapply(qtiles, "[[", 3),
                       type="l", col=pal[[2]], lwd=1, lty=3)
-           }, ..., layout=layout, ylab="Quality Score",
+           }, ..., ylab="Quality Score", layout=layout,
            strip=strip, strip.left=strip.left)
 }
 
 .plotMultipleAlignmentCount <-
     function(df, ...)
 {
-    df$lane <- .laneLbl(df$lane)
     xyplot(log10(Count)~log10(Matches + 1) | lane, df,
            xlab="log10(Number of matches + 1)", aspect=2, ...)
 }
 
 
 .plotDepthOfCoverage <-
-    function(df, ...)
+    function(df, ..., strip=FALSE)
 {
     if (is.null(df))
         return(NULL)
+    xmin <- log(min(df$Coverage))
+    ymax <- max(df$CumulativePpn)
     xyplot(CumulativePpn~Coverage | Lane, df, type="b", pch=20,
            scales=list(x=list(log=TRUE)),
-           ylab="Cumulative Proportion of Nucleotides", aspect=2, ...)
+           ylab="Cumulative Proportion of Nucleotides", aspect=2,
+           panel=function(..., subscripts) {
+               lbl <- as.character(unique(df$Lane[subscripts]))
+               ltext(xmin, ymax, lbl, adj=c(0, 1))
+               panel.xyplot(..., subscripts=subscripts)
+           }, ..., strip=strip)
 }
 

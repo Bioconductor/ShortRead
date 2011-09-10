@@ -215,7 +215,7 @@ setMethod(.report_pdf, "SolexaExportQA",
 setMethod(report_html, "SolexaExportQA",
           function (x, dest, type, ...)
 {
-    qa <- x                             # mnemonic alias
+    qa <- .qa_sampleKey(x)
     dir.create(dest, recursive=TRUE)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
@@ -227,7 +227,8 @@ setMethod(report_html, "SolexaExportQA",
     perTile <- qa[["perTile"]]
     readCnt <- perTile[["readCounts"]]
     values <-
-        list(PPN_COUNT=.html_img(
+        list(SAMPLE_KEY=hwrite(qa[["keyValue"]], border=0),
+             PPN_COUNT=.html_img(
                dest, "readCount", .plotReadCount(qa)),
              BASE_CALL_COUNT=.html_img(
                dest, "baseCalls", .plotNucleotideCount(qa)),
@@ -237,13 +238,13 @@ setMethod(report_html, "SolexaExportQA",
                dest, "readOccurences", qa),
              FREQUENT_SEQUENCES_READ=hwrite(
                .freqSequences(qa, "read"),
-               border=NULL),
+               border=0),
              FREQUENT_SEQUENCES_FILTERED=hwrite(
                .freqSequences(qa, "filtered"),
-               border=NULL),
+               border=0),
              FREQUENT_SEQUENCES_ALIGNED=hwrite(
                .freqSequences(qa, "aligned"),
-               border=NULL),
+               border=0),
              CYCLE_BASE_CALL_FIGURE=.html_img(
                dest, "perCycleBaseCall",
                .plotCycleBaseCall(perCycle$baseCall)),
@@ -278,6 +279,6 @@ setMethod(report_html, "SolexaExportQA",
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
              ADAPTER_CONTAMINATION=hwrite(
                .ppnCount(qa[["adapterContamination"]]),
-               border=NULL))
+               border=0))
     .report_html_do(dest, sections, values, ...)
 })

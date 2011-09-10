@@ -118,7 +118,7 @@
 .report_html_BAMQA <-
     function(x, dest, type, ...)
 {
-    qa <- x                             # mnemonic alias
+    qa <- .qa_sampleKey(x)
     dir.create(dest, recursive=TRUE)
     fls <- c("0000-Header.html", "1000-Overview.html",
              "2000-RunSummary.html", "3000-ReadDistribution.html",
@@ -127,7 +127,8 @@
     sections <- system.file("template", fls, package="ShortRead")
     perCycle <- qa[["perCycle"]]
     values <-
-        list(PPN_COUNT=.html_img(
+        list(SAMPLE_KEY=hwrite(qa[["keyValue"]], border=0),
+             PPN_COUNT=.html_img(
                dest, "readCount", .plotReadCount(qa)),
              BASE_CALL_COUNT=.html_img(
                dest, "baseCalls", .plotNucleotideCount(qa)),
@@ -137,7 +138,7 @@
                dest, "readOccurences", qa),
              FREQUENT_SEQUENCES_READ=hwrite(
                .freqSequences(qa, "read"),
-               border=NULL),
+               border=0),
              FREQUENT_SEQUENCES_FILTERED=.html_NA(),
              FREQUENT_SEQUENCES_ALIGNED=.html_NA(),
              CYCLE_BASE_CALL_FIGURE=.html_img(
@@ -151,7 +152,7 @@
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
              ADAPTER_CONTAMINATION=hwrite(
              .ppnCount(qa[["adapterContamination"]]),
-             border=NULL)
+             border=0)
              )
     .report_html_do(dest, sections, values, ...)
 }
