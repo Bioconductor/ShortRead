@@ -233,3 +233,52 @@ setMethod(trimTails, "XStringQuality",
     if (ranges) rng
     else narrow(object, 1L, end(rng))[0L != width(rng)]
 })
+
+setMethod(trimEnds, "XStringSet",
+    function(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+             ..., ranges=FALSE)
+{
+    relation <- match.arg(relation)
+    alphabet <- alphabet(object)
+    if (is.null(alphabet))
+        alphabet <- sapply(as.raw(0:127), rawToChar)
+    tryCatch({
+        a <- as.character(a)
+        if (!all(a %in% alphabet))
+            warning("some 'a' not in alphabet(object)")
+        left <- as.logical(left)[1]
+        right <- as.logical(right)[1]
+    }, error=function(err) {
+        .throw(SRError("UserArgumentMismatch", conditionMessage(err)))
+    })
+
+    tryCatch({
+        a_map <- alphabet %in% a
+        if ("<=" == relation)
+            a_map <- as.logical(rev(cumsum(rev(a_map)))) # '1' if <= a
+        a <- alphabet[a_map]
+
+        cls <- sub("(.*)String.*", "\\1", class(object))
+        xs <- get_xsbasetypes_conversion_lookup(cls, "character")
+        if (is.null(xs)) xs <- 0:127
+        map <- logical(length(xs))
+        key <- lapply(a, function(x) as.integer(charToRaw(x)))
+        map[match(unname(unlist(key)), xs)] <- TRUE
+
+        bnds <- .Call(.trimEnds, object, map, left, right)
+    }, error=function(err) {
+        .throw(SRError("InternalError", conditionMessage(err)))
+    })
+    if (ranges) IRanges(bnds[["start"]], bnds[["end"]])
+    else narrow(object, bnds[["start"]], bnds[["end"]])
+})
+
+setMethod(trimEnds, "XStringQuality",
+    function(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+             ..., ranges=FALSE)
+{
+    rng <- callGeneric(as(object, "BStringSet"), a, left, right, relation,
+                       ..., ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, 1L, end(rng))[0L != width(rng)]
+})

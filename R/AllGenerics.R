@@ -128,6 +128,12 @@ setGeneric("trimTailw",
            function(object, k, a, halfwidth, ..., ranges=FALSE)
            standardGeneric("trimTailw"), signature="object")
 
+setGeneric("trimEnds",
+           function(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+                    ..., ranges=FALSE)
+           standardGeneric("trimEnds"),
+           signature="object")
+
 setGeneric("clean", function(object, ...) standardGeneric("clean"))
 
 setGeneric("srdistance", function(pattern, subject, ...)

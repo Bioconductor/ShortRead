@@ -262,6 +262,17 @@ setMethod(trimTails, "FastqQuality",
     else narrow(object, 1L, end(rng))[0L != width(rng)]
 })
 
+setMethod(trimEnds, "FastqQuality",
+    function(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+             ..., ranges=FALSE)
+{
+    rng <- callGeneric(quality(object), a, left, right, relation,
+                       ..., alphabet=alphabet(object), ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, 1L, end(rng))[0L != width(rng)]
+})
+
+
 setMethod(srrank, "FastqQuality", .forward_xq)
 
 setMethod(srorder, "FastqQuality", .forward_xq)

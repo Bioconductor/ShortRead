@@ -2,43 +2,71 @@
 \alias{trimTailw}
 \alias{trimTailw,BStringSet-method}
 \alias{trimTailw,XStringQuality-method}
+
 \alias{trimTails}
 \alias{trimTails,BStringSet-method}
 \alias{trimTails,XStringQuality-method}
 
-\title{Trim tails of reads based on nucleotide qualities}
+\alias{trimEnds}
+\alias{trimEnds,XStringSet-method}
+\alias{trimEnds,XStringQuality-method}
+\alias{trimEnds,FastqQuality-method}
+\alias{trimEnds,ShortRead-method}
+\alias{trimEnds,ShortReadQ-method}
+
+\title{Trim ends of reads based on nucleotides or qualities}
 
 \description{
 
-  Short read quality typically deteriorates as cycle number
-  progresses. These generics removes trailing nucleotides whose quality
-  falls below a specified threshold.
+  These generic functions remove leading or trailing nucleotides or
+  qualities. \code{trimTails} and \code{trimTailw} remove low-quality
+  reads from the right end using a sliding window (\code{trimTailw}) or
+  a tally of (successive) nucleotides falling at or below a quality
+  threshold (\code{trimTails}). \code{trimEnds} takes an alphabet of
+  characters to remove from either left or right end.
 
 }
 \usage{
 trimTailw(object, k, a, halfwidth, ..., ranges=FALSE)
-trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
 
 \S4method{trimTailw}{BStringSet}(object, k, a, halfwidth, ..., alphabet, ranges=FALSE)
 \S4method{trimTailw}{XStringQuality}(object, k, a, halfwidth, ..., ranges=FALSE)
 
+trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
 \S4method{trimTails}{BStringSet}(object, k, a, successive=FALSE, ...,
     alphabet, ranges=FALSE)
 \S4method{trimTails}{XStringQuality}(object, k, a, successive=FALSE, ..., ranges=FALSE)
 
+trimEnds(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., ranges=FALSE)
+\S4method{trimEnds}{XStringSet}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., ranges=FALSE)
+\S4method{trimEnds}{XStringQuality}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., ranges=FALSE)
+\S4method{trimEnds}{FastqQuality}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., ranges=FALSE)
+\S4method{trimEnds}{ShortRead}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., ranges=FALSE)
+\S4method{trimEnds}{ShortReadQ}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., ranges=FALSE)
 }
 
 \arguments{
 
-  \item{object}{An object for which \code{trimTails} methods exist
-    (e.g., \code{\linkS4class{ShortReadQ}} and derived classes); see
-    below to discover these methods.}
+  \item{object}{An object for which a methods exist (e.g.,
+    \code{\linkS4class{ShortReadQ}} and derived classes); see below to
+    discover these methods.}
 
   \item{k}{\code{integer(1)} describing the number of failing
     letters required to trigger trimming.}
 
-  \item{a}{\code{character(1)} with \code{nchar(a) == 1L} giving the
-    letter at or below which a nucleotide is marked as failing.}
+  \item{a}{For \code{trimTails} and \code{trimTailw}, a
+    \code{character(1)} with \code{nchar(a) == 1L} giving the letter at
+    or below which a nucleotide is marked as failing.
+
+    For \code{trimEnds} a \code{character()} with all \code{nchar() ==
+    1L} giving the letter at or below which a nucleotide or quality
+    scores marked for removal.}
 
   \item{halfwidth}{The half width (cycles before or after the current;
     e.g., a half-width of 5 would span 5 + 1 + 5 cycles) in which
@@ -49,6 +77,14 @@ trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
     \code{successive=FALSE}, then the k'th failed letter and subsequent
     are removed. If \code{successive=TRUE}, the first succession of k
     failed and subsequent letters are removed.}
+
+  \item{left, right}{\code{logical(1)} indicating whether trimming is
+    from the left or right ends.}
+
+  \item{relation}{\code{character(1)} selected from the argument values,
+    i.e., \dQuote{<=} or \dQuote{==} indicating whether all letters at
+    or below the \code{alphabet(object)} are to be removed, or only
+    exact matches.}
 
   \item{\dots}{Additional arguments, perhaps used by methods.}
 
@@ -78,6 +114,11 @@ trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
   \code{successive=TRUE}, failing qualities must occur in strict
   succession.
 
+  \code{trimEnds} examines the \code{left}, \code{right}, or both ends
+  of \code{object}, marking for removal letters that correspond to
+  \code{a} and \code{relation}. The \code{trimEnds,ShortReadQ-method}
+  trims based on quality.
+
 }
 
 \value{
@@ -93,6 +134,18 @@ trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
 
 \examples{
 showMethods(trimTails)
+
+sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
+
+## remove leading / trailing quality scores <= 'I'
+trimEnds(rfq, "I")
+## remove leading / trailing 'N's
+rng <- trimEnds(sread(rfq), "N", relation="==", ranges=TRUE)
+narrow(rfq, start(rng), end(rng))
+## remove leading / trailing 'G's or 'C's
+trimEnds(rfq, c("G", "C"), relation="==")
+
 }
 
 \keyword{manip}

@@ -109,3 +109,78 @@ trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
     return end;
 }
 
+SEXP
+trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
+{
+
+    SEXP bounds;
+    const int * const map = LOGICAL(a_map);
+
+    const cachedXStringSet cache = cache_XStringSet(quality);
+    const int len = get_XStringSet_length(quality);
+    int i, j, *startp, *endp;
+
+    bounds = PROTECT(NEW_LIST(2));
+    SET_VECTOR_ELT(bounds, 0, NEW_INTEGER(len));
+    SET_VECTOR_ELT(bounds, 1, NEW_INTEGER(len));
+    SEXP nm = PROTECT(NEW_CHARACTER(2));
+    SET_STRING_ELT(nm, 0, mkChar("start"));
+    SET_STRING_ELT(nm, 1, mkChar("end"));
+    SET_NAMES(bounds, nm);
+    UNPROTECT(1);
+
+    startp = INTEGER(VECTOR_ELT(bounds, 0));
+    endp = INTEGER(VECTOR_ELT(bounds, 1));
+
+    if (LOGICAL(left)[0]) {
+#ifdef SUPPORT_OPENMP
+#pragma omp parallel for private(j)
+#endif
+        for (i = 0; i < len; ++i) {
+            const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+            for (j = 0; j < seq.length; ++j) {
+                if (0 == map[(int) seq.seq[j]])
+                    break;
+            }
+            startp[i] = j + 1L;
+        }
+    } else {
+        for (i = 0; i < len; ++i)
+            startp[i] = 1;
+    }
+
+    if (LOGICAL(right)[0]) {
+#ifdef SUPPORT_OPENMP
+#pragma omp parallel for private(j)
+#endif
+        for (i = 0; i < len; ++i) {
+            const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+            for (j = seq.length - 1; j >= 0; --j) {
+                if (0 == map[(int) seq.seq[j]])
+                    break;
+            }
+            endp[i] = j + 1L;
+        }
+    } else {
+        for (i = 0; i < len; ++i) {
+            const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+            endp[i] = seq.length;
+        }
+    }
+
+#ifdef SUPPORT_OPENMP
+#pragma omp parallel for private(j)
+#endif
+    for (i = 0; i < len; ++i) {
+        const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+        if (seq.length + 1 == startp[i]) {
+            endp[i] = 0;
+            startp[i] = 1;
+        } else if (0 == endp[i]) {
+            startp[i] = 1;
+        }
+    }
+
+    UNPROTECT(1);
+    return bounds;
+}

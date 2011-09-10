@@ -5,6 +5,9 @@ NEW FEATURES
 
     o trimTails to trim low quality trailing nucleotides
 
+    o trimEnds to remove arbitrary (vectors of) letters from reads or
+    qualities
+
 BUG FIXES
 
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand

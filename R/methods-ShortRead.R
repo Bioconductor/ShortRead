@@ -155,6 +155,16 @@ setMethod(trimLRPatterns, c(subject="ShortRead"),
         narrow(subject, start(ret), end(ret))
 })
 
+setMethod(trimEnds, "ShortRead",
+    function(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+             ..., ranges=FALSE)
+{
+    rng <- callGeneric(sread(object), a, left, right, relation,
+                       ..., ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, start(rng), end(rng))
+})
+
 ## show
 
 setMethod(show, "ShortRead", function(object) {

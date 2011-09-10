@@ -223,6 +223,16 @@ setMethod(trimTails, "ShortReadQ",
     else narrow(object, 1L, end(rng))[0L != width(rng)]
 })
 
+setMethod(trimEnds, "ShortReadQ",
+    function(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+             ..., ranges=FALSE)
+{
+    rng <- callGeneric(quality(object), a, left, right, relation,
+                       ..., ranges=TRUE)
+    if (ranges) rng
+    else narrow(object, start(rng), end(rng))
+})
+
 ## show
 
 setMethod(detail, "ShortReadQ", function(x, ...) {
