@@ -5,7 +5,6 @@
 
 #include <cerrno>
 #include <stdio.h>
-#include <assert.h>
 #include <limits.h>
 #include <R.h>
 #include <Rinternals.h>
@@ -66,7 +65,8 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
                CHAR(STRING_ELT(filename,0)));
     }
     i = gzrewind( mapfile );
-    assert( !i );
+    if (i)
+        error("internal error: gzrewind: '%d'", i);
 
    
     /* Read in header and map maqfile sequence indices to veclist indices */

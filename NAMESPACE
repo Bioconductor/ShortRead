@@ -3,7 +3,7 @@ useDynLib(ShortRead, .registration=TRUE)
 import(zlibbioc)
 
 importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
-                  ScalarCharacter)
+                  ScalarCharacter, AssayData)
 
 importClassesFrom(Biostrings, BStringSet, DNAStringSet,
                   PairwiseAlignedXStringSet,
