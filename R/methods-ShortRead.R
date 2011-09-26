@@ -63,7 +63,7 @@ setMethod(writeFasta, "ShortRead",
 {
     dna <- sread(object)
     names(dna) <- id(object)
-    write.XStringSet(dna, file=file, ...)
+    callGeneric(dna, file=file, ...)
 })
 
 ## subset

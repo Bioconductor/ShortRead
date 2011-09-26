@@ -59,6 +59,12 @@ setMethod(srduplicated, "XStringSet", function(x, ...) {
     .Call(.alphabet_duplicated, x)
 })
 
+setMethod(writeFasta, "DNAStringSet",
+    function(object, file, ...)
+{
+    write.XStringSet(object, file, ..., format="fasta")
+})
+
 ## srdistance
 
 .srdistance <-

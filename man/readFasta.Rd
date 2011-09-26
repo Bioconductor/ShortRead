@@ -3,6 +3,7 @@
 \alias{readFasta}
 \alias{readFasta,character-method}
 \alias{writeFasta}
+\alias{writeFasta,DNAStringSet-method}
 
 \title{Read and write FASTA files to or from ShortRead objects}
 
@@ -26,6 +27,7 @@ readFasta(dirPath, pattern = character(0), ...,
 \S4method{readFasta}{character}(dirPath, pattern = character(0), ...,
     nrec=-1L, skip=0L)
 writeFasta(object, file, ...)
+\S4method{writeFasta}{DNAStringSet}(object, file, ...)
 }
 
 \arguments{
@@ -42,8 +44,8 @@ writeFasta(object, file, ...)
   \item{file}{A length 1 character vector providing a path to a file to
     the object is to be written to.}
 
-  \item{...}{Additional arguments, used by \code{\link{writeFASTA}} or
-    methods.}
+  \item{...}{Additional arguments used by methods or, for
+    \code{writeFasta}, \code{\link{write.XStringSet}}.}
   
   \item{nrec}{See \code{?read.DNAStringSet}.}
 
@@ -59,7 +61,9 @@ writeFasta(object, file, ...)
 
   \code{writeFasta} is invoked primarily for its side effect, creating
   or appending to file \code{file}. The function returns, invisibly, the
-  length of \code{object}, and hence the number of records written.
+  length of \code{object}, and hence the number of records
+  written. There is a \code{writeFasta} method for any class derived
+  from \code{\linkS4class{ShortRead}}.
 
 }
 
@@ -68,14 +72,21 @@ writeFasta(object, file, ...)
 \examples{
 showMethods("readFasta")
 
+showMethods("writeFasta")
+
 f1 <- system.file("extdata", "someORF.fa", package="Biostrings")
 
 rfa <- readFasta(f1)
 sread(rfa)
 id(rfa)
 
+sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
+
 file <- tempfile()
-writeFasta(rfa, file)
+writeFasta(rfq, file)
 readLines(file, 8)
+
+writeFasta(sread(rfq), file)  # no 'id's 
 }
 \keyword{manip}
