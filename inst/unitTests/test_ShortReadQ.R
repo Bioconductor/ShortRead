@@ -1,3 +1,6 @@
+sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
+
 checkShortReadQ <- function(obj, len, wd) {
     checkStringSet <- function(obj, type, len, wd) {
         checkTrue(is(obj, type))
@@ -44,12 +47,39 @@ test_ShortReadQ_constructors <- function() {
 
 test_FastqSampler <- function()
 {
-    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
-    fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
     sr <- readFastq(fl)
     ## here to re-use equality checker
     obj <- yield(FastqSampler(fl))
     .equals(sr, obj)
+}
+
+test_FastqStreamer <- function()
+{
+    sr <- readFastq(fl)
+
+    f <- FastqStreamer(fl, n=50)
+    i <- 0L; len <- 0L
+    while (length(y <- yield(f))) {
+        len <- len + length(y)
+        i <- i + 1L
+    }
+    checkIdentical(6L, i)
+    checkIdentical(256L, len)
+
+    ## whole file
+    f <- FastqStreamer(fl, n=500)
+    i <- 0L; len <- 0L
+    while (length(y <- yield(f))) {
+        .equals(sr, y)
+        len <- len + length(y)
+        i <- i + 1L
+    }
+    checkIdentical(1L, i)
+    checkIdentical(256L, len)
+
+    f <- FastqStreamer(fl, n=50)
+    .equals(sr[1:50], yield(f))
+    .equals(sr[50+1:50], yield(f))
 }
 
 test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()

@@ -8,6 +8,8 @@ NEW FEATURES
     o trimEnds to remove arbitrary (vectors of) letters from reads or
     qualities
 
+    o FastqStreamer to iterate over a fastq file
+
 BUG FIXES
 
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand
