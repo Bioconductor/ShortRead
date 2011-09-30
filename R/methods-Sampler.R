@@ -178,8 +178,14 @@ setMethod(yield, "FastqSampler",
           if (verbose) .fastqfile_msg("FastqSampler$.add")
           res <- recParser(buf, bin, Inf, tot_n)
           samp <- res[["parsed_bin"]]
-          if (flush)
+          if (flush) {
               buf <<- raw()
+          } else {
+              len <- length(samp)
+              buf <<- samp[[len]]
+              res[["rec_n"]] <- res[["rec_n"]] - 1L
+              samp <- samp[-len]
+          }
           if (length(samp))
               records <<- c(records, samp)
           saved_n <<- length(records)

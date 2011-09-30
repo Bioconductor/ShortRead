@@ -51,6 +51,8 @@ test_FastqSampler <- function()
     ## here to re-use equality checker
     obj <- yield(FastqSampler(fl))
     .equals(sr, obj)
+
+    checkTrue(validObject(yield(FastqSampler(fl, readerBlockSize=1000))))
 }
 
 test_FastqStreamer <- function()
@@ -66,6 +68,11 @@ test_FastqStreamer <- function()
     checkIdentical(6L, i)
     checkIdentical(256L, len)
 
+    ## values equal?
+    f <- FastqStreamer(fl, n=50)
+    .equals(sr[1:50], yield(f))
+    .equals(sr[50+1:50], yield(f))
+
     ## whole file
     f <- FastqStreamer(fl, n=500)
     i <- 0L; len <- 0L
@@ -77,9 +84,15 @@ test_FastqStreamer <- function()
     checkIdentical(1L, i)
     checkIdentical(256L, len)
 
-    f <- FastqStreamer(fl, n=50)
-    .equals(sr[1:50], yield(f))
-    .equals(sr[50+1:50], yield(f))
+    ## small reader block size
+    f <- FastqStreamer(fl, n=50, readerBlockSize=100)
+    i <- 0L; len <- 0L
+    while (length(y <- yield(f))) {
+        len <- len + length(y)
+        i <- i + 1L
+    }
+    checkIdentical(6L, i)
+    checkIdentical(256L, len)
 }
 
 test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
