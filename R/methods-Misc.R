@@ -60,9 +60,10 @@ setMethod(srduplicated, "XStringSet", function(x, ...) {
 })
 
 setMethod(writeFasta, "DNAStringSet",
-    function(object, file, ...)
+    function(object, file, mode="w", ...)
 {
-    write.XStringSet(object, file, ..., format="fasta")
+    append = mode=="a"
+    write.XStringSet(object, file, ..., append=append, format="fasta")
 })
 
 ## srdistance

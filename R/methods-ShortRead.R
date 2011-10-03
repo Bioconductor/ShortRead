@@ -59,11 +59,11 @@ setMethod(readFasta, "character",
 })
 
 setMethod(writeFasta, "ShortRead",
-          function(object, file, ...)
+          function(object, file, mode="w", ...)
 {
     dna <- sread(object)
     names(dna) <- id(object)
-    callGeneric(dna, file=file, ...)
+    callGeneric(dna, file=file, mode=mode, ...)
 })
 
 ## subset

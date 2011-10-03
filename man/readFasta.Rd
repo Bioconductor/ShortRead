@@ -26,8 +26,8 @@ readFasta(dirPath, pattern = character(0), ...,
     nrec=-1L, skip=0L)
 \S4method{readFasta}{character}(dirPath, pattern = character(0), ...,
     nrec=-1L, skip=0L)
-writeFasta(object, file, ...)
-\S4method{writeFasta}{DNAStringSet}(object, file, ...)
+writeFasta(object, file, mode="w", ...)
+\S4method{writeFasta}{DNAStringSet}(object, file, mode="w", ...)
 }
 
 \arguments{
@@ -43,6 +43,10 @@ writeFasta(object, file, ...)
 
   \item{file}{A length 1 character vector providing a path to a file to
     the object is to be written to.}
+
+  \item{mode}{A length 1 character vector equal to either \sQuote{w} or
+    \sQuote{a} to write to a new file or append to an existing file,
+    respectively.}
 
   \item{...}{Additional arguments used by methods or, for
     \code{writeFasta}, \code{\link{write.XStringSet}}.}

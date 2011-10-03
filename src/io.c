@@ -48,16 +48,16 @@ _cache_to_char(cachedXStringSet *cache, const int i,
 }
 
 SEXP
-write_fastq(SEXP id, SEXP sread, SEXP quality, 
-            SEXP fname, SEXP fmode, SEXP max_width)
+write_fastq(SEXP id, SEXP sread, SEXP quality,
+            SEXP fname, SEXP fmode, SEXP full, SEXP max_width)
 {
-    if (!(IS_S4_OBJECT(id) && 
+    if (!(IS_S4_OBJECT(id) &&
           strcmp(get_classname(id), "BStringSet") == 0))
         Rf_error("'%s' must be '%s'", "id", "BStringSet");
-    if (!(IS_S4_OBJECT(sread) && 
+    if (!(IS_S4_OBJECT(sread) &&
           strcmp(get_classname(sread), "DNAStringSet") == 0))
         Rf_error("'%s' must be '%s'", "sread", "DNAStringSet");
-    if (!(IS_S4_OBJECT(quality) && 
+    if (!(IS_S4_OBJECT(quality) &&
           strcmp(get_classname(quality), "BStringSet") == 0))
         Rf_error("'%s' must be '%s'", "quality", "BStringSet");
     const int len = get_XStringSet_length(id);
@@ -69,6 +69,8 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
         Rf_error("'%s' must be '%s'", "file", "character(1)");
     if (!(IS_CHARACTER(fmode) && LENGTH(fmode) == 1)) /* FIXME nchar()<3 */
         Rf_error("'%s' must be '%s'", "mode", "character(1)");
+    if (!(IS_LOGICAL(full) && LENGTH(full) == 1))
+        Rf_error("'%s' must be '%s'", "full", "logical(1)");
     if (!(IS_INTEGER(max_width) && LENGTH(max_width) == 1 &&
           INTEGER(max_width)[0] >= 0))
         Rf_error("'%s' must be %s", "max_width", "'integer(1)', >=0");
@@ -79,20 +81,21 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
         xsread = cache_XStringSet(sread),
         xquality = cache_XStringSet(quality);
 
-    FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)), 
+    FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)),
                        CHAR(STRING_ELT(fmode, 0)));
     if (fout == NULL)
-        Rf_error("failed to open file '%s'", 
+        Rf_error("failed to open file '%s'",
                  CHAR(STRING_ELT(fname, 0)));
-    char *idbuf = (char *) R_alloc(sizeof(char), width + 1),
+    char *idbuf0 = (char *) R_alloc(sizeof(char), width + 1), *idbuf1,
         *readbuf = (char *) R_alloc(sizeof(char), width + 1),
         *qualbuf = (char *) R_alloc(sizeof(char), width + 1);
     int i;
+    idbuf1 = TRUE == LOGICAL(full)[0] ? idbuf0 : "";
     for (i = 0; i < len; ++i) {
-        idbuf = _cache_to_char(&xid, i, idbuf, width, NULL);
-        if (idbuf == NULL)
+        idbuf0 = _cache_to_char(&xid, i, idbuf0, width, NULL);
+        if (idbuf0 == NULL)
             _write_err(fout, i);
-        readbuf = 
+        readbuf =
             _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
         if (readbuf == NULL)
             _write_err(fout, i);
@@ -100,7 +103,7 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
         if (qualbuf == NULL)
             _write_err(fout, i);
         fprintf(fout, "@%s\n%s\n+%s\n%s\n",
-                idbuf, readbuf, idbuf, qualbuf);
+                idbuf0, readbuf, idbuf1, qualbuf);
     }
     fclose(fout);
     return R_NilValue;
@@ -687,11 +690,11 @@ _solexa_export_make_id(SEXP result)
         *x = INTEGER(VECTOR_ELT(result, SLX_X)),
         *y = INTEGER(VECTOR_ELT(result, SLX_Y)),
         *pairedReadNumber = NULL;
-    const SEXP 
+    const SEXP
         *run = STRING_PTR(VECTOR_ELT(result, SLX_RUN)),
         *multiplexIndex = NULL,
         *machine = STRING_PTR(VECTOR_ELT(result, SLX_MACHINE));
-    const Rboolean 
+    const Rboolean
         withMultiplexIndex = R_NilValue != VECTOR_ELT(result, SLX_MULTIPLEX),
         withPairedReadNumber = R_NilValue != VECTOR_ELT(result, SLX_PAIRID);
     if (withMultiplexIndex)
@@ -702,7 +705,7 @@ _solexa_export_make_id(SEXP result)
     const int nrec = LENGTH(VECTOR_ELT(result, SLX_RUN));
     char buf[LINEBUF_SIZE];
     SET_VECTOR_ELT(result, SLX_ID, _NEW_XSNAP(nrec, "BString"));
-    
+
     _XSnap id = VECTOR_ELT(result, SLX_ID);
     /* FIXME: machine */
     int n = 0;

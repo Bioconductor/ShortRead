@@ -13,7 +13,7 @@ static const R_CallMethodDef callMethods[] = {
     {".read_solexa_fastq", (DL_FUNC) &read_solexa_fastq, 2},
     {".read_XStringSet_columns", (DL_FUNC) &read_XStringSet_columns, 8},
     {".read_solexa_export", (DL_FUNC) &read_solexa_export, 4},
-    {".write_fastq", (DL_FUNC) &write_fastq, 6},
+    {".write_fastq", (DL_FUNC) &write_fastq, 7},
     {".count_ipar_int_recs", (DL_FUNC) &count_ipar_int_recs, 1},
     /* io_bowtie.c, io_soap.c */
     {".read_bowtie", (DL_FUNC) &read_bowtie, 4},

@@ -107,7 +107,9 @@ setMethod(readFastq, "character",
     })
 })
 
-setMethod(writeFastq, "ShortReadQ", function(object, file, mode="w", ...) {
+setMethod(writeFastq, "ShortReadQ",
+    function(object, file, mode="w", full=FALSE, ...)
+{
     if (length(file) != 1)
         .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
                        "file", "character(1)"))
@@ -121,7 +123,7 @@ setMethod(writeFastq, "ShortReadQ", function(object, file, mode="w", ...) {
                        unique(width(sread(object))),
                        unique(width(quality(object)))))
     .Call(.write_fastq, id(object), sread(object),
-          quality(quality(object)), file, mode, max_width)
+          quality(quality(object)), file, mode, full, max_width)
     invisible(length(object))
 })
 

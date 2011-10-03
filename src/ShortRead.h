@@ -51,14 +51,14 @@ void _XSNAP_ELT(SEXP x, int elt);
 
 /* io.c */
 
-SEXP write_fastq(SEXP id, SEXP sread, SEXP quality, 
-		 SEXP fname, SEXP fmode, SEXP max_width);
+SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
+		 SEXP fname, SEXP fmode, SEXP full, SEXP max_width);
 SEXP read_prb_as_character(SEXP file, SEXP asSolexa);
 SEXP read_solexa_fastq(SEXP files, SEXP withIds);
 SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
-			     SEXP colIndex, SEXP colClasses, 
+			     SEXP colIndex, SEXP colClasses,
 			     SEXP nrows, SEXP skip, SEXP commentChar);
-SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar, 
+SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar,
                         SEXP withFlags);
 
 /* io_bowtie.c, io_soap.c */

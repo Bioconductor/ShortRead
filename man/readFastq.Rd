@@ -25,7 +25,7 @@ readFastq(dirPath, pattern=character(0), ...)
 
 \S4method{readFastq}{character}(dirPath, pattern=character(0), ..., withIds=TRUE)
 
-writeFastq(object, file, mode="w", ...)
+writeFastq(object, file, mode="w", full=FALSE, ...)
 }
 
 \arguments{
@@ -47,6 +47,10 @@ writeFastq(object, file, mode="w", ...)
   \item{mode}{A length 1 character vector equal to either \sQuote{w} or
     \sQuote{a} to write to a new file or append to an existing file,
     respectively.}
+
+  \item{full}{A logical(1) indicating whether the identifier line should
+    be repeated \code{full=TRUE} or omitted \code{full=FALSE} on the
+    third line of the fastq record.}
 
   \item{...}{Additional arguments. In particular, \code{qualityType} and
     \code{filter}:

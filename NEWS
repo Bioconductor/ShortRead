@@ -10,12 +10,21 @@ NEW FEATURES
 
     o FastqStreamer to iterate over a fastq file
 
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o writeFastq has argument full, default value FALSE, disabling
+    printing of identifier a second time in '+' line
+
 BUG FIXES
 
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand
     inforamtion
 
     o FastqSampler segfaulted on some files
+
+    o writeFasta had a semi-documented argument mode; it is now
+    documented and as a consequence dis-allows argument 'append' that
+    would previously have been passed to underlying methods.
 
 CHANGES IN VERSION 1.9
 ----------------------
