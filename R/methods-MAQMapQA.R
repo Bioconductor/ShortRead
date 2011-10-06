@@ -117,6 +117,9 @@ setMethod(report_html, "MAQMapQA",
         list(SAMPLE_KEY=hwrite(qa[["keyValue"]], border=0),
              PPN_COUNT=.html_img(
                dest, "readCount", .plotReadCount(qa)),
+             PPN_COUNT_TBL=hwrite(
+               .ppnCount(qa[["readCounts"]]),
+               border=0),
              BASE_CALL_COUNT=.html_img(
                dest, "baseCalls", .plotNucleotideCount(qa)),
              READ_QUALITY_FIGURE=.htmlReadQuality(
