@@ -5,8 +5,7 @@
  * visit all sequences in a set, tallying character frequency as a
  * function of nucleotide position in the read.
  */
-SEXP
-alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
+SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
 {
     const int MAX_MAP = 256;
     /* FIXME: check types of incoming arguments */
@@ -29,7 +28,7 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     UNPROTECT(2);
 
     int *ansp = INTEGER(ans);   /* convenient pointer to data */
-    memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */
+    memset(ansp, 0, LENGTH(ans) * sizeof(int));	/* initialize to 0 */
 
     /* set up a decoder for the string */
     const char *base = get_XStringSet_xsbaseclassname(stringSet);
@@ -38,7 +37,7 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     /* map between decoded character and offset into 'ans' */
     int i, j;
     int map[MAX_MAP];
-    memset(map, -1, MAX_MAP*sizeof(int)); /* default; ignore */
+    memset(map, -1, MAX_MAP * sizeof(int));	/* default; ignore */
     for (i = 0; i < LENGTH(alphabet); ++i) {
         unsigned char c = (unsigned char) *CHAR(STRING_ELT(alphabet, i));
         map[c] = i;
@@ -65,8 +64,8 @@ alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     return ans;
 }
 
-SEXP
-alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphabet1, SEXP alphabet2)
+SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
+                            SEXP alphabet1, SEXP alphabet2)
 {
     const int MAX_MAP = 256;
     /* FIXME: check types of incoming arguments */
@@ -76,7 +75,8 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
         Rf_error("'alphabet' must be list of character vectors");
 
     /* allocate and initialize the answer matrix */
-    const int dim1 = LENGTH(alphabet1), dim2 = LENGTH(alphabet2), dim3 = INTEGER(width)[0];
+    const int dim1 = LENGTH(alphabet1), dim2 = LENGTH(alphabet2), dim3 =
+        INTEGER(width)[0];
     const int dim1xdim2 = dim1 * dim2;
     SEXP ans, dimnms, nms;
     PROTECT(ans = alloc3DArray(INTSXP, dim1, dim2, dim3));
@@ -93,7 +93,7 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     UNPROTECT(2);
 
     int *ansp = INTEGER(ans);   /* convenient pointer to data */
-    memset(ansp, 0, LENGTH(ans) * sizeof(int)); /* initialize to 0 */
+    memset(ansp, 0, LENGTH(ans) * sizeof(int));	/* initialize to 0 */
 
     /* set up a decoder for string1 and string2 */
     const char *base1 = get_XStringSet_xsbaseclassname(stringSet1);
@@ -104,8 +104,8 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     /* map between decoded character and offset into 'ans' */
     int i, j;
     int map1[MAX_MAP], map2[MAX_MAP];
-    memset(map1, -1, MAX_MAP*sizeof(int)); /* default; ignore */
-    memset(map2, -1, MAX_MAP*sizeof(int)); /* default; ignore */
+    memset(map1, -1, MAX_MAP * sizeof(int));	/* default; ignore */
+    memset(map2, -1, MAX_MAP * sizeof(int));	/* default; ignore */
     for (i = 0; i < LENGTH(alphabet1); ++i) {
         unsigned char c = (unsigned char) *CHAR(STRING_ELT(alphabet1, i));
         map1[c] = i;
@@ -139,8 +139,7 @@ alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width, SEXP alphab
     return ans;
 }
 
-SEXP
-alphabet_score(SEXP stringSet, SEXP score)
+SEXP alphabet_score(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStringSet */
     const char *base = get_XStringSet_xsbaseclassname(stringSet);
@@ -163,15 +162,14 @@ alphabet_score(SEXP stringSet, SEXP score)
         cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
         dans[i] = 0;
         for (j = 0; j < seq.length; ++j)
-            dans[i] +=  dscore[decode(seq.seq[j])];
+            dans[i] += dscore[decode(seq.seq[j])];
     }
 
     UNPROTECT(1);
     return ans;
 }
 
-SEXP
-alphabet_as_int(SEXP stringSet, SEXP score)
+SEXP alphabet_as_int(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStrinSet(1) or longer? */
     const char *base = get_XStringSet_xsbaseclassname(stringSet);
@@ -191,7 +189,8 @@ alphabet_as_int(SEXP stringSet, SEXP score)
     SEXP ans;
     for (i = 1; i < len && width > 0; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);
-        if (seq.length != width) width = -1;
+        if (seq.length != width)
+            width = -1;
     }
     if (width >= 0) {           /* matrix */
         ans = PROTECT(allocMatrix(INTSXP, len, width));
@@ -204,14 +203,14 @@ alphabet_as_int(SEXP stringSet, SEXP score)
     int j;
     for (i = 0; i < len; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);
-        if (width >= 0) { /* int matrix */
+        if (width >= 0) {       /* int matrix */
             for (j = 0; j < seq.length; ++j)
-                ians[len*j + i] =  iscore[decode(seq.seq[j])];
+                ians[len * j + i] = iscore[decode(seq.seq[j])];
         } else {                /* list of ints */
             SET_VECTOR_ELT(ans, i, NEW_INTEGER(seq.length));
             ians = INTEGER(VECTOR_ELT(ans, i));
             for (j = 0; j < seq.length; ++j)
-                ians[j] =  iscore[decode(seq.seq[j])];
+                ians[j] = iscore[decode(seq.seq[j])];
         }
     }
 
@@ -226,16 +225,15 @@ typedef struct {
     cachedCharSeq ref;
 } XSort;
 
-typedef int XSEQ_SORT_FUN(const void *, const void*);
+typedef int XSEQ_SORT_FUN(const void *, const void *);
 
 XSEQ_SORT_FUN compare_cachedCharSeq;
 XSEQ_SORT_FUN stable_compare_cachedCharSeq;
 
-int
-compare_cachedCharSeq(const void *a, const void *b)
+int compare_cachedCharSeq(const void *a, const void *b)
 {
-    const cachedCharSeq ra = ((const XSort*) a)->ref;
-    const cachedCharSeq rb = ((const XSort*) b)->ref;
+    const cachedCharSeq ra = ((const XSort *) a)->ref;
+    const cachedCharSeq rb = ((const XSort *) b)->ref;
 
     const int diff = ra.length - rb.length;
     size_t len = diff < 0 ? ra.length : rb.length;
@@ -243,41 +241,38 @@ compare_cachedCharSeq(const void *a, const void *b)
     return res == 0 ? diff : res;
 }
 
-int
-stable_compare_cachedCharSeq(const void *a, const void *b)
+int stable_compare_cachedCharSeq(const void *a, const void *b)
 {
-    const cachedCharSeq ra = ((const XSort*) a)->ref;
-    const cachedCharSeq rb = ((const XSort*) b)->ref;
+    const cachedCharSeq ra = ((const XSort *) a)->ref;
+    const cachedCharSeq rb = ((const XSort *) b)->ref;
 
     const int diff = ra.length - rb.length;
     size_t len = diff < 0 ? ra.length : rb.length;
     int res = memcmp(ra.seq, rb.seq, len);
     if ((0 == res) && (0 == diff))
-        res = ((const XSort*) a)->offset - ((const XSort*) b)->offset;
+        res = ((const XSort *) a)->offset - ((const XSort *) b)->offset;
     return res == 0 ? diff : res;
 }
 
-void
-_alphabet_order(cachedXStringSet cache, XSort *xptr, const int len)
+void _alphabet_order(cachedXStringSet cache, XSort * xptr, const int len)
 {
     int i;
 
     for (i = 0; i < len; ++i) {
-        xptr[i].offset=i;
+        xptr[i].offset = i;
         xptr[i].ref = get_cachedXStringSet_elt(&cache, i);
     }
     qsort(xptr, len, sizeof(XSort), stable_compare_cachedCharSeq);
 }
 
-SEXP
-alphabet_order(SEXP stringSet)
+SEXP alphabet_order(SEXP stringSet)
 {
     /* FIXME: stringSet is XStringSet; non-zero len? */
     const int len = get_XStringSet_length(stringSet);
-	if (len == 0)
-		return NEW_INTEGER(0);
+    if (len == 0)
+        return NEW_INTEGER(0);
     cachedXStringSet cache = cache_XStringSet(stringSet);
-    XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
+    XSort *xptr = (XSort *) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
 
     SEXP ans;
@@ -290,46 +285,45 @@ alphabet_order(SEXP stringSet)
     return ans;
 }
 
-SEXP
-alphabet_duplicated(SEXP stringSet)
+SEXP alphabet_duplicated(SEXP stringSet)
 {
     /* FIXME: stringSet is XStringSet; non-zero len? */
     const int len = get_XStringSet_length(stringSet);
-	if (len == 0)
-		return NEW_LOGICAL(0);
+    if (len == 0)
+        return NEW_LOGICAL(0);
     cachedXStringSet cache = cache_XStringSet(stringSet);
-    XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
+    XSort *xptr = (XSort *) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(len));
     int *ians = INTEGER(ans);
-    ians[xptr[0].offset]=0;
+    ians[xptr[0].offset] = 0;
     int i;
     for (i = 1; i < len; ++i)
-        ians[xptr[i].offset] = compare_cachedCharSeq(xptr+i-1, xptr+i) == 0;
+        ians[xptr[i].offset] =
+            compare_cachedCharSeq(xptr + i - 1, xptr + i) == 0;
 
     UNPROTECT(1);
     return ans;
 }
 
-SEXP
-alphabet_rank(SEXP stringSet)
+SEXP alphabet_rank(SEXP stringSet)
 {
     /* integer vector of unique indices into sorted set */
     const int len = get_XStringSet_length(stringSet);
-	if (len == 0)
-		return NEW_INTEGER(0);
+    if (len == 0)
+        return NEW_INTEGER(0);
     cachedXStringSet cache = cache_XStringSet(stringSet);
-    XSort *xptr = (XSort*) R_alloc(len, sizeof(XSort));
+    XSort *xptr = (XSort *) R_alloc(len, sizeof(XSort));
     _alphabet_order(cache, xptr, len);
 
     SEXP rank = PROTECT(NEW_INTEGER(len));
     int *irank = INTEGER(rank), i;
     irank[xptr[0].offset] = 1;
     for (i = 1; i < len; ++i) {
-        if (compare_cachedCharSeq(&xptr[i-1], &xptr[i]) == 0) {
-            irank[xptr[i].offset] = irank[xptr[i-1].offset];
+        if (compare_cachedCharSeq(&xptr[i - 1], &xptr[i]) == 0) {
+            irank[xptr[i].offset] = irank[xptr[i - 1].offset];
         } else {
             irank[xptr[i].offset] = i + 1;
         }
@@ -339,12 +333,10 @@ alphabet_rank(SEXP stringSet)
     return rank;
 }
 
-SEXP
-aligned_read_rank(SEXP alignedRead, SEXP order, SEXP withSread,
-				  SEXP rho)
+SEXP aligned_read_rank(SEXP alignedRead, SEXP order, SEXP withSread, SEXP rho)
 {
-	if (LENGTH(order) == 0)
-		return NEW_INTEGER(0);
+    if (LENGTH(order) == 0)
+        return NEW_INTEGER(0);
     SEXP chr, str, pos;
     PROTECT(chr = _get_SEXP(alignedRead, rho, "chromosome"));
     PROTECT(str = _get_SEXP(alignedRead, rho, "strand"));
@@ -355,36 +347,35 @@ aligned_read_rank(SEXP alignedRead, SEXP order, SEXP withSread,
     PROTECT(rank = NEW_INTEGER(len));
     int *r = INTEGER(rank), i;
 
-	if (LOGICAL(withSread)[0]) {
-		SEXP sread;
-		PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
-		cachedXStringSet cache = cache_XStringSet(sread);
-		XSort *xptr = (XSort*) R_alloc(2, sizeof(XSort));
-		xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
+    if (LOGICAL(withSread)[0]) {
+        SEXP sread;
+        PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
+        cachedXStringSet cache = cache_XStringSet(sread);
+        XSort *xptr = (XSort *) R_alloc(2, sizeof(XSort));
+        xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
 
-		r[o[0]-1] = 1;
-		for (i = 1; i < len; ++i) {
-			const int this = o[i]-1, prev=o[i-1]-1;
-			xptr[i%2].ref = get_cachedXStringSet_elt(&cache, this);
-			if (c[this] != c[prev] || s[this] != s[prev] ||
-				p[this] != p[prev] || 
-				compare_cachedCharSeq(xptr, xptr+1) != 0)
-				r[this] = i + 1;
-			else
-				r[this] = r[prev];
-		}
-		UNPROTECT(1);
-	} else {
-		r[o[0]-1] = 1;
-		for (i = 1; i < len; ++i) {
-			const int this = o[i]-1, prev=o[i-1]-1;
-			if (c[this] != c[prev] || s[this] != s[prev] ||
-				p[this] != p[prev])
-				r[this] = i + 1;
-			else
-				r[this] = r[prev];
-		}
-	}
+        r[o[0] - 1] = 1;
+        for (i = 1; i < len; ++i) {
+            const int this = o[i] - 1, prev = o[i - 1] - 1;
+            xptr[i % 2].ref = get_cachedXStringSet_elt(&cache, this);
+            if (c[this] != c[prev] || s[this] != s[prev] ||
+                p[this] != p[prev] ||
+                compare_cachedCharSeq(xptr, xptr + 1) != 0)
+                r[this] = i + 1;
+            else
+                r[this] = r[prev];
+        }
+        UNPROTECT(1);
+    } else {
+        r[o[0] - 1] = 1;
+        for (i = 1; i < len; ++i) {
+            const int this = o[i] - 1, prev = o[i - 1] - 1;
+            if (c[this] != c[prev] || s[this] != s[prev] || p[this] != p[prev])
+                r[this] = i + 1;
+            else
+                r[this] = r[prev];
+        }
+    }
     UNPROTECT(4);
     return rank;
 }

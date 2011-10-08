@@ -21,18 +21,14 @@ static const int LINES_PER_FASTA_REC = 2;
  * inst/extdata/s_1_sequences.txt contains 256 records
  */
 
-void
-_write_err(FILE *file, int i)
+void _write_err(FILE * file, int i)
 {
     fclose(file);
     Rf_error("failed to write record %d", i + 1);
 }
 
-
-char *
-_cache_to_char(cachedXStringSet *cache, const int i,
-               char *buf, const int width, 
-               DECODE_FUNC decode)
+char *_cache_to_char(cachedXStringSet * cache, const int i,
+                     char *buf, const int width, DECODE_FUNC decode)
 {
     cachedCharSeq roSeq = get_cachedXStringSet_elt(cache, i);
     if (roSeq.length > width)
@@ -41,18 +37,16 @@ _cache_to_char(cachedXStringSet *cache, const int i,
         int j;
         for (j = 0; j < roSeq.length; ++j)
             buf[j] = decode(roSeq.seq[j]);
-    } else 
+    } else
         strncpy(buf, roSeq.seq, roSeq.length);
     buf[roSeq.length] = '\0';
     return buf;
 }
 
-SEXP
-write_fastq(SEXP id, SEXP sread, SEXP quality,
-            SEXP fname, SEXP fmode, SEXP full, SEXP max_width)
+SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
+                 SEXP fname, SEXP fmode, SEXP full, SEXP max_width)
 {
-    if (!(IS_S4_OBJECT(id) &&
-          strcmp(get_classname(id), "BStringSet") == 0))
+    if (!(IS_S4_OBJECT(id) && strcmp(get_classname(id), "BStringSet") == 0))
         Rf_error("'%s' must be '%s'", "id", "BStringSet");
     if (!(IS_S4_OBJECT(sread) &&
           strcmp(get_classname(sread), "DNAStringSet") == 0))
@@ -65,9 +59,9 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
         (len != get_XStringSet_length(quality)))
         Rf_error("length() of %s must all be equal",
                  "'id', 'sread', 'quality'");
-    if (!(IS_CHARACTER(fname) && LENGTH(fname) == 1)) /* FIXME: nzchar */
+    if (!(IS_CHARACTER(fname) && LENGTH(fname) == 1))	/* FIXME: nzchar */
         Rf_error("'%s' must be '%s'", "file", "character(1)");
-    if (!(IS_CHARACTER(fmode) && LENGTH(fmode) == 1)) /* FIXME nchar()<3 */
+    if (!(IS_CHARACTER(fmode) && LENGTH(fmode) == 1))	/* FIXME nchar()<3 */
         Rf_error("'%s' must be '%s'", "mode", "character(1)");
     if (!(IS_LOGICAL(full) && LENGTH(full) == 1))
         Rf_error("'%s' must be '%s'", "full", "logical(1)");
@@ -78,14 +72,12 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
 
     DECODE_FUNC dnaDecoder = decoder(get_XStringSet_xsbaseclassname(sread));
     cachedXStringSet xid = cache_XStringSet(id),
-        xsread = cache_XStringSet(sread),
-        xquality = cache_XStringSet(quality);
+        xsread = cache_XStringSet(sread), xquality = cache_XStringSet(quality);
 
     FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)),
                        CHAR(STRING_ELT(fmode, 0)));
     if (fout == NULL)
-        Rf_error("failed to open file '%s'",
-                 CHAR(STRING_ELT(fname, 0)));
+        Rf_error("failed to open file '%s'", CHAR(STRING_ELT(fname, 0)));
     char *idbuf0 = (char *) R_alloc(sizeof(char), width + 1), *idbuf1,
         *readbuf = (char *) R_alloc(sizeof(char), width + 1),
         *qualbuf = (char *) R_alloc(sizeof(char), width + 1);
@@ -95,15 +87,13 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
         idbuf0 = _cache_to_char(&xid, i, idbuf0, width, NULL);
         if (idbuf0 == NULL)
             _write_err(fout, i);
-        readbuf =
-            _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
+        readbuf = _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
         if (readbuf == NULL)
             _write_err(fout, i);
         qualbuf = _cache_to_char(&xquality, i, qualbuf, width, NULL);
         if (qualbuf == NULL)
             _write_err(fout, i);
-        fprintf(fout, "@%s\n%s\n+%s\n%s\n",
-                idbuf0, readbuf, idbuf1, qualbuf);
+        fprintf(fout, "@%s\n%s\n+%s\n%s\n", idbuf0, readbuf, idbuf1, qualbuf);
     }
     fclose(fout);
     return R_NilValue;
@@ -113,86 +103,82 @@ write_fastq(SEXP id, SEXP sread, SEXP quality,
  * solexa/IPAR .*_int.txt.p.gz file
  */
 
-void
-_count_ipar_int_recs(gzFile *file, int *n_recs, int *n_cycles)
+void _count_ipar_int_recs(gzFile * file, int *n_recs, int *n_cycles)
 {
-  const char CYCLE_END = '#';
-  const int LINEBUF_SIZE=200001;
-  size_t bytes_read = 0;
-  char buf[LINEBUF_SIZE + 1];
-  *n_recs = *n_cycles = 0;
-  char *p = 0;
-  /* records and cycles */
-  while (*n_cycles == 0 &&
-		 (bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
-	p = buf;
-	while ((p = memchr(p, '\n', (buf + bytes_read) - p))) {
-	  ++p;
-	  if (*p == CYCLE_END) {
-		++p;
-		*n_cycles += 1;
-		break;
-	  }
-	  else *n_recs += 1;
-	}
-  }
-  /* just cycles */
-  while ((p = memchr(p, CYCLE_END, (buf + bytes_read) - p))) {
-	++p;
-	*n_cycles += 1;
-  }
-  while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
-	p = buf;
-	while ((p = memchr(p, CYCLE_END, (buf + bytes_read) - p))) {
-	  ++p;
-	  *n_cycles += 1;
-	}
-  }
+    const char CYCLE_END = '#';
+    const int LINEBUF_SIZE = 200001;
+    size_t bytes_read = 0;
+    char buf[LINEBUF_SIZE + 1];
+    *n_recs = *n_cycles = 0;
+    char *p = 0;
+    /* records and cycles */
+    while (*n_cycles == 0 && (bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
+        p = buf;
+        while ((p = memchr(p, '\n', (buf + bytes_read) - p))) {
+            ++p;
+            if (*p == CYCLE_END) {
+                ++p;
+                *n_cycles += 1;
+                break;
+            } else
+                *n_recs += 1;
+        }
+    }
+    /* just cycles */
+    while ((p = memchr(p, CYCLE_END, (buf + bytes_read) - p))) {
+        ++p;
+        *n_cycles += 1;
+    }
+    while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
+        p = buf;
+        while ((p = memchr(p, CYCLE_END, (buf + bytes_read) - p))) {
+            ++p;
+            *n_cycles += 1;
+        }
+    }
 }
 
-SEXP
-count_ipar_int_recs(SEXP fnames)
+SEXP count_ipar_int_recs(SEXP fnames)
 {
-  int i, nfile;
-  const char *filepath;
-  gzFile *file;
-  SEXP ans = R_NilValue, nms = R_NilValue;
-    
-  if (!IS_CHARACTER(fnames))
-	error("'fnames' must be character()");
+    int i, nfile;
+    const char *filepath;
+    gzFile *file;
+    SEXP ans = R_NilValue, nms = R_NilValue;
 
-  nfile = LENGTH(fnames);
-  PROTECT(ans = NEW_LIST(2));
-  SET_VECTOR_ELT(ans, 0, NEW_INTEGER(nfile));
-  SET_VECTOR_ELT(ans, 1, NEW_INTEGER(nfile));
-  PROTECT(nms = NEW_CHARACTER(2));
-  SET_STRING_ELT(nms, 0, mkChar("reads"));
-  SET_STRING_ELT(nms, 1, mkChar("cycles"));
-  setAttrib(ans, R_NamesSymbol, nms);
-  for (i = 0; i < nfile; ++i) {
-	R_CheckUserInterrupt();
-	filepath = translateChar(STRING_ELT(fnames, i));
-	file = _fopen(filepath, "rb");
-	_count_ipar_int_recs(file, 
-						 INTEGER(VECTOR_ELT(ans, 0)) + i,
-						 INTEGER(VECTOR_ELT(ans, 1)) + i);
-	gzclose(file);
-  }
+    if (!IS_CHARACTER(fnames))
+        error("'fnames' must be character()");
 
-  UNPROTECT(2);
-  return ans;
+    nfile = LENGTH(fnames);
+    PROTECT(ans = NEW_LIST(2));
+    SET_VECTOR_ELT(ans, 0, NEW_INTEGER(nfile));
+    SET_VECTOR_ELT(ans, 1, NEW_INTEGER(nfile));
+    PROTECT(nms = NEW_CHARACTER(2));
+    SET_STRING_ELT(nms, 0, mkChar("reads"));
+    SET_STRING_ELT(nms, 1, mkChar("cycles"));
+    setAttrib(ans, R_NamesSymbol, nms);
+    for (i = 0; i < nfile; ++i) {
+        R_CheckUserInterrupt();
+        filepath = translateChar(STRING_ELT(fnames, i));
+        file = _fopen(filepath, "rb");
+        _count_ipar_int_recs(file,
+                             INTEGER(VECTOR_ELT(ans, 0)) + i,
+                             INTEGER(VECTOR_ELT(ans, 1)) + i);
+        gzclose(file);
+    }
+
+    UNPROTECT(2);
+    return ans;
 }
 
 /*
  * Read a solexa .*_prb.txt file into STRING_VEC
  */
 
-SEXP
-read_prb_as_character(SEXP fname, SEXP asSolexa)
+SEXP read_prb_as_character(SEXP fname, SEXP asSolexa)
 {
     const int NUC_PER_CYCLE = 4;
 
-    if (!IS_CHARACTER(fname) || LENGTH(fname)!=1)
+    if (!IS_CHARACTER(fname) || LENGTH(fname) != 1)
         error("'fname' must be 'character(1)'");
     if (!IS_LOGICAL(asSolexa) || LENGTH(asSolexa) != 1)
         error("'asSolexa' must be 'logical(1)'");
@@ -202,11 +188,10 @@ read_prb_as_character(SEXP fname, SEXP asSolexa)
 
     gzFile *file = _fopen(translateChar(STRING_ELT(fname, 0)), "rb");
     char buf[LINEBUF_SIZE + 1];
-    int read=0;
+    int read = 0;
     if (gzgets(file, buf, LINEBUF_SIZE) == Z_NULL) {
         gzclose(file);
-        error("could not read file '%f'",
-              translateChar(STRING_ELT(fname, 0)));
+        error("could not read file '%f'", translateChar(STRING_ELT(fname, 0)));
     }
     int n_cycles = 0;
     char *quad = strtok(buf, "\t");
@@ -228,12 +213,11 @@ read_prb_as_character(SEXP fname, SEXP asSolexa)
         int cycle = 0;
         while (quad != NULL && cycle < n_cycles) {
             int v[4];
-            int bases = sscanf(quad, " %d %d %d %d", 
+            int bases = sscanf(quad, " %d %d %d %d",
                                &v[0], &v[1], &v[2], &v[3]);
             if (bases != NUC_PER_CYCLE) {
                 gzclose(file);
-                error("%d bases observed, %d expected", bases, 
-                      NUC_PER_CYCLE);
+                error("%d bases observed, %d expected", bases, NUC_PER_CYCLE);
             }
             v[0] = v[0] > v[1] ? v[0] : v[1];
             v[2] = v[2] > v[3] ? v[2] : v[3];
@@ -254,15 +238,13 @@ read_prb_as_character(SEXP fname, SEXP asSolexa)
 /*
  * Read a solexa 's_<lane>_sequence.txt' file into CharAEAE objects.
  */
-static void
-_read_solexa_fastq_file(const char *fname, SEXP ans)
+static void _read_solexa_fastq_file(const char *fname, SEXP ans)
 {
     gzFile *file;
     char linebuf[LINEBUF_SIZE];
     int lineno, reclineno, nchar_in_buf;
-	_XSnap seq = VECTOR_ELT(ans, 0),
-		id = VECTOR_ELT(ans, 1),
-		qualities = VECTOR_ELT(ans, 2);
+    _XSnap seq = VECTOR_ELT(ans, 0),
+        id = VECTOR_ELT(ans, 1), qualities = VECTOR_ELT(ans, 2);
 
     file = _fopen(fname, "rb");
     lineno = 0;
@@ -273,19 +255,19 @@ _read_solexa_fastq_file(const char *fname, SEXP ans)
         }
 
         nchar_in_buf = _rtrim(linebuf);
-        if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+        if (nchar_in_buf >= LINEBUF_SIZE - 1) {	// should never be >
             gzclose(file);
             error("line too long %s:%d", fname, lineno);
         } else if (nchar_in_buf == 0) {
             gzclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
         }
-        switch(reclineno) {
+        switch (reclineno) {
         case 0:
             /* add linebuf to CharAEAE; start at char +1 to skip the
              * fastq annotation. */
-  		    if (id != R_NilValue)
-				_APPEND_XSNAP(id, linebuf+1);
+            if (id != R_NilValue)
+                _APPEND_XSNAP(id, linebuf + 1);
             break;
         case 1:
             _solexa_to_IUPAC(linebuf);
@@ -305,8 +287,7 @@ _read_solexa_fastq_file(const char *fname, SEXP ans)
         error("unexpected number of lines in file '%s'", fname);
 }
 
-SEXP
-read_solexa_fastq(SEXP files, SEXP withId)
+SEXP read_solexa_fastq(SEXP files, SEXP withId)
 {
     int i, nfiles, nrec = 0;
     const char *fname;
@@ -314,72 +295,68 @@ read_solexa_fastq(SEXP files, SEXP withId)
 
     if (!IS_CHARACTER(files))
         Rf_error("'%s' must be '%s'", "files", "character");
-	if (!IS_LOGICAL(withId) || LENGTH(withId) != 1)
-   	    Rf_error("'%s' must be '%s'", "withId", "logical(1)");
+    if (!IS_LOGICAL(withId) || LENGTH(withId) != 1)
+        Rf_error("'%s' must be '%s'", "withId", "logical(1)");
 
     nfiles = LENGTH(files);
     nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
     PROTECT(ans = NEW_LIST(3));
-	SET_VECTOR_ELT(ans, 0, _NEW_XSNAP(nrec, "DNAString")); /* sread */
-	if (LOGICAL(withId)[0] == TRUE)			  /* id */
-		SET_VECTOR_ELT(ans, 1, _NEW_XSNAP(nrec, "BString"));
-	else
-		SET_VECTOR_ELT(ans, 1, R_NilValue);
-	SET_VECTOR_ELT(ans, 2, _NEW_XSNAP(nrec, "BString")); /* quality */
+    SET_VECTOR_ELT(ans, 0, _NEW_XSNAP(nrec, "DNAString"));	/* sread */
+    if (LOGICAL(withId)[0] == TRUE)	/* id */
+        SET_VECTOR_ELT(ans, 1, _NEW_XSNAP(nrec, "BString"));
+    else
+        SET_VECTOR_ELT(ans, 1, R_NilValue);
+    SET_VECTOR_ELT(ans, 2, _NEW_XSNAP(nrec, "BString"));	/* quality */
 
     PROTECT(nms = NEW_CHARACTER(3));
     SET_STRING_ELT(nms, 0, mkChar("sread"));
-	SET_STRING_ELT(nms, 1, mkChar("id"));
+    SET_STRING_ELT(nms, 1, mkChar("id"));
     SET_STRING_ELT(nms, 2, mkChar("quality"));
     setAttrib(ans, R_NamesSymbol, nms);
-	UNPROTECT(1);
+    UNPROTECT(1);
 
     for (i = 0; i < nfiles; ++i) {
         R_CheckUserInterrupt();
         fname = translateChar(STRING_ELT(files, i));
-		_read_solexa_fastq_file(fname, ans);
+        _read_solexa_fastq_file(fname, ans);
     }
-	_XSNAP_ELT(ans, 0);
-	if (VECTOR_ELT(ans, 1) != R_NilValue)
-		_XSNAP_ELT(ans, 1);
-	_XSNAP_ELT(ans, 2);
+    _XSNAP_ELT(ans, 0);
+    if (VECTOR_ELT(ans, 1) != R_NilValue)
+        _XSNAP_ELT(ans, 1);
+    _XSNAP_ELT(ans, 2);
 
     UNPROTECT(1);
     return ans;
 }
 
-int
-_io_XStringSet_columns(const char *fname, 
-                       int header,
-                       const char *sep, MARK_FIELD_FUNC *mark_field,
-                       const int *colidx, int ncol,
-                       int nrow, int skip, const char *commentChar,
-                       SEXP sets, const int *toIUPAC)
+int _io_XStringSet_columns(const char *fname, int header,
+                           const char *sep, MARK_FIELD_FUNC * mark_field,
+                           const int *colidx, int ncol,
+                           int nrow, int skip, const char *commentChar,
+                           SEXP sets, const int *toIUPAC)
 {
     gzFile *file;
     char *linebuf;
     int lineno = 0, recno = 0;
 
     file = _fopen(fname, "rb");
-    linebuf = S_alloc(LINEBUF_SIZE, sizeof(char)); /* auto free'd on return */
+    linebuf = S_alloc(LINEBUF_SIZE, sizeof(char));	/* auto free'd */
 
     while (skip-- > 0)
         gzgets(file, linebuf, LINEBUF_SIZE);
     if (header == TRUE)
         gzgets(file, linebuf, LINEBUF_SIZE);
 
-    while (recno < nrow &&
-           gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
-        if (_linebuf_skip_p(linebuf, file, fname,
-                            lineno, commentChar)) {
+    while (recno < nrow && gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
+        if (_linebuf_skip_p(linebuf, file, fname, lineno, commentChar)) {
             lineno++;
             continue;
         }
 
-        int j = 0, cidx=0;
+        int j = 0, cidx = 0;
         char *curr = linebuf, *next;
         for (j = 0; cidx < ncol && curr != NULL; ++j) {
-            next = (*mark_field)(curr, sep);
+            next = (*mark_field) (curr, sep);
             if (j == colidx[cidx]) {
                 if (toIUPAC[cidx])
                     _solexa_to_IUPAC(curr);
@@ -387,7 +364,7 @@ _io_XStringSet_columns(const char *fname,
                 cidx++;
             }
             curr = next;
-        } 
+        }
         lineno++;
         recno++;
     }
@@ -395,22 +372,22 @@ _io_XStringSet_columns(const char *fname,
     return recno;
 }
 
-SEXP
-read_XStringSet_columns(SEXP files, SEXP header, SEXP sep, 
-                        SEXP colIndex, SEXP colClasses,
-                        SEXP nrows, SEXP skip, SEXP commentChar)
+SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
+                             SEXP colIndex, SEXP colClasses,
+                             SEXP nrows, SEXP skip, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
         Rf_error("'%s' must be '%s'", "files", "character(1)");
     if (!IS_LOGICAL(header) || LENGTH(header) != 1)
         Rf_error("'%s' must be '%s'", "header", "logical(1)");
     if (!IS_CHARACTER(sep) || LENGTH(sep) != 1)
-        Rf_error("'%s' must be '%s'", "sep", "character(1)"); 
+        Rf_error("'%s' must be '%s'", "sep", "character(1)");
     /* FIXME: !nzchar(sep[1]) */
     if (!IS_INTEGER(colIndex) || LENGTH(colIndex) == 0)
         Rf_error("'colIndex' must be 'integer' with length > 0");
     if (!IS_CHARACTER(colClasses) || LENGTH(colClasses) != LENGTH(colIndex))
-        Rf_error("'colClasses' must be 'character' with length(colClasses) == length(colIndex)");
+        Rf_error("'%s' must be '%s', length(colClasses) == length(colIndex)",
+                 "colClasses", "character()");
     if (!IS_INTEGER(nrows) || LENGTH(nrows) != 1)
         Rf_error("'%s' must be '%s'", "nrows", "integer(1)");
     if (!IS_INTEGER(skip) || LENGTH(skip) != 1)
@@ -438,12 +415,12 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
     }
 
     int ncol = LENGTH(colIndex);
-	SEXP ans = PROTECT(NEW_LIST(ncol));
+    SEXP ans = PROTECT(NEW_LIST(ncol));
     int *colidx = (int *) R_alloc(sizeof(int), ncol);
     int *toIUPAC = (int *) R_alloc(sizeof(int), ncol);
     for (j = 0; j < ncol; ++j) {
-		const char *baseclass = CHAR(STRING_ELT(colClasses, j));
-		SET_VECTOR_ELT(ans, j, _NEW_XSNAP(nrow, baseclass));
+        const char *baseclass = CHAR(STRING_ELT(colClasses, j));
+        SET_VECTOR_ELT(ans, j, _NEW_XSNAP(nrow, baseclass));
         colidx[j] = INTEGER(colIndex)[j] - 1;
         toIUPAC[j] = !strcmp(baseclass, "DNAString");
     }
@@ -452,21 +429,20 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
     int nreads = 0;
     for (i = 0; i < nfiles; ++i) {
         R_CheckUserInterrupt();
-        if (nreads >= nrow) 
+        if (nreads >= nrow)
             break;
         const char *fname = translateChar(STRING_ELT(files, i));
-        nreads += 
-            _io_XStringSet_columns(fname, 
-                                   LOGICAL(header)[0], csep, sep_func,
-                                   colidx, ncol,
-                                   nrow - nreads, INTEGER(skip)[0],
-                                   CHAR(STRING_ELT(commentChar, 0)),
-                                   ans, toIUPAC);
+        nreads +=
+            _io_XStringSet_columns(fname, LOGICAL(header)[0], csep, sep_func,
+                                   colidx, ncol, nrow - nreads,
+                                   INTEGER(skip)[0],
+                                   CHAR(STRING_ELT(commentChar, 0)), ans,
+                                   toIUPAC);
     }
 
     /* formulate return value */
     for (j = 0; j < ncol; ++j)
-		_XSNAP_ELT(ans, j);
+        _XSNAP_ELT(ans, j);
     UNPROTECT(1);
     return ans;
 }
@@ -478,24 +454,21 @@ read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 enum {
     /* fields from the _export spec */
     SLX_MACHINE = 0, SLX_RUN, SLX_LANE, SLX_TILE, SLX_X, SLX_Y,
-    SLX_MULTIPLEX, SLX_PAIRID, SLX_SREAD, SLX_QUAL, SLX_CHR, 
-    SLX_CONTIG, SLX_POS, SLX_STRAND, SLX_ALIGNQUAL, SLX_FILT, 
+    SLX_MULTIPLEX, SLX_PAIRID, SLX_SREAD, SLX_QUAL, SLX_CHR,
+    SLX_CONTIG, SLX_POS, SLX_STRAND, SLX_ALIGNQUAL, SLX_FILT,
     /* ID, when calculated */
     SLX_ID,
     /* length of ENUM */
     SLX_ELEMENT_END
 };
 
-SEXP
-_AlignedRead_Solexa_make(SEXP fields)
+SEXP _AlignedRead_Solexa_make(SEXP fields)
 {
     const char *FILTER_LEVELS[] = { "Y", "N" };
     SEXP s, t, nmspc = PROTECT(_get_namespace("ShortRead"));
     const Rboolean
-        withMultiplexIndex = R_NilValue != VECTOR_ELT(fields, 
-                                                      SLX_MULTIPLEX),
-        withPairedReadNumber = R_NilValue != VECTOR_ELT(fields, 
-                                                        SLX_PAIRID),
+        withMultiplexIndex = R_NilValue != VECTOR_ELT(fields, SLX_MULTIPLEX),
+        withPairedReadNumber = R_NilValue != VECTOR_ELT(fields, SLX_PAIRID),
         withIds = R_NilValue != VECTOR_ELT(fields, SLX_MACHINE);
 
     SEXP sfq;                   /* SFastqQuality */
@@ -520,22 +493,20 @@ _AlignedRead_Solexa_make(SEXP fields)
     PROTECT(run);
 
     SEXP dataframe;
-    NEW_CALL(s, t, "data.frame", nmspc, 
+    NEW_CALL(s, t, "data.frame", nmspc,
              8 + withMultiplexIndex + withPairedReadNumber);
     CSET_CDR(t, "run", run);
-    CSET_CDR(t, "lane", VECTOR_ELT(fields, SLX_LANE)); 
-    CSET_CDR(t, "tile", VECTOR_ELT(fields, SLX_TILE)); 
+    CSET_CDR(t, "lane", VECTOR_ELT(fields, SLX_LANE));
+    CSET_CDR(t, "tile", VECTOR_ELT(fields, SLX_TILE));
     CSET_CDR(t, "x", VECTOR_ELT(fields, SLX_X));
     CSET_CDR(t, "y", VECTOR_ELT(fields, SLX_Y));
     CSET_CDR(t, "filtering", VECTOR_ELT(fields, SLX_FILT));
     CSET_CDR(t, "contig", VECTOR_ELT(fields, SLX_CONTIG));
     if (withMultiplexIndex) {
-        CSET_CDR(t, "multiplexIndex",
-                 VECTOR_ELT(fields, SLX_MULTIPLEX));
+        CSET_CDR(t, "multiplexIndex", VECTOR_ELT(fields, SLX_MULTIPLEX));
     }
     if (withPairedReadNumber) {
-        CSET_CDR(t, "pairedReadNumber",
-                 VECTOR_ELT(fields, SLX_PAIRID));
+        CSET_CDR(t, "pairedReadNumber", VECTOR_ELT(fields, SLX_PAIRID));
     }
     CEVAL_TO(s, nmspc, dataframe);
     PROTECT(dataframe);
@@ -564,15 +535,14 @@ _AlignedRead_Solexa_make(SEXP fields)
     return aln;
 }
 
-int
-_read_solexa_export_file(const char *fname, const char *commentChar,
-                         int offset, SEXP result)
+int _read_solexa_export_file(const char *fname, const char *commentChar,
+                             int offset, SEXP result)
 {
     const int N_FIELDS = 22;
-    Rboolean 
-        withMultiplexIndex = R_NilValue != VECTOR_ELT(result, 
+    Rboolean
+        withMultiplexIndex = R_NilValue != VECTOR_ELT(result,
                                                       SLX_MULTIPLEX),
-        withPairedReadNumber = R_NilValue != VECTOR_ELT(result, 
+        withPairedReadNumber = R_NilValue != VECTOR_ELT(result,
                                                         SLX_PAIRID),
         withId = R_NilValue != VECTOR_ELT(result, SLX_MACHINE);
 
@@ -580,8 +550,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
     char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
     int lineno = 0, irec = offset;
 
-    SEXP machine = NULL, 
-        run = VECTOR_ELT(result, SLX_RUN);
+    SEXP machine = NULL, run = VECTOR_ELT(result, SLX_RUN);
     int *lane = INTEGER(VECTOR_ELT(result, SLX_LANE)),
         *tile = INTEGER(VECTOR_ELT(result, SLX_TILE)),
         *x = INTEGER(VECTOR_ELT(result, SLX_X)),
@@ -593,8 +562,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         *strand = INTEGER(VECTOR_ELT(result, SLX_STRAND)),
         *alignQuality = INTEGER(VECTOR_ELT(result, SLX_ALIGNQUAL)),
         *filtering = INTEGER(VECTOR_ELT(result, SLX_FILT));
-    SEXP contig = VECTOR_ELT(result, SLX_CONTIG),
-        multiplexIndex = NULL;
+    SEXP contig = VECTOR_ELT(result, SLX_CONTIG), multiplexIndex = NULL;
     int *pairedReadNumber = NULL;
     if (withMultiplexIndex)
         multiplexIndex = VECTOR_ELT(result, SLX_MULTIPLEX);
@@ -617,7 +585,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
             error("incorrect number of fields (%d) %s:%d",
                   n_fields, fname, lineno);
         }
-            
+
         if (withId)
             SET_STRING_ELT(machine, irec, mkChar(elt[0]));
         SET_STRING_ELT(run, irec, mkChar(elt[1]));
@@ -626,8 +594,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         x[irec] = atoi(elt[4]);
         y[irec] = atoi(elt[5]);
         if (withMultiplexIndex) {
-            SEXP idxString = 
-                *elt[6] == '\0' ? R_BlankString : mkChar(elt[6]);
+            SEXP idxString = *elt[6] == '\0' ? R_BlankString : mkChar(elt[6]);
             SET_STRING_ELT(multiplexIndex, irec, idxString);
         }
         if (withPairedReadNumber)
@@ -643,7 +610,7 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         if (*elt[13] == '\0')
             strand[irec] = NA_INTEGER;
         else {
-            switch(*elt[13]) {
+            switch (*elt[13]) {
             case 'F':
                 strand[irec] = 1;
                 break;
@@ -677,21 +644,19 @@ _read_solexa_export_file(const char *fname, const char *commentChar,
         lineno++;
         irec++;
     }
-    
+
     return irec - offset;
 }
-    
-int
-_solexa_export_make_id(SEXP result)
+
+int _solexa_export_make_id(SEXP result)
 {
     const int
-        *lane = INTEGER(VECTOR_ELT(result, SLX_LANE)),
+    *lane = INTEGER(VECTOR_ELT(result, SLX_LANE)),
         *tile = INTEGER(VECTOR_ELT(result, SLX_TILE)),
         *x = INTEGER(VECTOR_ELT(result, SLX_X)),
-        *y = INTEGER(VECTOR_ELT(result, SLX_Y)),
-        *pairedReadNumber = NULL;
+        *y = INTEGER(VECTOR_ELT(result, SLX_Y)), *pairedReadNumber = NULL;
     const SEXP
-        *run = STRING_PTR(VECTOR_ELT(result, SLX_RUN)),
+        * run = STRING_PTR(VECTOR_ELT(result, SLX_RUN)),
         *multiplexIndex = NULL,
         *machine = STRING_PTR(VECTOR_ELT(result, SLX_MACHINE));
     const Rboolean
@@ -727,9 +692,7 @@ _solexa_export_make_id(SEXP result)
     return 1;
 }
 
-SEXP
-read_solexa_export(SEXP files, SEXP sep, SEXP commentChar,
-                   SEXP withFlags)
+SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar, SEXP withFlags)
 {
     const int N_ELTS = SLX_ELEMENT_END;
 
@@ -746,7 +709,7 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar,
                  LENGTH(STRING_ELT(commentChar, 0)));
     if (!IS_LOGICAL(withFlags) || LENGTH(withFlags) != 3)
         Rf_error("'%s' must be '%s'", "withFlags", "logical(3)");
-    Rboolean 
+    Rboolean
         withId = LOGICAL(withFlags)[0],
         withMultiplexIndex = LOGICAL(withFlags)[1],
         withPairedReadNumber = LOGICAL(withFlags)[2];
@@ -777,10 +740,9 @@ read_solexa_export(SEXP files, SEXP sep, SEXP commentChar,
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
-        nrec += _read_solexa_export_file(
-            CHAR(STRING_ELT(files, i)),
-            CHAR(STRING_ELT(commentChar, 0)),
-            nrec, result);
+        nrec += _read_solexa_export_file(CHAR(STRING_ELT(files, i)),
+                                         CHAR(STRING_ELT(commentChar, 0)),
+                                         nrec, result);
     }
 
     _XSNAP_ELT(result, SLX_SREAD);

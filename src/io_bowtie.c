@@ -10,11 +10,11 @@ static const char *ELT_NMS[] = {
     "id", "strand", "chromosome", "position", "sread", "quality",
     "similar", "mismatch"
 };
-static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char*);
 
-int
-_read_bowtie(const char *fname, const char *commentChar,
-             SEXP ref, int offset)
+static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char *);
+
+int _read_bowtie(const char *fname, const char *commentChar, SEXP ref,
+                 int offset)
 {
     const int N_FIELDS = 8;
     gzFile *file;
@@ -23,49 +23,46 @@ _read_bowtie(const char *fname, const char *commentChar,
 
     file = _fopen(fname, "rb");
 
-	_XSnap id = VECTOR_ELT(ref, 0),
-		sread = VECTOR_ELT(ref, 4),
-		quality = VECTOR_ELT(ref, 5);
-    SEXP chromosome = VECTOR_ELT(ref, 2),
-        mismatch = VECTOR_ELT(ref, 7);
+    _XSnap id = VECTOR_ELT(ref, 0),
+        sread = VECTOR_ELT(ref, 4), quality = VECTOR_ELT(ref, 5);
+    SEXP chromosome = VECTOR_ELT(ref, 2), mismatch = VECTOR_ELT(ref, 7);
     int *strand = INTEGER(VECTOR_ELT(ref, 1)),
-      *position = INTEGER(VECTOR_ELT(ref, 3)),
-      *similar = INTEGER(VECTOR_ELT(ref, 6));
+        *position = INTEGER(VECTOR_ELT(ref, 3)),
+        *similar = INTEGER(VECTOR_ELT(ref, 6));
 
     while (gzgets(file, linebuf, LINEBUF_SIZE) != NULL) {
 
-		if (*linebuf == *commentChar) {
+        if (*linebuf == *commentChar) {
             lineno++;
             continue;
         }
         lineno++;
 
-		int n_fields = _mark_field_0(linebuf, elt, N_FIELDS);
-		if (n_fields != N_FIELDS) {
-			gzclose(file);
-			error("incorrect number of fields (%d) %s:%d",
-				  n_fields, fname, lineno);
-		}
+        int n_fields = _mark_field_0(linebuf, elt, N_FIELDS);
+        if (n_fields != N_FIELDS) {
+            gzclose(file);
+            error("incorrect number of fields (%d) %s:%d",
+                  n_fields, fname, lineno);
+        }
 
         _APPEND_XSNAP(id, elt[0]);
         strand[irec] = _char_as_strand_int(*elt[1], fname, lineno);
         SET_STRING_ELT(chromosome, irec, mkChar(elt[2]));
-        position[irec] = atoi(elt[3]) + 1; /* leftmost-aligned, 0-based */
+        position[irec] = atoi(elt[3]) + 1;	/* leftmost-aligned, 0-based */
         if (strand[irec] == 2) {
             _reverseComplement(elt[4]);
             _reverse(elt[5]);
         }
-		_APPEND_XSNAP(sread, elt[4]);
-		_APPEND_XSNAP(quality, elt[5]);
-        similar[irec] = atoi(elt[6]); /* previous: 'reserved' */
+        _APPEND_XSNAP(sread, elt[4]);
+        _APPEND_XSNAP(quality, elt[5]);
+        similar[irec] = atoi(elt[6]);	/* previous: 'reserved' */
         SET_STRING_ELT(mismatch, irec, mkChar(elt[7]));
         irec++;
     }
     return irec - offset;
 }
 
-SEXP
-_AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
+SEXP _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
 {
     SEXP s, t, nmspc = PROTECT(_get_namespace("ShortRead"));
 
@@ -98,14 +95,13 @@ _AlignedRead_Bowtie_make(SEXP ref, const char *qtype)
     return aln;
 }
 
-SEXP
-read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
+SEXP read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 {
     if (!IS_CHARACTER(files))
         Rf_error("'%s' must be '%s'", "files", "character()");
-    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1 || 
-		*CHAR(STRING_ELT(sep, 0)) != '\t')
-        Rf_error("'%s' must be '%s'", "sep", "\t"); 
+    if (!IS_CHARACTER(sep) || LENGTH(sep) != 1 ||
+        *CHAR(STRING_ELT(sep, 0)) != '\t')
+        Rf_error("'%s' must be '%s'", "sep", "\t");
     if (!IS_CHARACTER(commentChar) || LENGTH(commentChar) != 1)
         Rf_error("'%s' must be '%s'", "commentChar", "character(1)");
     if (LENGTH(STRING_ELT(commentChar, 0)) != 1)
@@ -121,14 +117,14 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     int nrec = _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
-	SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec, "BString"));  /* id */
-    SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec)); /* strand */
-    SET_VECTOR_ELT(ref, 2, NEW_STRING(nrec)); /* chromosome */
-    SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec)); /* position */
-	SET_VECTOR_ELT(ref, 4, _NEW_XSNAP(nrec, "DNAString")); /* sread */
-	SET_VECTOR_ELT(ref, 5, _NEW_XSNAP(nrec, "BString")); /* quality */
-    SET_VECTOR_ELT(ref, 6, NEW_INTEGER(nrec)); /* similar */
-    SET_VECTOR_ELT(ref, 7, NEW_STRING(nrec)); /* mismatch encoding */
+    SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec, "BString"));	/* id */
+    SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec));	/* strand */
+    SET_VECTOR_ELT(ref, 2, NEW_STRING(nrec));	/* chromosome */
+    SET_VECTOR_ELT(ref, 3, NEW_INTEGER(nrec));	/* position */
+    SET_VECTOR_ELT(ref, 4, _NEW_XSNAP(nrec, "DNAString"));	/* sread */
+    SET_VECTOR_ELT(ref, 5, _NEW_XSNAP(nrec, "BString"));	/* quality */
+    SET_VECTOR_ELT(ref, 6, NEW_INTEGER(nrec));	/* similar */
+    SET_VECTOR_ELT(ref, 7, NEW_STRING(nrec));	/* mismatch encoding */
 
     SEXP names = PROTECT(NEW_CHARACTER(N_ELTS));
     for (int i = 0; i < N_ELTS; ++i)
@@ -139,10 +135,8 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
     nrec = 0;
     for (int i = 0; i < LENGTH(files); ++i) {
         R_CheckUserInterrupt();
-        nrec += _read_bowtie(
-            CHAR(STRING_ELT(files, i)),
-            CHAR(STRING_ELT(commentChar, 0)),
-            ref, nrec);
+        nrec += _read_bowtie(CHAR(STRING_ELT(files, i)),
+                             CHAR(STRING_ELT(commentChar, 0)), ref, nrec);
     }
     _XSNAP_ELT(ref, 0);
     _XSNAP_ELT(ref, 4);
@@ -150,7 +144,7 @@ read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
 
     SEXP strand_lvls = PROTECT(_get_strand_levels());
     _as_factor_SEXP(VECTOR_ELT(ref, 1), strand_lvls);
-	UNPROTECT(1);
+    UNPROTECT(1);
 
     SEXP aln = _AlignedRead_Bowtie_make(ref, qtype);
 

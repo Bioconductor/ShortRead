@@ -10,42 +10,37 @@ unsigned char _rnaDecode(char);
  * Encode / decode XString wrappers
  */
 
-char
-_bEncode(char c)
+char _bEncode(char c)
 {
-	return c;
+    return c;
 }
 
 #define _dnaEncode DNAencode;
 #define _rnaEncode RNAencode;
 
-unsigned char
-_bDecode(char c)
+unsigned char _bDecode(char c)
 {
     return (unsigned char) c;
 }
 
-unsigned char
-_dnaDecode(char c)
+unsigned char _dnaDecode(char c)
 {
     return (unsigned char) DNAdecode(c);
 }
 
-unsigned char
-_rnaDecode(char c)
+unsigned char _rnaDecode(char c)
 {
     return (unsigned char) RNAdecode(c);
 }
 
-DECODE_FUNC
-decoder(const char* base)
+DECODE_FUNC decoder(const char *base)
 {
     DECODE_FUNC decode = NULL;
-    if (strcmp(base, "DNAString")==0) {
+    if (strcmp(base, "DNAString") == 0) {
         decode = _dnaDecode;
-    } else if (strcmp(base, "RNAString")==0) {
+    } else if (strcmp(base, "RNAString") == 0) {
         decode = _rnaDecode;
-    } else if (strcmp(base, "BString")==0) {
+    } else if (strcmp(base, "BString") == 0) {
         decode = _bDecode;
     } else {
         Rf_error("unknown class '%s'", base);
@@ -53,15 +48,14 @@ decoder(const char* base)
     return decode;
 }
 
-ENCODE_FUNC
-encoder(const char *base)
+ENCODE_FUNC encoder(const char *base)
 {
     ENCODE_FUNC encode = NULL;
-    if (strcmp(base, "DNAString")==0) {
+    if (strcmp(base, "DNAString") == 0) {
         encode = _dnaEncode;
-    } else if (strcmp(base, "RNAString")==0) {
+    } else if (strcmp(base, "RNAString") == 0) {
         encode = _rnaEncode;
-    } else if (strcmp(base, "BString")==0) {
+    } else if (strcmp(base, "BString") == 0) {
         encode = _bEncode;
     } else {
         Rf_error("unknown class '%s'", base);
@@ -69,8 +63,7 @@ encoder(const char *base)
     return encode;
 }
 
-SEXP
-_get_namespace(const char* pkg)
+SEXP _get_namespace(const char *pkg)
 {
     SEXP fun = PROTECT(findFun(install("getNamespace"), R_GlobalEnv));
     SEXP nmspc = PROTECT(NEW_CHARACTER(1));
@@ -80,8 +73,7 @@ _get_namespace(const char* pkg)
     return nmspc;
 }
 
-SEXP
-_get_strand_levels()
+SEXP _get_strand_levels()
 {
     SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
     SEXP ans = eval(findVar(install(".STRAND_LEVELS"), nmspc), nmspc);
@@ -89,8 +81,7 @@ _get_strand_levels()
     return ans;
 }
 
-int
-_char_as_strand_int(const char c, const char *fname, const int lineno)
+int _char_as_strand_int(const char c, const char *fname, const int lineno)
 {
     int strand = 0;
     if (c == '\0')
@@ -104,8 +95,7 @@ _char_as_strand_int(const char c, const char *fname, const int lineno)
             strand = 2;
             break;
         default:
-            error("invalid 'strand' field '%s', %s:%d",
-                  &c, fname, lineno);
+            error("invalid 'strand' field '%s', %s:%d", &c, fname, lineno);
             break;
         }
     }
@@ -117,8 +107,7 @@ _char_as_strand_int(const char c, const char *fname, const int lineno)
  * becuase 'from' is an object and 'with' an accessor.
  */
 
-SEXP
-_get_SEXP(SEXP from, SEXP rho, const char *with)
+SEXP _get_SEXP(SEXP from, SEXP rho, const char *with)
 {
     SEXP fun = PROTECT(findFun(install(with), rho));
     SEXP res = eval(lang2(fun, from), rho);
@@ -130,21 +119,20 @@ _get_SEXP(SEXP from, SEXP rho, const char *with)
  * populate elt with pointers into tab-delimited strings in ptr
  */
 
-int
-_mark_field_0(char *ptr, char **elt, const int n_fields)
+int _mark_field_0(char *ptr, char **elt, const int n_fields)
 {
-	elt[0] = ptr;
-	int i = 0;
-	for (; *ptr != '\0'; ++ptr)
-		if (*ptr == '\t') {
-			if (++i == n_fields)
-				break;
-			elt[i] = ptr + 1;
-			*ptr = '\0';
-		} 
-	if (*(ptr - 1) == '\n')		/* trailing newline? */
-		*(ptr - 1) = '\0';
-	return i + 1;
+    elt[0] = ptr;
+    int i = 0;
+    for (; *ptr != '\0'; ++ptr)
+        if (*ptr == '\t') {
+            if (++i == n_fields)
+                break;
+            elt[i] = ptr + 1;
+            *ptr = '\0';
+        }
+    if (*(ptr - 1) == '\n')     /* trailing newline? */
+        *(ptr - 1) = '\0';
+    return i + 1;
 }
 
 /*
@@ -157,8 +145,7 @@ _mark_field_0(char *ptr, char **elt, const int n_fields)
  * no more fields.
  */
 
-char *
-_mark_field_1(char *curr, const char *delim)
+char *_mark_field_1(char *curr, const char *delim)
 {
     char *c = curr;
     while (*c != '\0' && *c != *delim)
@@ -168,8 +155,7 @@ _mark_field_1(char *curr, const char *delim)
     return c;
 }
 
-char *
-_mark_field_n(char *curr, const char *delim)
+char *_mark_field_n(char *curr, const char *delim)
 {
     const char *d = '\0';
     while (*curr != '\0' && *curr != '\n') {
@@ -188,21 +174,20 @@ _mark_field_n(char *curr, const char *delim)
     return *d == '\0' ? '\0' : curr + 1;
 }
 
-SEXP
-_mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
+SEXP _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
 {
-    if (!IS_CHARACTER(filename)  || LENGTH(filename) !=1)
+    if (!IS_CHARACTER(filename) || LENGTH(filename) != 1)
         error("'%s' must be '%s'", "filename", "character(1)");
     if (!IS_CHARACTER(delimiters) || LENGTH(delimiters) != 1)
         error("'%s' must be '%s'", "delimiters", "character(1)");
-    if  (!IS_INTEGER(dim) || LENGTH(dim) != 2)
+    if (!IS_INTEGER(dim) || LENGTH(dim) != 2)
         error("'%s' must be '%s'", "dim", "integer(2)");
 
     SEXP ans = PROTECT(NEW_LIST(INTEGER(dim)[0]));
     int i, j;
     for (i = 0; i < INTEGER(dim)[0]; ++i)
         SET_VECTOR_ELT(ans, i, NEW_CHARACTER(INTEGER(dim)[1]));
-    
+
 #define LINEBUF_SIZE 1024
     FILE *file;
     char linebuf[LINEBUF_SIZE];
@@ -235,8 +220,7 @@ const int LINEBUF_SIZE = 20001;
 /*
  * open and check file; signal error
  */
-gzFile *
-_fopen(const char *fname, const char *mode)
+gzFile *_fopen(const char *fname, const char *mode)
 {
     gzFile *file = gzopen(fname, mode);
     if (file == NULL)
@@ -247,13 +231,12 @@ _fopen(const char *fname, const char *mode)
 /*
  * trim & check linebuf, return 0 if processing should continue
  */
-int
-_linebuf_skip_p(char *linebuf, gzFile *file,
-                const char *fname, int lineno, const char *commentChar)
+int _linebuf_skip_p(char *linebuf, gzFile * file, const char *fname, int lineno,
+                    const char *commentChar)
 {
     int nchar_in_buf;
     nchar_in_buf = _rtrim(linebuf);
-    if (nchar_in_buf >= LINEBUF_SIZE - 1) { // should never be >
+    if (nchar_in_buf >= LINEBUF_SIZE - 1) {	// should never be >
         gzclose(file);
         error("line too long %s:%d", fname, lineno);
     } else if (nchar_in_buf == 0) {
@@ -261,19 +244,19 @@ _linebuf_skip_p(char *linebuf, gzFile *file,
         error("unexpected empty line %s:%d", fname, lineno);
     }
     return *linebuf == *commentChar;
-}              
+}
 
 /*
  * Return the number of chars that remain in the buffer after we've removed
  * the right spaces ('\n', '\r', '\t', ' ', etc...)
  */
-int
-_rtrim(char *linebuf)
+int _rtrim(char *linebuf)
 {
     int i;
 
     i = strlen(linebuf) - 1;
-    while (i >= 0 && isspace(linebuf[i])) i--;
+    while (i >= 0 && isspace(linebuf[i]))
+        i--;
     linebuf[++i] = 0;
     return i;
 }
@@ -283,28 +266,25 @@ _rtrim(char *linebuf)
  * Biostrings standard is '-'. Convert a null-terminated character
  * string in-place.
  */
-void
-_solexa_to_IUPAC(char *p)
+void _solexa_to_IUPAC(char *p)
 {
     while ((p = strchr(p, '.')) != NULL)
         *p = '-';
 }
 
-void
-_reverse(char *linebuf)
+void _reverse(char *linebuf)
 {
     size_t len = strlen(linebuf);
     int i;
     char tmp;
     for (i = 0; i < floor(len / 2); ++i) {
-        tmp = linebuf[len-i-1];
-        linebuf[len-i-1] = linebuf[i];
+        tmp = linebuf[len - i - 1];
+        linebuf[len - i - 1] = linebuf[i];
         linebuf[i] = tmp;
     }
 }
 
-void
-_reverseComplement(char *linebuf)
+void _reverseComplement(char *linebuf)
 {
     static const int MAX_MAP = 256;
     static char map[256];
@@ -313,8 +293,14 @@ _reverseComplement(char *linebuf)
         init = 1;
         for (int i = 0; i < MAX_MAP; ++i)
             map[i] = (char) i;
-        map['A'] = 'T'; map['C'] = 'G'; map['G'] = 'C'; map['T'] = 'A';
-        map['a'] = 't'; map['c'] = 'g'; map['g'] = 'c'; map['t'] = 'a';
+        map['A'] = 'T';
+        map['C'] = 'G';
+        map['G'] = 'C';
+        map['T'] = 'A';
+        map['a'] = 't';
+        map['c'] = 'g';
+        map['g'] = 'c';
+        map['t'] = 'a';
     }
     _reverse(linebuf);
     for (int i = 0; i < strlen(linebuf); ++i)
@@ -324,8 +310,7 @@ _reverseComplement(char *linebuf)
 /*
  * Chenge vector class and attribute to represent factor
  */
-void
-_as_factor_SEXP(SEXP vec, SEXP lvls)
+void _as_factor_SEXP(SEXP vec, SEXP lvls)
 {
     SEXP cls = PROTECT(NEW_CHARACTER(1));
     SET_STRING_ELT(cls, 0, mkChar("factor"));
@@ -334,8 +319,7 @@ _as_factor_SEXP(SEXP vec, SEXP lvls)
     UNPROTECT(1);
 }
 
-void
-_as_factor(SEXP vec, const char **levels, const int n_lvls)
+void _as_factor(SEXP vec, const char **levels, const int n_lvls)
 {
     SEXP lvls = PROTECT(NEW_CHARACTER(n_lvls));
     int i;
@@ -351,10 +335,9 @@ _as_factor(SEXP vec, const char **levels, const int n_lvls)
  * file: an open file stream at position 0
  *
  */
-static int
-_count_lines(gzFile *file)
+static int _count_lines(gzFile * file)
 {
-    const int LINEBUF_SIZE=20001;
+    const int LINEBUF_SIZE = 20001;
     size_t bytes_read;
     char buf[LINEBUF_SIZE + 1];
     int lines = 0;
@@ -369,8 +352,7 @@ _count_lines(gzFile *file)
     return lines;
 }
 
-int
-_count_lines_sum(SEXP files)
+int _count_lines_sum(SEXP files)
 {
     SEXP nlines = count_lines(files);
     int i, nrec = 0;
@@ -379,14 +361,13 @@ _count_lines_sum(SEXP files)
     return nrec;
 }
 
-SEXP
-count_lines(SEXP files)
+SEXP count_lines(SEXP files)
 {
     int i, nfile;
     const char *filepath;
     gzFile *file;
     SEXP ans = R_NilValue;
-    
+
     if (!IS_CHARACTER(files))
         error("'files' must be character()");
 

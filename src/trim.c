@@ -5,8 +5,7 @@
 #define MIN(a,b) ((a) > (b) ? (b) : (a))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
-SEXP
-trim_tailw(SEXP quality, SEXP k, SEXP a_map, SEXP width)
+SEXP trim_tailw(SEXP quality, SEXP k, SEXP a_map, SEXP width)
 {
     int map[256];
 
@@ -48,8 +47,7 @@ trim_tailw(SEXP quality, SEXP k, SEXP a_map, SEXP width)
     return end;
 }
 
-SEXP
-trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
+SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
 {
     SEXP end;
     int map[256];
@@ -71,14 +69,13 @@ trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
 #pragma omp parallel for private(j)
 #endif
         for (i = 0; i < len; ++i) {
-            const cachedCharSeq seq =
-                get_cachedXStringSet_elt(&cache, i);
+            const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
             int n = 0;
             for (j = 0; j < seq.length; ++j) {
                 n += map[(int) seq.seq[j]];
                 if (kmax <= n)
                     break;
-                }
+            }
             endp[i] = j;
         }
     } else {
@@ -88,8 +85,7 @@ trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
 #pragma omp parallel for private(j)
 #endif
         for (i = 0; i < len; ++i) {
-            const cachedCharSeq seq =
-                get_cachedXStringSet_elt(&cache, i);
+            const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
             int n = 0;
             for (ibuf = 0; ibuf < nbuf; ++ibuf)
                 kbuf[ibuf] = 0;
@@ -109,12 +105,11 @@ trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
     return end;
 }
 
-SEXP
-trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
+SEXP trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
 {
 
     SEXP bounds;
-    const int * const map = LOGICAL(a_map);
+    const int *const map = LOGICAL(a_map);
 
     const cachedXStringSet cache = cache_XStringSet(quality);
     const int len = get_XStringSet_length(quality);
