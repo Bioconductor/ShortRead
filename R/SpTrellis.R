@@ -1,10 +1,3 @@
-setOldClass("trellis")
-
-.SpTrellis <- setRefClass("SpTrellis",
-    fields=list(
-        trellis="trellis", 
-        .debug_enabled="logical"))
-
 .SpTrellis$methods(
     initialize=function(...) 
     {
@@ -160,13 +153,13 @@ SpTrellis <- function(trellis, debug_enabled=FALSE)
 
 }
 
-setMethod("update", "SpTrellis", function(object, ...)
+setMethod(update, "SpTrellis", function(object, ...)
 {
     tr <- update(object$trellis, ...)
     SpTrellis(tr)
 })
 
-setMethod("show", "SpTrellis", function(object) {
+setMethod(show, "SpTrellis", function(object) {
     cat("class:", class(object), "\n")
     with(object, {
         cat("region:", trellis$orig.x.limits, "\n") 
@@ -175,41 +168,31 @@ setMethod("show", "SpTrellis", function(object) {
     object$display()
 })
 
-if (is.null(getGeneric("zi")))
-    setGeneric("zi", function(x, ...) standardGeneric("zi"))
-setMethod("zi", "SpTrellis", function(x, by=5)
+setMethod(zi, "SpTrellis", function(x, by=5)
 {
   x$zi(by)
   x$display()
 })
 
-if (is.null(getGeneric("zo")))
-    setGeneric("zo", function(x, ...) standardGeneric("zo"))
-setMethod("zo", "SpTrellis", function(x, by=5)
+setMethod(zo, "SpTrellis", function(x, by=5)
 {
     x$zo(by)
     x$display()
 })    
 
-if (is.null(getGeneric("right")))
-    setGeneric("right", function(x, ...) standardGeneric("right"))
-setMethod("right", "SpTrellis", function(x, by=5)
+setMethod(right, "SpTrellis", function(x, by=5)
 {
     x$right(by)
     x$display()
 })
 
-if (is.null(getGeneric("left")))
-    setGeneric("left", function(x, ...) standardGeneric("left"))
-setMethod("left", "SpTrellis", function(x, by=5)
+setMethod(left, "SpTrellis", function(x, by=5)
 {
     x$left(by)
     x$display()
 })
 
-if (is.null(getGeneric("restore")))
-    setGeneric("restore", function(x, ...) standardGeneric("restore"))
-setMethod("restore", "SpTrellis", function(x)
+setMethod(restore, "SpTrellis", function(x)
 {
     x$restore()
     x$display()

@@ -107,7 +107,7 @@ setMethod(readFastq, "character",
     })
 })
 
-setMethod(writeFastq, "ShortReadQ",
+setMethod(writeFastq, c("ShortReadQ", "character"),
     function(object, file, mode="w", full=FALSE, ...)
 {
     if (length(file) != 1)

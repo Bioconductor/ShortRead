@@ -9,7 +9,8 @@
 \alias{ShortReadQ,DNAStringSet,BStringSet,missing-method}
 \alias{ShortReadQ,missing,missing,missing-method}
 \alias{coerce,ShortReadQ,QualityScaledDNAStringSet-method}
-\alias{writeFastq,ShortReadQ-method}
+\alias{writeFastq,ShortReadQ,character-method}
+\alias{writeFastq,ShortReadQ,FastqFile-method}
 \alias{alphabetByCycle,ShortReadQ-method}
 \alias{alphabetScore,ShortReadQ-method}
 \alias{[,ShortReadQ,ANY,ANY-method}
@@ -105,11 +106,13 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       \code{\linkS4class{QualityScore}} for supported quality
       classes and their coerced counterparts.}
 
-    \item{writeFastq}{\code{signature(object = "ShortReadQ", file = "character", mode="character", ...)}:
-      Write \code{object} to \code{file} in fastq format. \code{mode}
-      defaults to \sQuote{w}. This creates a new file, or fails if
-      \code{file} already exists. Use \code{mode="a"} to append to an
-      existing file. \code{file} is expanded using \code{path.expand}.}
+    \item{writeFastq}{\code{signature(object = "ShortReadQ", file =
+	"character", ...)}:}
+    \item{writeFastq}{\code{signature(object = "ShortReadQ", file =
+	"FastqFile", ...)}:
+      Write \code{object} to \code{file} in fastq format. See
+	\code{?\link{writeFastq}} for additional arguments \code{mode}
+	and \code{full}.}
 
     \item{[}{\code{signature(x = "ShortReadQ", i = "ANY", j = "missing")}: 
       This method creates a new \code{ShortReadQ} object containing only

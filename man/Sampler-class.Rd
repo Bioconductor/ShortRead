@@ -1,21 +1,35 @@
 \name{FastqFile-class}
 \docType{class}
+% Classes
+\alias{ShortReadFile-class}
 \alias{FastqFile-class}
+\alias{FastqFileReader-class}
+\alias{FastqSampler-class}
+\alias{FastqStreamer-class}
+\alias{FastqFileList-class}
+
+% ShortReadFile / FastqFile / FastqFileList
+\alias{FastqFile}
+\alias{FastqFileList}
+\alias{open.ShortReadFile}
+\alias{close.ShortReadFile}
+\alias{readFastq,FastqFile-method}
 
 % FastqSampler
-\alias{FastqSampler-class}
 \alias{FastqSampler}
 \alias{yield}
 \alias{yield,FastqSampler-method}
 
 % FastqStreamer
-\alias{FastqStreamer-class}
 \alias{FastqStreamer}
 \alias{yield,FastqStreamer-method}
 
 \title{Sampling and streaming records from fastq files}
 
 \description{
+
+  \code{FastqFile} represents a path and connection to a fastq
+  file. \code{FastqFileList} is a list of such connections.
 
   \code{FastqSampler} draws a subsample from a fastq file. \code{yield}
   is the method used to extract the sample from the \code{FastqSampler}
@@ -28,6 +42,14 @@
 }
 
 \usage{
+## FastqFile and FastqFileList
+FastqFile(con, ...)
+FastqFileList(...)
+\S3method{open}{ShortReadFile}(con, ...)
+\S3method{close}{ShortReadFile}(con, ...)
+\S4method{readFastq}{FastqFile}(dirPath, pattern=character(), ...)
+
+## FastqSampler and FastqStreamer
 FastqSampler(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
 FastqStreamer(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
 yield(x, ...)
@@ -35,7 +57,8 @@ yield(x, ...)
 
 \arguments{
 
-  \item{con}{A character string naming a connection, or a connection.}
+  \item{con, dirPath}{A character string naming a connection, or (for
+    \code{con}) a connection.}
 
   \item{n}{The size of the sample (number of records) to be drawn.}
 
@@ -48,7 +71,11 @@ yield(x, ...)
   \item{x}{An instance from the \code{FastqSampler} or
   \code{FastqStreamer} class.}
 
-  \item{...}{Additional arguments; currently none.}
+  \item{...}{Additional arguments. For \code{FastqFileList}, this can
+    either be a single character vector of paths to fastq files, or
+    several instances of \code{FastqFile} objects.}
+
+  \item{pattern}{Ignored.}
 
 }
 
@@ -57,6 +84,10 @@ yield(x, ...)
   Available classes include:
 
   \describe{
+
+    \item{\code{FastqFile}}{A file path and connection to a fastq file.}
+
+    \item{\code{FastqFileList}}{A list of \code{FastqFile} instances.}
 
     \item{\code{FastqSampler}}{Uniformly sample records from a fastq
       file.}
@@ -73,6 +104,13 @@ yield(x, ...)
 
   \describe{
 
+    \item{\code{readFastq,FastqFile-method}:}{see also
+      \code{?\link{readFastq}}.}
+
+    \item{\code{writeFastq,ShortReadQ,FastqFile-method}:}{see also
+      \code{?\link{writeFastq}}, 
+      \code{?"writeFastq,ShortReadQ,FastqFile-method"}.}
+
     \item{\code{yield}:}{Draw a single sample from the
       instance. Operationally this requires that the underlying data
       (e.g., file) represented by the \code{Sampler} instance be
@@ -83,13 +121,17 @@ yield(x, ...)
 }
 
 \seealso{
-  \code{\link{FastqQuality}} for instance construction.
-  \code{\link{yield}} for generic and method description.
+
+  \code{\link{readFastq}}, \code{\link{writeFastq}}, \code{\link{yield}}.
+
 }
 
 \examples{
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
+
+f <- FastqFile(fl)
+rfq <- readFastq(f)
 
 f <- FastqSampler(fl, 50)
 yield(f)    # sample of size n=50
@@ -103,14 +145,16 @@ yield(f)    # records 51 to 100
 f <- FastqStreamer(fl, 50)
 while (length(fq <- yield(f))) {
     ## do work here
+    print(length(fq))
 }
 
 ## Internal fields, methods, and help; for developers
-ShortRead:::.FastqSampler$methods()
-ShortRead:::.FastqSampler$fields()
-ShortRead:::.FastqSampler$help("get")
+ShortRead:::.FastqSampler_g$methods()
+ShortRead:::.FastqSampler_g$fields()
+ShortRead:::.FastqSampler_g$help("get")
 ## Internal -- sampled records as list of raw();
 ##   yield() knows how to translate these to ShortReadQ
+f <- FastqStreamer(fl, 50)
 f$status()
 recs <- f$get()
 str(recs[1:5])

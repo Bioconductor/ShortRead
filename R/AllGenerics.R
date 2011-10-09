@@ -89,7 +89,7 @@ setGeneric("readFastq", function(dirPath, pattern=character(0), ...)
 
 setGeneric("writeFastq",
            function(object, file, mode="w", full=FALSE, ...)
-           standardGeneric("writeFastq"), signature="object")
+           standardGeneric("writeFastq"), signature=c("object", "file"))
 
 setGeneric("readFasta",
            function(dirPath, pattern=character(0), ...,
@@ -222,3 +222,54 @@ setGeneric("RocheSet", function(path, ...)
 
 setGeneric("runNames", function(object, ...)
            standardGeneric("runNames"))
+
+## Snapshot
+
+setGeneric("Snapshot",
+           function(files, range, ...) standardGeneric("Snapshot"))
+
+setGeneric("SnapshotFunctionList",
+           function(...) standardGeneric("SnapshotFunctionList"))
+
+setGeneric("files", function(x, ...) standardGeneric("files"))
+
+setGeneric("vrange", function(x, ...) standardGeneric("vrange"))
+
+setGeneric("functions", function(x, ...) standardGeneric("functions"))
+
+setGeneric("annTrack", function(x, ...) standardGeneric("annTrack"))
+
+setGeneric("ignore.strand", function(x, ...) standardGeneric("ignore.strand"))
+
+setGeneric("fac", function(x, ...) standardGeneric("fac"))
+
+setGeneric("getTrellis", function(x, ...) standardGeneric("getTrellis"))
+
+setGeneric("togglez", function(x, ...) standardGeneric("togglez"))
+
+setGeneric("togglep", function(x, ...) standardGeneric("togglep"))
+
+setGeneric("togglefun", function(x, name, ...) standardGeneric("togglefun"))
+
+setGeneric("zoom", function(x, range, ...) standardGeneric("zoom"))
+
+setGeneric("pan", function(x, ...) standardGeneric("pan"))
+
+setGeneric("view", function(x, ...) standardGeneric("view"))
+
+setGeneric("zi", function(x, ...) standardGeneric("zi"))
+
+setGeneric("zo", function(x, ...) standardGeneric("zo"))
+
+setGeneric("right", function(x, ...) standardGeneric("right"))
+
+setGeneric("left", function(x, ...) standardGeneric("left"))
+
+setGeneric("restore", function(x, ...) standardGeneric("restore"))
+
+## ShortReadFile
+
+setGeneric(".ShortReadFile", function(g, path, ...)
+           standardGeneric(".ShortReadFile"), signature="path")
+
+setGeneric("yield", function(x, ...) standardGeneric("yield"))

@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: Classes and methods for high-throughput short-read sequencing data.
-Version: 1.11.41
+Version: 1.11.42
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
 Description: Base classes, functions, and methods for representation of
@@ -9,7 +9,7 @@ Description: Base classes, functions, and methods for representation of
 License: Artistic-2.0
 LazyLoad: yes
 Depends: methods, IRanges (>= 1.11.2), GenomicRanges, Biostrings (>= 2.19.0),
-         lattice, Rsamtools (>= 1.5.53), latticeExtra
+         lattice, Rsamtools (>= 1.5.75), latticeExtra
 Imports: IRanges, GenomicRanges, Biostrings, Biobase, hwriter, Rsamtools,
          zlibbioc, lattice
 Enhances: Rmpi, multicore
@@ -17,56 +17,3 @@ Suggests: biomaRt, RUnit, GenomicFeatures, yeastNagalakshmi
 LinkingTo: IRanges, Biostrings
 biocViews: DataImport, Sequencing, HighThroughputSequencing, 
            QualityControl
-Collate: AllClasses.R
-         AllGenerics.R
-         AllUtilities.R
-         GappedReads-class.R
-         methods-.QA.R
-         methods-.ShortReadBase.R
-         methods-AlignedDataFrame.R
-         methods-AlignedRead.R
-         methods-BAMQA.R
-         methods-BowtieQA.R
-         methods-ExperimentPath.R
-         methods-FastqQA.R
-         methods-Intensity.R
-         methods-MAQMapQA.R
-         methods-Misc.R
-         methods-QualityScore.R
-         methods-RochePath.R
-         methods-RocheSet.R
-         methods-RtaIntensity.R
-         methods-SRError.R
-         methods-SRFilter.R
-         methods-SRFilterResult.R
-         methods-SRList.R
-         methods-SRSet.R
-         methods-SRVector.R
-         methods-Sampler.R
-         methods-ShortRead.R
-         methods-ShortReadQ.R
-         methods-SolexaExportQA.R
-         methods-SolexaIntensity.R
-         methods-SolexaPath.R
-         methods-SolexaRealignQA.R
-         methods-SolexaSet.R
-         pileup.R
-         qa.R
-         qa_utilities.R
-         readAligned.R
-         readBaseQuality.R
-         readBfaToc.R
-         readIntensities.R
-         readPrb.R
-         readQseq.R
-         readXStringColumns.R
-         renew.R
-         report.R
-         SpTrellis.R
-	 SnapshotFunction-helpers.R
-         SnapshotFunction.R
-         Snapshot.R
- 	 spViewPerFeature.R
-         srapply.R
-         test_ShortRead_package.R
-

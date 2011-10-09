@@ -291,3 +291,121 @@ setClass("MAQMapQA", contains=".QA")
 setClass("BowtieQA", contains=".QA")
 
 setClass("BAMQA", contains=".QA")
+
+## Snapshot
+
+setClass("SnapshotFunction",
+    representation=representation(
+        reader="function", 
+        viewer="function", 
+        limits="integer"))
+
+setClass("SnapshotFunctionList", "SimpleList",
+         prototype=prototype(elementType="SnapshotFunction"))
+
+setOldClass("trellis")
+
+.SpTrellis <-
+    setRefClass("SpTrellis",
+                fields=list(trellis="trellis", .debug_enabled="logical"))
+
+.Snapshot <-
+    setRefClass("Snapshot",
+      fields=list(
+        .debug="function", .auto_display="logical",
+        ## ranges
+        .range="GRanges", .orig.range="GRanges", .zin="logical", 
+        .pright="logical",
+        ## data
+        .data="data.frame", .data_dirty="logical",
+        .initial_functions="SnapshotFunctionList",
+        .current_function="character", .using_initial_functions="logical",
+        ## more-or-less public
+        ## annotation track 
+        files="BamFileList", functions="SnapshotFunctionList",
+        view="SpTrellis", annTrack="ANY", ignore.strand="logical",
+        fac="character"))
+
+## ShortReadFile -- methods elsewhere
+
+.ShortReadFile_g <- setRefClass("ShortReadFile",
+    fields=list(con="ANY", path="character"),
+    methods=list(
+      finalize = function() {
+          ## isOpen fails after(close(con))...
+          tryCatch(if (isOpen(con)) close(con), error=function(...) {})
+          .self
+      },
+      msg = function(txt) {
+          "display 'txt' with status information as a message()"
+          s <- status()
+          message(txt, " ", paste(names(s), s, sep="=", collapse=" "))
+      },
+      status=function() {},
+      show = function() {
+          cat("class:", class(.self), "\n")
+          cat(Rsamtools:::.ppath("path", path))
+          cat("isOpen:", isOpen(.self), "\n")
+      }))
+
+.FastqFile_g <-
+    setRefClass("FastqFile", contains="ShortReadFile")
+
+.FastqFileReader_g <- setRefClass("FastqFileReader",
+                                  contains="ShortReadFile",
+    fields=list(
+      reader = "function", readerBlockSize = "integer",
+      recParser = "function",
+      n = "integer", saved_n = "integer", tot_n = "integer",
+      records = "list", buf="raw", verbose = "logical"),
+    methods=list(
+      flush = function() {
+          "append remaining buffer to output records"
+          if (verbose) msg("FastqFileReader$flush")
+          if (0 != length(buf)) .add(raw(), TRUE)
+          .self
+      },
+      reset = function() {
+          "reopen the connection and reset sample"
+          if (verbose) msg("FastqFileReader$reset")
+          if (isOpen(con)) {
+              if (verbose) msg("FastqFileReader$reset re-open")
+              s <- summary(con)
+              class <- s$class
+              desc <- s$description
+              close(con)
+              con <<- do.call(s$class, list(desc, "rb"))
+        } else {
+            open(con, "rb")
+        }
+        buf <<- raw()
+        records <<- list()
+        saved_n <<- tot_n <<- 0L
+        .self
+      },
+      get = function(reset=FALSE) {
+          "current records after flush'ing; optionally invoke .reset()"
+          flush()
+          result <- records
+          if (reset) reset()
+          result
+      },
+      status = function() {
+          "report status of FastqFileReader"
+          c(n=n, saved_n=saved_n, tot_n=tot_n, .buffer_len=length(buf))
+      },
+      show = function() {
+          cat("class:", class(.self), "\n")
+          cat("file:", basename(summary(.self$con)$description), "\n")
+          s <- .self$status()
+          cat("status:", paste(names(s), s, sep="=", collapse=" "), "\n")
+      }))
+
+.FastqStreamer_g <-
+    setRefClass("FastqStreamer", contains="FastqFileReader")
+
+.FastqSampler_g <-
+    setRefClass("FastqSampler", contains="FastqFileReader")
+
+setClass("FastqFileList", contains="RsamtoolsFileList",
+    prototype=prototype(elementType="FastqFile"))

@@ -69,13 +69,16 @@ SpTrellis(trellis, debug_enabled=FALSE)
 \seealso{\code{\link{Snapshot}}}
 
 \examples{
-data(yeastChrI) # data frame
 col <- c("#66C2A5", "#FC8D62")
-cv <- xyplot(data ~ pos, data=yeastChrI, group=group, type="s",
+x = numeric(1000)
+x[sample(1000, 100)] <- abs(rnorm(100))
+df <- data.frame(x = c(x, -x), pos = seq(1, 1e5, length.out=1000),
+                 group = rep(c("positive", "negative"), each=1000))
+cv <- xyplot(x ~ pos, df, group=group, type="s",
              col=col, main="yeast chrI:1 - 2e5",
              ylab="Coverage", xlab="Coordinate",
              scales=list(y=list(tck=c(1,0)),
-                             x=list(rot=45, tck=c(1,0), tick.number=20)),
+                         x=list(rot=45, tck=c(1,0), tick.number=20)),
              panel=function(...) {
                      panel.xyplot(...)
                      panel.grid(h=-1, v=20)

@@ -1,9 +1,3 @@
-setClass("SnapshotFunction",
-    representation=representation(
-        reader="function", 
-        viewer="function", 
-        limits="integer"))
-
 SnapshotFunction <-
     function(reader, viewer, limits, ...)
 {
@@ -35,13 +29,7 @@ setMethod(show, "SnapshotFunction", function(object)
 
 ## SnapshotFunctionList
 
-setClass("SnapshotFunctionList", "SimpleList",
-         prototype=prototype(elementType="SnapshotFunction"))
-
-setGeneric("SnapshotFunctionList",
-           function(...) standardGeneric("SnapshotFunctionList"))
-
-setMethod("SnapshotFunctionList", "ANY",
+setMethod(SnapshotFunctionList, "ANY",
     function(...)
 {
     if (nargs())

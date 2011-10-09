@@ -10,6 +10,8 @@ NEW FEATURES
 
     o FastqStreamer to iterate over a fastq file
 
+    o FastqFile, FastqFileList to represent fastq files
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o writeFastq has argument full, default value FALSE, disabling

@@ -22,7 +22,6 @@
 }
 \usage{
 readFastq(dirPath, pattern=character(0), ...)
-
 \S4method{readFastq}{character}(dirPath, pattern=character(0), ..., withIds=TRUE)
 
 writeFastq(object, file, mode="w", full=FALSE, ...)
@@ -143,7 +142,8 @@ writeFastq(object, file, mode="w", full=FALSE, ...)
 \author{Martin Morgan}
 
 \examples{
-showMethods("readFastq")
+showMethods(readFastq)
+showMethods(writeFastq)
 
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")

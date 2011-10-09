@@ -4,6 +4,7 @@
 \docType{class}
 
 \alias{Snapshot-class}
+\alias{trellis-class}
 % Constructor:
 \alias{Snapshot}
 \alias{Snapshot,character,GRanges-method}

@@ -1,29 +1,3 @@
-
-.Snapshot <- setRefClass("Snapshot",
-    fields=list(
-      .debug="function", 
-      .auto_display="logical",
-      ## ranges
-      .range="GRanges",
-      .orig.range="GRanges",
-      .zin="logical", 
-      .pright="logical",
-      ## data
-      .data="data.frame",
-      .data_dirty="logical",
-      .initial_functions="SnapshotFunctionList",
-      .current_function="character",
-      .using_initial_functions="logical",
-      ## more-or-less public
-      ## annotation track 
-      annTrack="ANY",
-      functions="SnapshotFunctionList",
-      ignore.strand="logical",
-      files="BamFileList",
-      fac="character",
-      view="SpTrellis"))
-
-
 .Snapshot$methods(
     .message = function(fmt, ...) 
     {
@@ -401,9 +375,6 @@
 
 ## Constructors
 
-setGeneric("Snapshot",
-           function(files, range, ...) standardGeneric("Snapshot"))
-
 setMethod(Snapshot, c("character", "GRanges"),
     function(files, range, ...)
 {
@@ -436,55 +407,44 @@ setMethod(Snapshot, c("character", "missing"),
 })
 
 ## accessors
-if (is.null(getGeneric("files")))
-    setGeneric("files", function(x, ...) standardGeneric("files"))
-setMethod("files", "Snapshot", function(x)  x$files)
 
+setMethod(files, "Snapshot", function(x)  x$files)
 
-setGeneric("vrange", function(x, ...) standardGeneric("vrange"))
-setMethod("vrange", "Snapshot", function(x) x$.range )
+setMethod(vrange, "Snapshot", function(x) x$.range )
 
-setGeneric("functions", function(x, ...) standardGeneric("functions"))
-setMethod("functions", "Snapshot", function(x) x$functions)
+setMethod(functions, "Snapshot", function(x) x$functions)
 
-setGeneric("annTrack", function(x, ...) standardGeneric("annTrack"))
-setMethod("annTrack", "Snapshot", function(x) x$annTrack)
+setMethod(annTrack, "Snapshot", function(x) x$annTrack)
 
-setGeneric("ignore.strand", function(x, ...) standardGeneric("ignore.strand"))
-setMethod("ignore.strand", "Snapshot", function(x) x$ignore.strand)
+setMethod(ignore.strand, "Snapshot", function(x) x$ignore.strand)
 
-setGeneric("fac", function(x, ...) standardGeneric("fac"))
-setMethod("fac", "Snapshot", function(x) x$fac)
+setMethod(fac, "Snapshot", function(x) x$fac)
 
-setGeneric("getTrellis", function(x, ...) standardGeneric("getTrellis"))
-setMethod("getTrellis", "Snapshot", function(x) x$view$trellis)
+setMethod(getTrellis, "Snapshot", function(x) x$view$trellis)
 
 ## private functions
+
 .getData <- function(x) x$.data
+
 .currentFunction <- function(x) x$.current_function
 
-if (is.null(getGeneric("view")))
-  setGeneric("view", function(x, ...) standardGeneric("view"))
-
-setMethod("view", "Snapshot", function(x) x$view)
+setMethod(view, "Snapshot", function(x) x$view)
 
 ## interface
-setGeneric("togglez", function(x, ...) standardGeneric("togglez"))
-setMethod("togglez", "Snapshot", function(x)
+
+setMethod(togglez, "Snapshot", function(x)
 {
     x$toggle(zoom=TRUE)
     invisible(x)
 })
 
-setGeneric("togglep", function(x, ...) standardGeneric("togglep"))
-setMethod("togglep", "Snapshot",  function(x)
+setMethod(togglep, "Snapshot",  function(x)
 {
     x$toggle(pan=TRUE)
     invisible(x)
 })
 
-setGeneric("togglefun", function(x, name, ...) standardGeneric("togglefun"))
-setMethod("togglefun", "Snapshot",  function(x, name)
+setMethod(togglefun, "Snapshot",  function(x, name)
 {
     if (!missing(name)) {
         x$toggle(currentFunction=name)
@@ -492,8 +452,7 @@ setMethod("togglefun", "Snapshot",  function(x, name)
     }
 })
 
-setGeneric("zoom", function(x, range, ...) standardGeneric("zoom"))
-setMethod("zoom", "Snapshot",  function(x, range)
+setMethod(zoom, "Snapshot",  function(x, range)
 {
     if (!missing(range))
         ## FIXME: must be able to tell whether .currentFunction is appropriate
@@ -504,8 +463,7 @@ setMethod("zoom", "Snapshot",  function(x, range)
     ## FIXME: invisible return TRUE on success, FALSE otherwise
 })
 
-setGeneric("pan", function(x, ...) standardGeneric("pan"))
-setMethod("pan", "Snapshot", function(x)
+setMethod(pan, "Snapshot", function(x)
 {
     x$pan()
     x$display()
