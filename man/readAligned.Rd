@@ -330,14 +330,8 @@ readAligned(dirPath, pattern=character(0), ...)
 
       Parse BAM files produced by samtools and other third party
       programs.  This method includes the argument
-      \code{param=ScanBamParam()}. The \code{param} argument can
-	  be a single ScanBamParam object or a list of ScanBamParam
-	  objects. The number of ScanBamParam objects supplied in the
-      \code{param} list argument must match the number of files 
-	  identified in \code{dirPath}. If a single ScanBamParam is 
-	  provided but there are multiple files in \code{dirPath} the 
-	  ScanBamParam object will be recycled and applied to all files.  
-	  The \code{which} and \code{flag}
+      \code{param=ScanBamParam()}. The \code{ScanBamParam} object is
+      recycled for all files.  The \code{which} and \code{flag}
       arguments to \code{ScanBamParam()} can be used to influence which
       reads in the BAM file are parsed; see \code{\link{ScanBamParam}}.
       The following values override user settings (issuing a warning if

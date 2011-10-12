@@ -289,18 +289,16 @@
     .Call(.read_soap, files, qualityType, sep, commentChar)
 }
 
-.readAligned_bamWhat <- function()
+.readAligned_bamWhat <- function(withQname=TRUE)
 {
-    c("qname", "flag", "rname", "strand", "pos", "mapq", "seq",
-      "qual")
+    c(if (withQname) "qname" else NULL,
+      "flag", "rname", "strand", "pos", "mapq", "seq", "qual")
 }
 
 .readAligned_bam <-
     function(dirPath, pattern=character(0), ...,
-             param=list(ScanBamParam(
-               simpleCigar=TRUE,
-               reverseComplement=TRUE,
-               what=.readAligned_bamWhat())))
+             param=ScanBamParam(simpleCigar=TRUE,
+               reverseComplement=TRUE, what=.readAligned_bamWhat()))
 {
     files <-
         if (!all(grepl("^(ftp|http)://", dirPath)))
@@ -314,71 +312,56 @@
             }
             dirPath
         }
-    if (!missing(param)) {
-        ## make param into a list
-        if (is.list(param) && !all(sapply(param, is, "ScanBamParam"))) {
-            msg <-  "all elements of 'param' must be ScanBamParam objects"
-            .throw(SRError("UserArgumentMismatch",msg))
-        }
-        else  if (!is.list(param) && !is(param, "ScanBamParam")) {
-            msg <-  "'param' must be a ScanBamParm object."
-            .throw(SRError("UserArgumentMismatch",msg))
-        }
-        else if (!is.list(param) && is(param, "ScanBamParam")) {
-            param <- list(param)
-        }
 
-        if (length(param) > 1L && (length(param) != length(files))) {
-            msg <-  paste("length(param) != length(files);",
-                          "if more than one param is supplied there must",
-                          "be one for each file.")
-            .throw(SRError("UserArgumentMismatch",msg))
-        }
-        ## FIXME: currently we only deal with cigars without indels
-        if (any(sapply(param, bamSimpleCigar) != TRUE)) {
-            msg <- paste("using 'TRUE' for 'bamSimpleCigar(param)'",
-                "(skipping reads with I, D, H, S, or P in 'cigar')")
-            .throw(SRWarn("UserArgumentMismatch", msg))
-        }
-        if (any(sapply(param, bamReverseComplement) != TRUE)) {
-            msg <- "using 'TRUE' for 'bamReverseComplement(param)'"
-            .throw(SRWarn("UserArgumentMismatch", msg))
-        }
-        tst <- function(x, what) setequal(bamWhat(x), what)
-        if (!all(sapply(param, tst, .readAligned_bamWhat()))) {
-            msg <- sprintf("using '%s' for 'bamWhat(param)'",
-                           paste(.readAligned_bamWhat(),
-                                 collapse="' '"))
-            .throw(SRWarn("UserArgumentMismatch", msg))
-        }
-        param <-
-            lapply(param, initialize, simpleCigar=TRUE,
-                   reverseComplement=TRUE,
-                   what=.readAligned_bamWhat())
+    if (!is(param, "ScanBamParam")) {
+        msg <-  "'param' must be a ScanBamParam object."
+        .throw(SRError("UserArgumentMismatch",msg))
+    }
+    ## FIXME: currently we only deal with cigars without indels
+    if (bamSimpleCigar(param) != TRUE) {
+        msg <- paste("using 'TRUE' for 'bamSimpleCigar(param)'",
+                     "(skipping reads with I, D, H, S, or P in 'cigar')")
+        .throw(SRWarn("UserArgumentMismatch", msg))
+        bamSimpleCigar(param) <- TRUE
+    }
+    if (bamReverseComplement(param) != TRUE) {
+        msg <- "using 'TRUE' for 'bamReverseComplement(param)'"
+        .throw(SRWarn("UserArgumentMismatch", msg))
+        bamReverseComplement(param) <- TRUE
+    }
+    what <- .readAligned_bamWhat("qname" %in% bamWhat(param))
+    if (!(length(bamWhat(param)) && all(bamWhat(param) %in% what))) {
+        msg <- sprintf("using at least '%s' for 'bamWhat(param)'",
+                       paste(required, collapse="' '"))
+        .throw(SRWarn("UserArgumentMismatch", msg))
+        bamWhat(param) <- union(bamWhat(param), what)
     }
 
     ## handle multiple files and params
-    result <- mapply(scanBam, file=files, param=param,
-        ..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
-    ulist <- function(X, ...)
-        unlist(lapply(X, lapply, "[[", ...), use.names=FALSE)
+    result <- mapply(scanBam, files, MoreArgs=list(param=param),
+                     ..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
+    ulist <- function(X, ..., recursive=TRUE)
+        unlist(lapply(X, lapply, "[[", ...),
+               recursive=recursive, use.names=FALSE)
     cxslist <- function(X, ...)
         do.call(c, ulist(X, ...))
     chromosome <- local({
-        X <- unlist(lapply(result, lapply, "[[", "rname"),
-                    recursive=FALSE, use.names=FALSE)
+        X <- ulist(result, "rname", recursive=FALSE)
         values <- do.call(c, lapply(X, as.character))
         factor(values, levels=unique(unlist(lapply(X, levels))))
     })
     strand <- local({
-        X <- unlist(lapply(result, lapply, "[[", "strand"),
-                    recursive=FALSE, use.names=FALSE)
+        X <- ulist(result, "strand", recursive=FALSE)
         values <- do.call(c, lapply(X, as.character))
         strand(values)
     })
+    id <- local({
+        X <- ulist(result, "qname")
+        if (is.null(X)) BStringSet(character(length(strand)))
+        else BStringSet(X)
+    })
 
-    AlignedRead(sread=cxslist(result, "seq"),
-                id=BStringSet(ulist(result, "qname")),
+    AlignedRead(sread=cxslist(result, "seq"), id=id,
                 quality=FastqQuality(as(cxslist(result, "qual"),
                   "BStringSet")),
                 chromosome=chromosome, strand=strand,

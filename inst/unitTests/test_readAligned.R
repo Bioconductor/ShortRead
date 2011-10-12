@@ -50,6 +50,15 @@ test_readAligned_bam <- function()
     checkIdentical(exp, rowSums(consensusMatrix(quality(quality(aln)))))
 }
 
+test_readAligned_bam_no_qname <- function()
+{
+    .readAligned_bamWhat <- ShortRead:::.readAligned_bamWhat
+    param <- ScanBamParam(simpleCigar=TRUE, reverseComplement=TRUE,
+                          what=.readAligned_bamWhat(FALSE))
+    aln <- .readAligned_bam(fl, param=param)
+    checkIdentical(0L, unique(width(id(aln))))
+}
+
 .checkEquals0 <- function(aln0, aln1)
 {
     checkIdentical(class(aln0), class(aln1))
