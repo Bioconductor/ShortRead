@@ -165,7 +165,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class ".Solexa", distance 2.
       \code{pattern=".*_export.txt"} as the pattern for discovering
       Solexa \code{export}-formatted fileds, returning a
       \code{\linkS4class{SolexaExportQA}} object summarizing quality
-      assessment. If \code{Rmpi} or \code{multicore} has been initiated,
+      assessment. If \code{Rmpi} or \code{parallel} has been initiated,
       quality assessment calculations are distributed across available
       nodes or cores (one node per export file.)}
 
@@ -211,7 +211,8 @@ report(qa(sp))
 }
 \dontrun{
 nfiles <- length(list.files(analysisPath(sp), "s_[1-8]_export.txt"))
-library(multicore)
+library(parallel)
+options(srapply_fapply="parallel")
 report(qa(sp))
 }
 }

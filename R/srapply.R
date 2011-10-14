@@ -13,7 +13,15 @@
             })
         }
     }
-    if (is.loaded("mpi_comm_size", PACKAGE="Rmpi")) {
+    opt <- getOption("srapply_fapply")
+    if (is.null(opt) || !opt %in% c("Rmpi", "parallel")) {
+        function(X, FUN, ..., verbose=FALSE) {
+            CFUN <- catchErrs(FUN)
+            if (verbose)
+                message("using lapply")
+            lapply(X, CFUN, ..., verbose=verbose)
+        }
+    } else if ("Rmpi" == opt) {
         ## 'get()' are to quieten R CMD check, and for no other reason
         commSize <- get("mpi.comm.size", mode="function")
         remoteExec <- get("mpi.remote.exec", mode="function")
@@ -41,20 +49,13 @@
                 parLapply(X, CFUN, ..., verbose=verbose)
             }
         }
-    } else if (is.loaded("mc_fork", PACKAGE="multicore")) {
-        mcLapply <- get('mclapply', envir=getNamespace('multicore'))
+    } else if ("parallel" == opt) {
+        mcLapply <- get('mclapply', envir=getNamespace('parallel'))
         function(X, FUN, ..., verbose=FALSE) {
             CFUN <- catchErrs(FUN)
             if (verbose)
                 message("using 'mclapply'")
             mcLapply(X, CFUN, ..., verbose=verbose)
-        }
-    } else {
-        function(X, FUN, ..., verbose=FALSE) {
-            CFUN <- catchErrs(FUN)
-            if (verbose)
-                message("using lapply")
-            lapply(X, CFUN, ..., verbose=verbose)
         }
     }
 }
@@ -68,7 +69,7 @@
                          sep=": ", collapse="\n  ")
             type <- 
                 if (is.loaded("mpi_comm_size", PACKAGE="Rmpi") |
-                    is.loaded("mc_fork", PACKAGE="multicore"))
+                    is.loaded("mc_fork", PACKAGE="parallel"))
                 {
                     "RemoteWarning"
                 } else "UnspecifiedWarning"

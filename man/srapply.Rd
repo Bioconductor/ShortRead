@@ -4,7 +4,7 @@
 \description{
 
   This \code{lapply} like function evaluates locally or, if \pkg{Rmpi}
-  or \pkg{multicore} is loaded (and \pkg{Rmpi} workers spawned), across
+  or \pkg{parallel} is loaded (and \pkg{Rmpi} workers spawned), across
   nodes in a cluster. Errors in evaluation of \code{FUN} generate
   warnings; results are trimmed to exclude results where the error
   occurs.
@@ -54,11 +54,11 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(),
 \details{
 
     The default value for \code{fapply} is available with
-    \code{ShortRead:::.fapply()}. It tests first whether \pkg{Rmpi} is
-    loaded and workers spawned, and if not then whether \pkg{multicore}
-    is laoded.
+    \code{ShortRead:::.fapply()}. It tests the
+    \code{getOption("srapply_fapply")} for value \dQuote{Rmpi} or
+    \dQuote{parallel}.
 
-	If \pkg{Rmpi} is laoded, \code{fapply} ensures that \pkg{ShortRead}
+    If \pkg{Rmpi} is indicated, \code{fapply} ensures that \pkg{ShortRead}
     is \code{require}d on all workers, and then invokes
     \code{mpi.parLapply} with arguments \code{X}, \code{FUN},
     \code{...}, and \code{verbose}. The function \code{FUN} is wrapped
@@ -67,8 +67,8 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(),
     evaluates \code{FUN} so that errors are reported as with remote
     evaluation.
 
-	If \pkg{multicore} is loaded (and \pkg{Rmpi} not), \code{fapply}
-	invokes \code{mclapply} with arguments as for \code{mpi.parLapply}.
+    If \pkg{parallel} is indicated, \code{fapply} invokes
+    \code{mclapply} with arguments as for \code{mpi.parLapply}.
 
     Custom \code{reduce} functions might be written as
     \code{reduce=function(lst) unlist(lst, use.names=TRUE)}.

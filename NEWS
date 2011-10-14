@@ -17,6 +17,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o writeFastq has argument full, default value FALSE, disabling
     printing of identifier a second time in '+' line
 
+    o srapply requires that options(srapply_fapply="parallel") or
+    options(srapply_fapply="Rmpi") to enable parallel processing via
+    fapply
+
 BUG FIXES
 
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand

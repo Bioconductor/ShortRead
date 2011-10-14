@@ -44,7 +44,7 @@ qa(dirPath, ...)
 
       \item{\code{fapply}, \code{reduce}:}{Influence how evaluation
         occurs when this function is run with the \pkg{Rmpi} or
-        \pkg{multicore} packages; see \code{\link{srapply}}.}
+        \pkg{parallel} packages; see \code{\link{srapply}}.}
 
       \item{\code{Lpattern}, \code{Rpattern}:}{A character vector or
         XString object to be matched to the left end of a sequence. If
