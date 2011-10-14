@@ -332,7 +332,7 @@
     what <- .readAligned_bamWhat("qname" %in% bamWhat(param))
     if (!(length(bamWhat(param)) && all(bamWhat(param) %in% what))) {
         msg <- sprintf("using at least '%s' for 'bamWhat(param)'",
-                       paste(required, collapse="' '"))
+                       paste(what, collapse="' '"))
         .throw(SRWarn("UserArgumentMismatch", msg))
         bamWhat(param) <- union(bamWhat(param), what)
     }
