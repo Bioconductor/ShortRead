@@ -7,7 +7,9 @@
         if (identical(0L, length(aln))) 
             numeric(wd)
         else
-            as.numeric(coverage(aln, shift=-start(rng)+1, width=wd))
+            as.numeric(unlist(coverage(aln, shift=-start(rng)+1,
+                                       width=wd),
+                              use.names=FALSE))
     }
     lst <- lapply(as.list(files(x)), function(fl, param) {
         aln <- readBamGappedAlignments(fl, param=param)
