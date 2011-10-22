@@ -404,8 +404,6 @@
 
     xyplot(Score ~ Cycle | Lane, df,
            panel=function(x, y, ..., subscripts) {
-               lbl <- as.character(unique(df$lane[subscripts]))
-               ltext(1, ymin, lbl, adj=c(0, 0))
                z <- df$Count[subscripts]
                mean <- calc_means(x, y, z)
                qtiles <- calc_quantile(x, y, z)
@@ -419,6 +417,8 @@
                       type="l", col=pal[[2]], lwd=1)
                llines(sxi, sapply(qtiles, "[[", 3),
                       type="l", col=pal[[2]], lwd=1, lty=3)
+               lbl <- as.character(unique(df$lane[subscripts]))
+               ltext(1, ymin, lbl, adj=c(0, 0))
            }, ..., ylab="Quality Score", layout=layout,
            strip=strip, strip.left=strip.left)
 }
