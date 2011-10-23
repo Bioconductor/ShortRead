@@ -1,9 +1,9 @@
 Package: ShortRead
 Type: Package
 Title: Classes and methods for high-throughput short-read sequencing data.
-Version: 1.11.44
+Version: 1.11.45
 Author: Martin Morgan, Michael Lawrence, Simon Anders
-Maintainer: Biocore Team c/o BioC user list <bioconductor@stat.math.ethz.ch>
+Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 Description: Base classes, functions, and methods for representation of
              high-throughput, short-read sequencing data.
 License: Artistic-2.0
