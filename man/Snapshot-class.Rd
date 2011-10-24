@@ -237,7 +237,7 @@ getAnnGR <- function(txdb, which) {
     ex <- exonsBy(txdb, by="gene")
     sn <- keepSeqlevels(ex, seqlevels(which))
     r <- range(sn)
-    gr <- r@unlistData
+    gr <- unlist(r)
     values(gr)[["gene_id"]] <- rep.int(names(r), times=elementLengths(r))
     gr
 }
