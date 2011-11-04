@@ -4,6 +4,25 @@
     subListExtract(lst, elt, keep.names=FALSE))
 }
 
+.qa_alphabetFrequency <-
+    function(object, ..., collapse=FALSE, baseOnly=FALSE)
+{
+    ## avoiding integer overflow in Biostrings::alphabetFrequency
+    if (!collapse) {
+        msg <- "'collapse' must be TRUE for '.qa_alphabetFrequency'"
+        .throw(SRError("InternalError", msg))
+    }
+    alf <- alphabetByCycle(object)
+    mode(alf) <- "numeric"
+    alf <- rowSums(alf)
+    if (baseOnly && is(object, "DNAStringSet")) {
+        bases <- names(Biostrings:::xscodes(object, baseOnly=baseOnly))
+        idx <- names(alf) %in% bases
+        alf <- c(alf[idx], other=sum(alf[!idx]))
+    }
+    alf
+}
+
 ## qa summary
 
 .qa_sampleKey <- function(qa)

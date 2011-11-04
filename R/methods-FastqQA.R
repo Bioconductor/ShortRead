@@ -15,8 +15,8 @@
         .throw(SRError("UserArgumentMismatch",
                        "'%s' must be '%s'", "lane", "character(1)"))
     obj <- dirPath 
-    alf <- alphabetFrequency(sread(obj), baseOnly=TRUE, collapse=TRUE)
-    bqtbl <- alphabetFrequency(quality(obj), collapse=TRUE)
+    alf <- .qa_alphabetFrequency(sread(obj), baseOnly=TRUE, collapse=TRUE)
+    bqtbl <- .qa_alphabetFrequency(quality(obj), collapse=TRUE)
     rqs <- .qa_qdensity(quality(obj))
     freqtbl <- tables(sread(obj))
     abc <- alphabetByCycle(obj)

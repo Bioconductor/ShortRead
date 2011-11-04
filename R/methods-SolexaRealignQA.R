@@ -19,7 +19,7 @@
 
     mapIdx <- alignData(aln)[["nMatch"]] == 1L
 
-    alf <- alphabetFrequency(sread(aln), baseOnly=TRUE, collapse=TRUE)
+    alf <- .qa_alphabetFrequency(sread(aln), baseOnly=TRUE, collapse=TRUE)
     abc <- alphabetByCycle(aln)
 
     alignQuality <- table(quality(alignQuality(aln))[mapIdx])
