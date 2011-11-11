@@ -13,13 +13,15 @@ importClassesFrom(IRanges, RangesList, SimpleRleList)
 
 importFrom(grDevices, colorRampPalette)
 
+importFrom(BiocGenerics, rbind)
+
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",
            pData, phenoData, varLabels, varMetadata, sampleNames,
            mkScalar)
 
 importFrom(IRanges, append, coverage, Filter, narrow, score, start,
-           Views, width, rbind, split, "%in%", sapply, lapply, as.list, 
+           Views, width, split, "%in%", sapply, lapply, as.list, 
            unlist, as.vector)
 
 importFrom(lattice, dotplot, histogram, levelplot, llines,
