@@ -50,8 +50,8 @@ qa(dirPath, ...)
         XString object to be matched to the left end of a sequence. If
         either \code{Lpattern} or \code{Rpattern} are provided,
         \code{trimLRPatterns} is invoked to produce a measure of adapter
-        contamination. The mismatch rate for left matching is 0.1. See
-        also \code{Rpattern}.}
+        contamination.  Mismatch rates are 0.1 on the left and 0.2 on
+        the right, with a minimum overlap of 10 nt.}
 
     }
   }
