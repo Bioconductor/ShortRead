@@ -228,7 +228,6 @@ test_AlignedRead_readAligned_SolexaResult <- function()
     
     checkIdentical(as.character(tbl[[2]]), as.character(sread(aln)))
     chr <- tbl[[7]]
-    chr[nchar(chr)==0] <- NA
     checkIdentical(factor(chr), chromosome(aln))
     checkIdentical(tbl[[8]], position(aln))
     checkIdentical(ShortRead:::.toStrand_Solexa(tbl[[9]]), strand(aln))

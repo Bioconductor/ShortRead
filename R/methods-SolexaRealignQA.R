@@ -87,9 +87,8 @@
            Matches=as.integer(names(malntbl)),
            lane=pattern, row.names=NULL),
 
-		 depthOfCoverage=doc,
-		 adapterContamination=ac
-         )
+         depthOfCoverage=doc,
+         adapterContamination=ac)
 }
 
 .qa_SolexaRealign <-
@@ -175,7 +174,7 @@ setMethod(report_html, "SolexaRealignQA",
                dest, "depthOfCoverage",
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
              ADAPTER_CONTAMINATION=hwrite(
-               .ppnCount(qa[["adapterContamination"]]),
+               .df2a(qa[["adapterContamination"]]),
                border=0))
 
     .report_html_do(dest, sections, values, ...)

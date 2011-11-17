@@ -35,7 +35,8 @@
     lst <- c(list(keyValue=kv), Map(function(elt, nm, kv) {
         switch(nm,
                readCounts=,
-               baseCalls={
+               baseCalls=,
+               adapterContamination={
                    rownames(elt) <- kv[rownames(elt), "Key"]
                    elt
                },
@@ -43,8 +44,7 @@
                baseQuality=,
                alignQuality=,
                frequentSequences=,
-               sequenceDistribution=,
-               adapterContamination={
+               sequenceDistribution={
                    elt$lane <- kv[elt$lane, "Key"]
                    elt
                },
@@ -157,18 +157,18 @@
 
 .qa_adapterContamination <-
     function(aln, lane, ..., Lpattern="", Rpattern="",
-             max.Lmismatch=.1, max.Rmismatch=.2)
+             max.Lmismatch=.1, max.Rmismatch=.2, min.trim=9L)
 {
     if (missing(Lpattern) && missing(Rpattern)) {
-        df <- data.frame(lane=lane, contamination="Not run", row.names=NULL)
+        df <- data.frame(contamination="Not run", row.names=lane)
         return(df)
     }
     trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
                            max.Lmismatch=max.Lmismatch, 
                            max.Rmismatch=max.Rmismatch, 
                            ranges=TRUE)
-    ac <- sum(width(trim) < (width(aln) - 9)) / length(trim)
-    data.frame(lane=lane, contamination=ac, row.names=NULL)
+    ac <- sum(width(trim) < (width(aln) - min.trim)) / length(trim)
+    data.frame(contamination=ac, row.names=lane)
 }
 
 ## report-generation

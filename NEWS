@@ -5,6 +5,8 @@ BUG FIXES
 
     o qa reports on very large lanes would overflow alphabetFrequency
 
+    o qa report scales adapaterContamination correctly
+
 CHANGES IN VERSION 1.11
 -----------------------
 

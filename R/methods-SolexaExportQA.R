@@ -281,7 +281,7 @@ setMethod(report_html, "SolexaExportQA",
                dest, "depthOfCoverage",
                .plotDepthOfCoverage(qa[["depthOfCoverage"]])),
              ADAPTER_CONTAMINATION=hwrite(
-               .ppnCount(qa[["adapterContamination"]]),
+               .df2a(qa[["adapterContamination"]]),
                border=0))
     .report_html_do(dest, sections, values, ...)
 })
