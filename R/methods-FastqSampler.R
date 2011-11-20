@@ -1,9 +1,27 @@
 .FastqSampler_g$methods(
+    .downsample = function(records, samp) {
+        ##   |-- x = length(records) --|-- y = length(samp) --|
+        ##   |---- n = length(result) ----|-------- w --------|
+        x <- length(records); y <- length(samp)
+        if (x + y <= n) {
+            c(records, samp)
+        } else {
+            w <- x + y - n
+            samp_n <- n - x + rbinom(1L, min(w, x), w / tot_n)
+            if (samp_n) {
+                records_n <- n - samp_n
+                c(sample(records, records_n), sample(samp, samp_n))
+            } else {
+                records
+            }
+        }
+    },
     .add = function(bin, flush=FALSE) {
         ".add (incomplete) 'bin'ary stream, possibly flush'ing buffer"
         if (verbose) msg("FastqSampler$.add")
-        res <- recParser(buf, bin, n, tot_n)
+        res <- recParser(buf, bin, n)
         samp <- res[["parsed_bin"]]
+        tot_n <<- tot_n + res[["rec_n"]]
         if (flush) {
             buf <<- raw()
             if (tot_n > n && runif(1L) > 1 / tot_n) # sample buf?
@@ -14,20 +32,8 @@
             res[["rec_n"]] <- res[["rec_n"]] - 1L
             samp <- samp[-len]
         }
-        if (length(samp)) {
-            if (length(records) + length(samp) <= n) {
-                records <<- c(records, samp)
-            } else if (length(records) < n) {
-                len <- length(records) + length(samp) - n
-                drop <- base::sample(length(records), len)
-                records <<- c(records[-drop], samp)
-            } else {
-                len <- length(samp)
-                records[base::sample(n, len)] <<- samp
-            }
-        }
+        records <<- .downsample(records, samp)
         saved_n <<- length(records)
-        tot_n <<- tot_n + res[["rec_n"]]
         .self
     },
     .yield = function() {
@@ -50,14 +56,27 @@ FastqSampler <-
         con <- file(con)
     .FastqSampler_g$new(con=con, n=as.integer(n), reader=.binReader,
                         readerBlockSize=as.integer(readerBlockSize),
-                        recParser=.fixedBinRecSampler,
+                        recParser=.fixedBinRecParser,
                         verbose=verbose)
 }
 
 setMethod(yield, "FastqSampler",
     function(x, ...)
 {
-    x$.yield()
-    elts <- .Call(.sampler_as_fastq, x$get())
-    ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]], ...)
+    recs <- x$.yield()$get()
+    if (0L == length(recs))
+        return(ShortReadQ())
+
+    ## split many recs into smaller units to be append'ed (cheap)
+    asShortReadQ <- function(idx, recs) {
+        elts <- .Call(.sampler_as_fastq, recs[idx])
+        ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]])
+    }
+    .binsize <- .Machine$integer.max
+    bin <- floor(cumsum(as.numeric(sapply(recs, length))) / .binsize)
+    idx <- split(seq_along(recs), bin)
+    res <- asShortReadQ(idx[[1]], recs)
+    for (i in idx[-1])
+        res <- append(res, asShortReadQ(i, recs))
+    res
 })

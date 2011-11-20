@@ -7,6 +7,10 @@ BUG FIXES
 
     o qa report scales adapaterContamination correctly
 
+    o FastqSampler would rarely sample fewer than requested reads
+
+    o FastqSampler supports outputs of >2^31 - 1 total nucleotides
+
 CHANGES IN VERSION 1.11
 -----------------------
 

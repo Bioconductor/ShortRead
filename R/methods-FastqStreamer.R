@@ -2,7 +2,7 @@
     .add = function(bin, flush=FALSE) {
         ".add (incomplete) 'bin'ary stream, possibly flush'ing buffer"
         if (verbose) msg("FastqSampler$.add")
-        res <- recParser(buf, bin, Inf, tot_n)
+        res <- recParser(buf, bin, Inf)
         samp <- res[["parsed_bin"]]
         if (flush) {
             buf <<- raw()
@@ -48,7 +48,7 @@ FastqStreamer <-
     .FastqStreamer_g$new(con=con, n=as.integer(n), tot_n=0L,
                          saved_n=0L, reader=.binReader,
                          readerBlockSize=as.integer(readerBlockSize),
-                         recParser=.fixedBinRecSampler,
+                         recParser=.fixedBinRecParser,
                          verbose=verbose)
 }
 

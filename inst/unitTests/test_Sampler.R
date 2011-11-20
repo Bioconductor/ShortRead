@@ -19,7 +19,7 @@ test_Sampler_rec_parser <- function()
 
     str <- "@one\nAA\n+\nII\n@two\nAA\n+\nII\n@three\nAA\n+\nII"
     buf <- charToRaw(str)
-    obs <- paste(sapply(.Call(CFUN, buf, 1:3), rawToChar), collapse="")
+    obs <- paste(sapply(.Call(CFUN, buf, 3L), rawToChar), collapse="")
     checkIdentical(str, obs)
 }
 

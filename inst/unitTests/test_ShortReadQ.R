@@ -44,6 +44,47 @@ test_ShortReadQ_constructors <- function() {
     .equals(sr, obj)
 }
 
+test_FastqSampler_downsample <- function()
+{
+    sampler <- FastqSampler(file())
+    downsample <- sampler$.downsample
+
+    n <- length(letters)
+    lets <- as.list(letters)
+    LETS <- as.list(LETTERS)
+
+    sampler$n <- n; sampler$tot_n <- 0L
+    checkIdentical(lets, downsample(list(), lets))
+
+    sampler$n <- sampler$tot_n <- n
+    checkIdentical(lets, downsample(list(), lets))
+    checkIdentical(lets, downsample(lets, list()))
+
+    sampler$n <- 10L; sampler$tot_n <- n
+    ans <- downsample(list(), lets)
+    checkIdentical(sampler$n, length(ans))
+
+    sampler$n <- sampler$tot_n <- 2L * n
+    checkIdentical(c(lets, LETS), downsample(lets, LETS))
+
+    sampler$n <- 2L * n + 1L
+    checkIdentical(c(lets, LETS), downsample(lets, LETS))
+
+    set.seed(123L)
+    sampler$tot_n <- 2L * n; sampler$n <- n
+    ans <- unlist(downsample(lets, LETS))
+    checkIdentical(n, length(ans))
+    checkIdentical(14L, sum(ans %in% letters))
+
+    sampler$tot_n <- 200L * n
+    ans <- unlist(downsample(lets, LETS))
+    checkIdentical(n, length(ans))
+    checkIdentical(n, sum(ans %in% lets))
+
+    ans <- unlist(downsample(LETS, lets))
+    checkIdentical(n, length(ans))
+    checkIdentical(n, sum(ans %in% LETS))
+}
 
 test_FastqSampler <- function()
 {
@@ -52,7 +93,13 @@ test_FastqSampler <- function()
     obj <- yield(FastqSampler(fl))
     .equals(sr, obj)
 
-    checkTrue(validObject(yield(FastqSampler(fl, readerBlockSize=1000))))
+    yld <- yield(FastqSampler(fl, readerBlockSize=1000))
+    checkTrue(validObject(yld))
+
+    ## regression
+    yld <- yield(FastqSampler(fl, readerBlockSize=256))
+    checkIdentical(256L, length(yld))
+
 }
 
 test_FastqStreamer <- function()

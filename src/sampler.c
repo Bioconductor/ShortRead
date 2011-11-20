@@ -58,20 +58,20 @@ SEXP sampler_rec_counter(SEXP buffer)
     return ScalarInteger(n);
 }
 
-SEXP sampler_rec_parser(SEXP buffer, SEXP sample)
+SEXP sampler_rec_parser(SEXP buffer, SEXP rec_n)
 {
-    if (0 == LENGTH(sample))
+    if (0 == INTEGER(rec_n)[0])
         return NEW_LIST(0);
 
+    const int n = INTEGER(rec_n)[0];
     Rbyte *buf = RAW(buffer);
     const Rbyte *bufend = buf + LENGTH(buffer), *prev;
     SEXP lst, elt;
-    int i, s_idx;
+    int s_idx;
 
-    lst = PROTECT(NEW_LIST(LENGTH(sample)));
+    lst = PROTECT(NEW_LIST(n));
 
     prev = buf = RAW(buffer);
-    i = 1;                      /* 1-based R indicies */
     s_idx = 0;
     while (buf && buf < bufend) {
         while (buf < bufend && *buf == '\n')
@@ -79,19 +79,18 @@ SEXP sampler_rec_parser(SEXP buffer, SEXP sample)
         prev = buf;
         if (NULL == (buf = _fastq_record_end(buf, bufend)))
             break;
-        if (i++ == INTEGER(sample)[s_idx]) {
-            elt = NEW_RAW(buf - prev);
-            SET_VECTOR_ELT(lst, s_idx++, elt);
-            memcpy((Rbyte *) RAW(elt), prev, (buf - prev) * sizeof(Rbyte));
-        }
+        elt = NEW_RAW(buf - prev);
+        SET_VECTOR_ELT(lst, s_idx++, elt);
+        memcpy((Rbyte *) RAW(elt), prev, (buf - prev) * sizeof(Rbyte));
     }
-    if (i == INTEGER(sample)[s_idx]) {
+    if (n > s_idx) {
         elt = NEW_RAW(bufend - prev);
         SET_VECTOR_ELT(lst, s_idx++, elt);
         memcpy((Rbyte *) RAW(elt), prev, (bufend - prev) * sizeof(Rbyte));
     }
-    if (LENGTH(sample) != s_idx)
-        Rf_error("internal: sample index != 'length(sample)'");
+    if (n != s_idx)
+        Rf_error("internal: sample index (%d) != 'rec_n' (%d)",
+                 s_idx, n);
     UNPROTECT(1);
     return lst;
 }
@@ -111,12 +110,10 @@ SEXP sampler_as_fastq(SEXP records)
     SET_VECTOR_ELT(ans, 1, NEW_RAW(totlen / 2));	/* quality */
     SET_VECTOR_ELT(ans, 2, NEW_RAW(totlen / 2));	/* id */
 
-    Rbyte
-        * sread_offset = RAW(VECTOR_ELT(ans, 0)),
+    Rbyte *sread_offset = RAW(VECTOR_ELT(ans, 0)),
         *qual_offset = RAW(VECTOR_ELT(ans, 1)),
         *id_offset = RAW(VECTOR_ELT(ans, 2));
-    int
-    *sread_len = INTEGER(VECTOR_ELT(lengths, 0)),
+    int *sread_len = INTEGER(VECTOR_ELT(lengths, 0)),
         *id_len = INTEGER(VECTOR_ELT(lengths, 1));
 
     for (i = 0; i < nrec; ++i) {
