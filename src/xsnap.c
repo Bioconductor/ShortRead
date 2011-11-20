@@ -195,7 +195,7 @@ SEXP _to_XStringSet(SEXP seq, SEXP start, SEXP width, const char *baseclass)
 {
     char classname[40];         /* longest string should be "DNAStringSet" */
     int res = snprintf(classname, sizeof(classname), "%sSet", baseclass);
-    if (res < 0 || ((uint) res) >= sizeof(classname))
+    if (res < 0 || ((unsigned int) res) >= sizeof(classname))
         error("ShortRead internal error in _to_XStringSet(): "
               "'classname' buffer too small or other error");
     SEXP irange = PROTECT(new_IRanges("IRanges", start, width, R_NilValue));
