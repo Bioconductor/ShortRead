@@ -303,7 +303,7 @@ void _reverseComplement(char *linebuf)
         map['t'] = 'a';
     }
     _reverse(linebuf);
-    for (int i = 0; i < strlen(linebuf); ++i)
+    for (uint i = 0; i < strlen(linebuf); ++i)
         linebuf[i] = map[(int) linebuf[i]];
 }
 
