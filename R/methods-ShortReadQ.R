@@ -44,9 +44,11 @@ setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "BStringSet"),
     tryCatch({
         qualityFunc <-
             switch(qualityType, Auto={
-                alf <- alphabetFrequency(quality, collapse=TRUE)
-                if (min(which(alf != 0)) < 59) FastqQuality
-                else SFastqQuality
+                alf <- alphabetFrequency(head(quality, 1000),
+                                         collapse=TRUE)
+                if (any(alf) && min(which(alf != 0)) < 59) {
+                    FastqQuality
+                } else SFastqQuality
             }, SFastqQuality=SFastqQuality, FastqQuality=FastqQuality)
         quality <- qualityFunc(quality)
         srq <- 
