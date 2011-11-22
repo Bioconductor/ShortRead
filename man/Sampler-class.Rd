@@ -15,6 +15,9 @@
 \alias{close.ShortReadFile}
 \alias{readFastq,FastqFile-method}
 
+% FastqFileReader
+\alias{yield,FastqFileReader-method}
+
 % FastqSampler
 \alias{FastqSampler}
 \alias{yield}

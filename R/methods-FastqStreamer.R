@@ -1,41 +1,45 @@
 .FastqStreamer_g$methods(
-    .add = function(bin, flush=FALSE) {
-        ".add (incomplete) 'bin'ary stream, possibly flush'ing buffer"
-        if (verbose) msg("FastqSampler$.add")
-        res <- recParser(buf, bin, Inf)
-        samp <- res[["parsed_bin"]]
-        if (flush) {
-            buf <<- raw()
-        } else {
-            len <- length(samp)
-            buf <<- samp[[len]]
-            res[["rec_n"]] <- res[["rec_n"]] - 1L
-            samp <- samp[-len]
+    add = function(bin) {
+        if (verbose) {
+            status(update=TRUE)
+            msg("FastqStreamer$add()")
         }
-        if (length(samp))
-            records <<- c(records, samp)
-        saved_n <<- length(records)
-        tot_n <<- tot_n + res[["rec_n"]]
-        .self
+        .Call(.streamer_add, sampler, bin)
+        status(update=TRUE)
     },
-    get = function() {
-        "at most 'n' complete records"
-        if (verbose) msg("FastqStreamer$get")
+    yield = function(...) {
+        "read at most n records in a connection"
+        if (verbose) msg("FastqStreamer$yield()")
 
-        while (n > length(records) &&
-               0 != length(bin <- reader(con, readerBlockSize)))
-            .add(bin)
-        if (n > length(records))
-            flush()                  # last record
-        if (n < length(records)) {
-            idx <- 1:n
-            res <- records[idx]
-            records <<- records[-idx]
-        } else {
-            res <- records
-            records <<- list()
+        status(update=TRUE)
+        if (status()["current"] != status()["n"]) {
+            ## use C scratch buffer
+            if (verbose) {
+                status(update=TRUE)
+                msg("FastqStreamer$yield() reader")
+            }
+            add(raw())
         }
-        res
+
+        while (status()["current"] != status()["n"]) {
+            ## fill C buffer
+            if (verbose) {
+                status(update=TRUE)
+                msg("FastqStreamer$yield() reader")
+            }
+            bin <- reader(con, readerBlockSize)
+            if (!length(bin))
+                break
+            add(bin)
+        }
+
+        if (verbose)
+            msg("FastqStreamer$yield() XStringSet")
+        elts <- .Call(.streamer_as_XStringSet, sampler)
+        if (verbose)
+            msg("FastqStreamer$yield() ShortReadQ")
+        ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]],
+                   ...)
     })
 
 FastqStreamer <-
@@ -44,20 +48,10 @@ FastqStreamer <-
     if (length(n) != 1 || !is.finite(n) || n < 0)
         stop("'n' must be finite and >= 0")
     if (is.character(con))
-        con <- file(con, "rb")
-    .FastqStreamer_g$new(con=con, n=as.integer(n), tot_n=0L,
-                         saved_n=0L, reader=.binReader,
+        con <- file(con)
+    open(con, "rb")
+    streamer <- .Call(.sampler_new, as.integer(n))
+    .FastqStreamer_g$new(con=con, reader=.binReader,
                          readerBlockSize=as.integer(readerBlockSize),
-                         recParser=.fixedBinRecParser,
-                         verbose=verbose)
+                         sampler=streamer, verbose=verbose)
 }
-
-setMethod(yield, "FastqStreamer",
-    function(x, ...)
-{
-    elts <- .Call(.sampler_as_fastq, x$get())
-    if (length(elts[["sread"]]))
-        ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]], ...)
-    else
-        ShortReadQ()
-})

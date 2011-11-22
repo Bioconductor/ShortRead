@@ -53,10 +53,7 @@ void _sampler_reset(struct sampler *sampler)
 {
     for (int i = 0;i < sampler->n_curr; ++i)
         Free(sampler->records[i].record);
-    sampler->n_tot = sampler->n_curr = sampler->n_added = 0;
-    if (sampler->scratch->record)
-        Free(sampler->scratch->record);
-    sampler->scratch->record = NULL;
+    sampler->n_curr = sampler->n_added = 0;
 }
 
 void _sampler_free(struct sampler *sampler)
@@ -69,7 +66,8 @@ void _sampler_free(struct sampler *sampler)
     Free(sampler);
 }
 
-void _sampler_add(struct sampler *sampler, Rbyte *record, int len)
+void _sampler_add(struct sampler *sampler, const Rbyte *record,
+                  int len)
 {
     int idx;
     sampler->n_tot += 1;
@@ -90,7 +88,8 @@ void _sampler_add(struct sampler *sampler, Rbyte *record, int len)
     memcpy(sampler->records[idx].record, record, len * sizeof(Rbyte));
 }
 
-void _sampler_scratch_set(struct sampler *sampler, Rbyte *record, int len)
+void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
+                          int len)
 {
     if (NULL != sampler->scratch->record)
         Free(sampler->scratch->record);
@@ -193,8 +192,6 @@ SEXP _sampler_as_XStringSet(struct sampler *sampler)
         memcpy((char *) x.seq, start, (curr - start) * sizeof(Rbyte));
     }
 
-    _sampler_reset(sampler);
-
     SEXP nms = PROTECT(NEW_CHARACTER(3));
     SET_STRING_ELT(nms, 0, mkChar("sread"));
     SET_STRING_ELT(nms, 1, mkChar("quality"));
@@ -205,7 +202,7 @@ SEXP _sampler_as_XStringSet(struct sampler *sampler)
     return ans;
 }
 
-/* R implementation */
+/* R implementation -- FastqSampler */
 
 #define SAMPLER(s) ((struct sampler *) R_ExternalPtrAddr(s))
 #define SCRATCH(s) (_sampler_scratch_get(SAMPLER(s)))
@@ -241,12 +238,12 @@ SEXP sampler_add(SEXP s, SEXP bin)
 
     /* parse the buffer */
     struct sampler *sampler = SAMPLER(s);
-    Rbyte *prev = buf, *bufend = buf + buflen;
+    const Rbyte *bufend = buf + buflen;
     _sampler_scratch_set(sampler, NULL, 0);
     while (buf && buf < bufend) {
         while (buf < bufend && *buf == '\n')
             ++buf;
-        prev = buf;
+        const Rbyte *prev = buf;
         if (NULL == (buf = _fastq_record_end(buf, bufend))) {
             _sampler_scratch_set(sampler, prev, bufend - prev);
             break;
@@ -257,7 +254,7 @@ SEXP sampler_add(SEXP s, SEXP bin)
     return s;
 }
 
-SEXP sampler_summary(SEXP s)
+SEXP sampler_status(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
     SEXP result = PROTECT(NEW_INTEGER(4));
@@ -279,7 +276,54 @@ SEXP sampler_summary(SEXP s)
 
 SEXP sampler_as_XStringSet(SEXP s)
 {
-    return _sampler_as_XStringSet(SAMPLER(s));
+    struct sampler *sampler = SAMPLER(s);
+    SEXP result = _sampler_as_XStringSet(sampler);
+    _sampler_scratch_set(sampler, NULL, 0);
+    _sampler_reset(sampler);
+    return result;
+}
+
+/* Streamer */
+
+SEXP streamer_add(SEXP s, SEXP bin)
+{
+    struct sampler_rec *scratch = SCRATCH(s);
+    int buflen = scratch->length + Rf_length(bin);
+    Rbyte *buf = (Rbyte *) R_alloc(sizeof(Rbyte), buflen);
+    memcpy(buf, scratch->record, scratch->length * sizeof(Rbyte));
+    memcpy(buf + scratch->length, RAW(bin),
+           Rf_length(bin) * sizeof(Rbyte));
+
+    /* parse the buffer, no more than n_tot elements*/
+    struct sampler *sampler = SAMPLER(s);
+    const Rbyte *bufend = buf + buflen;
+
+    _sampler_scratch_set(sampler, NULL, 0);
+
+    while (buf && buf < bufend) {
+        while (buf < bufend && *buf == '\n')
+            ++buf;
+        if (sampler->n == sampler->n_curr) {
+            _sampler_scratch_set(sampler, buf, bufend - buf);
+            break;
+        }
+        const Rbyte *prev = buf;
+        if (NULL == (buf = _fastq_record_end(buf, bufend))) {
+            _sampler_scratch_set(sampler, prev, bufend - prev);
+            break;
+        }
+        _sampler_add(sampler, prev, buf - prev);
+    }
+
+    return s;
+}
+
+SEXP streamer_as_XStringSet(SEXP s)
+{
+    struct sampler *sampler = SAMPLER(s);
+    SEXP result = _sampler_as_XStringSet(sampler);
+    _sampler_reset(sampler);
+    return result;
 }
 
 /*  */

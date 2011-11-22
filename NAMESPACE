@@ -20,9 +20,8 @@ importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            pData, phenoData, varLabels, varMetadata, sampleNames,
            mkScalar)
 
-importFrom(IRanges, append, coverage, narrow, score, start,
-           Views, width, split, "%in%", as.list, 
-           unlist, as.vector)
+importFrom(IRanges, append, as.list, as.vector, coverage, head,
+           narrow, score, split, start, unlist, Views, width, "%in%")
 
 importFrom(lattice, dotplot, histogram, levelplot, llines,
            panel.abline, panel.histogram, panel.levelplot,

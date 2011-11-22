@@ -1,9 +1,4 @@
 .FastqSampler_g$methods(
-    initialize = function(..., n) {
-        callSuper(...)
-        sampler <<- .Call(.sampler_new, as.integer(n))
-        .self
-    },
     reset = function() {
         "reopen the connection"
         if (verbose) msg("FastqSampler$reset()")
@@ -19,7 +14,7 @@
       }
       .self
     },
-    yield=function() {
+    yield = function(...) {
         "read and sample all records in a connection"
         if (verbose) msg("FastqSampler$yield()")
         reset()
@@ -32,21 +27,11 @@
         }
         status(update=TRUE)
         if (verbose)
-            msg("FastqSampler$yield() as XStringSet")
+            msg("FastqSampler$yield() XStringSet")
         elts <- .Call(.sampler_as_XStringSet, sampler)
-        ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]])
-    },
-    status=function(update=FALSE) {
-        "report status of FastqSampler"
-        if (update || !length(status_txt))
-            status_txt <<- .Call(.sampler_summary, sampler)
-        status_txt
-    },
-    show = function() {
-        cat("class:", class(.self), "\n")
-        cat("file:", basename(summary(.self$con)$description), "\n")
-        s <- .self$status()
-        cat("status:", paste(names(s), s, sep="=", collapse=" "), "\n")
+        if (verbose)
+            msg("FastqSampler$yield() ShortReadQ")
+        ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]], ...)
     })
 
 FastqSampler <-
@@ -56,9 +41,9 @@ FastqSampler <-
         stop("'n' must be finite and >= 0")
     if (is.character(con))
         con <- file(con)
-    .FastqSampler_g$new(con=con, n=as.integer(n), reader=.binReader,
+    open(con, "rb")
+    sampler <- .Call(.sampler_new, as.integer(n))
+    .FastqSampler_g$new(con=con, reader=.binReader,
                         readerBlockSize=as.integer(readerBlockSize),
-                        verbose=verbose)
+                        sampler=sampler, verbose=verbose)
 }
-
-setMethod(yield, "FastqSampler", function(x, ...) x$yield())

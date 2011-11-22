@@ -353,46 +353,20 @@ setOldClass("trellis")
 
 .FastqFileReader_g <- setRefClass("FastqFileReader",
     contains="FastqFile",
-    fields=list(
-      reader = "function", readerBlockSize = "integer",
-      recParser = "function",
-      n = "integer", saved_n = "integer", tot_n = "integer",
-      records = "list", buf="raw", verbose = "logical"),
-    methods=list(
-      flush = function() {
-          "append remaining buffer to output records"
-          if (verbose) msg("FastqFileReader$flush")
-          if (0 != length(buf)) .add(raw(), TRUE)
-          .self
+    fields = list(
+      reader = "function", readerBlockSize="integer",
+      .status = "integer", sampler = "externalptr",
+      verbose = "logical"),
+    methods = list(
+      status = function(update=FALSE) {
+          "report status of FastqSampler"
+          if (update || !length(.status))
+              .status <<- .Call(.sampler_status, sampler)
+          .status
       },
-      reset = function() {
-          "reopen the connection and reset sample"
-          if (verbose) msg("FastqFileReader$reset")
-          if (isOpen(con)) {
-              if (verbose) msg("FastqFileReader$reset re-open")
-              s <- summary(con)
-              class <- s$class
-              desc <- s$description
-              close(con)
-              con <<- do.call(s$class, list(desc, "rb"))
-        } else {
-            open(con, "rb")
-        }
-        buf <<- raw()
-        records <<- list()
-        saved_n <<- tot_n <<- 0L
-        .self
-      },
-      get = function(reset=FALSE) {
-          "current records after flush'ing; optionally invoke .reset()"
-          flush()
-          result <- records
-          if (reset) reset()
-          result
-      },
-      status = function() {
-          "report status of FastqFileReader"
-          c(n=n, saved_n=saved_n, tot_n=tot_n, .buffer_len=length(buf))
+      yield = function(...) {
+          stop("'yield' not implemented for class '",
+               class(.self), "'")
       },
       show = function() {
           cat("class:", class(.self), "\n")
@@ -404,11 +378,8 @@ setOldClass("trellis")
 .FastqStreamer_g <-
     setRefClass("FastqStreamer", contains="FastqFileReader")
 
-.FastqSampler_g <- setRefClass("FastqSampler", contains="FastqFile",
-    fields = list(
-      reader = "function", readerBlockSize = "integer",
-      status_txt = "integer", sampler = "externalptr",
-      verbose="logical"))
+.FastqSampler_g <-
+    setRefClass("FastqSampler", contains="FastqFileReader")
 
 setClass("FastqFileList", contains="RsamtoolsFileList",
     prototype=prototype(elementType="FastqFile"))
