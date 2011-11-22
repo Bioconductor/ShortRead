@@ -151,11 +151,6 @@ while (length(fq <- yield(f))) {
 ## Internal fields, methods, and help; for developers
 ShortRead:::.FastqSampler_g$methods()
 ShortRead:::.FastqSampler_g$fields()
-ShortRead:::.FastqSampler_g$help("get")
-## Internal -- sampled records as list of raw();
-##   yield() knows how to translate these to ShortReadQ
-f <- FastqStreamer(fl, 50)
-f$status()
-recs <- f$get()
-str(recs[1:5])
+ShortRead:::.FastqSampler_g$help("yield")
+
 }

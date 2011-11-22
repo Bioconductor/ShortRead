@@ -94,6 +94,11 @@ extern "C" {
 
 /* sampler */
 
+    SEXP sampler_new(SEXP n);
+    SEXP sampler_add(SEXP s, SEXP bin);
+    SEXP sampler_summary(SEXP s);
+    SEXP sampler_as_XStringSet(SEXP s);
+
     SEXP sampler_rec_counter(SEXP buffer);
     SEXP sampler_rec_parser(SEXP buffer, SEXP sample);
     SEXP sampler_as_fastq(SEXP records);

@@ -352,7 +352,7 @@ setOldClass("trellis")
     setRefClass("FastqFile", contains="ShortReadFile")
 
 .FastqFileReader_g <- setRefClass("FastqFileReader",
-                                  contains="ShortReadFile",
+    contains="FastqFile",
     fields=list(
       reader = "function", readerBlockSize = "integer",
       recParser = "function",
@@ -404,8 +404,11 @@ setOldClass("trellis")
 .FastqStreamer_g <-
     setRefClass("FastqStreamer", contains="FastqFileReader")
 
-.FastqSampler_g <-
-    setRefClass("FastqSampler", contains="FastqFileReader")
+.FastqSampler_g <- setRefClass("FastqSampler", contains="FastqFile",
+    fields = list(
+      reader = "function", readerBlockSize = "integer",
+      status_txt = "integer", sampler = "externalptr",
+      verbose="logical"))
 
 setClass("FastqFileList", contains="RsamtoolsFileList",
     prototype=prototype(elementType="FastqFile"))
