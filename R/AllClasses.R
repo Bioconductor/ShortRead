@@ -358,12 +358,6 @@ setOldClass("trellis")
       .status = "integer", sampler = "externalptr",
       verbose = "logical"),
     methods = list(
-      status = function(update=FALSE) {
-          "report status of FastqSampler"
-          if (update || !length(.status))
-              .status <<- .Call(.sampler_status, sampler)
-          .status
-      },
       yield = function(...) {
           stop("'yield' not implemented for class '",
                class(.self), "'")

@@ -61,7 +61,7 @@ yield(x, ...)
 \arguments{
 
   \item{con, dirPath}{A character string naming a connection, or (for
-    \code{con}) a connection.}
+    \code{con}) an R connection (e.g., \code{file}, \code{gzfile}).}
 
   \item{n}{The size of the sample (number of records) to be drawn.}
 

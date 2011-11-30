@@ -7,6 +7,12 @@
         .Call(.streamer_add, sampler, bin)
         status(update=TRUE)
     },
+    status = function(update=FALSE) {
+        "report status of FastqSampler"
+        if (update || !length(.status))
+            .status <<- .Call(.streamer_status, sampler)
+        .status
+    },
     yield = function(...) {
         "read at most n records in a connection"
         if (verbose) msg("FastqStreamer$yield()")

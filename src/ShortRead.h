@@ -95,11 +95,14 @@ extern "C" {
 /* sampler */
 
     SEXP sampler_new(SEXP n);
+    SEXP sampler_add(SEXP s, SEXP bin);
+    SEXP sampler_reset(SEXP s);
     SEXP sampler_status(SEXP s);
     SEXP sampler_as_XStringSet(SEXP s);
-    SEXP sampler_add(SEXP s, SEXP bin);
 
+    SEXP streamer_new(SEXP n);
     SEXP streamer_add(SEXP s, SEXP bin);
+    SEXP streamer_status(SEXP s);
     SEXP streamer_as_XStringSet(SEXP s);
 
 #ifdef __cplusplus

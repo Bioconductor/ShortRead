@@ -9,10 +9,17 @@
             desc <- s$description
             close(con)
             con <<- do.call(s$class, list(desc, "rb"))
-      } else {
-          open(con, "rb")
-      }
-      .self
+        } else {
+            open(con, "rb")
+        }
+        .Call(.sampler_reset, sampler)
+        .self
+    },
+    status = function(update=FALSE) {
+        "report status of FastqSampler"
+        if (update || !length(.status))
+            .status <<- .Call(.sampler_status, sampler)
+        .status
     },
     yield = function(...) {
         "read and sample all records in a connection"

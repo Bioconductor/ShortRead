@@ -1,11 +1,27 @@
 #include <stdlib.h>
+#include <R_ext/Random.h>
 #include "ShortRead.h"
-
 #include "IRanges_interface.h"
+
+struct bufnode {
+    int len;
+    Rbyte *bytes;
+    struct bufnode *next;
+};
+
+struct binary_record {
+    int length;
+    const Rbyte *record;
+};
+
+struct binary_records {
+    int n, n_curr, n_tot, n_added;
+    struct binary_record *records;
+};
 
 /* fastq */
 
-Rbyte *_fastq_record_end(Rbyte * buf, const Rbyte * bufend)
+const Rbyte *_fastq_record_end(const Rbyte * buf, const Rbyte * bufend)
 {
     int id = 1, nchr = 0;
     if (*buf++ != '@')
@@ -27,95 +43,38 @@ Rbyte *_fastq_record_end(Rbyte * buf, const Rbyte * bufend)
     return buf;
 }
 
-/* sampler */
-
-struct sampler_rec {
-    int length;
-    Rbyte *record;
-};
-
-struct sampler {
-    int n, n_curr, n_tot, n_added;
-    struct sampler_rec *records;
-    struct sampler_rec *scratch;  /* tail end of binary stream */
-};
-
-struct sampler * _sampler_new(int n)
+SEXP _fastq_status(struct binary_records *fastq)
 {
-    struct sampler *sampler = Calloc(1, struct sampler);
-    sampler->n = n;
-    sampler->records = Calloc(n, struct sampler_rec);
-    sampler->scratch = Calloc(1, struct sampler_rec);
-    return sampler;
+    SEXP result = PROTECT(NEW_INTEGER(4));
+    INTEGER(result)[0] = fastq->n;
+    INTEGER(result)[1] = fastq->n_curr;
+    INTEGER(result)[2] = fastq->n_added;
+    INTEGER(result)[3] = fastq->n_tot;
+
+    SEXP nms = PROTECT(NEW_CHARACTER(4));
+    SET_STRING_ELT(nms, 0, mkChar("n"));
+    SET_STRING_ELT(nms, 1, mkChar("current"));
+    SET_STRING_ELT(nms, 2, mkChar("added"));
+    SET_STRING_ELT(nms, 3, mkChar("total"));
+    SET_NAMES(result, nms);
+
+    UNPROTECT(2);
+    return result;
+
 }
 
-void _sampler_reset(struct sampler *sampler)
-{
-    for (int i = 0;i < sampler->n_curr; ++i)
-        Free(sampler->records[i].record);
-    sampler->n_curr = sampler->n_added = 0;
-}
-
-void _sampler_free(struct sampler *sampler)
-{
-    for (int i = 0; i < sampler->n_curr; ++i)
-        Free(sampler->records[i].record);
-    if (NULL != sampler->scratch->record)
-        Free(sampler->scratch->record);
-    Free(sampler->records);
-    Free(sampler);
-}
-
-void _sampler_add(struct sampler *sampler, const Rbyte *record,
-                  int len)
-{
-    int idx;
-    sampler->n_tot += 1;
-
-    if (sampler->n_curr < sampler->n) {
-        idx = sampler->n_curr;
-        sampler->n_curr++;
-    } else {
-        double r = (((double) rand()) / RAND_MAX);
-        if (r >= ((double) sampler->n) / sampler->n_tot)
-            return;
-        idx = (((double) rand()) / RAND_MAX) * sampler->n;
-        Free(sampler->records[idx].record);
-    }
-    sampler->n_added += 1;
-    sampler->records[idx].length = len;
-    sampler->records[idx].record = Calloc(len, Rbyte);
-    memcpy(sampler->records[idx].record, record, len * sizeof(Rbyte));
-}
-
-void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
-                          int len)
-{
-    if (NULL != sampler->scratch->record)
-        Free(sampler->scratch->record);
-    if (NULL != record)
-        sampler->scratch->record = Calloc(len, Rbyte);
-    sampler->scratch->length = len;
-    memcpy(sampler->scratch->record, record, len * sizeof(Rbyte));
-}
-
-struct sampler_rec * _sampler_scratch_get(struct sampler *sampler)
-{
-    return sampler->scratch;
-}
-
-SEXP _sampler_as_XStringSet(struct sampler *sampler)
+SEXP _fastq_as_XStringSet(struct binary_records *fastq)
 {
     SEXP widths = PROTECT(NEW_LIST(2));
-    SET_VECTOR_ELT(widths, 0, NEW_INTEGER(sampler->n_curr));
-    SET_VECTOR_ELT(widths, 1, NEW_INTEGER(sampler->n_curr));
+    SET_VECTOR_ELT(widths, 0, NEW_INTEGER(fastq->n_curr));
+    SET_VECTOR_ELT(widths, 1, NEW_INTEGER(fastq->n_curr));
     int *sread_w = INTEGER(VECTOR_ELT(widths, 0)),
         *id_w = INTEGER(VECTOR_ELT(widths, 1));
 
     /* geometry */
 #pragma omp parallel for
-    for (int i = 0; i < sampler->n_curr; ++i) {
-        const Rbyte *buf = sampler->records[i].record;
+    for (int i = 0; i < fastq->n_curr; ++i) {
+        const Rbyte *buf = fastq->records[i].record;
         const Rbyte *start;
 
         start = ++buf;          /* id; skip '@' */
@@ -146,13 +105,13 @@ SEXP _sampler_as_XStringSet(struct sampler *sampler)
         id = cache_XVectorList(VECTOR_ELT(ans, 2));
 
 #pragma omp parallel for
-    for (int i = 0; i < sampler->n_curr; ++i) {
+    for (int i = 0; i < fastq->n_curr; ++i) {
         cachedCharSeq x;
 
-        Rbyte *buf = sampler->records[i].record;
-        Rbyte *bufend = buf + sampler->records[i].length;
-        Rbyte *start, *curr;
-        int nchr;
+        const Rbyte *buf = fastq->records[i].record,
+            *bufend = buf + fastq->records[i].length,
+            *start;
+        char *curr;
 
         /* id */
         start = ++buf;          /* skip '@' */
@@ -164,15 +123,12 @@ SEXP _sampler_as_XStringSet(struct sampler *sampler)
         /* read */
         while (*buf == '\n')
             ++buf;
-        start = curr = buf;
+        curr = (char *) get_cachedXRawList_elt(&sread, i).seq;
         while (*buf != '+') {
             while (*buf != '\n') /* strip '\n' */
                 *curr++ = DNAencode(*buf++);
             buf++;
         }
-        x = get_cachedXRawList_elt(&sread, i);
-        memcpy((char *) x.seq, start, (curr - start) * sizeof(Rbyte));
-        nchr = curr - start;
 
         /* second id tag */
         while (*buf != '\n')
@@ -181,15 +137,15 @@ SEXP _sampler_as_XStringSet(struct sampler *sampler)
         /* quality */
         while (*buf == '\n')
             ++buf;              /* leading '\n' */
-        start = curr = buf;
-        while (buf != bufend && curr - start != nchr) {
+        start = buf;
+        x = get_cachedXRawList_elt(&qual, i);
+        curr = (char *) x.seq;
+        while (buf != bufend && curr - x.seq != x.length) {
             if (*buf != '\n')
                 *curr++ = *buf++;
             else
                 buf++;
         }
-        x = get_cachedXRawList_elt(&qual, i);
-        memcpy((char *) x.seq, start, (curr - start) * sizeof(Rbyte));
     }
 
     SEXP nms = PROTECT(NEW_CHARACTER(3));
@@ -202,12 +158,87 @@ SEXP _sampler_as_XStringSet(struct sampler *sampler)
     return ans;
 }
 
+/* Sampler */
+
+struct sampler {
+    struct binary_records *fastq;
+    struct bufnode *bufnode;  /* tail end of binary stream */
+};
+
+struct sampler * _sampler_new(int n)
+{
+    struct sampler *sampler = Calloc(1, struct sampler);
+    sampler->fastq = Calloc(1, struct binary_records);
+    sampler->fastq->records = Calloc(n, struct binary_record);
+    sampler->fastq->n = n;
+    sampler->bufnode = Calloc(1, struct bufnode);
+    return sampler;
+}
+
+void _sampler_reset(struct sampler *sampler)
+{
+    struct binary_records *fastq = sampler->fastq;
+    for (int i = 0; i < fastq->n_curr; ++i)
+        Free(fastq->records[i].record);
+    if (NULL != sampler->bufnode->bytes)
+        Free(sampler->bufnode->bytes);
+    fastq->n_curr = fastq->n_added = fastq->n_tot = 0;
+}
+
+void _sampler_free(struct sampler *sampler)
+{
+    struct binary_records *fastq = sampler->fastq;
+    for (int i = 0; i < fastq->n_curr; ++i)
+        Free(fastq->records[i].record);
+    if (NULL != sampler->bufnode->bytes)
+        Free(sampler->bufnode->bytes);
+    Free(sampler->fastq->records);
+    Free(sampler->fastq);
+    Free(sampler->bufnode);
+    Free(sampler);
+}
+
+void _sampler_add(struct binary_records *fastq, const Rbyte *record,
+                  int len)
+{
+    int idx;
+    fastq->n_tot += 1;
+
+    if (fastq->n_curr < fastq->n) {
+        idx = fastq->n_curr;
+        fastq->n_curr++;
+    } else {
+        double r = unif_rand();
+        if (r >= ((double) fastq->n) / fastq->n_tot)
+            return;
+        idx = unif_rand();
+        Free(fastq->records[idx].record);
+    }
+    fastq->n_added += 1;
+    fastq->records[idx].length = len;
+    Rbyte *intern_record = Calloc(len, Rbyte);
+    memcpy(intern_record, record, len * sizeof(Rbyte));
+    fastq->records[idx].record = intern_record;
+}
+
+void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
+                          int len)
+{
+    if (NULL != sampler->bufnode->bytes)
+        Free(sampler->bufnode->bytes);
+    if (NULL != record) {
+        Rbyte *bytes = Calloc(len, Rbyte);
+        memcpy(bytes, record, len * sizeof(Rbyte));
+        sampler->bufnode->bytes = bytes;
+    }
+    sampler->bufnode->len = len;
+}
+
 /* R implementation -- FastqSampler */
 
 #define SAMPLER(s) ((struct sampler *) R_ExternalPtrAddr(s))
-#define SCRATCH(s) (_sampler_scratch_get(SAMPLER(s)))
 
-void _sampler_finalizer(SEXP s)
+void _sampler_finalize(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
     if (!sampler)
@@ -221,7 +252,7 @@ SEXP sampler_new(SEXP n)
     struct sampler *sampler = _sampler_new(INTEGER(n)[0]);
     SEXP s = PROTECT(R_MakeExternalPtr(sampler, mkString("sampler"),
                                        R_NilValue));
-    R_RegisterCFinalizerEx(s, _sampler_finalizer, TRUE);
+    R_RegisterCFinalizerEx(s, _sampler_finalize, TRUE);
     UNPROTECT(1);
     return s;
 }
@@ -229,55 +260,71 @@ SEXP sampler_new(SEXP n)
 SEXP sampler_add(SEXP s, SEXP bin)
 {
     /* create a buffer with both scratch and new data */
-    struct sampler_rec *scratch = SCRATCH(s);
-    int buflen = scratch->length + Rf_length(bin);
-    Rbyte *buf = (Rbyte *) R_alloc(sizeof(Rbyte), buflen);
-    memcpy(buf, scratch->record, scratch->length * sizeof(Rbyte));
-    memcpy(buf + scratch->length, RAW(bin),
-           Rf_length(bin) * sizeof(Rbyte));
+    struct sampler *sampler = SAMPLER(s);
+    struct bufnode *scratch = sampler->bufnode;
+
+    if (scratch->bytes) {
+        int len = Rf_length(bin), buflen = scratch->len + len;
+        Rbyte *buf = Calloc(buflen, Rbyte), *obuf = scratch->bytes;
+        memcpy(buf, scratch->bytes, scratch->len * sizeof(Rbyte));
+        Free(obuf);
+        memcpy(buf + scratch->len, RAW(bin), len * sizeof(Rbyte));
+        scratch->bytes = buf;
+        scratch->len = buflen;
+    } else {
+        int buflen = Rf_length(bin);
+        Rbyte *buf = Calloc(buflen, Rbyte);
+        memcpy(buf, RAW(bin), buflen * sizeof(Rbyte));
+        scratch->bytes = buf;
+        scratch->len = buflen;
+    }
 
     /* parse the buffer */
-    struct sampler *sampler = SAMPLER(s);
-    const Rbyte *bufend = buf + buflen;
-    _sampler_scratch_set(sampler, NULL, 0);
-    while (buf && buf < bufend) {
+    const Rbyte *buf = scratch->bytes, *bufend = buf + scratch->len;
+    struct binary_records *fastq = sampler->fastq;
+    GetRNGstate();
+    while (buf < bufend) {
         while (buf < bufend && *buf == '\n')
             ++buf;
         const Rbyte *prev = buf;
         if (NULL == (buf = _fastq_record_end(buf, bufend))) {
-            _sampler_scratch_set(sampler, prev, bufend - prev);
+            buf = prev;
             break;
         }
-        _sampler_add(sampler, prev, buf - prev);
+        _sampler_add(fastq, prev, buf - prev);
+    }
+    PutRNGstate();
+
+    if (bufend - buf) {
+        int len = bufend - buf;
+        Rbyte *tail = Calloc(len, Rbyte);
+        memcpy(tail, buf, len * sizeof(Rbyte));
+        Free(scratch->bytes);
+        scratch->bytes = tail;
+        scratch->len = len;
+    } else {
+        Free(scratch->bytes);
     }
 
     return s;
 }
 
+SEXP sampler_reset(SEXP s)
+{
+    _sampler_reset(SAMPLER(s));
+    return R_NilValue;
+}
+
 SEXP sampler_status(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
-    SEXP result = PROTECT(NEW_INTEGER(4));
-    INTEGER(result)[0] = sampler->n;
-    INTEGER(result)[1] = sampler->n_curr;
-    INTEGER(result)[2] = sampler->n_added;
-    INTEGER(result)[3] = sampler->n_tot;
-
-    SEXP nms = PROTECT(NEW_CHARACTER(4));
-    SET_STRING_ELT(nms, 0, mkChar("n"));
-    SET_STRING_ELT(nms, 1, mkChar("current"));
-    SET_STRING_ELT(nms, 2, mkChar("added"));
-    SET_STRING_ELT(nms, 3, mkChar("total"));
-    SET_NAMES(result, nms);
-
-    UNPROTECT(2);
-    return result;
+    return _fastq_status(sampler->fastq);
 }
 
 SEXP sampler_as_XStringSet(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
-    SEXP result = _sampler_as_XStringSet(sampler);
+    SEXP result = _fastq_as_XStringSet(sampler->fastq);
     _sampler_scratch_set(sampler, NULL, 0);
     _sampler_reset(sampler);
     return result;
@@ -285,219 +332,152 @@ SEXP sampler_as_XStringSet(SEXP s)
 
 /* Streamer */
 
+struct streamer {
+    struct binary_records *fastq;
+    struct bufnode *bufnode;
+};
+
+struct streamer * _streamer_new(int n)
+{
+    struct streamer *streamer = Calloc(1, struct streamer);
+    streamer->fastq = Calloc(1, struct binary_records);
+    streamer->fastq->records = Calloc(n, struct binary_record);
+    streamer->fastq->n = n;
+    return streamer;
+}
+
+void _streamer_reset(struct streamer *streamer)
+{
+    streamer->fastq->n_curr = 0;
+    struct bufnode *bufnode = streamer->bufnode, *prev;
+    if (NULL != bufnode) {
+        bufnode = bufnode->next;
+        while (NULL != bufnode) {
+            prev = bufnode;
+            bufnode = prev->next;
+            Free(prev->bytes);
+            Free(prev);
+        }
+        streamer->bufnode->next = NULL;
+    }
+}
+
+void _streamer_free(struct streamer *streamer)
+{
+    struct bufnode *curr, *next = streamer->bufnode;
+    while (next) {
+        curr = next;
+        next = curr->next;
+        Free(curr->bytes);
+        Free(curr);
+    }
+    Free(streamer->fastq->records);
+    Free(streamer->fastq);
+    Free(streamer);
+}
+
+void _streamer_add(struct binary_records *fastq, const Rbyte *record,
+                   int len)
+{
+    fastq->records[fastq->n_curr].length = len;
+    fastq->records[fastq->n_curr].record = record;
+    fastq->n_tot += 1;
+    fastq->n_curr += 1;
+    fastq->n_added += 1;
+}
+
+#define STREAMER(s) ((struct streamer *) R_ExternalPtrAddr(s))
+
+void _streamer_finalize(SEXP s)
+{
+    struct streamer *streamer = STREAMER(s);
+    if (!streamer)
+        return;
+    _streamer_free(streamer);
+    R_ClearExternalPtr(s);
+}
+
+SEXP streamer_new(SEXP n)
+{
+    struct streamer *streamer = _streamer_new(INTEGER(n)[0]);
+    SEXP s = PROTECT(R_MakeExternalPtr(streamer, mkString("streamer"),
+                                       R_NilValue));
+    R_RegisterCFinalizerEx(s, _streamer_finalize, TRUE);
+    UNPROTECT(1);
+    return s;
+}
+
 SEXP streamer_add(SEXP s, SEXP bin)
 {
-    struct sampler_rec *scratch = SCRATCH(s);
-    int buflen = scratch->length + Rf_length(bin);
-    Rbyte *buf = (Rbyte *) R_alloc(sizeof(Rbyte), buflen);
-    memcpy(buf, scratch->record, scratch->length * sizeof(Rbyte));
-    memcpy(buf + scratch->length, RAW(bin),
-           Rf_length(bin) * sizeof(Rbyte));
+    struct streamer *streamer = STREAMER(s);
+    int len = Rf_length(bin);
 
-    /* parse the buffer, no more than n_tot elements*/
-    struct sampler *sampler = SAMPLER(s);
-    const Rbyte *bufend = buf + buflen;
+    /* start with tail of previous bin */
+    struct bufnode *scratch = streamer->bufnode;
+    if (NULL == scratch) {
+        /* first record */
+        scratch = streamer->bufnode = Calloc(1, struct bufnode);
+        scratch->bytes = Calloc(len, Rbyte);
+        scratch->len = len;
+        memcpy(scratch->bytes, RAW(bin), len * sizeof(Rbyte));
+    } else if (NULL == scratch->bytes) {
+        /* nothing 'extra' from previous bin */
+        scratch->bytes = Calloc(len, Rbyte);
+        scratch->len = len;
+        memcpy(scratch->bytes, RAW(bin), len * sizeof(Rbyte));
+    } else {
+        /* scratch contains tail of prev. bin */
+        int buflen = scratch->len;
+        Rbyte *bytes = Calloc(buflen + len, Rbyte);
+        memcpy(bytes, scratch->bytes, buflen * sizeof(Rbyte));
+        memcpy(bytes + buflen, RAW(bin), len * sizeof(Rbyte));
+        Free(scratch->bytes);
+        scratch->bytes = bytes;
+        scratch->len = buflen + len;
+    }
 
-    _sampler_scratch_set(sampler, NULL, 0);
-
-    while (buf && buf < bufend) {
+    /* find record starts and lengths */
+    const Rbyte *buf = scratch->bytes, *bufend = buf + scratch->len;
+    struct binary_records *fastq = streamer->fastq;
+    while (fastq->n > fastq->n_curr && buf < bufend) {
         while (buf < bufend && *buf == '\n')
             ++buf;
-        if (sampler->n == sampler->n_curr) {
-            _sampler_scratch_set(sampler, buf, bufend - buf);
-            break;
-        }
         const Rbyte *prev = buf;
         if (NULL == (buf = _fastq_record_end(buf, bufend))) {
-            _sampler_scratch_set(sampler, prev, bufend - prev);
+            buf = prev;
             break;
         }
-        _sampler_add(sampler, prev, buf - prev);
+        _streamer_add(fastq, prev, buf - prev);
+    }
+
+    /* capture tail of bin */
+    if (NULL != scratch->bytes) {
+        struct bufnode *next = scratch;
+        scratch = streamer->bufnode = Calloc(1, struct bufnode);
+        scratch->next = next;
+    }
+    if (bufend - buf) {
+        int len = bufend - buf;
+        Rbyte *tail = Calloc(len, Rbyte);
+        memcpy(tail, buf, len * sizeof(Rbyte));
+        scratch->bytes = tail;
+        scratch->len = len;
     }
 
     return s;
 }
 
+SEXP streamer_status(SEXP s)
+{
+    struct streamer *streamer = STREAMER(s);
+    return _fastq_status(streamer->fastq);
+}
+
 SEXP streamer_as_XStringSet(SEXP s)
 {
-    struct sampler *sampler = SAMPLER(s);
-    SEXP result = _sampler_as_XStringSet(sampler);
-    _sampler_reset(sampler);
+    struct streamer *streamer = STREAMER(s);
+    struct binary_records *fastq = streamer->fastq;
+    SEXP result = _fastq_as_XStringSet(fastq);
+    _streamer_reset(streamer);
     return result;
-}
-
-/*  */
-
-SEXP sampler_rec_counter(SEXP buffer)
-{
-    /* full and partial records */
-    if (0 == LENGTH(buffer))
-        return ScalarInteger(0);
-
-    Rbyte *buf = RAW(buffer);
-    const Rbyte *bufend = buf + LENGTH(buffer);
-    int n = 0;
-
-    while (buf && buf < bufend) {
-        while (buf != bufend && *buf == '\n')
-            ++buf;
-        if (buf != bufend) {
-            buf = _fastq_record_end(buf, bufend);
-            ++n;
-        }
-    }
-    return ScalarInteger(n);
-}
-
-SEXP sampler_rec_parser(SEXP buffer, SEXP rec_n)
-{
-    if (0 == INTEGER(rec_n)[0])
-        return NEW_LIST(0);
-
-    const int n = INTEGER(rec_n)[0];
-    Rbyte *buf = RAW(buffer);
-    const Rbyte *bufend = buf + LENGTH(buffer), *prev;
-    SEXP lst, elt;
-    int s_idx;
-
-    lst = PROTECT(NEW_LIST(n));
-
-    prev = buf = RAW(buffer);
-    s_idx = 0;
-    while (buf && buf < bufend) {
-        while (buf < bufend && *buf == '\n')
-            ++buf;
-        prev = buf;
-        if (NULL == (buf = _fastq_record_end(buf, bufend)))
-            break;
-        elt = NEW_RAW(buf - prev);
-        SET_VECTOR_ELT(lst, s_idx++, elt);
-        memcpy((Rbyte *) RAW(elt), prev, (buf - prev) * sizeof(Rbyte));
-    }
-    if (n > s_idx) {
-        elt = NEW_RAW(bufend - prev);
-        SET_VECTOR_ELT(lst, s_idx++, elt);
-        memcpy((Rbyte *) RAW(elt), prev, (bufend - prev) * sizeof(Rbyte));
-    }
-    if (n != s_idx)
-        Rf_error("internal: sample index (%d) != 'rec_n' (%d)",
-                 s_idx, n);
-    UNPROTECT(1);
-    return lst;
-}
-
-SEXP _as_xstringset(SEXP width, SEXP tag, const char *classname,
-                    const char *element_type)
-{
-    int nrec = LENGTH(width);
-    SEXP start = PROTECT(NEW_INTEGER(nrec));
-    int i, *s = INTEGER(start);
-    const int *w = INTEGER(width);
-    s[0] = 1;
-    for (i = 1; i < nrec; ++i)
-        s[i] = s[i - 1] + w[i - 1];
-    SEXP rng = PROTECT(new_IRanges("IRanges", start, width, R_NilValue));
-    SEXP xstringset =
-        PROTECT(new_XRawList_from_tag(classname, element_type, tag, rng));
-    UNPROTECT(3);
-    return xstringset;
-}
-
-SEXP sampler_as_fastq(SEXP records)
-{
-    SEXP ans = PROTECT(NEW_LIST(3));
-    SEXP lengths = PROTECT(NEW_LIST(2));
-    int nrec = LENGTH(records), totlen = 0, i;
-
-    SET_VECTOR_ELT(lengths, 0, NEW_INTEGER(nrec));	/* sread / quality */
-    SET_VECTOR_ELT(lengths, 1, NEW_INTEGER(nrec));	/* id */
-
-    for (i = 0; i < nrec; ++i)
-        totlen += LENGTH(VECTOR_ELT(records, i));
-    SET_VECTOR_ELT(ans, 0, NEW_RAW(totlen / 2));	/* sread */
-    SET_VECTOR_ELT(ans, 1, NEW_RAW(totlen / 2));	/* quality */
-    SET_VECTOR_ELT(ans, 2, NEW_RAW(totlen / 2));	/* id */
-
-    Rbyte *sread_offset = RAW(VECTOR_ELT(ans, 0)),
-        *qual_offset = RAW(VECTOR_ELT(ans, 1)),
-        *id_offset = RAW(VECTOR_ELT(ans, 2));
-    int *sread_len = INTEGER(VECTOR_ELT(lengths, 0)),
-        *id_len = INTEGER(VECTOR_ELT(lengths, 1));
-
-    for (i = 0; i < nrec; ++i) {
-        SEXP record = VECTOR_ELT(records, i);
-        Rbyte *buf = RAW(record);
-        Rbyte *bufend = buf + LENGTH(record);
-        Rbyte *start, *curr;
-        int nchr;
-
-        /* id */
-        start = ++buf;          /* skip '@' */
-        while (*buf != '\n')
-            ++buf;
-        memcpy(id_offset, start, (buf - start) * sizeof(Rbyte));
-        *id_len++ = buf - start;
-        id_offset += buf - start;
-
-        /* read */
-        while (*buf == '\n')
-            ++buf;
-        start = curr = buf;
-        while (*buf != '+') {
-            /* strip '\n' */
-            while (*buf != '\n')
-                *curr++ = *buf++;
-            buf++;
-        }
-        memcpy(sread_offset, start, (curr - start) * sizeof(Rbyte));
-        *sread_len++ = curr - start;
-        sread_offset += curr - start;
-        nchr = curr - start;
-
-        /* second id tag */
-        while (*buf != '\n')
-            ++buf;
-        /* quality */
-        while (*buf == '\n')
-            ++buf;              /* leading '\n' */
-        start = curr = buf;
-        while (buf != bufend && curr - start != nchr) {
-            if (*buf != '\n')
-                *curr++ = *buf++;
-            else
-                buf++;
-        }
-        memcpy(qual_offset, start, (curr - start) * sizeof(Rbyte));
-        qual_offset += curr - start;
-    }
-
-    Rbyte *dna = RAW(VECTOR_ELT(ans, 0));
-    while (dna < sread_offset) {
-        Rbyte tmp = DNAencode(*dna);
-        *dna++ = tmp;
-    }
-
-    SETLENGTH(VECTOR_ELT(ans, 0), sread_offset - RAW(VECTOR_ELT(ans, 0)));
-    SETLENGTH(VECTOR_ELT(ans, 1), qual_offset - RAW(VECTOR_ELT(ans, 1)));
-    SETLENGTH(VECTOR_ELT(ans, 2), id_offset - RAW(VECTOR_ELT(ans, 2)));
-
-    SEXP xsset;
-    xsset = _as_xstringset(VECTOR_ELT(lengths, 0), VECTOR_ELT(ans, 0),
-                           "DNAStringSet", "DNAString");
-    SET_VECTOR_ELT(ans, 0, xsset);;
-    xsset = _as_xstringset(VECTOR_ELT(lengths, 0), VECTOR_ELT(ans, 1),
-                           "BStringSet", "BString");
-    SET_VECTOR_ELT(ans, 1, xsset);;
-    xsset = _as_xstringset(VECTOR_ELT(lengths, 1), VECTOR_ELT(ans, 2),
-                           "BStringSet", "BString");
-    SET_VECTOR_ELT(ans, 2, xsset);
-
-    SEXP nms = PROTECT(NEW_CHARACTER(3));
-    SET_STRING_ELT(nms, 0, mkChar("sread"));
-    SET_STRING_ELT(nms, 1, mkChar("quality"));
-    SET_STRING_ELT(nms, 2, mkChar("id"));
-    SET_NAMES(ans, nms);
-
-    UNPROTECT(3);
-    return ans;
 }

@@ -35,9 +35,12 @@ static const R_CallMethodDef callMethods[] = {
     /* sampler */
     {".sampler_new", (DL_FUNC) & sampler_new, 1},
     {".sampler_add", (DL_FUNC) & sampler_add, 2},
+    {".sampler_reset", (DL_FUNC) & sampler_reset, 1},
     {".sampler_status", (DL_FUNC) & sampler_status, 1},
     {".sampler_as_XStringSet", (DL_FUNC) & sampler_as_XStringSet, 1},
+    {".streamer_new", (DL_FUNC) & streamer_new, 1},
     {".streamer_add", (DL_FUNC) & streamer_add, 2},
+    {".streamer_status", (DL_FUNC) & streamer_status, 1},
     {".streamer_as_XStringSet", (DL_FUNC) & streamer_as_XStringSet, 1},
 
     {NULL, NULL, 0}

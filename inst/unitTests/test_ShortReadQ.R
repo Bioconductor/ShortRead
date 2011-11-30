@@ -60,6 +60,15 @@ test_FastqSampler <- function()
 
 }
 
+test_FastqSampler_rand <- function()
+{
+    ## two samples with the same random number seed are identical
+    samp <- FastqSampler(fl, 50)
+    set.seed(123L); obs <- yield(samp)
+    set.seed(123L); exp <- yield(samp)
+    .equals(obs, exp)
+}
+
 test_FastqStreamer <- function()
 {
     sr <- readFastq(fl)
