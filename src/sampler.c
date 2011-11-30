@@ -9,15 +9,34 @@ struct bufnode {
     struct bufnode *next;
 };
 
-struct binary_record {
+struct record {
     int length;
     const Rbyte *record;
 };
 
-struct binary_records {
+struct records {
     int n, n_curr, n_tot, n_added;
-    struct binary_record *records;
+    struct record *records;
 };
+
+SEXP _records_status(struct records *records)
+{
+    SEXP result = PROTECT(NEW_INTEGER(4));
+    INTEGER(result)[0] = records->n;
+    INTEGER(result)[1] = records->n_curr;
+    INTEGER(result)[2] = records->n_added;
+    INTEGER(result)[3] = records->n_tot;
+
+    SEXP nms = PROTECT(NEW_CHARACTER(4));
+    SET_STRING_ELT(nms, 0, mkChar("n"));
+    SET_STRING_ELT(nms, 1, mkChar("current"));
+    SET_STRING_ELT(nms, 2, mkChar("added"));
+    SET_STRING_ELT(nms, 3, mkChar("total"));
+    SET_NAMES(result, nms);
+
+    UNPROTECT(2);
+    return result;
+}
 
 /* fastq */
 
@@ -43,27 +62,7 @@ const Rbyte *_fastq_record_end(const Rbyte * buf, const Rbyte * bufend)
     return buf;
 }
 
-SEXP _fastq_status(struct binary_records *fastq)
-{
-    SEXP result = PROTECT(NEW_INTEGER(4));
-    INTEGER(result)[0] = fastq->n;
-    INTEGER(result)[1] = fastq->n_curr;
-    INTEGER(result)[2] = fastq->n_added;
-    INTEGER(result)[3] = fastq->n_tot;
-
-    SEXP nms = PROTECT(NEW_CHARACTER(4));
-    SET_STRING_ELT(nms, 0, mkChar("n"));
-    SET_STRING_ELT(nms, 1, mkChar("current"));
-    SET_STRING_ELT(nms, 2, mkChar("added"));
-    SET_STRING_ELT(nms, 3, mkChar("total"));
-    SET_NAMES(result, nms);
-
-    UNPROTECT(2);
-    return result;
-
-}
-
-SEXP _fastq_as_XStringSet(struct binary_records *fastq)
+SEXP _fastq_as_XStringSet(struct records *fastq)
 {
     SEXP widths = PROTECT(NEW_LIST(2));
     SET_VECTOR_ELT(widths, 0, NEW_INTEGER(fastq->n_curr));
@@ -161,64 +160,64 @@ SEXP _fastq_as_XStringSet(struct binary_records *fastq)
 /* Sampler */
 
 struct sampler {
-    struct binary_records *fastq;
+    struct records *sample;
     struct bufnode *bufnode;  /* tail end of binary stream */
 };
 
 struct sampler * _sampler_new(int n)
 {
     struct sampler *sampler = Calloc(1, struct sampler);
-    sampler->fastq = Calloc(1, struct binary_records);
-    sampler->fastq->records = Calloc(n, struct binary_record);
-    sampler->fastq->n = n;
+    sampler->sample = Calloc(1, struct records);
+    sampler->sample->records = Calloc(n, struct record);
+    sampler->sample->n = n;
     sampler->bufnode = Calloc(1, struct bufnode);
     return sampler;
 }
 
 void _sampler_reset(struct sampler *sampler)
 {
-    struct binary_records *fastq = sampler->fastq;
-    for (int i = 0; i < fastq->n_curr; ++i)
-        Free(fastq->records[i].record);
+    struct records *sample = sampler->sample;
+    for (int i = 0; i < sample->n_curr; ++i)
+        Free(sample->records[i].record);
     if (NULL != sampler->bufnode->bytes)
         Free(sampler->bufnode->bytes);
-    fastq->n_curr = fastq->n_added = fastq->n_tot = 0;
+    sample->n_curr = sample->n_added = sample->n_tot = 0;
 }
 
 void _sampler_free(struct sampler *sampler)
 {
-    struct binary_records *fastq = sampler->fastq;
-    for (int i = 0; i < fastq->n_curr; ++i)
-        Free(fastq->records[i].record);
+    struct records *sample = sampler->sample;
+    for (int i = 0; i < sample->n_curr; ++i)
+        Free(sample->records[i].record);
     if (NULL != sampler->bufnode->bytes)
         Free(sampler->bufnode->bytes);
-    Free(sampler->fastq->records);
-    Free(sampler->fastq);
+    Free(sampler->sample->records);
+    Free(sampler->sample);
     Free(sampler->bufnode);
     Free(sampler);
 }
 
-void _sampler_add(struct binary_records *fastq, const Rbyte *record,
+void _sampler_add(struct records *sample, const Rbyte *record,
                   int len)
 {
     int idx;
-    fastq->n_tot += 1;
+    sample->n_tot += 1;
 
-    if (fastq->n_curr < fastq->n) {
-        idx = fastq->n_curr;
-        fastq->n_curr++;
+    if (sample->n_curr < sample->n) {
+        idx = sample->n_curr;
+        sample->n_curr++;
     } else {
         double r = unif_rand();
-        if (r >= ((double) fastq->n) / fastq->n_tot)
+        if (r >= ((double) sample->n) / sample->n_tot)
             return;
         idx = unif_rand();
-        Free(fastq->records[idx].record);
+        Free(sample->records[idx].record);
     }
-    fastq->n_added += 1;
-    fastq->records[idx].length = len;
+    sample->n_added += 1;
+    sample->records[idx].length = len;
     Rbyte *intern_record = Calloc(len, Rbyte);
     memcpy(intern_record, record, len * sizeof(Rbyte));
-    fastq->records[idx].record = intern_record;
+    sample->records[idx].record = intern_record;
 }
 
 void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
@@ -281,7 +280,7 @@ SEXP sampler_add(SEXP s, SEXP bin)
 
     /* parse the buffer */
     const Rbyte *buf = scratch->bytes, *bufend = buf + scratch->len;
-    struct binary_records *fastq = sampler->fastq;
+    struct records *sample = sampler->sample;
     GetRNGstate();
     while (buf < bufend) {
         while (buf < bufend && *buf == '\n')
@@ -291,7 +290,7 @@ SEXP sampler_add(SEXP s, SEXP bin)
             buf = prev;
             break;
         }
-        _sampler_add(fastq, prev, buf - prev);
+        _sampler_add(sample, prev, buf - prev);
     }
     PutRNGstate();
 
@@ -309,22 +308,16 @@ SEXP sampler_add(SEXP s, SEXP bin)
     return s;
 }
 
-SEXP sampler_reset(SEXP s)
-{
-    _sampler_reset(SAMPLER(s));
-    return R_NilValue;
-}
-
 SEXP sampler_status(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
-    return _fastq_status(sampler->fastq);
+    return _records_status(sampler->sample);
 }
 
 SEXP sampler_as_XStringSet(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
-    SEXP result = _fastq_as_XStringSet(sampler->fastq);
+    SEXP result = _fastq_as_XStringSet(sampler->sample);
     _sampler_scratch_set(sampler, NULL, 0);
     _sampler_reset(sampler);
     return result;
@@ -333,22 +326,22 @@ SEXP sampler_as_XStringSet(SEXP s)
 /* Streamer */
 
 struct streamer {
-    struct binary_records *fastq;
+    struct records *stream;
     struct bufnode *bufnode;
 };
 
 struct streamer * _streamer_new(int n)
 {
     struct streamer *streamer = Calloc(1, struct streamer);
-    streamer->fastq = Calloc(1, struct binary_records);
-    streamer->fastq->records = Calloc(n, struct binary_record);
-    streamer->fastq->n = n;
+    streamer->stream = Calloc(1, struct records);
+    streamer->stream->records = Calloc(n, struct record);
+    streamer->stream->n = n;
     return streamer;
 }
 
 void _streamer_reset(struct streamer *streamer)
 {
-    streamer->fastq->n_curr = 0;
+    streamer->stream->n_curr = 0;
     struct bufnode *bufnode = streamer->bufnode, *prev;
     if (NULL != bufnode) {
         bufnode = bufnode->next;
@@ -371,19 +364,19 @@ void _streamer_free(struct streamer *streamer)
         Free(curr->bytes);
         Free(curr);
     }
-    Free(streamer->fastq->records);
-    Free(streamer->fastq);
+    Free(streamer->stream->records);
+    Free(streamer->stream);
     Free(streamer);
 }
 
-void _streamer_add(struct binary_records *fastq, const Rbyte *record,
+void _streamer_add(struct records *stream, const Rbyte *record,
                    int len)
 {
-    fastq->records[fastq->n_curr].length = len;
-    fastq->records[fastq->n_curr].record = record;
-    fastq->n_tot += 1;
-    fastq->n_curr += 1;
-    fastq->n_added += 1;
+    stream->records[stream->n_curr].length = len;
+    stream->records[stream->n_curr].record = record;
+    stream->n_tot += 1;
+    stream->n_curr += 1;
+    stream->n_added += 1;
 }
 
 #define STREAMER(s) ((struct streamer *) R_ExternalPtrAddr(s))
@@ -438,8 +431,8 @@ SEXP streamer_add(SEXP s, SEXP bin)
 
     /* find record starts and lengths */
     const Rbyte *buf = scratch->bytes, *bufend = buf + scratch->len;
-    struct binary_records *fastq = streamer->fastq;
-    while (fastq->n > fastq->n_curr && buf < bufend) {
+    struct records *stream = streamer->stream;
+    while (stream->n > stream->n_curr && buf < bufend) {
         while (buf < bufend && *buf == '\n')
             ++buf;
         const Rbyte *prev = buf;
@@ -447,7 +440,7 @@ SEXP streamer_add(SEXP s, SEXP bin)
             buf = prev;
             break;
         }
-        _streamer_add(fastq, prev, buf - prev);
+        _streamer_add(stream, prev, buf - prev);
     }
 
     /* capture tail of bin */
@@ -470,14 +463,14 @@ SEXP streamer_add(SEXP s, SEXP bin)
 SEXP streamer_status(SEXP s)
 {
     struct streamer *streamer = STREAMER(s);
-    return _fastq_status(streamer->fastq);
+    return _records_status(streamer->stream);
 }
 
 SEXP streamer_as_XStringSet(SEXP s)
 {
     struct streamer *streamer = STREAMER(s);
-    struct binary_records *fastq = streamer->fastq;
-    SEXP result = _fastq_as_XStringSet(fastq);
+    struct records *stream = streamer->stream;
+    SEXP result = _fastq_as_XStringSet(stream);
     _streamer_reset(streamer);
     return result;
 }

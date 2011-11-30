@@ -12,7 +12,6 @@
         } else {
             open(con, "rb")
         }
-        .Call(.sampler_reset, sampler)
         .self
     },
     status = function(update=FALSE) {
