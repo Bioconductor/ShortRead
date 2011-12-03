@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <Rmath.h>
 #include <R_ext/Random.h>
 #include "ShortRead.h"
 #include "IRanges_interface.h"
@@ -71,7 +72,9 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         *id_w = INTEGER(VECTOR_ELT(widths, 1));
 
     /* geometry */
+#ifdef SUPPORT_OPENMP
 #pragma omp parallel for
+#endif
     for (int i = 0; i < fastq->n_curr; ++i) {
         const Rbyte *buf = fastq->records[i].record;
         const Rbyte *start;
@@ -103,7 +106,9 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         qual = cache_XVectorList(VECTOR_ELT(ans, 1)),
         id = cache_XVectorList(VECTOR_ELT(ans, 2));
 
+#ifdef SUPPORT_OPENMP
 #pragma omp parallel for
+#endif
     for (int i = 0; i < fastq->n_curr; ++i) {
         cachedCharSeq x;
 
@@ -161,7 +166,11 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
 
 struct sampler {
     struct records *sample;
-    struct bufnode *bufnode;  /* tail end of binary stream */
+    struct {
+        struct record *records;
+        int n, n_curr;
+    } current;
+    struct bufnode *bufnode;    /* tail end of binary stream */
 };
 
 struct sampler * _sampler_new(int n)
@@ -170,6 +179,8 @@ struct sampler * _sampler_new(int n)
     sampler->sample = Calloc(1, struct records);
     sampler->sample->records = Calloc(n, struct record);
     sampler->sample->n = n;
+    sampler->current.records = Calloc(n, struct record);
+    sampler->current.n = n;
     sampler->bufnode = Calloc(1, struct bufnode);
     return sampler;
 }
@@ -182,6 +193,7 @@ void _sampler_reset(struct sampler *sampler)
     if (NULL != sampler->bufnode->bytes)
         Free(sampler->bufnode->bytes);
     sample->n_curr = sample->n_added = sample->n_tot = 0;
+    sampler->current.n_curr = 0;
 }
 
 void _sampler_free(struct sampler *sampler)
@@ -193,31 +205,76 @@ void _sampler_free(struct sampler *sampler)
         Free(sampler->bufnode->bytes);
     Free(sampler->sample->records);
     Free(sampler->sample);
+    Free(sampler->current.records);
     Free(sampler->bufnode);
     Free(sampler);
 }
 
-void _sampler_add(struct records *sample, const Rbyte *record,
-                  int len)
+void _sampler_add1(struct records *sample, const Rbyte *record,
+                   int len)
 {
+    /* add record to sample */
     int idx;
-    sample->n_tot += 1;
-
-    if (sample->n_curr < sample->n) {
-        idx = sample->n_curr;
-        sample->n_curr++;
-    } else {
-        double r = unif_rand();
-        if (r >= ((double) sample->n) / sample->n_tot)
-            return;
+    if (sample->n_curr < sample->n)
+        idx = sample->n_curr++;
+    else {
         idx = unif_rand();
         Free(sample->records[idx].record);
     }
-    sample->n_added += 1;
+
     sample->records[idx].length = len;
     Rbyte *intern_record = Calloc(len, Rbyte);
     memcpy(intern_record, record, len * sizeof(Rbyte));
     sample->records[idx].record = intern_record;
+    sample->n_added += 1;
+    sample->n_tot += 1;
+}
+
+void _sampler_dosample(struct sampler *sampler)
+{
+    int n_curr = sampler->current.n_curr;
+    int n_tot = n_curr + sampler->sample->n_tot;
+    int n_samp = rbinom(n_curr, ((double) n_curr) / n_tot);
+
+    if (0 != n_samp) {
+        int *idx = Calloc(n_curr, int);
+
+        /* select reads to save -- sample w/out replacement */
+        for (int i = 0; i < n_curr; ++i)
+            idx[i] = i;
+        for (int i = 0; i < n_samp; ++i) {
+            int j = (n_samp - i) * unif_rand();
+            int tmp = idx[i];
+            idx[i] = idx[i + j];
+            idx[i + j] = tmp;
+        }
+        /* save selected reads */
+        for (int i = 0; i < n_samp; ++i) {
+            struct record *r = sampler->current.records + idx[i];
+            _sampler_add1(sampler->sample, r->record, r->length);
+        }
+
+        Free(idx);
+    }
+
+    sampler->sample->n_tot = n_tot;
+    sampler->current.n_curr = 0;
+}
+
+void _sampler_add(struct sampler *sampler, const Rbyte *record,
+                  int len)
+{
+    struct records *sample = sampler->sample;
+    if (sample->n_curr < sample->n) { /* sampling not yet needed */
+        _sampler_add1(sample, record, len);
+    } else {                    /* sample */
+        struct record *r =
+            sampler->current.records + sampler->current.n_curr;
+        r->record = record;
+        r->length = len;
+        if (sampler->current.n == ++sampler->current.n_curr)
+            _sampler_dosample(sampler);
+    }
 }
 
 void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
@@ -280,7 +337,6 @@ SEXP sampler_add(SEXP s, SEXP bin)
 
     /* parse the buffer */
     const Rbyte *buf = scratch->bytes, *bufend = buf + scratch->len;
-    struct records *sample = sampler->sample;
     GetRNGstate();
     while (buf < bufend) {
         while (buf < bufend && *buf == '\n')
@@ -290,8 +346,9 @@ SEXP sampler_add(SEXP s, SEXP bin)
             buf = prev;
             break;
         }
-        _sampler_add(sample, prev, buf - prev);
+        _sampler_add(sampler, prev, buf - prev);
     }
+    _sampler_dosample(sampler);
     PutRNGstate();
 
     if (bufend - buf) {
