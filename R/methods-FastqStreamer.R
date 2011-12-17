@@ -57,7 +57,7 @@ FastqStreamer <-
         con <- file(con)
     open(con, "rb")
     streamer <- .Call(.sampler_new, as.integer(n))
-    .FastqStreamer_g$new(con=con, reader=.binReader,
-                         readerBlockSize=as.integer(readerBlockSize),
-                         sampler=streamer, verbose=verbose)
+    .ShortReadFile(.FastqStreamer_g, con, reader=.binReader,
+                   readerBlockSize=as.integer(readerBlockSize),
+                   sampler=streamer, verbose=verbose)
 }
