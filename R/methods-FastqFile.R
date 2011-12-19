@@ -24,7 +24,7 @@ setMethod(writeFastq, c("ShortReadQ", "FastqFile"),
 })
 
 FastqFileList <-
-    function(...)
+    function(..., class="FastqFile")
 {
-    Rsamtools:::.RsamtoolsFileList(..., class="FastqFile")
+    Rsamtools:::.RsamtoolsFileList(..., class=class)
 }
