@@ -272,4 +272,10 @@ setGeneric("restore", function(x, ...) standardGeneric("restore"))
 setGeneric(".ShortReadFile", function(g, path, ...)
            standardGeneric(".ShortReadFile"), signature="path")
 
+setGeneric("FastqStreamerList",
+           function(...) standardGeneric("FastqStreamerList"))
+
+setGeneric("FastqSamplerList",
+           function(...) standardGeneric("FastqSamplerList"))
+
 setGeneric("yield", function(x, ...) standardGeneric("yield"))

@@ -61,3 +61,16 @@ FastqStreamer <-
                    readerBlockSize=as.integer(readerBlockSize),
                    sampler=streamer, verbose=verbose)
 }
+
+setMethod("FastqStreamerList", "ANY", function(...) {
+    FastqFileList(..., class="FastqStreamer")
+})
+
+setMethod("FastqStreamerList", "character",
+          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+{
+    listData <-
+        lapply(..1, FastqStreamer, n=n, readerBlockSize=readerBlockSize,
+               verbose=verbose)
+    new("FastqStreamerList", listData=listData)
+})

@@ -377,3 +377,9 @@ setOldClass("trellis")
 
 setClass("FastqFileList", contains="RsamtoolsFileList",
     prototype=prototype(elementType="FastqFile"))
+
+setClass("FastqSamplerList", contains="FastqFileList",
+         prototype=prototype(elementType="FastqSampler"))
+
+setClass("FastqStreamerList", contains="FastqFileList",
+         prototype=prototype(elementType="FastqStreamer"))

@@ -53,3 +53,16 @@ FastqSampler <-
                    readerBlockSize=as.integer(readerBlockSize),
                    sampler=sampler, verbose=verbose)
 }
+
+setMethod("FastqSamplerList", "ANY", function(...) {
+    FastqFileList(..., class="FastqSampler")
+})
+
+setMethod("FastqSamplerList", "character",
+          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+{
+    listData <-
+        lapply(..1, FastqSampler, n=n, readerBlockSize=readerBlockSize,
+               verbose=verbose)
+    new("FastqSamplerList", listData=listData)
+})
