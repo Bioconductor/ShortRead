@@ -68,10 +68,14 @@ setMethod(.report_pdf, "character",
         close(fromConn)
     }
     close(toConn)
+
+    imgDir <- file.path(destDir, "image")
+    if (!file.exists(imgDir))
+        dir.create(imgDir)
     file.copy(cssFile, file.path(destDir, names(cssFile)))
     file.copy(system.file("template", "image", biocFile,
                           package="ShortRead"),
-              file.path(destDir, "image", biocFile))
+              file.path(imgDir, biocFile))
     htmlFile
 }
 
