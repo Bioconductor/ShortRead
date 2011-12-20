@@ -1,6 +1,10 @@
 #include "ShortRead.h"
 #include "trim.h"
 
+#ifdef SUPPORT_OPENMP
+#include <omp.h>
+#endif
+
 SEXP set_omp_threads(SEXP nthreads)
 {
     int n = 1;
