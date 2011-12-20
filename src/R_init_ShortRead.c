@@ -3,10 +3,13 @@
 
 SEXP set_omp_threads(SEXP nthreads)
 {
-    int n = omp_get_max_threads();
+    int n = 1;
+#ifdef SUPPORT_OPENMP
+    n = omp_get_max_threads();
     if (!IS_INTEGER(nthreads) || 1L != LENGTH(nthreads))
         Rf_error("'nthreads' must be integer(1)");
     omp_set_num_threads(INTEGER(nthreads)[0]);
+#endif
     return ScalarInteger(n);
 }
 
