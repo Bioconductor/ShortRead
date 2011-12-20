@@ -1,8 +1,18 @@
 #include "ShortRead.h"
 #include "trim.h"
 
+SEXP set_omp_threads(SEXP nthreads)
+{
+    int n = omp_get_max_threads();
+    if (!IS_INTEGER(nthreads) || 1L != LENGTH(nthreads))
+        Rf_error("'nthreads' must be integer(1)");
+    omp_set_num_threads(INTEGER(nthreads)[0]);
+    return ScalarInteger(n);
+}
+
 static const R_CallMethodDef callMethods[] = {
     /* util.c */
+    {".set_omp_threads", (DL_FUNC) & set_omp_threads, 1},
     {".count_lines", (DL_FUNC) & count_lines, 1},
     /* trim.c */
     {".trimTails", (DL_FUNC) & trim_tails, 4},

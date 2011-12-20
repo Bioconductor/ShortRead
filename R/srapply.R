@@ -55,6 +55,8 @@
             CFUN <- catchErrs(FUN)
             if (verbose)
                 message("using 'mclapply'")
+            nthreads <- .Call(.set_omp_threads, 1L)
+            on.exit(.Call(.set_omp_threads, nthreads))
             mcLapply(X, CFUN, ..., verbose=verbose)
         }
     }
