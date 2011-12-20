@@ -62,7 +62,9 @@ FastqStreamer <-
                    sampler=streamer, verbose=verbose)
 }
 
-setMethod("FastqStreamerList", "ANY", function(...) {
+setMethod("FastqStreamerList", "ANY", 
+          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+{
     FastqFileList(..., class="FastqStreamer")
 })
 

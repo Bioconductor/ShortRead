@@ -47,14 +47,15 @@ FastqSampler <-
         stop("'n' must be length 1, finite and >= 0")
     if (is.character(con))
         con <- file(con)
-    open(con, "rb")
     sampler <- .Call(.sampler_new, as.integer(n))
     .ShortReadFile(.FastqSampler_g, con, reader=.binReader,
                    readerBlockSize=as.integer(readerBlockSize),
                    sampler=sampler, verbose=verbose)
 }
 
-setMethod("FastqSamplerList", "ANY", function(...) {
+setMethod("FastqSamplerList", "ANY",
+          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+{
     FastqFileList(..., class="FastqSampler")
 })
 
