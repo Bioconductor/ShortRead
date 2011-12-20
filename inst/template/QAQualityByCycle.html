@@ -1,0 +1,14 @@
+<p>
+Per-cycle quality score. Reported quality scores are `calibrated', i.e.,
+incorporating phred-like adjustments following sequence alignment. These
+typically decline with cycle, in an accelerating manner. Abrupt transitions in
+quality between cycles toward the end of the read might result when only some
+of the cycles are used for alignment: the cycles included in the alignment are
+calibrated more effectively than the reads excluded from the alignment.
+</p>
+<p>
+The reddish lines are quartiles (solid: median, dotted: 25, 75), the green line
+is the mean. Shading is proporitional to number of reads.
+</p>
+
+@CYCLE_QUALITY@

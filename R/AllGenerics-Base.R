@@ -50,7 +50,7 @@ setGeneric("srsort", function(x, ...) standardGeneric("srsort"))
 
 setGeneric("srrank", function(x, ...) standardGeneric("srrank"))
 
-setGeneric("tables", function(x, n=50, p, ...)
+setGeneric("tables", function(x, n=50, ...)
            standardGeneric("tables"),
            signature="x")
 
@@ -273,9 +273,13 @@ setGeneric(".ShortReadFile", function(g, path, ...)
            standardGeneric(".ShortReadFile"), signature="path")
 
 setGeneric("FastqStreamerList",
-           function(...) standardGeneric("FastqStreamerList"))
+           function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+           standardGeneric("FastqStreamerList"),
+           signature="...")
 
 setGeneric("FastqSamplerList",
-           function(...) standardGeneric("FastqSamplerList"))
+           function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+           standardGeneric("FastqSamplerList"),
+           signature="...")
 
 setGeneric("yield", function(x, ...) standardGeneric("yield"))

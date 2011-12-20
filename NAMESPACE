@@ -3,7 +3,8 @@ useDynLib(ShortRead, .registration=TRUE)
 import(zlibbioc)
 
 importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
-                  ScalarCharacter, AssayData)
+                  ScalarCharacter, ScalarNumeric, ScalarInteger,
+                  ScalarLogical, AssayData)
 
 importClassesFrom(Biostrings, BStringSet, DNAStringSet,
                   PairwiseAlignedXStringSet,
@@ -13,7 +14,8 @@ importClassesFrom(IRanges, RangesList, SimpleRleList)
 
 importFrom(grDevices, colorRampPalette)
 
-importFrom(BiocGenerics, Filter, lapply, rbind, sapply)
+importFrom(BiocGenerics, Filter, lapply, mapply, sapply,
+           cbind, rbind)
 
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",
@@ -21,7 +23,8 @@ importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            mkScalar)
 
 importFrom(IRanges, append, as.list, as.vector, coverage, head,
-           narrow, score, split, start, unlist, Views, width, "%in%")
+           narrow, score, split, start, unlist, Views, width, with,
+           "%in%")
 
 importFrom(lattice, dotplot, histogram, levelplot, llines,
            panel.abline, panel.histogram, panel.levelplot,
@@ -29,7 +32,7 @@ importFrom(lattice, dotplot, histogram, levelplot, llines,
 
 importFrom(methods, Ops)
 
-importMethodsFrom(IRanges, Ops)
+importMethodsFrom(IRanges, Ops, coerce)
 
 importFrom(GenomicRanges, strand, GappedAlignments)
 
