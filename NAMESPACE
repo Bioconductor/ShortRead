@@ -14,7 +14,7 @@ importClassesFrom(IRanges, RangesList, SimpleRleList)
 
 importFrom(grDevices, colorRampPalette)
 
-importFrom(BiocGenerics, Filter, lapply, mapply, sapply,
+importFrom(BiocGenerics, Filter, lapply, mapply, sapply, Map,
            cbind, rbind)
 
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,

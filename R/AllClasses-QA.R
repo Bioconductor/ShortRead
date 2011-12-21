@@ -13,10 +13,6 @@ setClass(".QA2",
                          length(.self$filter)), "\n")
          }))
 
-setClass("QASource",
-         representation("VIRTUAL", ".QA2",
-                        metadata="DataFrame", data="QAData"))
-
 setClass("QASummary",
          representation("VIRTUAL", ".QA2",
                         addFilter="ScalarLogical",
@@ -27,8 +23,24 @@ setClass("QASummary",
            addFilter=mkScalar(TRUE),
            useFilter=mkScalar(TRUE)))
 
+## Sources
+
+setClass("QASource",
+         representation("VIRTUAL", "QASummary",
+                        metadata="DataFrame", data="QAData",
+                        flagNSequencesRange="integer"),
+         prototype=prototype(
+           flagNSequencesRange=NA_integer_),
+         validity=function(object) {
+             msg <- NULL
+             if (!(is.na(object@flagNSequencesRange) ||
+                   2L == length(object@flagNSequencesRange)))
+                 msg <- "'flagNSequencesRange' must be integer(2)"
+             if (is.null(msg)) TRUE else msg
+         })
+
 setClass("QAFastqSource",
-         representation("QASource", "QASummary",
+         representation("QASource",
                         con="character", n="ScalarInteger",
                         readerBlockSize="ScalarInteger"))
 
@@ -37,7 +49,7 @@ setClass("QAFastqSource",
 
 ## summaries
 
-setClass("QASources", representation("QASummary"))
+setClass("QAFlagged", representation("QASummary"))
 
 setClass("QAFiltered", representation("QASummary"))
 
@@ -81,6 +93,8 @@ setClass("QACollate",
          prototype=prototype(elementType="QASummary"))
 
 setClass("QA",
-         representation(".QA2", "SimpleList", sources="QASources",
-                        filtered="QAFiltered"),
+         representation(".QA2", "SimpleList",
+                        src="QASource",
+                        filtered="QAFiltered",
+                        flagged="QAFlagged"),
          prototype=prototype(elementType="QASummary"))

@@ -11,3 +11,6 @@ setGeneric("qa2", function(object, state, ..., verbose=FALSE)
            standardGeneric("qa2"),
            signature="object")
 
+setGeneric("flag", function(object, ..., verbose=FALSE)
+           standardGeneric("flag"),
+           signature="object")

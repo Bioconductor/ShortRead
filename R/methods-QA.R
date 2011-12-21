@@ -21,23 +21,6 @@ setMethod(.filter, "QAData", function(object, useFilter, ...) {
     object
 }
 
-## QASource
-
-QAFastqSource <-
-    function(con=character(), n=1e6, readerBlockSize=1e8, ...)
-{
-    new("QAFastqSource", con=as.character(con),
-        n=mkScalar(as.integer(n)),
-        readerBlockSize=mkScalar(as.integer(readerBlockSize)),
-        ...)
-}
-
-setMethod(show, "QAFastqSource", function(object) {
-    callNextMethod()
-    cat("n: ", object@n, ";",
-        " readerBlockSize: ", object@readerBlockSize, "\n", sep="")
-})
-
 ## QASummary
 
 .QASummary <- 
@@ -65,11 +48,12 @@ setMethod(show, "QAFastqSource", function(object) {
 
 setMethod(show, "QASummary", function(object) {
     callNextMethod()
+    cat(Rsamtools:::.ppath("html template", object@html))
     cat("useFilter: ", object@useFilter, "; ",
         "addFilter: ", object@addFilter, "\n", sep="")
 })
 
-QASources <- .QASummaryFactory("QASources")
+QAFlagged <- .QASummaryFactory("QAFlagged")
 
 QAFiltered <- .QASummaryFactory("QAFiltered")
 
@@ -141,6 +125,28 @@ QANucleotideByCycle <- .QASummaryFactory("QANucleotideByCycle")
 
 QAQualityByCycle <- .QASummaryFactory("QAQualityByCycle")
 
+## QASource
+
+QAFastqSource <-
+    function(con=character(), n=1e6, readerBlockSize=1e8,
+             flagNSequencesRange=NA_integer_, ...,
+             html=system.file("template", "QASources.html",
+               package="ShortRead"))
+{
+    .QASummary("QAFastqSource", con=as.character(con),
+        n=mkScalar(as.integer(n)),
+        readerBlockSize=mkScalar(as.integer(readerBlockSize)),
+        flagNSequencesRange=as.integer(flagNSequencesRange),
+        ..., html=mkScalar(html))
+}
+
+setMethod(show, "QAFastqSource", function(object) {
+    callNextMethod()
+    cat("length:", length(object@con), "\n")
+    cat("n: ", object@n, ";",
+        " readerBlockSize: ", object@readerBlockSize, "\n", sep="")
+})
+
 ## QACollate
 
 setMethod(QACollate, "missing",
@@ -171,9 +177,10 @@ setMethod(show, "QACollate", function(object) {
 ## QA
 
 QA <- 
-    function (sources, filtered, ...) 
+    function (src, filtered, flagged, ...) 
 {
-    new("QA", sources = sources, filtered = filtered, ...)
+    new("QA", src = src, filtered = filtered, flagged=flagged,
+        ...)
 }
 
 ## .clone
@@ -400,12 +407,10 @@ setMethod(qa2, "QACollate",
     }, object, ..., verbose=verbose)
 
     ## collapse summary
-    srcValues <- do.call(rbind, lapply(qas, function(elt) {
-        values(elt@src)
-    }))
-    srcValues[["Id"]] <- seq_along(qas)
-    ncol <- ncol(srcValues)
-    srcValues <- srcValues[, c(ncol, seq_len(ncol - 1L))]
+    df <- do.call(rbind, Map(function(elt) values(elt@src), qas))
+    df[["Id"]] <- seq_along(qas)
+    ncol <- ncol(df)
+    values(object@src) <- df[, c(ncol, seq_len(ncol - 1L))]
 
     ## collect NumberOfRecords
     filtered <- as(t(sapply(qas, function(lst) {
@@ -413,7 +418,7 @@ setMethod(qa2, "QACollate",
             metadata(values(elt))[["NumberOfRecords"]]
         })
     })), "DataFrame")
-    filtered[["Id"]] <- srcValues[["Id"]]
+    filtered[["Id"]] <- values(object@src)[["Id"]]
     ncol <- ncol(filtered)
     filtered <- filtered[,c(ncol, seq_len(ncol - 1L))]
 
@@ -425,15 +430,57 @@ setMethod(qa2, "QACollate",
         rotate <- c(ncol(df), seq_len(ncol - 1L))
         values(elt) <- df[,rotate]
         elt
-    }, id), qas, srcValues[["Id"]])
+    }, id), qas, values(object@src)[["Id"]])
 
     ## collapse
-    values <- do.call(mapply, c(function(...) {
+    values <- do.call(Map, c(function(...) {
         do.call(rbind, list(...))
     }, qas))
 
-    QA(QASources(values=srcValues), QAFiltered(values=filtered),
+    ## flag
+    flag <- Reduce(rbind, Map(function(x, verbose) {
+        nm <- class(x)
+        f <- flag(x, verbose=verbose)
+        if (length(f)) DataFrame(Flag=f, Summary=nm)
+        else DataFrame(Flag=integer(), Summary=character())
+    }, c(list(object@src), values), MoreArgs=list(verbose=verbose)))
+
+    QA(object@src, QAFiltered(values=filtered),
+       QAFlagged(values=flag),
        do.call(SimpleList, values))
+})
+
+## flag
+
+setMethod(flag, "ANY",
+          function(object, ..., verbose=FALSE)
+{
+    if (verbose) message("flag,ANY-method")
+    integer()
+})
+
+setMethod(flag, "QASource",
+          function(object, ..., verbose=FALSE)
+{
+    if (verbose) message("flag,QASource-method")
+
+    rng <- object@flagNSequencesRange
+    x <- values(object)[["SourceN"]]
+
+    out <- if (1L == length(rng) && is.na(rng)) {
+        ## default -- outliers
+        stats <- stats::fivenum(x, na.rm = TRUE)
+        iqr <- diff(stats[c(2, 4)])
+        coef <- 1.5
+        if (!is.na(iqr)) {
+            x < (stats[2L] - coef * iqr) |
+            x > (stats[4L] + coef * iqr)
+        } else !is.finite(x)
+    } else {
+        !is.finite(x) | x < rng[1] | x > rng[2]
+    }
+
+    which(out)
 })
 
 ## report
@@ -444,13 +491,19 @@ setMethod(qa2, "QACollate",
     hwrite(as(df, "data.frame"), border=0)
 }
 
-setMethod(report, "QASources",
+setMethod(report, "QASource",
           function(x, ..., dest=tempfile(), type="html")
 {
     plt <- dotplot(Id ~ SourceN, as(values(x), "data.frame"),
                    type = "b", pch = 20, col = .dnaCol)
     list(SAMPLE_KEY=.hwrite(values(x)),
          PPN_COUNT=.html_img(dest, "readCounts", plt))
+})
+
+setMethod(report, "QAFlagged",
+          function(x, ...., dest=tempfile(), type="html")
+{
+    list(FLAGGED=.hwrite(values(x)))
 })
 
 setMethod(report, "QAFiltered",
@@ -643,15 +696,18 @@ setMethod(report, "QA", function(x, ..., dest=tempfile(), type="html") {
         .throw(SRError("UserArgumentMismatch", "'type' must be 'html'"))
     dir.create(dest, recursive=TRUE)
 
-    sections <- c(system.file("template", "QAHeader.html",
-                              package="ShortRead", mustWork=TRUE),
-                  x@sources@html, x@filtered@html,
+    header <- system.file("template", "QAHeader.html",
+                       package="ShortRead", mustWork=TRUE)
+    footer <- system.file("template", "QAFooter.html",
+                          package="ShortRead", mustWork=TRUE)
+    sections <- c(header,
+                  x@src@html, x@filtered@html, x@flagged@html,
                   sapply(x, slot, "html"),
-                  system.file("template", "QAFooter.html",
-                              package="ShortRead", mustWork=TRUE))
+                  footer)
 
-    values0 <- c(list(report(x@sources, dest=dest),
-                      report(x@filtered, dest=dest)),
+    values0 <- c(list(report(x@src, dest=dest),
+                      report(x@filtered, dest=dest),
+                      report(x@flagged, dest=dest)),
                  lapply(x, report, dest=dest))
     values <- setNames(unlist(values0, recursive=FALSE, use.names=FALSE),
                        unlist(lapply(values0, names)))
