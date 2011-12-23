@@ -18,6 +18,7 @@ setClass("QASummary",
                         addFilter="ScalarLogical",
                         useFilter="ScalarLogical",
                         values="DataFrame",
+                        flag="integer",
                         html="ScalarCharacter"),
          prototype=prototype(
            addFilter=mkScalar(TRUE),
@@ -59,7 +60,10 @@ setClass("QAQualityUse", representation("QASummary"))
 
 setClass("QASequenceUse", representation("QASummary"))
 
-setClass("QAReadQuality", representation("QASummary"))
+setClass("QAReadQuality",
+         representation("QASummary",
+                        flagK="ScalarNumeric",
+                        flagA="ScalarInteger"))
 
 setClass("QAAdapterContamination",
          representation("QASummary",

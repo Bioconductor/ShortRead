@@ -63,7 +63,22 @@ QAQualityUse <- .QASummaryFactory("QAQualityUse")
 
 QASequenceUse <- .QASummaryFactory("QASequenceUse")
 
-QAReadQuality <- .QASummaryFactory("QAReadQuality")
+QAReadQuality <- 
+    function(useFilter=TRUE, addFilter=TRUE,
+             flagK=.2, flagA=30L, ...)
+{
+    .QASummary("QAReadQuality",
+               useFilter=useFilter, addFilter=addFilter,
+               flagK=mkScalar(flagK),
+               flagA=mkScalar(as.integer(flagA)),
+               ...)
+}
+
+setMethod(show, "QAReadQuality", function(object) {
+    callNextMethod()
+    cat(sprintf("flag: K over A = (%.2f x 100)%% over %d\n",
+                object@flagK, object@flagA))
+})
 
 QAAdapterContamination <-
     function (useFilter=TRUE, addFilter=TRUE,
@@ -298,7 +313,10 @@ setMethod(qa2, "QAQualityUse",
     alf <- .qa_alphabetFrequency(quality(obj), collapse=TRUE)
     alf <- alf[alf != 0]
     quality <- factor(names(alf), levels=alphabet(quality(obj)))
-    values <- DataFrame(Quality=quality, Count=as.vector(alf))
+    q0 <- 1 + 32 * is(quality, "SFastqQuality")
+    values <- DataFrame(Quality=quality,
+                        Score=as.numeric(quality) - q0,
+                        Count=as.vector(alf))
     metadata(values) <- list(NumberOfRecords=length(obj))
     renew(object, values=values)
 })
@@ -408,7 +426,8 @@ setMethod(qa2, "QACollate",
 
     ## collapse summary
     df <- do.call(rbind, Map(function(elt) values(elt@src), qas))
-    df[["Id"]] <- seq_along(qas)
+    df[["Id"]] <- factor(seq_along(qas),
+                         levels=as.character(seq_along(qas)))
     ncol <- ncol(df)
     values(object@src) <- df[, c(ncol, seq_len(ncol - 1L))]
 
@@ -438,25 +457,27 @@ setMethod(qa2, "QACollate",
     }, qas))
 
     ## flag
-    flag <- Reduce(rbind, Map(function(x, verbose) {
-        nm <- class(x)
-        f <- flag(x, verbose=verbose)
-        if (length(f)) DataFrame(Flag=f, Summary=nm)
+    object@src <- flag(object@src, verbose=verbose)
+    values <- lapply(values, flag, verbose=verbose)
+
+    flagged <- Reduce(rbind, Map(function(x) {
+        f <- x@flag
+        if (length(f)) DataFrame(Flag=f, Summary=class(x))
         else DataFrame(Flag=integer(), Summary=character())
-    }, c(list(object@src), values), MoreArgs=list(verbose=verbose)))
+    }, c(list(object@src), values)))
 
     QA(object@src, QAFiltered(values=filtered),
-       QAFlagged(values=flag),
+       QAFlagged(values=flagged),
        do.call(SimpleList, values))
 })
 
 ## flag
 
-setMethod(flag, "ANY",
+setMethod(flag, ".QA2",
           function(object, ..., verbose=FALSE)
 {
     if (verbose) message("flag,ANY-method")
-    integer()
+    object
 })
 
 setMethod(flag, "QASource",
@@ -467,20 +488,35 @@ setMethod(flag, "QASource",
     rng <- object@flagNSequencesRange
     x <- values(object)[["SourceN"]]
 
-    out <- if (1L == length(rng) && is.na(rng)) {
+    if (1L == length(rng) && is.na(rng)) {
         ## default -- outliers
         stats <- stats::fivenum(x, na.rm = TRUE)
         iqr <- diff(stats[c(2, 4)])
         coef <- 1.5
-        if (!is.na(iqr)) {
-            x < (stats[2L] - coef * iqr) |
-            x > (stats[4L] + coef * iqr)
-        } else !is.finite(x)
-    } else {
-        !is.finite(x) | x < rng[1] | x > rng[2]
+        object@flagNSequencesRange <- rng <-
+            c(as.integer(floor(stats[2L] - coef * iqr)),
+              as.integer(ceiling(stats[4L] + coef * iqr)))
     }
 
-    which(out)
+    object@flag <- which(!is.finite(x) | x < rng[1] | x > rng[2])
+    object
+})
+
+setMethod(flag, "QAReadQuality", function(object, verbose=FALSE)
+{
+    if (verbose) message("flag,QAReadQuality-method")
+    df <- as(values(object), "data.frame")
+    object@flag <- which(unname(unlist(with(df, {
+        Map(function(score, density, A, K) {
+            dx <- diff(score)
+            x <- score[-length(score)] + dx / 2
+            y <- density[-length(density)] + diff(density) / 2
+            k <- approxfun(x, cumsum(y * dx))(A)
+            is.na(k) || k < K
+        }, split(Score, Id), split(Density, Id),
+            MoreArgs=list(A = object@flagA, K = object@flagK))
+    }))))
+    object
 })
 
 ## report
@@ -494,8 +530,19 @@ setMethod(flag, "QASource",
 setMethod(report, "QASource",
           function(x, ..., dest=tempfile(), type="html")
 {
-    plt <- dotplot(Id ~ SourceN, as(values(x), "data.frame"),
-                   type = "b", pch = 20, col = .dnaCol)
+    df <- as(values(x), "data.frame")
+    df$Id <- as.integer(as.character(df$Id))
+    plt <-
+        dotplot(Id ~ SourceN, df,
+                type = "b", pch = 20, col = .dnaCol,
+                rng = x@flagNSequencesRange,
+                rngcol = brewer.pal(9, "RdYlBu")[c(1, 9)],
+                panel=function(x, y, ..., rng, rngcol) {
+                    panel.dotplot(x, y, ...)
+                    yy <- c(min(y), max(y))
+                    llines(rng[1], yy, col=rngcol[1], lty=2)
+                    llines(rng[2], yy, col=rngcol[2], lty=2)
+                })
     list(SAMPLE_KEY=.hwrite(values(x)),
          PPN_COUNT=.html_img(dest, "readCounts", plt))
 })
@@ -521,12 +568,19 @@ setMethod(report, "QAAdapterContamination",
 setMethod(report, "QANucleotideUse",
           function(x, ..., dest=tempfile(), type="html")
 {
-    plt <- dotplot(Id ~ Count, group = Nucleotide,
-                   as(values(x), "data.frame"),
-                   type = "b", pch = 20, col = .dnaCol,
-                   key = list(space = "top", lines = list(col = .dnaCol), 
-                     text = list(lab = levels(values(x)[["Nucleotide"]])),
-                       columns = 5L))
+    df <- as(values(x), "data.frame")
+    df$Id <- as.integer(as.character(df$Id))
+    plt <-
+        dotplot(Id ~ Count|factor(ifelse(df$Nucleotide == "N", "N", "O")),
+                group=Nucleotide, df,
+                base=df$Nucleotide,
+                type = "b", pch = 20, col = .dnaCol,
+                key = list(space = "top", lines = list(col = .dnaCol), 
+                  text = list(lab = levels(values(x)[["Nucleotide"]])),
+                  columns = 5L),
+                strip=FALSE, scale=list(relation="free"),
+                par.settings=list(layout.widths = list(panel = c(1, 2))))
+
     list(BASE_CALL_COUNT=.html_img(dest, "baseCalls", plt))
 })
 
@@ -551,7 +605,7 @@ setMethod(report, "QAQualityUse",
                    key = list(space = "top",
                      lines = list(col = col, size=3L), 
                      text = list(lab = levels(df[["Quality"]])),
-                     columns = 10L, cex=.6))
+                     columns = min(length(col), 10L), cex=.6))
     list(QUALITY_SCORE_COUNT=.html_img(dest, "qualityCalls", plt))
 })
 
@@ -559,16 +613,21 @@ setMethod(report, "QAReadQuality",
     function(x, ..., dest=tempfile(), type="html")
 {
     df <- as(values(x), "data.frame")
+    lvl <- levels(df$Id)
+    flag <- lvl[x@flag]
+    df$Id <- factor(df$Id, levels=c(lvl[!lvl %in% flag], flag))
     xmin <- min(df$Score)
     ymax <- max(df$Density)
-    plt <- xyplot(Density ~ Score | Id, df,
-                  type = "l", xlab = "Average (calibrated) base quality", 
-                  ylab = "Proportion of reads", aspect = 2,
-                  panel = function(..., subscripts) {
-                      panel.xyplot(...)
-                      lbl <- as.character(unique(df$Id[subscripts]))
-                      ltext(xmin, ymax, lbl, adj = c(0, 1))
-                  }, strip = FALSE)
+    col <- c(rep("gray", length(lvl) - length(flag)),
+             brewer.pal(8, "Set1")[1 + (seq_along(flag) - 1) %% 8])
+    plt <-
+        xyplot(Density ~ Score, group=Id, df,
+               type = "l", xlab = "Average (calibrated) base quality", 
+               nylab = "Proportion of reads", col = col, strip=FALSE,
+               key = list(space = "top",
+                 lines = list(col=tail(col, length(flag)), size=3L, lwd=2),
+                 text = list(lab=tail(lvl, length(flag))),
+                 columns=min(length(col), 10L), cex=.6))
     list(READ_QUALITY_FIGURE=.html_img(dest, "readQuality", plt))
 })
 
