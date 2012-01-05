@@ -4,7 +4,8 @@
 \description{
 
   This \code{lapply} like function evaluates locally or, if \pkg{Rmpi}
-  or \pkg{parallel} is loaded (and \pkg{Rmpi} workers spawned), across
+  or \pkg{parallel} is loaded (and \pkg{Rmpi} workers spawned) and
+  \code{options(srapply_fapply)} set appropriately (see below), across
   nodes in a cluster. Errors in evaluation of \code{FUN} generate
   warnings; results are trimmed to exclude results where the error
   occurs.
@@ -54,12 +55,12 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(),
 \details{
 
     The default value for \code{fapply} is available with
-    \code{ShortRead:::.fapply()}. It tests the
+    \code{ShortRead:::.fapply()}. It tests
     \code{getOption("srapply_fapply")} for value \dQuote{Rmpi} or
     \dQuote{parallel}.
 
-    If \pkg{Rmpi} is indicated, \code{fapply} ensures that \pkg{ShortRead}
-    is \code{require}d on all workers, and then invokes
+    If \pkg{Rmpi} is indicated, \code{fapply} ensures that
+    \pkg{ShortRead} is \code{require}d on all workers, and then invokes
     \code{mpi.parLapply} with arguments \code{X}, \code{FUN},
     \code{...}, and \code{verbose}. The function \code{FUN} is wrapped
     so that errors are returned as objects of class \code{SRError} with

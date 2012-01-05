@@ -77,6 +77,7 @@ setClass("QAFrequentSequence",
          representation("QASummary",
                         n="ScalarInteger", k="ScalarInteger",
                         reportSequences="ScalarLogical"),
+         prototype=prototype(n=mkScalar(10L)),
          validity=function(object) {
              msg <- NULL
              if (is.finite(object@n) && is.finite(object@k))
@@ -92,13 +93,19 @@ setClass("QAQualityByCycle", representation("QASummary"))
 
 ## collation
 
+gc()                                    # work around finalizer bug
+
 setClass("QACollate",
          representation(".QA2", "SimpleList", src="QASource"),
-         prototype=prototype(elementType="QASummary"))
+         prototype=prototype(
+           src=new("QAFastqSource"),
+           elementType="QASummary"))
 
 setClass("QA",
          representation(".QA2", "SimpleList",
                         src="QASource",
                         filtered="QAFiltered",
                         flagged="QAFlagged"),
-         prototype=prototype(elementType="QASummary"))
+         prototype=prototype(
+           src=new("QAFastqSource"),
+           elementType="QASummary"))

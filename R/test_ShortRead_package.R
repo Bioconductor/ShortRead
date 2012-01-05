@@ -1,1 +1,2 @@
-.test <- function() BiocGenerics:::testPackage("ShortRead")
+.test <- function(...)
+    BiocGenerics:::testPackage("ShortRead", ...)
