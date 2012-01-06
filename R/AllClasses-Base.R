@@ -364,7 +364,12 @@ setOldClass("trellis")
       },
       show = function() {
           cat("class:", class(.self), "\n")
-          cat("file:", basename(summary(.self$con)$description), "\n")
+          nm <- tryCatch({
+              basename(summary(.self$con)$description)
+          }, error=function(err) {
+              "closed"
+          })
+          cat("file:", nm, "\n")
           s <- .self$status()
           cat("status:", paste(names(s), s, sep="=", collapse=" "), "\n")
       }))
