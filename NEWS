@@ -5,6 +5,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o FastqSampler is considerably faster
 
+    o FastqSampler and FastqStreamer require explicit close() to avoid
+    warnings about closing unused connections
+
 BUG FIXES
 
     o qa reports on very large lanes would overflow alphabetFrequency

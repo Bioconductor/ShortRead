@@ -48,14 +48,18 @@ test_FastqSampler <- function()
 {
     sr <- readFastq(fl)
     ## here to re-use equality checker
-    obj <- yield(FastqSampler(fl))
+    
+    obj <- yield(f <- FastqSampler(fl))
+    close(f)
     .equals(sr, obj)
 
-    yld <- yield(FastqSampler(fl, readerBlockSize=1000))
+    yld <- yield(f <- FastqSampler(fl, readerBlockSize=1000))
+    close(f)
     checkTrue(validObject(yld))
 
     ## regression
-    yld <- yield(FastqSampler(fl, readerBlockSize=256))
+    yld <- yield(f <- FastqSampler(fl, readerBlockSize=256))
+    close(f)
     checkIdentical(256L, length(yld))
 
 }
@@ -66,6 +70,7 @@ test_FastqSampler_rand <- function()
     samp <- FastqSampler(fl, 50)
     set.seed(123L); obs <- yield(samp)
     set.seed(123L); exp <- yield(samp)
+    close(samp)
     .equals(obs, exp)
 }
 
@@ -79,6 +84,7 @@ test_FastqStreamer <- function()
         len <- len + length(y)
         i <- i + 1L
     }
+    close(f)
     checkIdentical(6L, i)
     checkIdentical(256L, len)
 
@@ -86,6 +92,7 @@ test_FastqStreamer <- function()
     f <- FastqStreamer(fl, n=50)
     .equals(sr[1:50], yield(f))
     .equals(sr[50+1:50], yield(f))
+    close(f)
 
     ## whole file
     f <- FastqStreamer(fl, n=500)
@@ -95,6 +102,7 @@ test_FastqStreamer <- function()
         len <- len + length(y)
         i <- i + 1L
     }
+    close(f)
     checkIdentical(1L, i)
     checkIdentical(256L, len)
 
@@ -105,6 +113,7 @@ test_FastqStreamer <- function()
         len <- len + length(y)
         i <- i + 1L
     }
+    close(f)
     checkIdentical(6L, i)
     checkIdentical(256L, len)
 }

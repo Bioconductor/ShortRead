@@ -139,10 +139,12 @@ rfq <- readFastq(f)
 f <- FastqSampler(fl, 50)
 yield(f)    # sample of size n=50
 yield(f)    # independent sample of size 50
+close(f)
 
 f <- FastqStreamer(fl, 50)
 yield(f)    # records 1 to 50
 yield(f)    # records 51 to 100
+close(f)
 
 ## iterating over an entire file
 f <- FastqStreamer(fl, 50)
@@ -150,6 +152,7 @@ while (length(fq <- yield(f))) {
     ## do work here
     print(length(fq))
 }
+close(f)
 
 ## Internal fields, methods, and help; for developers
 ShortRead:::.FastqSampler_g$methods()

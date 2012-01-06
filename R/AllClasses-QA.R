@@ -93,8 +93,6 @@ setClass("QAQualityByCycle", representation("QASummary"))
 
 ## collation
 
-gc()                                    # work around finalizer bug
-
 setClass("QACollate",
          representation(".QA2", "SimpleList", src="QASource"),
          prototype=prototype(

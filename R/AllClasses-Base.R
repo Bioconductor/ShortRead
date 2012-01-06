@@ -331,11 +331,6 @@ setOldClass("trellis")
 .ShortReadFile_g <- setRefClass("ShortReadFile",
     fields=list(con="ANY", path="character"),
     methods=list(
-      finalize = function() {
-          ## isOpen fails after(close(con))...
-          tryCatch(if (isOpen(con)) close(con), error=function(...) {})
-          .self
-      },
       msg = function(txt) {
           "display 'txt' with status information as a message()"
           s <- status()
