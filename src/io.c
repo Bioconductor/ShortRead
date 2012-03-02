@@ -255,10 +255,10 @@ static void _read_solexa_fastq_file(const char *fname, SEXP ans)
         }
 
         nchar_in_buf = _rtrim(linebuf);
-        if (nchar_in_buf >= LINEBUF_SIZE - 1) {	// should never be >
+        if (nchar_in_buf >= LINEBUF_SIZE - 1) {	// should never be
             gzclose(file);
             error("line too long %s:%d", fname, lineno);
-        } else if (nchar_in_buf == 0) {
+        } else if ((0 == reclineno) && (0 == nchar_in_buf)) {
             gzclose(file);
             error("unexpected empty line %s:%d", fname, lineno);
         }

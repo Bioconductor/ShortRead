@@ -23,6 +23,14 @@ test_readFastq_withids <- function() {
     checkIdentical(as.character(id(rfq1)), character(length(rfq1)))
 }
 
+test_readFastq_zerowidth <- function() {
+    fl <- tempfile();
+    writeLines("@ \n\n+\n", fl)
+    fq <- readFastq(fl)
+    checkTrue(validObject(fq))
+    checkIdentical(0L, width(fq))
+}
+
 ## alphabetByCycle
 
 checkAlphabetByCycle <- function(obj) {

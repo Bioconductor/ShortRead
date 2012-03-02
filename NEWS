@@ -18,6 +18,8 @@ BUG FIXES
 
     o FastqSampler supports outputs of >2^31 - 1 total nucleotides
 
+    o readFastq parses records with 0 width
+
 CHANGES IN VERSION 1.11
 -----------------------
 
