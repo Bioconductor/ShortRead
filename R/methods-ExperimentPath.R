@@ -8,7 +8,7 @@ setMethod(.srValidity, "ExperimentPath", function(object) {
 .srPath <- function(path, pattern = character()) {
     path <- path.expand(path)
     tryCatch({
-        res <- list.files(path, pattern=pattern, full.name=TRUE)
+        res <- list.files(path, pattern=pattern, full.names=TRUE)
         if (length(res)==0) NA_character_
         else res
     }, warning=function(warn) NA_character_)

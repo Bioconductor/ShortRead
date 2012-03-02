@@ -28,11 +28,9 @@
     lst <- lapply(as.list(files(x)), function(fl) {
         param <- ScanBamParam(which=rng, what=c("pos", "strand"))
         starts <- scanBam(fl, param=param)[[1]]
-        bins <- with(starts, {
-            lapply(split(pos, strand)[1:2], function(elt) {
-                if (length(elt)) cut(elt, breaks=breaks, labels=FALSE)
-                else integer()
-            })
+        bins <- lapply(split(starts$pos, starts$strand)[1:2], function(elt) {
+            if (length(elt)) cut(elt, breaks=breaks, labels=FALSE)
+            else integer()
         })
         lapply(bins, tabulate, length(breaks)-1) #nbins = breaks-1
     })

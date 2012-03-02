@@ -47,7 +47,7 @@
 \usage{
 ## FastqFile and FastqFileList
 FastqFile(con, ...)
-FastqFileList(...)
+FastqFileList(..., class="FastqFile")
 \S3method{open}{ShortReadFile}(con, ...)
 \S3method{close}{ShortReadFile}(con, ...)
 \S4method{readFastq}{FastqFile}(dirPath, pattern=character(), ...)
@@ -72,13 +72,16 @@ yield(x, ...)
   \item{verbose}{Display progress.}
 
   \item{x}{An instance from the \code{FastqSampler} or
-  \code{FastqStreamer} class.}
+    \code{FastqStreamer} class.}
 
   \item{...}{Additional arguments. For \code{FastqFileList}, this can
     either be a single character vector of paths to fastq files, or
     several instances of \code{FastqFile} objects.}
 
   \item{pattern}{Ignored.}
+
+  \item{class}{For developer use, to specify the underlying class
+    contained in the \code{FastqFileList}.}
 
 }
 

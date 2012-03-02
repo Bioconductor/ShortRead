@@ -144,10 +144,10 @@
 }
 
 .readAligned_Maq_ADF <- function(lst) {
-    df <- with(lst, data.frame(nMismatchBestHit=nMismatchBestHit,
-                               mismatchQuality=mismatchQuality,
-                               nExactMatch24=nExactMatch24,
-                               nOneMismatch24=nOneMismatch24))
+    df <- data.frame(nMismatchBestHit=lst$nMismatchBestHit,
+                     mismatchQuality=lst$mismatchQuality,
+                     nExactMatch24=lst$nExactMatch24,
+                     nOneMismatch24=lst$nOneMismatch24)
     meta <- data.frame(labelDescription=c(
                          "Number of mismatches of the best hit",
                          "Sum of mismatched base qualities of the best hit",

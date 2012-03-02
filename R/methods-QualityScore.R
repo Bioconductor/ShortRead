@@ -61,7 +61,7 @@ IntegerQuality <- function(quality=integer(0)) {
     inds <- seq_len(length(reads))
     scores <- split(nums, factor(rep(inds, width(reads)), inds))
   } else {
-      qual <- readFASTA(file, strip.desc=TRUE)
+      qual <- readFASTA(file, strip.descs=TRUE)
       scores <- lapply(strsplit(subListExtract(qual, "seq", TRUE), " +"),
                        as.integer)
       names(scores) <- subListExtract(qual, "desc", TRUE)

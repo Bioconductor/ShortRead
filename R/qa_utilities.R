@@ -146,13 +146,12 @@
         }, cvg))
 
     ## Entire lane, non-zero coverage
-    with(count[count$Coverage!=0,], {
-        res <- tapply(as.numeric(Count), Coverage, sum)
-        count <- as.vector(res)
-        data.frame(Coverage=as.numeric(names(res)), Count= count,
-                   CumulativePpn=cumsum(count) / sum(count),
-                   Lane=lane, row.names=NULL)
-    })
+    count <- count[count$Coverage != 0,]
+    res <- tapply(as.numeric(count$Count), count$Coverage, sum)
+    count <- as.vector(res)
+    data.frame(Coverage=as.numeric(names(res)), Count= count,
+               CumulativePpn=cumsum(count) / sum(count),
+               Lane=lane, row.names=NULL)
 }
 
 .qa_adapterContamination <-
@@ -208,7 +207,7 @@
                       Census=factor(names(df)[col(df)],
                         levels=names(df)))
     col <- .dnaCol[c(1, 4, 2)]
-    dotplot(Sample~Count, group=Census, df1,
+    dotplot(Sample~Count, group=df1$Census, df1,
             type="b", pch=20, col=col,
             key=list(space="top", lines=list(col=rev(col)),
               text=list(rev(names(df))), columns=ncol(df)))
@@ -223,7 +222,7 @@
                       Sample=factor(rownames(alph), levels=rownames(alph)),
                       Nucleotide=factor(names(alph)[col(alph)],
                         levels=c("A", "C", "G", "T", "N")))
-    dotplot(Sample~Frequency, group=Nucleotide, df1,
+    dotplot(Sample~Frequency, group=df1$Nucleotide, df1,
             type="b", pch=20,  col=.dnaCol,
             key=list(space="top", lines=list(col=.dnaCol),
               text=list(lab=names(df)), columns=ncol(df)))
@@ -248,13 +247,13 @@
 
 .plotReadOccurrences <- function(df, ..., strip=FALSE)
 {
-    df <- with(df, {
-        nOccur <- tapply(nOccurrences, lane, c)
-        cumulative <- tapply(nOccurrences*nReads, lane, function(elt) {
+    df <- local({
+        nOccur <- tapply(df$nOccurrences, df$lane, c)
+        cumulative <- tapply(df$nOccurrences * df$nReads, df$lane, function(elt) {
             cs <- cumsum(elt)
             (cs-cs[1] + 1) / (diff(range(cs)) + 1L)
         })
-        lane <- tapply(lane, lane, c)
+        lane <- tapply(df$lane, df$lane, c)
         data.frame(nOccurrences=unlist(nOccur),
                    cumulative=unlist(cumulative),
                    lane=unlist(lane),
@@ -385,8 +384,8 @@
     xmax <- max(df$Cycle)
     ymax <- log10(max(df$Count))
     xyplot(log10(Count)~as.integer(Cycle)|lane,
-           group=factor(Base),
-           df[with(df, order(lane, Base, Cycle)),],
+           group=factor(df$Base),
+           df[order(df$lane, df$Base, df$Cycle),],
            panel=function(..., subscripts) {
                lbl <- as.character(unique(df$lane[subscripts]))
                ltext(xmax, ymax, lbl, adj=c(1, 1))
