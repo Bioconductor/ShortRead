@@ -106,10 +106,9 @@
     }
     abc <- apply(abc, 2:3, sum)
     q <- factor(rownames(abc)[row(abc)], levels=rownames(abc))
-    q0 <- 1 + 32 * is(quality, "SFastqQuality")
+    q0 <- as(do.call(class(quality), list(rownames(abc))), "matrix")
     df <- data.frame(Cycle=as.integer(colnames(abc)[col(abc)]),
-                     Quality=q,
-                     Score=as.numeric(q)-q0,
+                     Quality=q, Score=as.integer(q0)[q],
                      Count=as.vector(abc),
                      lane=lane, row.names=NULL)
     df[df$Count != 0, ]
