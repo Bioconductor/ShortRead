@@ -15,7 +15,7 @@ importClassesFrom(IRanges, RangesList, SimpleRleList)
 importFrom(grDevices, colorRampPalette)
 
 importFrom(BiocGenerics, Filter, lapply, mapply, sapply, Map,
-           cbind, rbind)
+           cbind, rbind, strand)
 
 importFrom(Biobase, selectSome, subListExtract, copySubstitute,
            "dimLabels<-",
@@ -34,7 +34,7 @@ importFrom(methods, Ops)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
-importFrom(GenomicRanges, strand, GappedAlignments)
+importFrom(GenomicRanges, GappedAlignments)
 
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            alphabetFrequency, alphabet, DNA_ALPHABET,
