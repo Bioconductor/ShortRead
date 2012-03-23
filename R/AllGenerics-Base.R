@@ -1,9 +1,3 @@
-## promote to generic
-
-setGeneric("sapply")
-
-setGeneric("lapply")
-
 ## new generics
 
 setGeneric(".throw",
@@ -260,10 +254,6 @@ setGeneric("view", function(x, ...) standardGeneric("view"))
 setGeneric("zi", function(x, ...) standardGeneric("zi"))
 
 setGeneric("zo", function(x, ...) standardGeneric("zo"))
-
-setGeneric("right", function(x, ...) standardGeneric("right"))
-
-setGeneric("left", function(x, ...) standardGeneric("left"))
 
 setGeneric("restore", function(x, ...) standardGeneric("restore"))
 

@@ -34,7 +34,7 @@ importFrom(methods, Ops)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
-importFrom(GenomicRanges, GappedAlignments)
+importFrom(GenomicRanges, GappedAlignments, left, right)
 
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            alphabetFrequency, alphabet, DNA_ALPHABET,
