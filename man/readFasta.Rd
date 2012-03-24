@@ -9,11 +9,11 @@
 
 \description{
 
-  \code{readFasta} reads all FASTa-formated files in a directory
+  \code{readFasta} reads all FASTA-formated files in a directory
   \code{dirPath} whose file name matches pattern \code{pattern},
   returning a compact internal representation of the sequences and
   quality scores in the files. Methods read all files into a single R
-  object; a typical use is to restrict input to a single FASTQ file.
+  object; a typical use is to restrict input to a single FASTA file.
 
   \code{writeFasta} writes an object to a single \code{file}, using
   \code{mode="w"} (the default) to create a new file or \code{mode="a"}
