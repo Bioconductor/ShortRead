@@ -55,12 +55,12 @@ setValidity2("GappedReads", .valid.GappedReads,
 ### Constructors.
 ###
 
-GappedReads <- function(rname=Rle(factor()), pos=integer(0),
+GappedReads <- function(seqnames=Rle(factor()), pos=integer(0),
                         cigar=character(0), strand=NULL,
                         qseq=DNAStringSet(),
                         names=NULL, seqlengths=NULL)
 {
-    galn <- GappedAlignments(rname=rname, pos=pos,
+    galn <- GappedAlignments(seqnames=seqnames, pos=pos,
                              cigar=cigar, strand=strand,
                              names=names, seqlengths=seqlengths)
     new("GappedReads", galn, qseq=qseq)

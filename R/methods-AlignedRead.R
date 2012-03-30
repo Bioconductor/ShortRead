@@ -113,7 +113,7 @@ setAs("AlignedRead", "GappedReads", function(from)
         cigar <- character(0)
     else
         cigar <- paste(width(from), "M", sep="")
-    GappedReads(rname=chromosome(from), pos=position(from),
+    GappedReads(seqnames=chromosome(from), pos=position(from),
                 cigar=cigar, strand=strand(from),
                 qname=id(from), qseq=sread(from))
 })
