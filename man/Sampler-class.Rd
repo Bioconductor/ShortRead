@@ -5,7 +5,9 @@
 \alias{FastqFile-class}
 \alias{FastqFileReader-class}
 \alias{FastqSampler-class}
+\alias{FastqSamplerList-class}
 \alias{FastqStreamer-class}
+\alias{FastqStreamerList-class}
 \alias{FastqFileList-class}
 
 % ShortReadFile / FastqFile / FastqFileList
@@ -20,11 +22,17 @@
 
 % FastqSampler
 \alias{FastqSampler}
+\alias{FastqSamplerList}
+\alias{FastqSamplerList,ANY-method}
+\alias{FastqSamplerList,character-method}
 \alias{yield}
 \alias{yield,FastqSampler-method}
 
 % FastqStreamer
 \alias{FastqStreamer}
+\alias{FastqStreamerList}
+\alias{FastqStreamerList,ANY-method}
+\alias{FastqStreamerList,character-method}
 \alias{yield,FastqStreamer-method}
 
 \title{Sampling and streaming records from fastq files}
@@ -36,11 +44,15 @@
 
   \code{FastqSampler} draws a subsample from a fastq file. \code{yield}
   is the method used to extract the sample from the \code{FastqSampler}
-  instance; a short illustration is in the example below.
+  instance; a short illustration is in the example
+  below. \code{FastqSamplerList} is a list of \code{FastqSampler}
+  elements.
 
   \code{FastqStreamer} draws successive subsets from a fastq
   file. Iterating over the stream will eventually yield the entire
-  file; a short illustration is in the example below.
+  file; a short illustration is in the example
+  below. \code{FastqStreamerList} is a list of \code{FastqStreamer}
+  elements.
 
 }
 
@@ -54,7 +66,9 @@ FastqFileList(..., class="FastqFile")
 
 ## FastqSampler and FastqStreamer
 FastqSampler(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
+FastqSamplerList(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
 FastqStreamer(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
+FastqStreamerList(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
 yield(x, ...)
 }
 
@@ -74,9 +88,11 @@ yield(x, ...)
   \item{x}{An instance from the \code{FastqSampler} or
     \code{FastqStreamer} class.}
 
-  \item{...}{Additional arguments. For \code{FastqFileList}, this can
+  \item{...}{Additional arguments. For \code{FastqFileList},
+    \code{FastqSamplerList}, or \code{FastqStreamerList}, this can
     either be a single character vector of paths to fastq files, or
-    several instances of \code{FastqFile} objects.}
+    several instances of the corresponding \code{FastqFile},
+    \code{FastqSampler}, or \code{FastqStreamer} objects.}
 
   \item{pattern}{Ignored.}
 

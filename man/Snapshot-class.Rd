@@ -276,7 +276,7 @@ s <- Snapshot(c(file, file), range=which,
               currentFunction="multicoarse_coverage")
 
 ## grouping files and view by 'multicoarse_coverage'
-bfiles <- BamFileList(c(file, file))
+bfiles <- BamFileList(c(a=file, b=file))
 values(bfiles) <- DataFrame(sampleGroup=factor(c("normal", "tumor")))
 values(bfiles)
 s <- Snapshot(bfiles, range=which, 

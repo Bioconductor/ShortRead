@@ -75,15 +75,16 @@ setClass("QAAdapterContamination",
 
 setClass("QAFrequentSequence",
          representation("QASummary",
-                        n="ScalarInteger", k="ScalarInteger",
+                        n="ScalarInteger", a="ScalarInteger",
+                        flagK="ScalarNumeric",
                         reportSequences="ScalarLogical"),
          prototype=prototype(n=mkScalar(10L)),
          validity=function(object) {
              msg <- NULL
-             if (is.finite(object@n) && is.finite(object@k))
-                 msg <- c(msg, "only one of 'n' or 'k' can be defined")
-             else if (!is.finite(object@n) && !is.finite(object@k))
-                 msg <- c(msg, "one of 'k' or 'n' must be defined")
+             if (is.finite(object@n) && is.finite(object@a))
+                 msg <- c(msg, "only one of 'n' or 'a' can be defined")
+             else if (!is.finite(object@n) && !is.finite(object@a))
+                 msg <- c(msg, "one of 'n' or 'a' must be defined")
              if (is.null(msg)) TRUE else paste("\n    ", msg)
          })
 

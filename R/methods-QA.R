@@ -23,6 +23,12 @@ setMethod(.filter, "QAData", function(object, useFilter, ...) {
 
 ## QASummary
 
+.show_KoverA <-
+    function(object, K=object@flagK, A=object@flagA)
+{
+    cat(sprintf("flag: K over A = (%.2f x 100)%% over %d\n", K, A))
+}
+
 .QASummary <- 
     function (class, useFilter = TRUE, addFilter = TRUE, ..., html) 
 {
@@ -76,8 +82,7 @@ QAReadQuality <-
 
 setMethod(show, "QAReadQuality", function(object) {
     callNextMethod()
-    cat(sprintf("flag: K over A = (%.2f x 100)%% over %d\n",
-                object@flagK, object@flagA))
+    .show_KoverA(object)
 })
 
 QAAdapterContamination <-
@@ -117,12 +122,13 @@ setMethod(show, "QAAdapterContamination", function(object) {
 
 QAFrequentSequence <-
     function (useFilter = TRUE, addFilter = TRUE,
-              n = NA_integer_, k = NA_integer_,
-              reportSequences = FALSE, ...) 
+              n = NA_integer_, a = NA_integer_,
+              flagK=.8, reportSequences = FALSE, ...) 
 {
     .QASummary("QAFrequentSequence",
                addFilter = addFilter, useFilter = useFilter, 
-               n = mkScalar(as.integer(n)), k = mkScalar(as.integer(k)), 
+               n = mkScalar(as.integer(n)), a = mkScalar(as.integer(a)),
+               flagK = mkScalar(as.numeric(flagK)),
                reportSequences = mkScalar(as.logical(reportSequences)), 
                ...)
 }
@@ -132,8 +138,9 @@ setMethod(show, "QAFrequentSequence", function(object) {
     if (!is.na(object@n))
         cat("n: ", object@n, "; ", sep="")
     else
-        cat("k: ", object@k, "; ", sep="")
+        cat("a: ", object@a, "; ", sep="")
     cat("reportSequences:", object@reportSequences, "\n")
+    .show_KoverA(object, object@flagK, object@a)
 })
 
 QANucleotideByCycle <- .QASummaryFactory("QANucleotideByCycle")
@@ -257,9 +264,10 @@ setMethod(qa2, "QAFastqSource",
     if (1 != length(object@con))
         .throw(SRError("InternalError",
                        "'QAFastqSource' source length != 1"))
-    df <- qa2(FastqSampler(object@con, object@n,
-                           object@readerBlockSize),
-              object@data, verbose=verbose)
+    sampler <- FastqSampler(object@con, object@n,
+                            object@readerBlockSize)
+    on.exit(close(sampler))
+    df <- qa2(sampler, object@data, verbose=verbose)
     values <-
         cbind(df, DataFrame(AccessTimestamp=date(),
                             FileName=basename(object@con)))
@@ -312,10 +320,11 @@ setMethod(qa2, "QAQualityUse",
     obj <- .filter(state@data, object@useFilter)
     alf <- .qa_alphabetFrequency(quality(obj), collapse=TRUE)
     alf <- alf[alf != 0]
-    quality <- factor(names(alf), levels=alphabet(quality(obj)))
-    q0 <- 1 + 32 * is(quality, "SFastqQuality")
+    alphabet <- alphabet(quality(obj))
+    quality <- factor(names(alf), levels=alphabet)
+    q0 <- as(do.call(class(quality(obj)), list(alphabet)), "matrix")
     values <- DataFrame(Quality=quality,
-                        Score=as.numeric(quality) - q0,
+                        Score=as.integer(q0)[quality],
                         Count=as.vector(alf))
     metadata(values) <- list(NumberOfRecords=length(obj))
     renew(object, values=values)
@@ -342,7 +351,7 @@ setMethod(qa2, "QAFrequentSequence",
         n <- thresh <- object@n
     } else {
         n <- 10L
-        thresh <- object@k
+        thresh <- object@a
     }
 
     obj <- .filter(state@data, object@useFilter)
@@ -357,7 +366,8 @@ setMethod(qa2, "QAFrequentSequence",
     } else r %in% which(t >= thresh)
     .filterUpdate(state@data, object@addFilter, filt)
 
-    values <- DataFrame(Threshold=thresh, Count=sum(filt),
+    values <- DataFrame(Threshold=thresh,
+                        Records=length(r), Count=sum(filt),
                         TopCount=IntegerList(topCount))
     metadata(values) <- list(NumberOfRecords=length(obj))
     renew(object, values=values)
@@ -393,10 +403,11 @@ setMethod(qa2, "QAQualityByCycle",
     if (verbose) message("qa2,QAQualityByCycle-method")
     obj <- .filter(state@data, object@useFilter)
     abc <- alphabetByCycle(quality(obj))
-    q <- factor(rownames(abc)[row(abc)], levels = rownames(abc))
-    q0 <- 1 + 32 * is(quality, "SFastqQuality")
+    alphabet <- rownames(abc)
+    q <- factor(rownames(abc)[row(abc)], levels = alphabet)
+    q0 <- as(do.call(class(quality(obj)), list(alphabet)), "matrix")
     values <- DataFrame(Cycle=seq_len(ncol(abc))[col(abc)],
-                        Quality=q, Score=as.numeric(q) - q0,
+                        Quality=q, Score=as.integer(q0)[q],
                         Count=as.vector(abc), row.names=NULL)
     metadata(values) <- list(NumberOfRecords=length(obj))
     renew(object, values=values[values$Count != 0,])
@@ -502,7 +513,8 @@ setMethod(flag, "QASource",
     object
 })
 
-setMethod(flag, "QAReadQuality", function(object, verbose=FALSE)
+setMethod(flag, "QAReadQuality",
+          function(object, ..., verbose=FALSE)
 {
     if (verbose) message("flag,QAReadQuality-method")
     df <- as(values(object), "data.frame")
@@ -516,6 +528,14 @@ setMethod(flag, "QAReadQuality", function(object, verbose=FALSE)
         }, split(Score, Id), split(Density, Id),
             MoreArgs=list(A = object@flagA, K = object@flagK))
     }))))
+    object
+})
+
+setMethod(flag, "QAFrequentSequence",
+          function(object, ..., verbose=FALSE)
+{
+    ppn <- values(object)[["Count"]] / values(object)[["Records"]]
+    object@flag <- which(ppn > object@flagK )
     object
 })
 
@@ -663,8 +683,8 @@ setMethod(report, "QASequenceUse",
 setMethod(report, "QAFrequentSequence",
           function(x, ..., dest=tempfile(), type="html")
 {
-    thresholdLabel <- if (is.finite(x@n)) "n" else "k"
-    threshold <- as.character(if (is.finite(x@n)) x@n else x@k)
+    thresholdLabel <- if (is.finite(x@n)) "n" else "a"
+    threshold <- as.character(if (is.finite(x@n)) x@n else x@a)
     freqseq <- if (x@reportSequences) {
         seqdf <- lapply(with(values(x), { #with() gets wrong env for .hwrite
             lapply(split(TopCount, Id), function(elt) {
