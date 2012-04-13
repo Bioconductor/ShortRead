@@ -330,7 +330,7 @@
         bamReverseComplement(param) <- TRUE
     }
     what <- .readAligned_bamWhat("qname" %in% bamWhat(param))
-    if (!(length(bamWhat(param)) && all(bamWhat(param) %in% what))) {
+    if (!(length(bamWhat(param)) && all(what %in% bamWhat(param)))) {
         msg <- sprintf("using at least '%s' for 'bamWhat(param)'",
                        paste(what, collapse="' '"))
         .throw(SRWarn("UserArgumentMismatch", msg))

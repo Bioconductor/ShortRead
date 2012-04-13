@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.15
+-----------------------
+
+BUG FIXES
+
+    o readAligned, type="BAM" correctly adds requried 'what' elements
+
 CHANGES IN VERSION 1.13
 -----------------------
 
