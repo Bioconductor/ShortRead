@@ -55,7 +55,7 @@ txdbFile <- system.file("extdata", "sacCer2_sgdGene.sqlite",
                          package="yeastNagalakshmi")
 
 ## either use a txdb file quaried from UCSC or use existing TxDb packages.
-txdb <- loadFeatures(txdbFile)
+txdb <- loadDb(txdbFile)
 
 grl <- exonsBy(txdb, by="gene")
 file <- system.file("extdata", "SRR002051.chrI-V.bam",
@@ -66,7 +66,7 @@ s <- spViewPerFeature(GRL=grl, name="YAL001C", files=file)
 ## multi-files: using 'BamFileList' and setting up the 'DataFrame'
 ## holding the phenotype data
 
-bfiles <- BamFileList(c(file, file))
+bfiles <- BamFileList(c(a=file, b=file))
 values(bfiles) <- DataFrame(sampleGroup=factor(c("normal", "tumor")))
 values(bfiles)
 

@@ -246,7 +246,7 @@ txdbFile <- system.file("extdata", "sacCer2_sgdGene.sqlite",
                     package="yeastNagalakshmi")
 # txdb <- makeTranscriptDbFromUCSC(genome="sacCer2",
 #                                  tablename="sgdGene")
-txdb <- loadFeatures(txdbFile)
+txdb <- loadDb(txdbFile)
 which <-  GRanges("chrI", IRanges(1, 2e5))
 gr <- getAnnGR(txdb, which)
 ## note that the first column of the elementMetadata annotates of the
