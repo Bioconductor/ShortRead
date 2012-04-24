@@ -39,7 +39,8 @@ importFrom(GenomicRanges, GappedAlignments, left, right)
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            alphabetFrequency, alphabet, DNA_ALPHABET,
            quality, pairwiseAlignment, pattern,
-           trimLRPatterns, unaligned, detail)
+           trimLRPatterns, unaligned, detail,
+           readDNAStringSet, writeXStringSet)
 
 importFrom(hwriter, hwrite, hwriteImage)
 

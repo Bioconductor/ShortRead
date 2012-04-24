@@ -49,11 +49,11 @@ writeFasta(object, file, mode="w", ...)
     respectively.}
 
   \item{...}{Additional arguments used by methods or, for
-    \code{writeFasta}, \code{\link{write.XStringSet}}.}
+    \code{writeFasta}, \code{\link{writeXStringSet}}.}
   
-  \item{nrec}{See \code{?read.DNAStringSet}.}
+  \item{nrec}{See \code{?readDNAStringSet}.}
 
-  \item{skip}{See \code{?read.DNAStringSet}.}
+  \item{skip}{See \code{?readDNAStringSet}.}
 }
 
 \value{

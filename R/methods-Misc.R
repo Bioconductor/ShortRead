@@ -63,7 +63,7 @@ setMethod(writeFasta, "DNAStringSet",
     function(object, file, mode="w", ...)
 {
     append = mode=="a"
-    write.XStringSet(object, file, ..., append=append, format="fasta")
+    writeXStringSet(object, file, ..., append=append, format="fasta")
 })
 
 ## srdistance

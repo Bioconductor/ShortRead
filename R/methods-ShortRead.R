@@ -51,7 +51,7 @@ setMethod(readFasta, "character",
                    nrec=-1L, skip=0L)
 {
     src <- .file_names(dirPath, pattern)
-    FASTAlist <- lapply(src, read.DNAStringSet, nrec=nrec, skip=skip)
+    FASTAlist <- lapply(src, readDNAStringSet, nrec=nrec, skip=skip)
     fasta <- do.call(c, FASTAlist)
     new("ShortRead", ...,
         sread=DNAStringSet(fasta, use.names=FALSE),
