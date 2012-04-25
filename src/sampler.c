@@ -211,16 +211,11 @@ void _sampler_free(struct sampler *sampler)
 }
 
 void _sampler_add1(struct records *sample, const Rbyte *record,
-                   int len)
+                   int len, int idx)
 {
     /* add record to sample */
-    int idx;
-    if (sample->n_curr < sample->n)
-        idx = sample->n_curr++;
-    else {
-        idx = ((int) (unif_rand() * sample->n)) % (sample->n + 1);
+    if (sample->n_curr == sample->n)
         Free(sample->records[idx].record);
-    }
 
     sample->records[idx].length = len;
     Rbyte *intern_record = Calloc(len, Rbyte);
@@ -243,20 +238,31 @@ void _sampler_dosample(struct sampler *sampler)
         for (int i = 0; i < n_curr; ++i)
             idx[i] = i;
         for (int i = 0; i < n_samp; ++i) {
-            int j = (n_samp - i) * unif_rand();
+            int j = (n_curr - i) * unif_rand();
             int tmp = idx[i];
             idx[i] = idx[i + j];
             idx[i + j] = tmp;
         }
+        /* select reads to replace */
+        int sn_curr = sampler->sample->n_curr;
+        int *idx0 = Calloc(sn_curr, int);
+        for (int i = 0; i < sn_curr; ++i)
+            idx0[i] = i;
+        for (int i = 0; i < n_samp; ++i) {
+            int j = (sn_curr - i) * unif_rand();
+            int tmp = idx0[i];
+            idx0[i] = idx0[i + j];
+            idx0[i + j] = tmp;
+        }
         /* save selected reads */
         for (int i = 0; i < n_samp; ++i) {
             struct record *r = sampler->current.records + idx[i];
-            _sampler_add1(sampler->sample, r->record, r->length);
+            _sampler_add1(sampler->sample, r->record, r->length, idx0[i]);
         }
 
         Free(idx);
+        Free(idx0);
     }
-
     sampler->sample->n_tot = n_tot;
     sampler->current.n_curr = 0;
 }
@@ -266,7 +272,8 @@ void _sampler_add(struct sampler *sampler, const Rbyte *record,
 {
     struct records *sample = sampler->sample;
     if (sample->n_curr < sample->n) { /* sampling not yet needed */
-        _sampler_add1(sample, record, len);
+        _sampler_add1(sample, record, len, sample->n_curr);
+        sample->n_curr++;
     } else {                    /* sample */
         struct record *r =
             sampler->current.records + sampler->current.n_curr;
