@@ -5,6 +5,9 @@ BUG FIXES
 
     o readAligned, type="BAM" correctly adds requried 'what' elements
 
+    o FastqSampler would only randomize first read; introduced 1.13.9
+    2011-12-02, fixed 1.15.4 2012-04-25
+
 CHANGES IN VERSION 1.13
 -----------------------
 

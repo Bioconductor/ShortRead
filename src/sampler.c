@@ -218,7 +218,7 @@ void _sampler_add1(struct records *sample, const Rbyte *record,
     if (sample->n_curr < sample->n)
         idx = sample->n_curr++;
     else {
-        idx = unif_rand();
+        idx = ((int) (unif_rand() * sample->n)) % (sample->n + 1);
         Free(sample->records[idx].record);
     }
 

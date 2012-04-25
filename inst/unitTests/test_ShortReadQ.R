@@ -72,6 +72,15 @@ test_FastqSampler_rand <- function()
     set.seed(123L); exp <- yield(samp)
     close(samp)
     .equals(obs, exp)
+
+    ## different samples
+    set.seed(123L)
+    samp <- open(FastqSampler(fl, 50))
+    obs <- length(Reduce(intersect, replicate(2, id(yield(samp)))))
+    checkIdentical(20L, obs)
+    obs <- length(Reduce(intersect, replicate(5, id(yield(samp)))))
+    checkIdentical(8L, obs)
+    close(samp)
 }
 
 test_FastqStreamer <- function()
