@@ -225,43 +225,41 @@ void _sampler_add1(struct records *sample, const Rbyte *record,
     sample->n_tot += 1;
 }
 
+int * _sampler_wout_replacement(int n, int k)
+{
+    /* sample k of n without replacement */
+    int *idx = Calloc(n, int);
+    for (int i = 0; i < n; ++i)
+        idx[i] = i;
+    for (int i = 0; i < k; ++i) {
+        int j = (n - i) * unif_rand();
+        int tmp = idx[i];
+        idx[i] = idx[i + j];
+        idx[i + j] = tmp;
+    }
+    return idx;
+}
+
 void _sampler_dosample(struct sampler *sampler)
 {
     int n_curr = sampler->current.n_curr;
     int n_tot = n_curr + sampler->sample->n_tot;
-    int n_samp = rbinom(n_curr, ((double) n_curr) / n_tot);
+    double n_choose = n_tot < sampler->sample->n ?
+        n_tot : sampler->sample->n;
+    int n_samp = rbinom(n_curr, n_choose / n_tot);
 
     if (0 != n_samp) {
-        int *idx = Calloc(n_curr, int);
-
-        /* select reads to save -- sample w/out replacement */
-        for (int i = 0; i < n_curr; ++i)
-            idx[i] = i;
-        for (int i = 0; i < n_samp; ++i) {
-            int j = (n_curr - i) * unif_rand();
-            int tmp = idx[i];
-            idx[i] = idx[i + j];
-            idx[i + j] = tmp;
-        }
-        /* select reads to replace */
         int sn_curr = sampler->sample->n_curr;
-        int *idx0 = Calloc(sn_curr, int);
-        for (int i = 0; i < sn_curr; ++i)
-            idx0[i] = i;
-        for (int i = 0; i < n_samp; ++i) {
-            int j = (sn_curr - i) * unif_rand();
-            int tmp = idx0[i];
-            idx0[i] = idx0[i + j];
-            idx0[i + j] = tmp;
-        }
+        int *keep = _sampler_wout_replacement(n_curr, n_samp);
+        int *drop = _sampler_wout_replacement(sn_curr, n_samp);
         /* save selected reads */
         for (int i = 0; i < n_samp; ++i) {
-            struct record *r = sampler->current.records + idx[i];
-            _sampler_add1(sampler->sample, r->record, r->length, idx0[i]);
+            struct record *r = sampler->current.records + keep[i];
+            _sampler_add1(sampler->sample, r->record, r->length, drop[i]);
         }
 
-        Free(idx);
-        Free(idx0);
+        Free(keep);
+        Free(drop);
     }
     sampler->sample->n_tot = n_tot;
     sampler->current.n_curr = 0;
