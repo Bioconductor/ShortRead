@@ -77,9 +77,9 @@ test_FastqSampler_rand <- function()
     set.seed(123L)
     samp <- open(FastqSampler(fl, 50))
     obs <- length(Reduce(intersect, replicate(2, id(yield(samp)))))
-    checkIdentical(20L, obs)
-    obs <- length(Reduce(intersect, replicate(5, id(yield(samp)))))
-    checkIdentical(8L, obs)
+    checkIdentical(7L, obs)
+    obs <- length(Reduce(intersect, replicate(3, id(yield(samp)))))
+    checkIdentical(0L, obs)
     close(samp)
 }
 
