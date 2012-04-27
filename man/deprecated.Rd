@@ -1,6 +1,7 @@
 \name{deprecated}
 
 \alias{deprecated}
+\alias{defunct}
 \alias{basePath}
 \alias{pileup}
 

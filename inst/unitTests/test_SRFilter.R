@@ -12,24 +12,6 @@ test_srFilter <- function() {
     checkException(srFilter(function(x, ...) {}), silent=TRUE)
 }
 
-test_uniqueFilter <- function() {
-    suppressWarnings({
-        checkTrue(validObject(uniqueFilter()))
-        aln <- AlignedRead(DNAStringSet(character(2)),
-                           chromosome=c("chr1", "chr1"),
-                           position=c(1L, 1L),
-                           strand=rep(strand("+"), 2))
-        checkTrue(all(c(TRUE, FALSE) == uniqueFilter(withSread=FALSE)(aln)))
-        checkTrue(all(c(TRUE, FALSE) == uniqueFilter(withSread=TRUE)(aln)))
-        aln <- AlignedRead(DNAStringSet(character(4)),
-                           chromosome=rep(c("chr1", "chr2"), each=2),
-                           position=rep(1:2, 2),
-                           strand=rep(strand("+"), 4))
-        ## would like the following to be true, but it's not
-        ##     checkTrue(all(uniqueFilter(withSread=FALSE)(aln)))
-        checkTrue(all(uniqueFilter(withSread=TRUE)(aln)))
-    })
-}
 
 test_occurrenceFilter <- function()
 {
@@ -62,11 +44,6 @@ test_occurrenceFilter <- function()
 
     sp <- SolexaPath(system.file("extdata", package="ShortRead"))
     aln <- readAligned(analysisPath(sp), "s_2_export.txt", "SolexaExport")
-    if (exists("uniqueFilter", where=getNamespace("ShortRead")))
-        suppressWarnings({
-            checkTrue(all(uniqueFilter(withSread=TRUE)(aln) ==
-                           occurrenceFilter(withSread=TRUE)(aln)))
-        })
     checkIdentical(980L, sum(occurrenceFilter(withSread=NA)(aln)))
     checkIdentical(996L, sum(occurrenceFilter(withSread=TRUE)(aln)))
     df <- data.frame(chromosome(aln), position(aln), strand(aln))

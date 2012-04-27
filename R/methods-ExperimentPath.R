@@ -30,8 +30,7 @@ ExperimentPath <- function(experimentPath=NA_character_, ...) {
 }
 
 basePath <- function(object, ...) {
-    .Deprecated("experimentPath")
-    experimentPath(object, ...)
+    .Defunct("experimentPath")
 }
 
 setMethod(sampleNames, "ExperimentPath", function(object) {

@@ -87,16 +87,7 @@ uniqueFilter <-
     msg <-
         if (withSread) "occurrenceFilter(withSread=TRUE)"
         else "occurrenceFilter"
-    .Deprecated(msg, package="ShortRead")
-    .check_type_and_length(withSread, "logical", 1)
-    srFilter(function(x) {
-        if (withSread)
-            !srduplicated(x)
-        else {
-            !(duplicated(position(x)) & duplicated(strand(x)) &
-              duplicated(chromosome(x)))
-        }
-    }, name=.name)
+    .Defunct(msg, package="ShortRead")
 }
 
 ## withSread

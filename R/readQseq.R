@@ -81,10 +81,7 @@
                  dirPath, pattern, ...,
                  filtered=filtered, verbose=verbose),
                XDataFrame={
-                   .Deprecated(msg="Use type='DataFrame' instead")
-                   .readQseq_DataFrame(dirPath, pattern, ...,
-                                       filtered=filtered,
-                                       verbose=verbose)
+                   .Defunct(msg="Use type='DataFrame' instead")
                })
     }, error=function(err) {
         if (is(err, "SRError")) stop(err)
