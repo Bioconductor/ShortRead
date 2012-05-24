@@ -8,6 +8,9 @@ BUG FIXES
     o FastqSampler would only randomize first read; introduced 1.13.9
     2011-12-02, fixed 1.15.4 2012-04-25
 
+    o report(qa, ...) no longer produces obviously confused base
+    calls per cycle
+
 CHANGES IN VERSION 1.13
 -----------------------
 

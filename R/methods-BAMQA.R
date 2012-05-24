@@ -14,7 +14,7 @@
     res <-  .srlist(qa(rpt, fileName, ..., verbose=verbose))
     flag <- alignData(rpt)[["flag"]]
     res[["readCounts"]][,c("filter", "aligned")] <-
-        c(sum(bamFlagTest(flag, "isValidVendorRead")),
+        c(sum(!bamFlagTest(flag, "isNotPassingQualityControls")),
           sum(!bamFlagTest(flag, "isUnmappedQuery")))
     c(res, list(depthOfCoverage=doc))
 }

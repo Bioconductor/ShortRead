@@ -383,7 +383,7 @@
     xmax <- max(df$Cycle)
     ymax <- log10(max(df$Count))
     xyplot(log10(Count)~as.integer(Cycle)|lane,
-           group=factor(df$Base),
+           group=factor(Base),
            df[order(df$lane, df$Base, df$Cycle),],
            panel=function(..., subscripts) {
                lbl <- as.character(unique(df$lane[subscripts]))
@@ -391,7 +391,7 @@
                panel.xyplot(..., subscripts=subscripts)
            },
            type="l", col=col,
-           key=list(space="top", lines=list(col=col),
+           key=list(space="top", lines=list(col=col, lwd=2),
              text=list(lab=levels(df$Base)),
              columns=length(levels(df$Base))),
            xlab="Cycle", aspect=2, strip=strip, ...)
