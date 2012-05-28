@@ -333,10 +333,10 @@ setOldClass("trellis")
     methods=list(
       msg = function(txt) {
           "display 'txt' with status information as a message()"
-          s <- status()
+          s <- status(update=TRUE)
           message(txt, " ", paste(names(s), s, sep="=", collapse=" "))
       },
-      status=function() {},
+      status=function(update=FALSE) {},
       show = function() {
           cat("class:", class(.self), "\n")
           cat(Rsamtools:::.ppath("path", path))
@@ -369,8 +369,11 @@ setOldClass("trellis")
           cat("status:", paste(names(s), s, sep="=", collapse=" "), "\n")
       }))
 
-.FastqStreamer_g <-
-    setRefClass("FastqStreamer", contains="FastqFileReader")
+.FastqStreamer_g <- setRefClass("FastqStreamer",
+    contains="FastqFileReader",
+    fields = list(
+      skips="integer", adds = "integer", ith = "integer",
+      recycle = "logical"))
 
 .FastqSampler_g <-
     setRefClass("FastqSampler", contains="FastqFileReader")

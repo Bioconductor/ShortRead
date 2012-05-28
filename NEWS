@@ -1,6 +1,10 @@
 CHANGES IN VERSION 1.15
 -----------------------
 
+NEW FEATURES
+
+    o FastqStreamer accepts IRanges for selecting input records
+
 BUG FIXES
 
     o readAligned, type="BAM" correctly adds requried 'what' elements

@@ -436,7 +436,6 @@ void _streamer_add(struct records *stream, const Rbyte *record,
 {
     stream->records[stream->n_curr].length = len;
     stream->records[stream->n_curr].record = record;
-    stream->n_tot += 1;
     stream->n_curr += 1;
     stream->n_added += 1;
 }
@@ -462,20 +461,19 @@ SEXP streamer_new(SEXP n)
     return s;
 }
 
-SEXP streamer_add(SEXP s, SEXP bin)
+SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd)
 {
     struct streamer *streamer = STREAMER(s);
     int len = Rf_length(bin);
+    int skip = INTEGER(skipadd)[0], add = INTEGER(skipadd)[1];
 
     /* start with tail of previous bin */
     struct bufnode *scratch = streamer->bufnode;
     if (NULL == scratch) {
         /* first record */
         scratch = streamer->bufnode = Calloc(1, struct bufnode);
-        scratch->bytes = Calloc(len, Rbyte);
-        scratch->len = len;
-        memcpy(scratch->bytes, RAW(bin), len * sizeof(Rbyte));
-    } else if (NULL == scratch->bytes) {
+    }
+    if (NULL == scratch->bytes) {
         /* nothing 'extra' from previous bin */
         scratch->bytes = Calloc(len, Rbyte);
         scratch->len = len;
@@ -494,7 +492,7 @@ SEXP streamer_add(SEXP s, SEXP bin)
     /* find record starts and lengths */
     const Rbyte *buf = scratch->bytes, *bufend = buf + scratch->len;
     struct records *stream = streamer->stream;
-    while (stream->n > stream->n_curr && buf < bufend) {
+    while (add > stream->n_curr && buf < bufend) {
         while (buf < bufend && *buf == '\n')
             ++buf;
         const Rbyte *prev = buf;
@@ -502,7 +500,12 @@ SEXP streamer_add(SEXP s, SEXP bin)
             buf = prev;
             break;
         }
-        _streamer_add(stream, prev, buf - prev);
+
+        stream->n_tot += 1;
+        if (skip == 0)
+            _streamer_add(stream, prev, buf - prev);
+        else
+            skip -= 1;
     }
 
     /* capture tail of bin */

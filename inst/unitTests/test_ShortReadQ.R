@@ -127,6 +127,54 @@ test_FastqStreamer <- function()
     checkIdentical(256L, len)
 }
 
+test_FastqStreamer_IRanges <- function()
+{
+    sr <- readFastq(fl)
+
+    ## basics
+    rng <- IRanges(c(50, 100, 200), width=c(5, 4, 3))
+    f <- FastqStreamer(fl, rng)
+    .equals(sr[50:54], yield(f))
+    .equals(sr[100:103], yield(f))
+    .equals(sr[200:202], yield(f))
+    .equals(ShortReadQ(), yield(f))
+    close(f)
+
+    ## successive
+    rng <- IRanges(c(50, 60), width=10)
+    f <- FastqStreamer(fl, rng)
+    .equals(sr[50:59], yield(f))
+    .equals(sr[60:69], yield(f))
+    .equals(ShortReadQ(), yield(f))
+    close(f)
+
+    ## off-the-end
+    rng <- IRanges(250, width=100)
+    f <- FastqStreamer(fl, rng)
+    .equals(sr[250:256], yield(f))
+    .equals(ShortReadQ(), yield(f))
+    close(f)
+
+    ## too-short buffer to skip all reads in one binary input
+    rng <- IRanges(250, width=5)
+    f <- FastqStreamer(fl, rng, readerBlockSize=10000)
+    .equals(sr[250:254], yield(f))
+    .equals(ShortReadQ(), yield(f))
+    close(f)
+
+    rng <- IRanges(241, width=5)
+    f <- FastqStreamer(fl, rng, readerBlockSize=10000)
+    .equals(sr[241:245], yield(f))
+    .equals(ShortReadQ(), yield(f))
+    close(f)
+
+    ## exceptions
+    rng <- IRanges(50, 49)              # non-zero
+    checkException(FastqStreamer(fl, rng), silent=TRUE)
+    rng <- IRanges(c(50, 59), c(60, 70)) # strictly increasing
+    checkException(FastqStreamer(fl, rng), silent=TRUE)
+}
+
 test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
 {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))

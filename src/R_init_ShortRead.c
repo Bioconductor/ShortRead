@@ -55,7 +55,7 @@ static const R_CallMethodDef callMethods[] = {
     {".sampler_status", (DL_FUNC) & sampler_status, 1},
     {".sampler_as_XStringSet", (DL_FUNC) & sampler_as_XStringSet, 1},
     {".streamer_new", (DL_FUNC) & streamer_new, 1},
-    {".streamer_add", (DL_FUNC) & streamer_add, 2},
+    {".streamer_add", (DL_FUNC) & streamer_add, 3},
     {".streamer_status", (DL_FUNC) & streamer_status, 1},
     {".streamer_as_XStringSet", (DL_FUNC) & streamer_as_XStringSet, 1},
 

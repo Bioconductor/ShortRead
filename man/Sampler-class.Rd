@@ -30,6 +30,9 @@
 
 % FastqStreamer
 \alias{FastqStreamer}
+\alias{FastqStreamer,ANY,missing-method}
+\alias{FastqStreamer,ANY,numeric-method}
+\alias{FastqStreamer,ANY,IRanges-method}
 \alias{FastqStreamerList}
 \alias{FastqStreamerList,ANY-method}
 \alias{FastqStreamerList,character-method}
@@ -48,11 +51,9 @@
   below. \code{FastqSamplerList} is a list of \code{FastqSampler}
   elements.
 
-  \code{FastqStreamer} draws successive subsets from a fastq
-  file. Iterating over the stream will eventually yield the entire
-  file; a short illustration is in the example
-  below. \code{FastqStreamerList} is a list of \code{FastqStreamer}
-  elements.
+  \code{FastqStreamer} draws successive subsets from a fastq file, a
+  short illustration is in the example below. \code{FastqStreamerList}
+  is a list of \code{FastqStreamer} elements.
 
 }
 
@@ -67,8 +68,8 @@ FastqFileList(..., class="FastqFile")
 ## FastqSampler and FastqStreamer
 FastqSampler(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
 FastqSamplerList(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
-FastqStreamer(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
-FastqStreamerList(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+FastqStreamer(con, n, readerBlockSize=1e8, verbose=FALSE)
+FastqStreamerList(..., n, readerBlockSize=1e8, verbose=FALSE)
 yield(x, ...)
 }
 
@@ -77,7 +78,13 @@ yield(x, ...)
   \item{con, dirPath}{A character string naming a connection, or (for
     \code{con}) an R connection (e.g., \code{file}, \code{gzfile}).}
 
-  \item{n}{The size of the sample (number of records) to be drawn.}
+  \item{n}{For \code{FastqSampler}, the size of the sample (number of
+    records) to be drawn.  For \code{FastqStreamer} a \code{numeric(1)}
+    (set to 1e6 when \code{n} is missing) providing the number of
+    successive records to be returned on each yield, or an
+    \code{\linkS4class{IRanges}}-class delimiting the (1-based) indicies
+    of records returned by each yield; entries in \code{n} must have
+    non-zero width and must not overlap.}
 
   \item{readerBlockSize}{The number of bytes or characters to be read at
     one time; smaller \code{readerBlockSize} reduces memory requirements
@@ -169,6 +176,14 @@ close(f)
 f <- FastqStreamer(fl, 50)
 while (length(fq <- yield(f))) {
     ## do work here
+    print(length(fq))
+}
+close(f)
+
+## iterating over IRanges
+rng <- IRanges(c(50, 100, 200), width=10:8)
+f <- FastqStreamer(fl, rng)
+while (length(fq <- yield(f))) {
     print(length(fq))
 }
 close(f)

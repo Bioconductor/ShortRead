@@ -100,7 +100,7 @@ extern "C" {
     SEXP sampler_as_XStringSet(SEXP s);
 
     SEXP streamer_new(SEXP n);
-    SEXP streamer_add(SEXP s, SEXP bin);
+    SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd);
     SEXP streamer_status(SEXP s);
     SEXP streamer_as_XStringSet(SEXP s);
 
