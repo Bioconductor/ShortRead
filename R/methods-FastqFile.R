@@ -23,8 +23,15 @@ setMethod(writeFastq, c("ShortReadQ", "FastqFile"),
     callGeneric(object, path(file), mode=mode, full=full, ...)
 })
 
-FastqFileList <-
+setMethod(FastqFileList, "ANY",
     function(..., class="FastqFile")
 {
     Rsamtools:::.RsamtoolsFileList(..., class=class)
-}
+})
+
+setMethod(FastqFileList, "character",
+    function(..., class="FastqFile")
+{
+    fls <- lapply(..1, FastqFile)
+    FastqFileList(fls, class=class)
+})

@@ -17,6 +17,10 @@
 \alias{close.ShortReadFile}
 \alias{readFastq,FastqFile-method}
 
+% FastqFileList
+\alias{FastqFileList,ANY-method}
+\alias{FastqFileList,character-method}
+
 % FastqFileReader
 \alias{yield,FastqFileReader-method}
 

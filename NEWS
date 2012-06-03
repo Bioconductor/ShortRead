@@ -15,6 +15,9 @@ BUG FIXES
     o report(qa, ...) no longer produces obviously confused base
     calls per cycle
 
+    o FastqFileList would fail to initialize correctly from a
+    character vector
+
 CHANGES IN VERSION 1.13
 -----------------------
 

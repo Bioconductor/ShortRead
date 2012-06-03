@@ -262,6 +262,11 @@ setGeneric("restore", function(x, ...) standardGeneric("restore"))
 setGeneric(".ShortReadFile", function(g, path, ...)
            standardGeneric(".ShortReadFile"), signature="path")
 
+setGeneric("FastqFileList",
+           function(..., class="FastqFile")
+           standardGeneric("FastqFileList"),
+           signature="...")
+
 setGeneric("FastqStreamer",
            function(con, n, readerBlockSize=1e8, verbose=FALSE)
            standardGeneric("FastqStreamer"),
