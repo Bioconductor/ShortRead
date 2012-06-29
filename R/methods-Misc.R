@@ -266,7 +266,7 @@ setMethod(trimEnds, "XStringSet",
         a <- alphabet[a_map]
 
         cls <- sub("(.*)String.*", "\\1", class(object))
-        xs <- get_xsbasetypes_conversion_lookup(cls, "character")
+        xs <- get_seqtype_conversion_lookup(cls, "character")
         if (is.null(xs)) xs <- 0:127
         map <- logical(length(xs))
         key <- lapply(a, function(x) as.integer(charToRaw(x)))
