@@ -158,7 +158,7 @@ SolexaIntensity <-
     posPattern <- paste(pattern, posExtension, sep="")
     posFiles <- .file_names(dirPath, posPattern)
 
-    dims <- .Call(.count_ipar_int_recs, intFiles, PACKAGE="ShortRead") # reads, cycles
+    dims <- .Call(.count_ipar_int_recs, intFiles) # reads, cycles
     nrec <- dims$reads
     crec <- cumsum(c(0, nrec))
     cycles <- dims$cycles[[1]]
@@ -166,7 +166,7 @@ SolexaIntensity <-
     if (withVariability) {
         nsePattern <- paste(pattern, nseExtension, sep="")
         nseFiles <- .file_names(dirPath, nsePattern)
-        extrec <- .Call(.count_ipar_int_recs, nseFiles, PACKAGE="ShortRead")$reads
+        extrec <- .Call(.count_ipar_int_recs, nseFiles)$reads
         if (length(nrec) != length(extrec)) {
             .throw(SRError("UserArgumentMismatch",
                            "number of files found differs between 'int' (%d) and 'nse' (%d)\n  dirPath: '%s'\n  pattern: '%s'\n  intExtension: '%s'\n  nseExtension: '%s'",
