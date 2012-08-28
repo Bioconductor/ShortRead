@@ -199,12 +199,14 @@
 
     \item{coerce}{\code{signature(from = "SFastqQuality", to = "SolexaQuality")}:
 
-      Use like \code{as(from, "matrix")}) to coerce objects of class
-      \code{from} to class \code{to}, using the quality encoding implied
-      by the class. When \code{to} is \dQuote{matrix}, all quality
-      scores must be of the same width, and the result is a matrix of
-      type \code{integer}. The result always represents the
-      integer encoding of the corresponding quality string.}
+      Use \code{as(from, "matrix")}) and similar to coerce objects of
+      class \code{from} to class \code{to}, using the quality encoding
+      implied by the class. When \code{to} is \dQuote{matrix}, the
+      result is a matrix of type \code{integer} with number of columns
+      equal to the maximum width of \code{from}; elements \code{i, j}
+      with \code{j > width(from)[i]} have value \code{NA_integer_}. The
+      result always represents the integer encoding of the corresponding
+      quality string.}
 
     \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
       \sQuote{narrow} \code{quality} so that scores are between

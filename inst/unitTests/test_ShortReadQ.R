@@ -200,6 +200,19 @@ test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
     checkException(as(obj, "QualityScaledDNAStringSet"), silent=TRUE)
 }
 
+test_ShortReadQ_coerce_matrix <- function() 
+{
+    ## 0-length
+    fq <- FastqQuality()
+    exp <- matrix(NA_integer_, 0, 0)
+    checkIdentical(exp, as(fq, "matrix"))
+
+    ## ragged matrix
+    fq <- FastqQuality(BStringSet(c("]]X", "]]]X")))
+    exp <- matrix(c(rep(60L, 4), 55L, 60L, NA_integer_, 55L), 2)
+    checkIdentical(exp, as(fq, "matrix"))
+}
+
 test_ShortReadQ_subset <- function() {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     obj <- readFastq(sp)

@@ -166,9 +166,6 @@ setAs("FastqQuality", "numeric", function(from) {
 })
 
 setAs("FastqQuality", "matrix", function(from) {
-    if (!length(unique(width(from)))==1)
-        .throw(SRError("UserArgumentMismatch",
-                       "matrix requires identical quality score widths"))
     .Call(.alphabet_as_int, quality(from), 0:255-33L)
 })
 
@@ -178,9 +175,6 @@ setAs("FastqQuality", "PhredQuality", function(from)
 })
 
 setAs("SFastqQuality", "matrix", function(from) {
-    if (!length(unique(width(from)))==1)
-        .throw(SRError("UserArgumentMismatch",
-                       "matrix requires identical quality score widths"))
     .Call(.alphabet_as_int, quality(from), 0:255-64L)
 })
 

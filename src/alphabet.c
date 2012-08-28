@@ -179,6 +179,8 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score)
         Rf_error("'%s' must be '%s'", "score", "integer(256)");
     DECODE_FUNC decode = decoder(base);
     const int len = get_XStringSet_length(stringSet);
+    if (len == 0)
+	return allocMatrix(INTSXP, 0, 0);
 
     cachedXStringSet cache = cache_XStringSet(stringSet);
     int i;
@@ -189,29 +191,20 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score)
     SEXP ans;
     for (i = 1; i < len && width > 0; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);
-        if (seq.length != width)
-            width = -1;
+        if (seq.length > width)
+            width = seq.length;
     }
-    if (width >= 0) {           /* matrix */
-        ans = PROTECT(allocMatrix(INTSXP, len, width));
-        ians = INTEGER(ans);
-    } else {                    /* list of int */
-        ans = PROTECT(NEW_LIST(len));
-    }
+    ans = PROTECT(allocMatrix(INTSXP, len, width));
+    ians = INTEGER(ans);
+    for (i = 0; i < LENGTH(ans); ++i)
+	ians[i] = NA_INTEGER;
 
     const int *iscore = INTEGER(score);
     int j;
     for (i = 0; i < len; ++i) {
         seq = get_cachedXStringSet_elt(&cache, i);
-        if (width >= 0) {       /* int matrix */
-            for (j = 0; j < seq.length; ++j)
-                ians[len * j + i] = iscore[decode(seq.seq[j])];
-        } else {                /* list of ints */
-            SET_VECTOR_ELT(ans, i, NEW_INTEGER(seq.length));
-            ians = INTEGER(VECTOR_ELT(ans, i));
-            for (j = 0; j < seq.length; ++j)
-                ians[j] = iscore[decode(seq.seq[j])];
-        }
+	for (j = 0; j < seq.length; ++j)
+	    ians[len * j + i] = iscore[decode(seq.seq[j])];
     }
 
     UNPROTECT(1);

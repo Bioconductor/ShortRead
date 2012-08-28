@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.17
+-----------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o as(ShortReadQ, "matrix") now accepts ShortReadQ instances with
+    heterogenous widths, returning a matrix x[i, j] with NA values in
+    when j > width()[i].
+
 CHANGES IN VERSION 1.15
 -----------------------
 
