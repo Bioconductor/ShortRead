@@ -51,9 +51,9 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
     if (!(IS_S4_OBJECT(sread) &&
           strcmp(get_classname(sread), "DNAStringSet") == 0))
         Rf_error("'%s' must be '%s'", "sread", "DNAStringSet");
-    if (!(IS_S4_OBJECT(quality) &&
-          strcmp(get_classname(quality), "BStringSet") == 0))
-        Rf_error("'%s' must be '%s'", "quality", "BStringSet");
+    /* check in R -- C-level R_check_super... is not adequate */
+    /* if (R_check_class_etc(quality, qualityClasses) < 0) */
+    /*     Rf_error("'is(<%s>, \"%s\")' failed", "quality", qualityClasses[0]); */
     const int len = get_XStringSet_length(id);
     if ((len != get_XStringSet_length(sread)) ||
         (len != get_XStringSet_length(quality)))

@@ -124,6 +124,9 @@ setMethod(writeFastq, c("ShortReadQ", "character"),
     max_width <- max(c(unique(width(id(object))),
                        unique(width(sread(object))),
                        unique(width(quality(object)))))
+    if (!is(quality(quality(object)), "XStringSet"))
+        .throw(SRError("UserArgumentMismatch", "'is(<%s>, \"%s\")' failed",
+                       "quality", "XStringSet"))
     .Call(.write_fastq, id(object), sread(object),
           quality(quality(object)), file, mode, full, max_width)
     invisible(length(object))
