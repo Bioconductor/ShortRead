@@ -211,7 +211,7 @@
     \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
       \sQuote{narrow} \code{quality} so that scores are between
       \code{start} and \code{end} bases, according to
-      \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
+      \code{\link[IRanges:intra-range-methods]{narrow}} in the \code{IRanges}
       package.}
 
     \item{trimTailw}{\code{signature(object="FastqQuality", k="integer",

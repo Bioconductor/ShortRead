@@ -128,7 +128,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       NA, width = NA, use.names = TRUE)}: narrow \code{sread} and
       \code{quality} so that sequences are between \code{start} and
       \code{end} bases, according to
-      \code{\link[IRanges:Ranges-utils]{narrow}} in the \code{IRanges}
+      \code{\link[IRanges:intra-range-methods]{narrow}} in the \code{IRanges}
       package.}
 
     \item{trimTailw}{\code{signature(object="ShortReadQ", k="integer",
