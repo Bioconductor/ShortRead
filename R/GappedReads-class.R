@@ -145,10 +145,10 @@ setMethod("qnarrow", "GappedReads",
     function(x, start=NA, end=NA, width=NA)
     {
         stop("coming soon")
-        ans_cigar <- cigarQNarrow(cigar(x),
-                                  start=start, end=end, width=width)
-        ans_start <- start(x) + attr(ans_cigar, "rshift")
-        updateCigarAndStart(x, cigar=ans_cigar, start=ans_start)
+        ## ans_cigar <- cigarQNarrow(cigar(x),
+        ##                           start=start, end=end, width=width)
+        ## ans_start <- start(x) + attr(ans_cigar, "rshift")
+        ## updateCigarAndStart(x, cigar=ans_cigar, start=ans_start)
     }
 )
 
@@ -156,10 +156,10 @@ setMethod("narrow", "GappedReads",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         stop("coming soon")
-        ans_cigar <- cigarNarrow(cigar(x),
-                                 start=start, end=end, width=width)
-        ans_start <- start(x) + attr(ans_cigar, "rshift")
-        updateCigarAndStart(x, cigar=ans_cigar, start=ans_start)
+        ## ans_cigar <- cigarNarrow(cigar(x),
+        ##                          start=start, end=end, width=width)
+        ## ans_start <- start(x) + attr(ans_cigar, "rshift")
+        ## updateCigarAndStart(x, cigar=ans_cigar, start=ans_start)
     }
 )
 

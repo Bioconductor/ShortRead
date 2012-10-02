@@ -5,6 +5,7 @@
 \alias{vclass}
 % ShortRead / ShortReadQ
 \alias{sread}
+\alias{sread,ShortRead-method}
 \alias{id}
 % AlignedRead
 \alias{chromosome}

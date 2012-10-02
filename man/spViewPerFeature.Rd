@@ -5,7 +5,7 @@
 Tools to visualize genomic data
 }
 \description{
-Use \code{Snapshot}-class to visulatize a specific region of genomic data
+Use \code{Snapshot}-class to visualize a specific region of genomic data
 }
 \usage{
 spViewPerFeature(GRL, name, files, ignore.strand=FALSE,
@@ -22,14 +22,14 @@ spViewPerFeature(GRL, name, files, ignore.strand=FALSE,
     to be visualized.} 
 
   \item{files}{Charactor() or \code{BamFileList} specifying the file(s)
-    to be visuliazed. If multiple files, local metadata of the files can
+    to be visualized. If multiple files, local metadata of the files can
     be hold by setting a \code{DataFrame} (values(files) <-
     DataFrame(...)). See examples below.} 
   
   \item{ignore.strand}{Logical(1) indicating whether to ignore the
     strand of the genomic data.} 
 
-  \item{multi.levels}{Logical(1) inidicating whether to plot the
+  \item{multi.levels}{Logical(1) indicating whether to plot the
     coverage of  multiple files on different panels. If \code{FALSE},
     the mean coverage of multiple files would be plotted. }
 
@@ -37,7 +37,7 @@ spViewPerFeature(GRL, name, files, ignore.strand=FALSE,
      (\code{elementMetatdata()}) should be used to group the
      samples. Ignore}
    
-  \item{\dots}{Arguments used for createing a \code{\link{Snapshot}} object.}
+  \item{\dots}{Arguments used for creating a \code{\link{Snapshot}} object.}
   
 }
 

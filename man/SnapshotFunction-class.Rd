@@ -59,10 +59,10 @@ limits(x, ...)
       \code{\link{data.frame}}.}
 
     \item{\code{viewer}:}{Object of class \code{\link{function}} for
-      visulazation that returns an \code{\link{SpTrellis}} object.}
+      visualization that returns an \code{\link{SpTrellis}} object.}
 
     \item{\code{limits}:}{Object of class \code{integer} for the limits
-      of ranges to be visuzlized.}
+      of ranges to be visualized.}
   }
 }
 

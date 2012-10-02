@@ -71,6 +71,8 @@ setGeneric("readPrb", function(dirPath, pattern=character(0), ...)
 setGeneric("ShortRead", function(sread, id, ...)
            standardGeneric("ShortRead"))
 
+setGeneric("sread", function(object, ...) standardGeneric("sread"))
+
 setGeneric("writeFasta", function(object, file, mode="w", ...)
            standardGeneric("writeFasta"),
            signature=signature("object"))
@@ -112,8 +114,6 @@ setGeneric("readQseq", function(dirPath, pattern=character(0), ...,
                                   "XDataFrame"),
                                 filtered=FALSE, verbose=FALSE)
            standardGeneric("readQseq"), signature="dirPath")
-
-setGeneric("length")
 
 setGeneric("trimTails",
            function(object, k, a, successive=FALSE, ..., ranges=FALSE)

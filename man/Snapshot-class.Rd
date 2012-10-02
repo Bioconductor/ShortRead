@@ -47,7 +47,7 @@
 \description{
 
   A \code{\linkS4class{Snapshot}}-class to visualize genomic data from 
-  BAM files with zoom and pan functionalities.
+  BAM files with zoom and pan functionality.
 
 }
 
@@ -60,7 +60,7 @@ Snapshot(files, range, ...)
   \item{files}{A character() or \code{BamFileList} specifying the file(s)
     to be visualized.} 
 
-  \item{range}{A \code{\link{GRanges}} object specifing the range to be
+  \item{range}{A \code{\link{GRanges}} object specifying the range to be
     visualized.}
 
    \item{...}{Additional, optional, arguments to be passed to the
@@ -74,11 +74,11 @@ Snapshot(files, range, ...)
 	 used for visualization.}
 
        \item{currentFunction:}{character(1) naming the function, from
-	 \code{functinos} to be used for data input and
+	 \code{functions} to be used for data input and
 	 visualization. The default chooses a function based on the
 	 scale at which the data is being visualized.}
 
-       \item{annTrack:}{Annotation track. If built-in visulization
+       \item{annTrack:}{Annotation track. If built-in visualization
          functions are to be used, \code{annTrack} should be a
          \code{GRanges} instance and the first column of its
          elementMeatdata would be used to annotate the range.}
@@ -150,9 +150,9 @@ Snapshot(files, range, ...)
     \item{\code{.debug}:}{Object of class \code{function} to display
     messages while in debug mode }
     \item{\code{.auto_display}:}{Object of class \code{logical} to
-       automatically disply the coverage plot. }
+       automatically display the coverage plot. }
     \item{\code{.range}:}{Object of class \code{GRanges} indicating
-      which ranges of records to be imported from BAM fiels. }
+      which ranges of records to be imported from BAM fields. }
     \item{\code{.zin}:}{Object of class \code{logical} indicating
       whether the current zooming effect is zoom in. }
     \item{\code{.pright}:}{Object of class \code{logical} indicating
@@ -164,10 +164,10 @@ Snapshot(files, range, ...)
     \item{\code{.initial_functions}:}{Object of class 
        \code{SnapshotFunctionList} available by the \code{Snapshot} object. }
     \item{\code{.current_function}:}{Object of class \code{character}
-      of the function the imported recored are currently evaluated and
+      of the function the imported recorded are currently evaluated and
       visualized.}
     \item{\code{annTrack}:}{Default to \code{NULL} if not intended to
-       visulize the annotation track. If default visulization
+       visualize the annotation track. If default visualization
        function(s) is intended to be used to plot the annotation,
        \code{annTrack} has to be a \code{GRanges} instance.}   
     \item{\code{functions}:}{Object of class
@@ -213,7 +213,7 @@ zoom(s, range=GRanges("chrI", IRanges(7e4, 7e4+8000)))
 pan(s)  # pan right
 togglez(s) # change effect of zooming
 zoom(s) # zoom out
-togglep(s) # chage effect of panning
+togglep(s) # change effect of panning
 pan(s)
 
 ## accessors
@@ -228,7 +228,7 @@ getTrellis(s) ## extract the trellis object
 s <- Snapshot(file, range=which, ignore.strand=TRUE)
 
 ##
-## example 3: visulizing annotation track
+## example 3: visualizing annotation track
 ##
 
 library(GenomicFeatures)
@@ -263,8 +263,8 @@ zoom(s)
 
 pan(s)
 
-## example 4, 5, 6: muliple BAM files with 'multicoarse_covarage'
-## and 'mutifine_coverage' view.
+## example 4, 5, 6: multiple BAM files with 'multicoarse_covarage'
+## and 'multifine_coverage' view.
 
 ## Resolution does not automatically switch for views of multiple
 ## files. It is important to note if width(which) < 10,000, use
