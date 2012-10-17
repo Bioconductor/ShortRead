@@ -81,9 +81,6 @@ SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
     } else {
         const int nbuf = INTEGER(k)[0];
         int *kbuf = (int *) R_alloc(sizeof(int), nbuf), ibuf;
-#ifdef SUPPORT_OPENMP
-#pragma omp parallel for private(j)
-#endif
         for (i = 0; i < len; ++i) {
             const cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
             int n = 0;

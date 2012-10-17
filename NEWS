@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.17
+-----------------------
+
+BUG FIXES
+
+  o trimTails, succesive=TRUE would return inconsistent results
+
 CHANGES IN VERSION 1.15
 -----------------------
 
