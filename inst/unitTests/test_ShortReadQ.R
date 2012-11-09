@@ -127,6 +127,14 @@ test_FastqStreamer <- function()
     checkIdentical(256L, len)
 }
 
+test_FastqStreamer_roundtrip <- function()
+{
+    out <- tempfile()
+    writeFastq(v1 <- readFastq(fl), out)
+    s <- FastqStreamer(out)
+    .equals(v1, yield(s))
+}
+
 test_FastqStreamer_IRanges <- function()
 {
     sr <- readFastq(fl)

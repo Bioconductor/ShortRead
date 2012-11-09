@@ -80,15 +80,18 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         const Rbyte *start;
 
         start = ++buf;          /* id; skip '@' */
-        while (*buf != '\n')
+        while (!((*buf == '\n') || (*buf == '\r')))
             ++buf;
         id_w[i] = buf - start;
-        while (*buf == '\n')
+        while ((*buf == '\n') || (*buf == '\r'))
             ++buf;
         sread_w[i] = 0;         /* read */
         while (*buf != '+') {
-            while (*buf++ != '\n') /* strip '\n' */
+            while (!((*buf == '\n') || (*buf == '\r'))) { /* strip '\n' */
                 sread_w[i] += 1;
+                ++buf;
+            }
+	    ++buf;
         }
     }
 
@@ -119,39 +122,38 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
 
         /* id */
         start = ++buf;          /* skip '@' */
-        while (*buf != '\n')
+        while (!((*buf == '\n') || (*buf == '\r')))
             ++buf;
         x = get_cachedXRawList_elt(&id, i);
         memcpy((char *) x.seq, start, (buf - start) * sizeof(Rbyte));
 
         /* read */
-        while (*buf == '\n')
+        while ((*buf == '\n') || (*buf == '\r'))
             ++buf;
         curr = (char *) get_cachedXRawList_elt(&sread, i).seq;
         while (*buf != '+') {
-            while (*buf != '\n') /* strip '\n' */
+            while (!((*buf == '\n') || (*buf == '\r'))) /* strip '\n' */
                 *curr++ = DNAencode(*buf++);
             buf++;
         }
 
         /* second id tag */
-        while (*buf != '\n')
+        while (!((*buf == '\n') || (*buf == '\r')))
             ++buf;
 
         /* quality */
-        while (*buf == '\n')
+        while ((*buf == '\n') || (*buf == '\r'))
             ++buf;              /* leading '\n' */
         start = buf;
         x = get_cachedXRawList_elt(&qual, i);
         curr = (char *) x.seq;
         while (buf != bufend && curr - x.seq != x.length) {
-            if (*buf != '\n')
+            if ((*buf != '\n') && (*buf != '\r'))
                 *curr++ = *buf++;
             else
                 buf++;
         }
     }
-
     SEXP nms = PROTECT(NEW_CHARACTER(3));
     SET_STRING_ELT(nms, 0, mkChar("sread"));
     SET_STRING_ELT(nms, 1, mkChar("quality"));

@@ -159,7 +159,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     
     \item{writeFasta}{\code{signature(object, file, ...)}: write
       \code{object} to \code{file} in fasta format. See
-      \code{\link{writeFASTA}} for \code{...} argument values.}
+      \code{\link{writeXStringSet}} for \code{...} argument values.}
 
   }
 }

@@ -5,6 +5,8 @@ BUG FIXES
 
   o trimTails, succesive=TRUE would return inconsistent results
 
+  o FastqStreamer, FastqSampler parse fastq files created with '\r'
+
 CHANGES IN VERSION 1.15
 -----------------------
 
