@@ -34,14 +34,19 @@
         status(update=TRUE)
         if (verbose)
             msg("FastqSampler$yield() XStringSet")
-        elts <- .Call(.sampler_as_XStringSet, sampler)
+        elts <- .Call(.sampler_as_XStringSet, sampler, ordered)
         if (verbose)
             msg("FastqSampler$yield() ShortReadQ")
         ShortReadQ(elts[["sread"]], elts[["quality"]], elts[["id"]], ...)
+    },
+    show = function() {
+        callSuper()
+        cat("ordered:", ordered, "\n")
     })
 
 FastqSampler <-
-    function(con, n = 1e6, readerBlockSize=1e8, verbose=FALSE)
+    function(con, n = 1e6, readerBlockSize=1e8, verbose=FALSE,
+             ordered=FALSE)
 {
     if (length(n) != 1 || !is.finite(n) || n < 0)
         stop("'n' must be length 1, finite and >= 0")
@@ -50,20 +55,22 @@ FastqSampler <-
     sampler <- .Call(.sampler_new, as.integer(n))
     .ShortReadFile(.FastqSampler_g, con, reader=.binReader,
                    readerBlockSize=as.integer(readerBlockSize),
-                   sampler=sampler, verbose=verbose)
+                   sampler=sampler, verbose=verbose, ordered=ordered)
 }
 
 setMethod("FastqSamplerList", "ANY",
-          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE,
+                   ordered = FALSE)
 {
     FastqFileList(..., class="FastqSampler")
 })
 
 setMethod("FastqSamplerList", "character",
-          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+          function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE,
+                   ordered = FALSE)
 {
     listData <-
         lapply(..1, FastqSampler, n=n, readerBlockSize=readerBlockSize,
-               verbose=verbose)
+               verbose=verbose, ordered=ordered)
     new("FastqSamplerList", listData=listData)
 })

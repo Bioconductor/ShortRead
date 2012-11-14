@@ -97,7 +97,7 @@ extern "C" {
     SEXP sampler_new(SEXP n);
     SEXP sampler_add(SEXP s, SEXP bin);
     SEXP sampler_status(SEXP s);
-    SEXP sampler_as_XStringSet(SEXP s);
+    SEXP sampler_as_XStringSet(SEXP s, SEXP ordered);
 
     SEXP streamer_new(SEXP n);
     SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd);

@@ -375,8 +375,10 @@ setOldClass("trellis")
       skips="integer", adds = "integer", ith = "integer",
       recycle = "logical"))
 
-.FastqSampler_g <-
-    setRefClass("FastqSampler", contains="FastqFileReader")
+.FastqSampler_g <- setRefClass("FastqSampler",
+    contains="FastqFileReader",
+    fields = list(
+      ordered = "logical"))
 
 setClass("FastqFileList", contains="RsamtoolsFileList",
     prototype=prototype(elementType="FastqFile"))

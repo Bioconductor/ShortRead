@@ -11,7 +11,7 @@ struct bufnode {
 };
 
 struct record {
-    int length;
+    int order, length;
     const Rbyte *record;
 };
 
@@ -38,6 +38,13 @@ SEXP _records_status(struct records *records)
     UNPROTECT(2);
     return result;
 }
+
+static int _records_compare_order(const void *a, const void *b)
+{
+    return ((struct record * const) a)->order -
+        ((struct record * const) b)->order;
+}
+
 
 /* fastq */
 
@@ -213,13 +220,14 @@ void _sampler_free(struct sampler *sampler)
 }
 
 void _sampler_add1(struct records *sample, const Rbyte *record,
-                   int len, int idx)
+                   int len, int order, int idx)
 {
     /* add record to sample */
     if (sample->n_curr == sample->n)
         Free(sample->records[idx].record);
 
     sample->records[idx].length = len;
+    sample->records[idx].order = order;
     Rbyte *intern_record = Calloc(len, Rbyte);
     memcpy(intern_record, record, len * sizeof(Rbyte));
     sample->records[idx].record = intern_record;
@@ -257,7 +265,8 @@ void _sampler_dosample(struct sampler *sampler)
         /* save selected reads */
         for (int i = 0; i < n_samp; ++i) {
             struct record *r = sampler->current.records + keep[i];
-            _sampler_add1(sampler->sample, r->record, r->length, drop[i]);
+            _sampler_add1(sampler->sample, r->record, r->length,
+                          r->order, drop[i]);
         }
 
         Free(keep);
@@ -272,16 +281,23 @@ void _sampler_add(struct sampler *sampler, const Rbyte *record,
 {
     struct records *sample = sampler->sample;
     if (sample->n_curr < sample->n) { /* sampling not yet needed */
-        _sampler_add1(sample, record, len, sample->n_curr);
+        _sampler_add1(sample, record, len, sample->n_curr, sample->n_curr);
         sample->n_curr++;
     } else {                    /* sample */
         struct record *r =
             sampler->current.records + sampler->current.n_curr;
         r->record = record;
         r->length = len;
+        r->order = sample->n_tot + sampler->current.n_curr;
         if (sampler->current.n == ++sampler->current.n_curr)
             _sampler_dosample(sampler);
     }
+}
+
+void _sampler_order(struct records *sample)
+{
+    qsort(sample->records, sample->n_curr,
+          sizeof(struct record), _records_compare_order);
 }
 
 void _sampler_scratch_set(struct sampler *sampler, const Rbyte *record,
@@ -378,9 +394,11 @@ SEXP sampler_status(SEXP s)
     return _records_status(sampler->sample);
 }
 
-SEXP sampler_as_XStringSet(SEXP s)
+SEXP sampler_as_XStringSet(SEXP s, SEXP ordered)
 {
     struct sampler *sampler = SAMPLER(s);
+    if (TRUE == LOGICAL(ordered)[0])
+        _sampler_order(sampler->sample);
     SEXP result = _fastq_as_XStringSet(sampler->sample);
     _sampler_scratch_set(sampler, NULL, 0);
     _sampler_reset(sampler);

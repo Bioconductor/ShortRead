@@ -278,7 +278,8 @@ setGeneric("FastqStreamerList",
            signature="...")
 
 setGeneric("FastqSamplerList",
-           function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+           function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE,
+                    ordered = FALSE)
            standardGeneric("FastqSamplerList"),
            signature="...")
 

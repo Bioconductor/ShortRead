@@ -70,8 +70,10 @@ FastqFileList(..., class="FastqFile")
 \S4method{readFastq}{FastqFile}(dirPath, pattern=character(), ...)
 
 ## FastqSampler and FastqStreamer
-FastqSampler(con, n=1e6, readerBlockSize=1e8, verbose=FALSE)
-FastqSamplerList(..., n=1e6, readerBlockSize=1e8, verbose=FALSE)
+FastqSampler(con, n=1e6, readerBlockSize=1e8, verbose=FALSE,
+    ordered = FALSE)
+FastqSamplerList(..., n=1e6, readerBlockSize=1e8, verbose=FALSE,
+    ordered = FALSE)
 FastqStreamer(con, n, readerBlockSize=1e8, verbose=FALSE)
 FastqStreamerList(..., n, readerBlockSize=1e8, verbose=FALSE)
 yield(x, ...)
@@ -95,6 +97,9 @@ yield(x, ...)
     but is less efficient.}
 
   \item{verbose}{Display progress.}
+
+  \item{ordered}{logical(1) indicating whether sampled reads should be
+    returned in the same order as they were encountered in the file.}
 
   \item{x}{An instance from the \code{FastqSampler} or
     \code{FastqStreamer} class.}
@@ -169,6 +174,11 @@ rfq <- readFastq(f)
 f <- FastqSampler(fl, 50)
 yield(f)    # sample of size n=50
 yield(f)    # independent sample of size 50
+close(f)
+
+## Return sample as ordered in original file
+f <- FastqSampler(fl, 50, ordered=TRUE)
+yield(f)
 close(f)
 
 f <- FastqStreamer(fl, 50)
