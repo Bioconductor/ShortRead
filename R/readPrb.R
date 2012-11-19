@@ -36,7 +36,7 @@
     nrec <- countLines(dirPath, pattern)
     crec <- c(0, cumsum(nrec))
     fls <- .file_names(dirPath, pattern)
-    gz <- gzfile(fls[[1]], "rb")
+    gz <- gzfile(fls[[1]]); open(gz)
     tryCatch({
         ln <- readLines(gz, 1)
     }, finally=close(gz))
@@ -46,7 +46,7 @@
     what <- rep(list(integer()), 4L * cycles)
     for (i in seq_along(fls))
         tryCatch({
-            gz <- gzfile(fls[[i]], "rb")
+            gz <- gzfile(fls[[i]]); open(gz)
             data <- unlist(scan(gz, what, sum(nrec), ..., quiet=!verbose))
             a[(crec[i]+1):crec[i+1],,] <-
                 array(data, c(nrec[[i]], 4L, cycles))
@@ -71,7 +71,7 @@
     } else if (!is.character(as) || length(as) != 1) {
         .arg_mismatch_type_err("as", "character(1)")
     } else {
-        vals <- eval(formals(.readPrb_character)$as)
+        vals <- eval(formals(ShortRead:::.readPrb_character)$as)
         if (!as %in% vals)
             .arg_mismatch_value_err("as", as, vals)
     }

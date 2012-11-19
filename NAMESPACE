@@ -2,50 +2,100 @@ useDynLib(ShortRead, .registration=TRUE)
 
 import(zlibbioc)
 
-importClassesFrom(Biobase, AnnotatedDataFrame, Versioned,
-                  ScalarCharacter, ScalarNumeric, ScalarInteger,
-                  ScalarLogical, AssayData)
+import(methods)
 
-importClassesFrom(Biostrings, BStringSet, DNAStringSet,
-                  PairwiseAlignedXStringSet,
-                  SolexaQuality, PhredQuality, XStringQuality)
+importClassesFrom(Biobase, AnnotatedDataFrame, AssayData,
+                  ScalarCharacter, ScalarInteger, ScalarLogical,
+                  ScalarNumeric, Versioned, Versions)
 
-importClassesFrom(IRanges, RangesList, SimpleRleList)
+importClassesFrom(BiocGenerics, connection)
 
-importFrom(grDevices, colorRampPalette)
+importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
+                  PairwiseAlignedXStringSet, PhredQuality,
+                  QualityScaledDNAStringSet, SolexaQuality,
+                  XStringQuality, XStringSet)
 
-importFrom(BiocGenerics, Filter, lapply, mapply, sapply, Map,
-           cbind, rbind, strand)
+importClassesFrom(GenomicRanges, GappedAlignments, GRanges, Seqinfo)
 
-importFrom(Biobase, selectSome, subListExtract, copySubstitute,
-           "dimLabels<-",
-           pData, phenoData, varLabels, varMetadata, sampleNames,
-           mkScalar)
+importClassesFrom(IRanges, characterORNULL, DataFrame, DataTableORNULL,
+                  FilterRules, IRanges, RangedData, RangesList, Rle,
+                  SimpleList)
 
-importFrom(IRanges, append, as.list, as.vector, coverage, head,
-           narrow, score, split, start, unlist, Views, width, with,
-           "%in%")
-
-importFrom(lattice, dotplot, histogram, levelplot, llines,
-           panel.abline, panel.histogram, panel.levelplot,
-           panel.xyplot, panel.grid, xyplot)
-
-importFrom(methods, Ops)
+importClassesFrom(Rsamtools, BamFileList, RsamtoolsFileList)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
-importFrom(GenomicRanges, GappedAlignments, left, right)
+importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
+                  coerce, colnames, "colnames<-", coverage, diff,
+                  endoapply, eval, gsub, head, ifelse, "%in%", levels,
+                  median, metadata, "metadata<-", narrow, ncol, nrow,
+                  paste, pmin, quantile, Reduce, rev, Rle, rownames,
+                  "rownames<-", runLength, runValue, score, split,
+                  start, sub, t, table, tapply, toupper, unlist,
+                  update, Views, which, width, with)
+
+importMethodsFrom(Biobase, "dimLabels<-", initialize, pData, phenoData,
+                  sampleNames, show, varLabels, varMetadata)
+
+importMethodsFrom(BiocGenerics, cbind, density, Filter, get, lapply,
+                  Map, mapply, rbind, sapply, strand)
+
+importMethodsFrom(Biostrings, alphabet, alphabetFrequency, detail,
+                  duplicated, end, match, nchar, pairwiseAlignment,
+                  pattern, PDict, quality, reverse, reverseComplement,
+                  substr, summary, tail, trimLRPatterns, unaligned,
+                  union, vcountPDict)
+
+importMethodsFrom(GenomicRanges, as.data.frame, cigar, countOverlaps,
+                  keepSeqlevels, left, qnarrow, qwidth, ranges, reduce,
+                  right, seqlevels, "seqlevels<-", seqnames, unique,
+                  values, "values<-")
+
+importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
+                  coerce, colnames, "colnames<-", coverage, diff,
+                  endoapply, eval, gsub, head, ifelse, "%in%", levels,
+                  median, metadata, "metadata<-", narrow, ncol, nrow,
+                  order, paste, pmin, quantile, Reduce, rev, Rle, rownames,
+                  "rownames<-", runLength, runValue, score, sort, split,
+                  start, sub, t, table, tapply, toupper, unlist,
+                  update, Views, which, width, with)
+
+importMethodsFrom(Rsamtools, isOpen, path, readBamGappedAlignments,
+                  readBamGappedReads, scanBam, ScanBamParam)
+
+importFrom(Biobase, copySubstitute, mkScalar, selectSome,
+           subListExtract)
 
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
-           alphabetFrequency, alphabet, DNA_ALPHABET,
-           quality, pairwiseAlignment, pattern,
-           trimLRPatterns, unaligned, detail,
-           readDNAStringSet, writeXStringSet)
+           get_seqtype_conversion_lookup, mkAllStrings,
+           QualityScaledDNAStringSet, readDNAStringSet,
+           writeXStringSet)
+
+importFrom(GenomicRanges, cigarToQWidth, GappedAlignments, GRanges)
+
+importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
 importFrom(hwriter, hwrite, hwriteImage)
 
-importFrom(Rsamtools, scanBam, ScanBamParam, bamSimpleCigar, 
-           bamReverseComplement, bamWhat, bamFlagTest, isOpen)
+importFrom(IRanges, DataFrame, FilterRules, IntegerList, IRanges,
+           isSingleString, isTRUEorFALSE, RleList, SimpleList,
+           solveUserSEW)
+
+importFrom(lattice, dotplot, histogram, levelplot, llines, lsegments,
+           ltext, panel.abline, panel.dotplot, panel.grid,
+           panel.histogram, panel.levelplot, panel.xyplot,
+           strip.custom, xyplot)
+
+importFrom(Rsamtools, BamFileList, bamFlagTest, bamReverseComplement,
+           "bamReverseComplement<-", bamSimpleCigar,
+           "bamSimpleCigar<-", bamWhat, "bamWhat<-")
+
+importFrom(stats, approxfun, setNames)
+
+importFrom(utils, capture.output, packageDescription, read.csv,
+           read.table, Sweave)
+
+importFrom(Biostrings, DNA_ALPHABET)
 
 exportClassPattern("^.*$")
 

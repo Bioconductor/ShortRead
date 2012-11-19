@@ -390,7 +390,7 @@
         .arg_mismatch_type_err("type", "character(1)")
     if (!missing(filter))
         .check_type_and_length(filter, "SRFilter", NA)
-    vals <- eval(formals(sys.function())$type)
+    vals <- eval(formals(ShortRead:::.readAligned_character)$type)
     if (!type %in% vals)
         .arg_mismatch_value_err("type", type, vals)
     aln <-

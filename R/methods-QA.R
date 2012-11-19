@@ -552,11 +552,12 @@ setMethod(report, "QASource",
 {
     df <- as(values(x), "data.frame")
     df$Id <- as.integer(as.character(df$Id))
+    pal <- c("#D73027", "#4575B4") # brewer.pal(9, "RdYlBu")[c(1, 9)]
     plt <-
         dotplot(Id ~ SourceN, df,
                 type = "b", pch = 20, col = .dnaCol,
                 rng = x@flagNSequencesRange,
-                rngcol = brewer.pal(9, "RdYlBu")[c(1, 9)],
+                rngcol = pal,
                 panel=function(x, y, ..., rng, rngcol) {
                     panel.dotplot(x, y, ...)
                     yy <- c(min(y), max(y))
@@ -618,7 +619,11 @@ setMethod(report, "QAQualityUse",
                             lapply(split(Count, Id), cumsum),
                             lapply(split(Count, Id), sum)),
                         use.names=FALSE))
-    col <- colorRampPalette(brewer.pal(9, "RdYlBu"))(length(levels(q)))
+
+    pal <-       # brewer.pal(9, "RdYlBu")
+        c("#D73027", "#F46D43", "#FDAE61", "#FEE090", "#FFFFBF",
+           "#E0F3F8", "#ABD9E9", "#74ADD1", "#4575B4")
+    col <- colorRampPalette(pal)(length(levels(q)))
     plt <- dotplot(Id ~ Proportion, group=Quality, df,
                    type = "b", pch = 20, col = col,
                    xlab="Cummulative Proportion",
@@ -638,8 +643,11 @@ setMethod(report, "QAReadQuality",
     df$Id <- factor(df$Id, levels=c(lvl[!lvl %in% flag], flag))
     xmin <- min(df$Score)
     ymax <- max(df$Density)
+    pal <-       # brewer.pal(8, "Set1")
+        c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",
+          "#FFFF33", "#A65628", "#F781BF")
     col <- c(rep("gray", length(lvl) - length(flag)),
-             brewer.pal(8, "Set1")[1 + (seq_along(flag) - 1) %% 8])
+             pal[1 + (seq_along(flag) - 1) %% 8])
     plt <-
         xyplot(Density ~ Score, group=Id, df,
                type = "l", xlab = "Average (calibrated) base quality", 

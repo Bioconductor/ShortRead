@@ -30,7 +30,7 @@ readXStringColumns <-
                        conditionMessage(err)))
     })
     if (header) {
-        gz <- gzfile(files[[1]], "rb")
+        gz <- gzfile(files[[1]]); open(gz)
         tryCatch({
             ln <- readLines(gz, skip+1)[skip+1]
         }, finally=close(gz))

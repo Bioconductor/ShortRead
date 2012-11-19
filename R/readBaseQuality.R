@@ -20,7 +20,7 @@
                          "help(\"readBaseQuality,character-method\")")
     if (!is.character(type) || length(type) != 1)
         .arg_mismatch_type_err("type", "character(1)")
-    vals <- eval(formals(sys.function())$type)
+    vals <- eval(formals(ShortRead:::.readBaseQuality_character)$type)
     if (!type %in% vals)
         .arg_mismatch_value_err("type", type, vals)
     tryCatch({

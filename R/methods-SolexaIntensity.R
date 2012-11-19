@@ -63,7 +63,7 @@ SolexaIntensity <-
     }
 
     fls <- .file_names(dirPath, intPattern)
-    gz <- gzfile(fls[[1]], "rb")
+    gz <- gzfile(fls[[1]]); open(gz)
     tryCatch({
         ln <- readLines(gz, 1)
     }, finally=close(gz))
@@ -76,7 +76,7 @@ SolexaIntensity <-
                      x=integer(reads), y=integer(reads))
     for (i in seq_along(fls)) {
         tryCatch({
-            gz <- gzfile(fls[[i]], "rb")
+            gz <- gzfile(fls[[i]]); open(gz)
             data <- scan(gz, what, nrec[[i]],..., quiet=!verbose)
             idx <- (crec[i]+1):crec[i+1]
             int[idx,,] <- array(unlist(data[-(1:4)]),
@@ -96,7 +96,7 @@ SolexaIntensity <-
         what <- c(rep(list(NULL), 4), what[-(1:4)])
         for (i in seq_along(fls)) {
             tryCatch({
-                gz <- gzfile(fls[[i]], "rb")
+                gz <- gzfile(fls[[i]]); open(gz)
                 data <- scan(gz, what, nrec[[i]], ..., quiet=!verbose)
                 idx <- (crec[i]+1):crec[i+1]
                 nse[idx,,] <- array(unlist(data[-(1:4)]),
@@ -125,7 +125,7 @@ SolexaIntensity <-
                dimnames=list(NULL, c("A", "C", "G", "T"), NULL))
     for (i in seq_along(fileNames)) {
         tryCatch({
-            gz <- gzfile(fileNames[[i]], "rb")
+            gz <- gzfile(fileNames[[i]]); open(gz)
             data <- scan(gz, nmax=nrec[[i]] * 4 * cycles,
                          comment.char="#", ..., quiet=!verbose)
             idx <- (crec[i]+1):crec[i+1]
