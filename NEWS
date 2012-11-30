@@ -6,6 +6,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
   o FastqSampler can return records in the order encountered in the
     sampled file.
 
+  o Increase to 10000 the number of reads examined for determining
+    Fastq quality type
+
 BUG FIXES
 
   o trimTails, succesive=TRUE would return inconsistent results
