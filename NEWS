@@ -9,6 +9,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
   o Increase to 10000 the number of reads examined for determining
     Fastq quality type
 
+  o as(FastqQuality, "numeric") returns a vector of quality scores
+  concatenated end to end (previously cycle to cycle), without padding
+  to effective equal width
+
 BUG FIXES
 
   o trimTails, succesive=TRUE would return inconsistent results

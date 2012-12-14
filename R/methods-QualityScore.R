@@ -162,7 +162,8 @@ setMethod(SFastqQuality, "BStringSet", function(quality, ...) {
 })
 
 setAs("FastqQuality", "numeric", function(from) {
-    as.vector(as(from, "matrix"))
+    v <- as.vector(t(as(from, "matrix")))
+    v[!is.na(v)]
 })
 
 setAs("FastqQuality", "matrix", function(from) {
