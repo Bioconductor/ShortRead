@@ -48,7 +48,7 @@ importMethodsFrom(Biostrings, alphabet, alphabetFrequency, detail,
 
 importMethodsFrom(GenomicRanges, as.data.frame, cigar, countOverlaps,
                   keepSeqlevels, left, qnarrow, qwidth, ranges, reduce,
-                  right, seqlevels, "seqlevels<-", seqnames, unique,
+                  right, seqlevels, "seqlevels<-", seqnames,
                   values, "values<-")
 
 importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
@@ -57,7 +57,7 @@ importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
                   median, metadata, "metadata<-", narrow, ncol, nrow,
                   order, paste, pmin, quantile, Reduce, rev, Rle, rownames,
                   "rownames<-", runLength, runValue, score, sort, split,
-                  start, sub, t, table, tapply, toupper, unlist,
+                  start, sub, t, table, tapply, toupper, unique, unlist,
                   update, Views, which, width, with)
 
 importMethodsFrom(Rsamtools, isOpen, path, readBamGappedAlignments,
