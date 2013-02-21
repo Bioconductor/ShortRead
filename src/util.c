@@ -215,7 +215,7 @@ SEXP _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
     return ans;
 }
 
-const int LINEBUF_SIZE = 20001;
+const int LINEBUF_SIZE = 200001;
 
 /*
  * open and check file; signal error
