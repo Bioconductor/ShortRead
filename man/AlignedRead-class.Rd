@@ -14,7 +14,7 @@
 \alias{coerce,AlignedRead,RangesList-method}
 \alias{coerce,AlignedRead,RangedData-method}
 \alias{coerce,AlignedRead,GRanges-method}
-\alias{coerce,AlignedRead,GappedAlignments-method}
+\alias{coerce,AlignedRead,GAlignments-method}
 \alias{coerce,AlignedRead,GappedReads-method}
 \alias{chromosome,AlignedRead-method}
 \alias{position,AlignedRead-method}
@@ -109,7 +109,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \code{signature(from = "AlignedRead", to = "RangesList")}:
           \code{signature(from = "AlignedRead", to = "RangedData")}:
           \code{signature(from = "AlignedRead", to = "GRanges")}:
-          \code{signature(from = "AlignedRead", to = "GappedAlignments")}:
+          \code{signature(from = "AlignedRead", to = "GAlignments")}:
           \code{signature(from = "AlignedRead", to = "GappedReads")}:
       
       Invoke these methods with, e.g., \code{as(from, "AlignedRead")}

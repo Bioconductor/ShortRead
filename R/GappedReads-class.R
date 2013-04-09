@@ -4,7 +4,7 @@
 ###
 
 setClass("GappedReads",
-    contains="GappedAlignments",
+    contains="GAlignments",
     representation(
         qseq="DNAStringSet"
         ## TODO: Maybe add the read quality? mismatch information?
@@ -20,7 +20,7 @@ setGeneric("qseq", function(x) standardGeneric("qseq"))
 
 setMethod("qseq", "GappedReads", function(x) x@qseq)
 
-### Overriding "qwidth" method for GappedAlignments objects with a faster
+### Overriding "qwidth" method for GAlignments objects with a faster
 ### method.
 setMethod("qwidth", "GappedReads", function(x) width(qseq(x)))
 
@@ -60,9 +60,9 @@ GappedReads <- function(seqnames=Rle(factor()), pos=integer(0),
                         qseq=DNAStringSet(),
                         names=NULL, seqlengths=NULL)
 {
-    galn <- GappedAlignments(seqnames=seqnames, pos=pos,
-                             cigar=cigar, strand=strand,
-                             names=names, seqlengths=seqlengths)
+    galn <- GAlignments(seqnames=seqnames, pos=pos,
+                        cigar=cigar, strand=strand,
+                        names=names, seqlengths=seqlengths)
     new("GappedReads", galn, qseq=qseq)
 }
 
@@ -75,7 +75,7 @@ readGappedReads <- function(file, format="BAM", use.names=FALSE, ...)
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
     if (format == "BAM") {
-        ans <- readBamGappedReads(file=file, use.names=use.names, ...)
+        ans <- readGappedReadsFromBam(file=file, use.names=use.names, ...)
         return(ans)
     }
     stop("only BAM format is supported at the moment")

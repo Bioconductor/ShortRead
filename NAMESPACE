@@ -15,7 +15,7 @@ importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
                   QualityScaledDNAStringSet, SolexaQuality,
                   XStringQuality, XStringSet)
 
-importClassesFrom(GenomicRanges, GappedAlignments, GRanges, Seqinfo)
+importClassesFrom(GenomicRanges, GAlignments, GRanges, Seqinfo)
 
 importClassesFrom(IRanges, characterORNULL, DataFrame, DataTableORNULL,
                   FilterRules, IRanges, RangedData, RangesList, Rle,
@@ -60,8 +60,8 @@ importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
                   start, sub, t, table, tapply, toupper, unique, unlist,
                   update, Views, which, width, with)
 
-importMethodsFrom(Rsamtools, isOpen, path, readBamGappedAlignments,
-                  readBamGappedReads, scanBam, ScanBamParam)
+importMethodsFrom(Rsamtools, isOpen, path, readGAlignmentsFromBam,
+                  readGappedReadsFromBam, scanBam, ScanBamParam)
 
 importFrom(Biobase, copySubstitute, mkScalar, selectSome,
            subListExtract)
@@ -71,7 +71,7 @@ importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            QualityScaledDNAStringSet, readDNAStringSet,
            writeXStringSet)
 
-importFrom(GenomicRanges, cigarToQWidth, GappedAlignments, GRanges)
+importFrom(GenomicRanges, cigarToQWidth, GAlignments, GRanges)
 
 importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 

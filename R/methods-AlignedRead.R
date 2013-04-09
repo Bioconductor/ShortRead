@@ -118,9 +118,9 @@ setAs("AlignedRead", "GappedReads", function(from)
                 names=id(from), qseq=sread(from))
 })
 
-setAs("AlignedRead", "GappedAlignments", function(from)
+setAs("AlignedRead", "GAlignments", function(from)
 {
-    as(as(from, "GappedReads"), "GappedAlignments")
+    as(as(from, "GappedReads"), "GAlignments")
 })
 
 ## subset

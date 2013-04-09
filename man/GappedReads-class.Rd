@@ -28,10 +28,10 @@
 \title{GappedReads objects}
 
 \description{
-  The GappedReads class extends the \link[GenomicRanges]{GappedAlignments}
+  The GappedReads class extends the \link[GenomicRanges]{GAlignments}
   class defined in the GenomicRanges package.
   A GappedReads object contains all the information contained in a
-  \link[GenomicRanges]{GappedAlignments} object plus the sequences
+  \link[GenomicRanges]{GAlignments} object plus the sequences
   of the queries. Those sequences can be accessed via the \code{qseq}
   accessor.
 }
@@ -41,7 +41,7 @@
     \item{}{
       \code{readGappedReads(file, format="BAM", use.names=FALSE, ...)}:
       Read a file as a GappedReads object.
-      Like with the \code{\link[GenomicRanges]{readGappedAlignments}}
+      Like with the \code{\link[GenomicRanges]{readGAlignments}}
       constructor, by default (i.e. \code{use.names=FALSE}) the resulting
       object has no names. If \code{use.names} is \code{TRUE}, then the
       names are constructed from the query template names (QNAME field in
@@ -52,10 +52,11 @@
       argument. The \code{use.names} argument and any extra argument are
       passed to the back-end function.
       Only the BAM format is supported for now. Its back-end is the
-      \code{\link[Rsamtools]{readBamGappedReads}} function defined
+      \code{\link[Rsamtools]{readGappedReadsFromBam}} function defined
       in the Rsamtools package.
-      See \code{?\link[Rsamtools]{readBamGappedReads}} for more information
-      (you might need to install and load the Rsamtools package first).
+      See \code{?\link[Rsamtools]{readGappedReadsFromBam}} for more
+      information (you might need to install and load the Rsamtools package
+      first).
     }
   }
 }
@@ -81,8 +82,8 @@
 }
 
 \seealso{
-  \link[GenomicRanges]{GappedAlignments-class},
-  \code{\link[Rsamtools]{readBamGappedReads}}
+  \link[GenomicRanges]{GAlignments-class},
+  \code{\link[Rsamtools]{readGappedReadsFromBam}}
 }
 
 \examples{
