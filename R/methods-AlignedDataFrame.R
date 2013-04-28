@@ -6,7 +6,7 @@ AlignedDataFrame <- function(data, metadata, nrow=nrow(data)) {
     new("AlignedDataFrame", data=data, varMetadata=metadata)
 }
 
-setMethod(append, c("AlignedDataFrame", "AlignedDataFrame", "missing"),
+setMethod(append, c("AlignedDataFrame", "AlignedDataFrame"),
     function(x, values, after=length(x))
 {
     if (!identical(varMetadata(x), varMetadata(values))) {

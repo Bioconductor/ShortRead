@@ -9,7 +9,7 @@
 \alias{[,AlignedRead,missing,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,missing,ANY-method}
-\alias{append,AlignedRead,AlignedRead,missing-method}
+\alias{append,AlignedRead,AlignedRead-method}
 \alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
 \alias{coerce,AlignedRead,RangesList-method}
 \alias{coerce,AlignedRead,RangedData-method}
@@ -97,7 +97,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       those reads indexed by \code{i}. \code{chromosome} is recoded to
       contain only those levels in the new subset.}
 
-    \item{append}{\code{signature(x = "AlignedRead", values = "AlignedRead", length = "missing")}:
+    \item{append}{\code{signature(x = "AlignedRead", values = "AlignedRead")}:
       append \code{values} after \code{x}. \code{chromosome} and
       \code{strand} must be factors with the same levels. See methods
       for \code{ShortReadQ}, \code{AlignedDataFrame} for details of how

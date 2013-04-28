@@ -1,6 +1,5 @@
-setMethod(append,
-          c(".ShortReadBase", ".ShortReadBase", "ANY"),
-          function(x, values, after=length(x))
+setMethod(append, c(".ShortReadBase", ".ShortReadBase"),
+    function(x, values, after=length(x))
 {
     .throw(SRError("UserArgumentMismatch",
                    "'%s' methods not defined for classes '%s', '%s'",

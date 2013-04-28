@@ -10,7 +10,7 @@
 \alias{[,QualityScore,ANY,missing-method}
 \alias{[,QualityScore,ANY,missing,ANY-method}
 \alias{[[,QualityScore,ANY,missing-method}
-\alias{append,QualityScore,QualityScore,missing-method}
+\alias{append,QualityScore,QualityScore-method}
 \alias{length,QualityScore-method}
 \alias{width,QualityScore-method}
 \alias{detail,QualityScore-method}
@@ -25,7 +25,7 @@
 \alias{length,MatrixQuality-method}
 \alias{narrow,MatrixQuality-method}
 \alias{width,MatrixQuality-method}
-\alias{append,MatrixQuality,MatrixQuality,missing-method}
+\alias{append,MatrixQuality,MatrixQuality-method}
 % FastqQuality
 \alias{width,FastqQuality-method}
 \alias{show,FastqQuality-method}
@@ -138,7 +138,7 @@
       the number of rows of the corresponding matrix, and not the length
       of the corresponding numeric vector.}
 
-    \item{append}{\code{signature(x = "QualityScore", values = "QualityScore", length = "missing")}:
+    \item{append}{\code{signature(x = "QualityScore", values = "QualityScore")}:
       append \code{values} after \code{x}.}
 
     \item{width}{\code{signature(x = "QualityScore")}:}

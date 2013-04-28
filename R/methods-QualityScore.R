@@ -25,7 +25,7 @@ setMethod(length, "QualityScore", function(x) length(quality(x)))
 setMethod(width, "QualityScore", function(x)
           .undefined_method_err(class(x), "width"))
 
-setMethod(append, c("QualityScore", "QualityScore", "missing"),
+setMethod(append, c("QualityScore", "QualityScore"),
     function(x, values, after=length(x))
 {
     initialize(x, quality=append(quality(x), quality(values)))
@@ -129,7 +129,7 @@ setMethod(narrow, "MatrixQuality",
     }
 })
 
-setMethod(append, c("MatrixQuality", "MatrixQuality", "missing"),
+setMethod(append, c("MatrixQuality", "MatrixQuality"),
     function(x, values, after=length(x))
 {
     initialize(x, quality=rbind(quality(x), quality(values)))

@@ -162,7 +162,7 @@ setMethod("[", c("ShortReadQ", "ANY", "ANY"),
 
 setMethod("[", c("ShortReadQ", "ANY", "missing"), .ShortReadQ_subset)
 
-setMethod(append, c("ShortReadQ", "ShortReadQ", "missing"),
+setMethod(append, c("ShortReadQ", "ShortReadQ"),
     function(x, values, after=length(x))
 {
     initialize(x, id=append(id(x), id(values)),

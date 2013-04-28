@@ -22,7 +22,7 @@
 \alias{[,ShortRead,missing,ANY,ANY-method}
 \alias{[,ShortRead,ANY,ANY,ANY-method}
 \alias{[,ShortRead,ANY,missing,ANY-method}
-\alias{append,ShortRead,ShortRead,missing-method}
+\alias{append,ShortRead,ShortRead-method}
 \alias{narrow,ShortRead-method}
 \alias{detail,ShortRead-method}
 \alias{id,ShortRead-method}
@@ -92,7 +92,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
 
-    \item{append}{\code{signature(x = "ShortRead", values = "ShortRead", length = "missing")}:
+    \item{append}{\code{signature(x = "ShortRead", values = "ShortRead")}:
       append the \code{sread} and \code{id} slots of \code{values} after
       the corresponding fields of \code{x}.}
 

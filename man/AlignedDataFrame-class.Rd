@@ -1,7 +1,7 @@
 \name{AlignedDataFrame-class}
 \docType{class}
 \alias{AlignedDataFrame-class}
-\alias{append,AlignedDataFrame,AlignedDataFrame,missing-method}
+\alias{append,AlignedDataFrame,AlignedDataFrame-method}
 
 \title{
   "AlignedDataFrame" representing alignment annotations as a data frame
@@ -59,7 +59,7 @@ Class \code{"\link[Biobase:class.Versioned]{Versioned}"}, by class "AnnotatedDat
   Additional methods include:
   \describe{
 
-    \item{append}{\code{signature(x = "AlignedDataFrame", values = "AlignedDataFrame", length = "missing")}:
+    \item{append}{\code{signature(x = "AlignedDataFrame", values = "AlignedDataFrame")}:
       append \code{values} after \code{x}. \code{varMetadata} of
       \code{x} and \code{y} must be identical; \code{pData} and
       \code{varMetadata} are appended using \code{rbind}.}

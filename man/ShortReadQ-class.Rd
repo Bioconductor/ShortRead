@@ -21,7 +21,7 @@
 \alias{[,ShortReadQ,missing,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
-\alias{append,ShortReadQ,ShortReadQ,missing-method}
+\alias{append,ShortReadQ,ShortReadQ-method}
 \alias{narrow,ShortReadQ-method}
 \alias{trimTailw,ShortReadQ-method}
 \alias{trimTails,ShortReadQ-method}
@@ -120,7 +120,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
 
-    \item{append}{\code{signature(x = "ShortReadQ", values = "ShortRead", length = "missing")}:
+    \item{append}{\code{signature(x = "ShortReadQ", values = "ShortRead")}:
       append the \code{sread}, \code{quality} and \code{id} slots of
       \code{values} after the corresponding fields of \code{x}.}
 

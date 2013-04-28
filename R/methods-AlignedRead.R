@@ -147,7 +147,7 @@ setMethod("[", c("AlignedRead", "ANY", "ANY"),
 
 setMethod("[", c("AlignedRead", "ANY", "missing"), .AlignedRead_subset)
 
-setMethod(append, c("AlignedRead", "AlignedRead", "missing"),
+setMethod(append, c("AlignedRead", "AlignedRead"),
     function(x, values, after=length(x))
 {
     initialize(x,

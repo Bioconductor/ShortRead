@@ -86,7 +86,7 @@ setMethod("[", c("ShortRead", "ANY", "ANY"),
 setMethod("[", c(x="ShortRead", i="ANY", j="missing"),
           .ShortRead_subset)
 
-setMethod(append, c("ShortRead", "ShortRead", "missing"),
+setMethod(append, c("ShortRead", "ShortRead"),
     function(x, values, after=length(x)) 
 {
     initialize(x, id=append(id(x), id(values)),

@@ -2,7 +2,7 @@
 \alias{ShortReadBase-package}
 \alias{.ShortReadBase-class}
 \alias{show,.ShortReadBase-method}
-\alias{append,.ShortReadBase,.ShortReadBase,ANY-method}
+\alias{append,.ShortReadBase,.ShortReadBase-method}
 \alias{.Solexa-class}
 \alias{.Roche-class}
 \docType{package}
