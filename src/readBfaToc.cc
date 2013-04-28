@@ -16,7 +16,7 @@ struct seq_meta_info {
 extern "C" SEXP readBfaToc( SEXP bfa_filename )
 {
    FILE * fp;
-   int name_len, seq_ori_len, seq_len;
+   int name_len, seq_ori_len, seq_len, status;
    char seq_name[201];
    std::deque< seq_meta_info > seqs;
    if( (! isString(bfa_filename) ) || ( length(bfa_filename) != 1 ) )
@@ -32,9 +32,9 @@ extern "C" SEXP readBfaToc( SEXP bfa_filename )
    while( fread( &name_len, sizeof(int), 1, fp) ) {
       if( name_len > 200 )
          Rf_error( "sequence name >200 characters; invalid BFA file?" );
-      (void) fread( seq_name, sizeof(char), name_len, fp );
-      (void) fread( &seq_ori_len, sizeof(int), 1, fp );
-      (void) fread( &seq_len, sizeof(int), 1, fp );
+      status = fread( seq_name, sizeof(char), name_len, fp );
+      status = fread( &seq_ori_len, sizeof(int), 1, fp );
+      status = fread( &seq_len, sizeof(int), 1, fp );
       if( ( seq_ori_len >> 5 != seq_len ) && ( seq_ori_len >> 5 != seq_len - 1) )
          Rf_error( "Fields bfa.len and bfa_ori_len do not agree. This is not a "
            "valid BFA file." );
