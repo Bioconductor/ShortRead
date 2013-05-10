@@ -1,20 +1,20 @@
 Package: ShortRead
 Type: Package
 Title: Classes and methods for high-throughput short-read sequencing data.
-Version: 1.19.2
+Version: 1.19.3
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 Description: Base classes, functions, and methods for representation of
              high-throughput, short-read sequencing data.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: methods, BiocGenerics (>= 0.1.0), IRanges (>= 1.17.18),
-         GenomicRanges (>= 1.13.3), Biostrings (>= 2.25.6),
+Depends: methods, BiocGenerics (>= 0.1.0), IRanges (>= 1.19.5),
+         GenomicRanges (>= 1.13.3), XVector, Biostrings (>= 2.29.2),
          lattice, Rsamtools (>= 1.13.1), latticeExtra
-Imports: BiocGenerics, IRanges, GenomicRanges, Biostrings, Biobase, hwriter,
-         Rsamtools, zlibbioc, lattice
+Imports: BiocGenerics, IRanges, GenomicRanges, XVector, Biostrings, Biobase,
+         hwriter, Rsamtools, zlibbioc, lattice
 Enhances: Rmpi, parallel
 Suggests: biomaRt, RUnit, GenomicFeatures, yeastNagalakshmi
-LinkingTo: IRanges, Biostrings
+LinkingTo: IRanges, XVector, Biostrings
 biocViews: DataImport, Sequencing, HighThroughputSequencing, 
            QualityControl
