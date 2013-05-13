@@ -61,7 +61,7 @@ setMethod(strand, "AlignedRead",
 
 ## coerce
 
-setAs("PairwiseAlignedXStringSet", "AlignedRead",
+setAs("PairwiseAlignments", "AlignedRead",
       function(from, to)
 {
     pat <- pattern(from)

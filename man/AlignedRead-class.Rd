@@ -10,7 +10,7 @@
 \alias{[,AlignedRead,ANY,ANY,ANY-method}
 \alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{append,AlignedRead,AlignedRead-method}
-\alias{coerce,PairwiseAlignedXStringSet,AlignedRead-method}
+\alias{coerce,PairwiseAlignments,AlignedRead-method}
 \alias{coerce,AlignedRead,RangesList-method}
 \alias{coerce,AlignedRead,RangedData-method}
 \alias{coerce,AlignedRead,GRanges-method}
@@ -104,7 +104,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       these components of \code{x} and \code{y} are appended.}
 
     \item{coerce}{
-	  \code{signature(from = "PairwiseAlignedXStringSet", to = "AlignedRead")}:
+	  \code{signature(from = "PairwiseAlignments", to = "AlignedRead")}:
 
 	  \code{signature(from = "AlignedRead", to = "RangesList")}:
           \code{signature(from = "AlignedRead", to = "RangedData")}:

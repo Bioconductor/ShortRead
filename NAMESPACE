@@ -11,7 +11,7 @@ importClassesFrom(Biobase, AnnotatedDataFrame, AssayData,
 importClassesFrom(BiocGenerics, connection)
 
 importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
-                  PairwiseAlignedXStringSet, PhredQuality,
+                  PairwiseAlignments, PhredQuality,
                   QualityScaledDNAStringSet, SolexaQuality,
                   XStringQuality, XStringSet)
 
