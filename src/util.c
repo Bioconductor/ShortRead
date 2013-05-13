@@ -339,7 +339,7 @@ static int _count_lines(gzFile * file)
 {
     const int LINEBUF_SIZE = 20001;
     size_t bytes_read;
-    char buf[LINEBUF_SIZE + 1];
+    char *buf = (char *) R_alloc(LINEBUF_SIZE + 1, sizeof(char));
     int lines = 0;
 
     while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {

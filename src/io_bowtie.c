@@ -12,13 +12,15 @@ static const char *ELT_NMS[] = {
 };
 
 static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char *);
+static const int N_FIELDS = 8;
 
 int _read_bowtie(const char *fname, const char *commentChar, SEXP ref,
                  int offset)
 {
     const int N_FIELDS = 8;
     gzFile *file;
-    char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
+    char linebuf[LINEBUF_SIZE],
+	**elt = (char **) R_alloc(N_FIELDS, sizeof(char*));
     int lineno = 0, irec = offset;
 
     file = _fopen(fname, "rb");

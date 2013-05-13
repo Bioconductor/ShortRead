@@ -5,6 +5,7 @@
  * visit all sequences in a set, tallying character frequency as a
  * function of nucleotide position in the read.
  */
+
 SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
 {
     const int MAX_MAP = 256;
@@ -36,7 +37,7 @@ SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
 
     /* map between decoded character and offset into 'ans' */
     int i, j;
-    int map[MAX_MAP];
+    int *map = (int *) R_alloc(MAX_MAP, sizeof(int));
     memset(map, -1, MAX_MAP * sizeof(int));	/* default; ignore */
     for (i = 0; i < LENGTH(alphabet); ++i) {
         unsigned char c = (unsigned char) *CHAR(STRING_ELT(alphabet, i));
@@ -103,7 +104,8 @@ SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
 
     /* map between decoded character and offset into 'ans' */
     int i, j;
-    int map1[MAX_MAP], map2[MAX_MAP];
+    int *map1 = (int *) R_alloc(MAX_MAP, sizeof(int)),
+	*map2 = (int *) R_alloc(MAX_MAP, sizeof(int));
     memset(map1, -1, MAX_MAP * sizeof(int));	/* default; ignore */
     memset(map2, -1, MAX_MAP * sizeof(int));	/* default; ignore */
     for (i = 0; i < LENGTH(alphabet1); ++i) {

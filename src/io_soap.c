@@ -19,7 +19,8 @@ int _read_soap(const char *fname, const char *csep, const char *commentChar,
 {
     const int N_FIELDS = N_ELTS;
     gzFile *file;
-    char linebuf[LINEBUF_SIZE], *elt[N_FIELDS];
+    char linebuf[LINEBUF_SIZE],
+	**elt = (char **) R_alloc(N_FIELDS, sizeof(char*));
     int lineno = 0;
 
     file = _fopen(fname, "rb");
