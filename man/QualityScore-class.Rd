@@ -30,6 +30,7 @@
 \alias{width,FastqQuality-method}
 \alias{show,FastqQuality-method}
 \alias{alphabet,FastqQuality-method}
+\alias{encoding,FastqQuality-method}
 \alias{alphabetFrequency,FastqQuality-method}
 \alias{alphabetByCycle,FastqQuality-method}
 \alias{alphabetScore,FastqQuality-method}
@@ -44,6 +45,7 @@
 \alias{srrank,FastqQuality-method}
 \alias{srduplicated,FastqQuality-method}
 % SFastqQuality
+\alias{encoding,SFastqQuality-method}
 \alias{alphabetScore,SFastqQuality-method}
 \alias{coerce,SFastqQuality,matrix-method}
 \alias{coerce,SFastqQuality,SolexaQuality-method}
@@ -175,6 +177,11 @@
       Return a character vector of valid quality characters.
     }
 
+    \item{encoding}{\code{signature(x = "FastqQuality", ...)},
+      \code{signature(x = "SFastqQuality", ...)}:
+      Returns a named character vector of integer encodings.
+    }
+
     \item{alphabetFrequency}{\code{signature(stringSet = "FastqQuality")}:
 
       Apply \code{\link[Biostrings:letterFrequency]{alphabetFrequency}}
@@ -248,5 +255,7 @@
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 \examples{
 names(slot(getClass("QualityScore"), "subclasses"))
+encoding(FastqQuality())
+encoding(SFastqQuality())
 }
 \keyword{classes}

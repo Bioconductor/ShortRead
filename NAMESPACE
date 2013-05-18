@@ -77,9 +77,9 @@ importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
 importFrom(hwriter, hwrite, hwriteImage)
 
-importFrom(IRanges, DataFrame, FilterRules, IntegerList, IRanges,
-           isSingleString, isTRUEorFALSE, RleList, SimpleList,
-           solveUserSEW)
+importFrom(IRanges, DataFrame, encoding, FilterRules, IntegerList,
+           IRanges, isSingleString, isTRUEorFALSE, RleList,
+           SimpleList, solveUserSEW)
 
 importFrom(lattice, dotplot, histogram, levelplot, llines, lsegments,
            ltext, panel.abline, panel.dotplot, panel.grid,
@@ -100,8 +100,9 @@ importFrom(Biostrings, DNA_ALPHABET)
 exportClassPattern("^.*$")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
-              alphabet, coverage, narrow, strand, trimLRPatterns,
-              width, append, rbind, "%in%", c, lapply, sapply)
+              alphabet, coverage, encoding, narrow, strand,
+              trimLRPatterns, width, append, rbind, "%in%", c, lapply,
+              sapply)
 
 export(pData, phenoData, varLabels, varMetadata)
 

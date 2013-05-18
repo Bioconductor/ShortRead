@@ -197,6 +197,22 @@ setMethod(narrow, "FastqQuality",
 setMethod(alphabet, "FastqQuality",
           function(x, ...) rawToChar(as.raw(32:125), TRUE))
 
+setMethod(encoding, "FastqQuality",
+    function(x)
+{
+    alf <- alphabet(x)
+    x <- setNames(seq(-1, length.out=length(alf)), alf)
+    x[x >= 0 & x <= 41]
+})
+
+setMethod(encoding, "SFastqQuality",
+    function(x)
+{
+    alf <- alphabet(x)
+    x <- setNames(seq(-32, length.out=length(alf)), alf)
+    x[x >= -5 & x <= 41]
+})
+
 setMethod(show, "FastqQuality", function(object) {
     callNextMethod()
     cat("quality:\n")
