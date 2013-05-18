@@ -75,7 +75,7 @@ setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "missing"),
 setMethod(ShortReadQ, c("missing", "missing", "missing"),
           function(sread, quality, id, ...)
 {
-    new("ShortReadQ")
+    ShortReadQ(DNAStringSet(), FastqQuality(), BStringSet(), ...)
 })
 
 setAs("ShortReadQ", "QualityScaledDNAStringSet", function(from) 
@@ -121,9 +121,9 @@ setMethod(writeFastq, c("ShortReadQ", "character"),
                        file))
     file <- path.expand(file)
     ## FIXME: different quality types
-    max_width <- max(c(unique(width(id(object))),
-                       unique(width(sread(object))),
-                       unique(width(quality(object)))))
+    max_width <- max(0L, unique(width(id(object))),
+                     unique(width(sread(object))),
+                     unique(width(quality(object))))
     if (!is(quality(quality(object)), "XStringSet"))
         .throw(SRError("UserArgumentMismatch", "'is(<%s>, \"%s\")' failed",
                        "quality", "XStringSet"))

@@ -26,3 +26,12 @@ test_writeFastq_writeError <- function()
                          max_width),
                    silent=TRUE)
 }
+
+test_writeFastq_roundtrip0length <- function()
+{
+    dest <- tempfile()
+    file.create(dest)
+    exp <- readFastq(dest)
+    writeFastq(exp, dest <- tempfile())
+    checkIdentical(exp, readFastq(dest))
+}
