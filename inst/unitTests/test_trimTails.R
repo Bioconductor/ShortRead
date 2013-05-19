@@ -1,5 +1,6 @@
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
-rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
+fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
+rfq <- readFastq(fl)
 
 .check <- function(xexp, xobs)
     checkIdentical(as.character(xexp), as.character(xobs))
@@ -35,6 +36,12 @@ test_trimTails_XStringQuality <- function()
     .check(BStringSet(), .qb(trimTails(qual, 1, "]")))
 }
 
+test_trimTails_file <- function()
+{
+    exp <- width(trimTails(rfq, 1, "H"))
+    dest <- trimTails(fl, 1, "H", destinations=tempfile())
+    checkIdentical(exp, width(readFastq(dest)))
+}
 
 test_trimTailw <- function()
 {
@@ -54,4 +61,11 @@ test_trimTailw <- function()
     b <- BStringSet("DDDBDBBBB")
     checkIdentical(BStringSet("DDDBD"), trimTailw(b, 2L, "C", 1L))
     checkIdentical(BStringSet("DDDBDB"), trimTailw(b, 4L, "C", 2L))
+}
+
+test_trimTailw_file <- function()
+{
+    exp <- width(trimTailw(rfq, 2L, "C", 1L))
+    dest <- trimTailw(fl, 2L, "C", 1L, destinations=tempfile())
+    checkIdentical(exp, width(readFastq(dest)))
 }

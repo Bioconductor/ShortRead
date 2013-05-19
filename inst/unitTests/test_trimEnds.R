@@ -1,7 +1,6 @@
-rfq <- local({
-    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
-    readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
-})
+sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
+rfq <- readFastq(fl)
 
 test_trimEnds <- function()
 {
@@ -28,9 +27,8 @@ test_trimEnds_unknown_a <- function()
 {
     checkIdentical(as.character(sread(rfq)),
                    suppressWarnings(as.character(trimEnds(sread(rfq), "Z"))))
-    op <- options(warn=2)
-    on.exit(options(op))
-    checkException(trimEnds(sread(rfq), "Z"), silent=TRUE)
+    obs <- tryCatch(trimEnds(sread(rfq), "Z"), warning=conditionMessage)
+    checkIdentical("some 'a' not in alphabet(object)", obs)
 }
 
 test_trimEnds_classes <- function()
@@ -42,4 +40,7 @@ test_trimEnds_classes <- function()
     ## FIXME: additional, e.g., PhredQuality
 }
 
-test_trimEnds_classes()
+test_trimEnds_file <- function() {
+    dest <- trimEnds(fl, "I", destinations=tempfile())
+    checkIdentical(width(trimEnds(rfq, "I")), width(readFastq(dest)))
+}

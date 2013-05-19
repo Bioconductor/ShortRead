@@ -1,13 +1,16 @@
 \name{trimTails}
 \alias{trimTailw}
+\alias{trimTailw,character-method}
 \alias{trimTailw,BStringSet-method}
 \alias{trimTailw,XStringQuality-method}
 
 \alias{trimTails}
+\alias{trimTails,character-method}
 \alias{trimTails,BStringSet-method}
 \alias{trimTails,XStringQuality-method}
 
 \alias{trimEnds}
+\alias{trimEnds,character-method}
 \alias{trimEnds,XStringSet-method}
 \alias{trimEnds,XStringQuality-method}
 \alias{trimEnds,FastqQuality-method}
@@ -27,35 +30,27 @@
 
 }
 \usage{
+## S4 methods for 'ShortReadQ', 'FastqQuality', or 'SFastqQuality'
 trimTailw(object, k, a, halfwidth, ..., ranges=FALSE)
-
-\S4method{trimTailw}{BStringSet}(object, k, a, halfwidth, ..., alphabet, ranges=FALSE)
-\S4method{trimTailw}{XStringQuality}(object, k, a, halfwidth, ..., ranges=FALSE)
-
 trimTails(object, k, a, successive=FALSE, ..., ranges=FALSE)
-\S4method{trimTails}{BStringSet}(object, k, a, successive=FALSE, ...,
-    alphabet, ranges=FALSE)
-\S4method{trimTails}{XStringQuality}(object, k, a, successive=FALSE, ..., ranges=FALSE)
-
 trimEnds(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
     ..., ranges=FALSE)
-\S4method{trimEnds}{XStringSet}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
-    ..., ranges=FALSE)
-\S4method{trimEnds}{XStringQuality}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
-    ..., ranges=FALSE)
-\S4method{trimEnds}{FastqQuality}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
-    ..., ranges=FALSE)
-\S4method{trimEnds}{ShortRead}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
-    ..., ranges=FALSE)
-\S4method{trimEnds}{ShortReadQ}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
-    ..., ranges=FALSE)
+
+\S4method{trimTailw}{BStringSet}(object, k, a, halfwidth, ..., alphabet, ranges=FALSE)
+\S4method{trimTails}{BStringSet}(object, k, a, successive=FALSE, ...,
+    alphabet, ranges=FALSE)
+
+\S4method{trimTailw}{character}(object, k, a, halfwidth, ..., destinations, ranges=FALSE)
+\S4method{trimTails}{character}(object, k, a, successive=FALSE, ..., destinations, ranges=FALSE)
+\S4method{trimEnds}{character}(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
+    ..., destinations, ranges=FALSE)
 }
 
 \arguments{
 
-  \item{object}{An object for which a methods exist (e.g.,
-    \code{\linkS4class{ShortReadQ}} and derived classes); see below to
-    discover these methods.}
+  \item{object}{An object (e.g., \code{\linkS4class{ShortReadQ}} and
+    derived classes; see below to discover these methods) or character
+    vector of fastq file(s) to be trimmed. }
 
   \item{k}{\code{integer(1)} describing the number of failing
     letters required to trigger trimming.}
@@ -88,6 +83,10 @@ trimEnds(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
 
   \item{\dots}{Additional arguments, perhaps used by methods.}
 
+  \item{destinations}{For \code{object} of type \code{character()}, an
+    equal-length vector of destination files. Files must not already
+    exist.}
+
   \item{alphabet}{\code{character()} (ordered low to high) letters on
     which quality scale is measured. Usually supplied internally (user
     does not need to specify). If missing, then set to ASCII characters
@@ -118,6 +117,15 @@ trimEnds(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
   of \code{object}, marking for removal letters that correspond to
   \code{a} and \code{relation}. The \code{trimEnds,ShortReadQ-method}
   trims based on quality.
+
+  \code{ShortReadQ} methods operate on quality scores; use
+  \code{sread()} and the \code{ranges} argument to trim based on
+  nucleotide (see examples).
+
+  \code{character} methods transform one or several fastq files to new
+  fastq files, applying trim operations based on quality scores; use
+  \code{filterFastq} with your own \code{filter} argument to filter on
+  nucleotides.
 
 }
 
