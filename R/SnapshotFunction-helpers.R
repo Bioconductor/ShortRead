@@ -181,16 +181,21 @@
     anntrack <- annTrack(x)
     rng <- vrange(x)
     ignore.strand <- ignore.strand(x)
-    if (any(seqnames(anntrack)@values %in% seqlevels(rng)))
-        gr <- keepSeqlevels(anntrack, seqlevels(vrange(x)))
-    else  {
-        message("SnapshotFunction-helper: seqname of 'annTrack' does not match to the imported range. Annotation track will not be plotted.")
+    if (any(seqnames(anntrack)@values %in% seqlevels(rng))) {
+        gr <- anntrack
+        seqlevels(gr, force=TRUE) <- seqlevels(vrange(x))
+    } else  {
+        message(paste(strwrap("SnapshotFunction-helper: seqname of
+           'annTrack' does not match the imported range. Annotation
+           track will not be plotted."), collapse="\n"))
         return(NULL)
     }
 
     ## if anntrack has no elementMetada value, then return NULL
     if (ncol(values(anntrack)) < 1) {
-        message("SnapshotFunction-helper: at least one column of 'annTrack' elementMetadata is required. Annotation track will not be plotted.")
+        message(paste(strwrap("SnapshotFunction-helper: at least one
+            column of 'annTrack' elementMetadata is required. Annotation
+            track will not be plotted."), collapse="\n"))
         return(NULL)
     }
     
@@ -209,8 +214,6 @@
            xlab=NULL, ylab=NULL,
            strip=if (!is.null(dimnames(cv)$levels))
                     strip.custom(factor.levels=strip.label),
-           scales=list(y=list(alternating=2, tck=c(0,1)),
-                       x=list(rot=45, tck=c(1,0), tick.number=20)), 
            par.setting=list(layout.heights=list(panel=c(rep(2,npacket),1))))
 }
      
@@ -222,16 +225,16 @@
     lty <- rep(seq_len(length(levels(sp$group)) / 2), times=2)
     ## sp: data.frame with "data", "group", and "pos" column
     col <- c("#66C2A5", "#FC8D62")
+    scales <- list(y=list(tck=c(1,0)),
+                   x=list(rot=45, tck=c(1,0), tick.number=20))
 
-    if (!ignore.strand(x)) 
-        cv <- xyplot(data ~ pos, data=sp, group=sp$group, col=col)
+    cv <- if (!ignore.strand(x)) 
+        xyplot(data ~ pos, data=sp, group=sp$group, col=col,
+               scales=scales)
     else
-        cv <- xyplot(data ~ pos, data=sp, col=col[1])
+        xyplot(data ~ pos, data=sp, col=col[1], scales=scales)
     
-    cv <- update(cv, type="s",
-                 ylab="Coverage", xlab="Coordinate",
-                 scales=list(y=list(tck=c(1,0)),
-                             x=list(rot=45, tck=c(1,0), tick.number=20)),
+    cv <- update(cv, type="s", ylab="Coverage", xlab="Coordinate",
                  panel=function(...) {
                      panel.xyplot(...)
                      panel.grid(h=-1, v=20)
@@ -253,15 +256,15 @@
     lty <- rep(seq_len(lv), times=2)
     col <- c("#FC8D62", "#66C2A5")
     #col <- c(rep("#FC8D62", lv) , rep("#66C2A5", lv))
-    if (ignore.strand(x)) 
-        cv <- xyplot(data ~ pos | levels, data=sp, col=col[2])
+    scales <- list(y=list(tck=c(1,0)),
+                   x=list(rot=45, tck=c(1,0), tick.number=20))
+    cv <- if (ignore.strand(x)) 
+        xyplot(data ~ pos | levels, data=sp, col=col[2], scales=scales)
     else
-        cv <- xyplot(data ~ pos | levels, data=sp, group=sp$group, col=col)
-    cv <- update(cv, type="s", #lty=lty,
-                 ylab="Coverage", xlab="Coordinate",
+        xyplot(data ~ pos | levels, data=sp, group=sp$group, col=col,
+               scales=scales)
+    cv <- update(cv, type="s", ylab="Coverage", xlab="Coordinate",
                  layout=c(1, length(levels(factor(sp$levels)))),
-                 scales=list(y=list(tck=c(1,0)),
-                             x=list(rot=45, tck=c(1,0), tick.number=20)),
                  #key=list(space="top", column=2, cex=0.8,
                  #         lines=list(lty=lty, col=col),
                  #         text=list(levels(sp$group))),
@@ -316,8 +319,10 @@
     interval <- seq.int(start(rng), end(rng), length.out=nbins)
     l <- length(interval)
     ir <- IRanges(start=interval[1:(l-1)], end=interval[2:l])
-    annview <- 
-    if (!ignore.strand) {
+    scales <- list(y=list(alternating=2, tick.number=3,tck=c(0,1)),
+                   x=list(tck=c(0,0), labels=NULL))
+
+    annview <- if (!ignore.strand) {
         lst <- list("+" = countOverlaps(ir, ranges(gr[strand(gr)=="+"])),
                     "-" = countOverlaps(ir, ranges(gr[strand(gr)=="-"])))
         snames <- c("positive", "negative")
@@ -326,19 +331,14 @@
         cvg <- data.frame(data=c(lst[["+"]], -lst[["-"]]),
                           group=group,
                           pos = (start(ir)+end(ir))/2)
-        xyplot(data ~ pos, data=cvg, groups=group, col=col)
+        xyplot(data ~ pos, data=cvg, groups=group, col=col, scales=scales)
     } else {
         lst <-  countOverlaps(ir, ranges(gr))
         cvg <- data.frame(data=lst, pos=(start(ir)+end(ir))/2)
-        xyplot(data ~ pos, data=cvg, col=col[1])
+        xyplot(data ~ pos, data=cvg, col=col[1], scales=scales)
     }
     
-    update(annview, type="h",
-           xlab=NULL, ylab=NULL,
-           scales=list(y=list(alternating=2, tick.number=3,tck=c(0,1)),
-                       x=list(tck=c(0,0), labels=NULL)),
-           par.settings=
-                   list(axis.text=list(alpha=0.5), axis.line=list(alpha=0.5))
-           )
-
+    update(annview, type="h", xlab=NULL, ylab=NULL,
+           par.settings=list(axis.text=list(alpha=0.5),
+             axis.line=list(alpha=0.5)))
 }

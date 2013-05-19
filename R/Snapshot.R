@@ -1,11 +1,13 @@
 .Snapshot$methods(
     .message = function(fmt, ...) 
     {
-        message(sprintf("Snapshot: %s", sprintf(fmt, ...)))
+        message(paste(strwrap(sprintf("Snapshot: %s", sprintf(fmt, ...)),
+                              exdent=2), collapse="\n"))
     },
     .stop=function(fmt, ...) 
     {
-        stop(sprintf("Snapshot: %s", sprintf(fmt, ...)))
+        stop(paste(strwrap(sprintf("Snapshot: %s", sprintf(fmt, ...)),
+                           exdent=2), collapse="\n"))
     },
     .initial_range=function() 
     {
@@ -19,17 +21,20 @@
 
     .update_range=function(lim) {
         if (lim[2] < lim[1])
-            .stop("The end of range must be greater than the start of the range.") 
+            .stop("The end of range must be greater than the start of
+                   the range.") 
         if (lim[1] >= start(.self$.orig.range)) {
             start(.self$.range) <- lim[1]
            .self$.data_dirty <- TRUE
        } else
-           .stop("Please make sure the range argument are defining the regions within the limits of the original range.")
+           .stop("Please make sure the range arguments define the
+                  regions within the limits of the original range.")
         if (lim[2] <= end(.self$.orig.range)) {
             end(.self$.range) <- lim[2]
             .self$.data_dirty <- TRUE
         } else
-             .stop("Please make sure the range argument are defining the regions within the limits of the original range.")
+             .stop("Please make sure the range arguments define
+                    the regions within the limits of the original range.")
         invisible()
     },
                   
@@ -204,7 +209,7 @@
                         .range, .auto_display=TRUE, .debug=FALSE)
     {
         callSuper(...)
-        .self$.debug <- if (.debug) .message else function(...) {}
+        .self$.debug <- if (.debug) .self$.message else function(...) {}
 
         .self$.zin <- TRUE
         .self$.pright <- TRUE

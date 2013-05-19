@@ -235,8 +235,8 @@ library(GenomicFeatures)
 
 getAnnGR <- function(txdb, which) {
     ex <- exonsBy(txdb, by="gene")
-    sn <- keepSeqlevels(ex, seqlevels(which))
-    r <- range(sn)
+    seqlevels(ex, force=TRUE) <- seqlevels(which)
+    r <- range(ex)
     gr <- unlist(r)
     values(gr)[["gene_id"]] <- rep.int(names(r), times=elementLengths(r))
     gr
