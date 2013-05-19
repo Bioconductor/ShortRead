@@ -1,6 +1,24 @@
 CHANGES IN VERSION 1.17
 -----------------------
 
+NEW FEATURES
+
+    o encoding,FastqQuality and encoding,SFastqQuality provide a
+      convenient map between letter encodings and their corresponding
+      integer quality values.
+
+    o filterFastq transforms one fastq file to another, removing reads
+      or nucleotides via a user-specified
+      function. trimEnds,character-method & friends use this for an
+      easy way to remove low-quality base.
+
+BUG FIXES
+
+    o writeFastq successfully writes zero-length fastq files.
+
+CHANGES IN VERSION 1.17
+-----------------------
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
   o FastqSampler can return records in the order encountered in the
@@ -10,12 +28,12 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Fastq quality type
 
   o as(FastqQuality, "numeric") returns a vector of quality scores
-  concatenated end to end (previously cycle to cycle), without padding
-  to effective equal width
+    concatenated end to end (previously cycle to cycle), without
+    padding to effective equal width
 
 BUG FIXES
 
-  o trimTails, succesive=TRUE would return inconsistent results
+  o trimTails, successive=TRUE would return inconsistent results
 
   o FastqStreamer, FastqSampler parse fastq files created with '\r'
 
@@ -29,12 +47,12 @@ NEW FEATURES
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o as(ShortReadQ, "matrix") now accepts ShortReadQ instances with
-    heterogenous widths, returning a matrix x[i, j] with NA values in
+    heterogeneous widths, returning a matrix x[i, j] with NA values in
     when j > width()[i].
 
 BUG FIXES
 
-    o readAligned, type="BAM" correctly adds requried 'what' elements
+    o readAligned, type="BAM" correctly adds required 'what' elements
 
     o FastqSampler would only randomize first read; introduced 1.13.9
     2011-12-02, fixed 1.15.4 2012-04-25
@@ -93,7 +111,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES
 
     o SolexaRealign, SolexaAlign, and SolexaResult transposed strand
-    inforamtion
+    information
 
     o FastqSampler segfaulted on some files
 
