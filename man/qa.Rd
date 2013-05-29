@@ -116,6 +116,13 @@ qa1 <- qa(sp)
 fq <- file.path(analysisPath(sp), pattern="s_1_sequence.txt")
 qa2 <- qa(readFastq(fq), basename(fq))  # name fastq files
 
+## create report from a random sample of each file
+qas0 <- Map(function(fl, nm) {
+  fq <- FastqSampler(fl)
+  qa(yield(fq), nm)
+}, fq,  sub(".txt", "", basename(fq)))
+qa3 <- do.call(rbind, qas0)
+
 showMethods("qa", where=getNamespace("ShortRead"))
 }
 
