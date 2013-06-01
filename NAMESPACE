@@ -47,7 +47,7 @@ importMethodsFrom(Biostrings, alphabet, alphabetFrequency, detail,
                   union, vcountPDict)
 
 importMethodsFrom(GenomicRanges, as.data.frame, cigar, countOverlaps,
-                  keepSeqlevels, left, qnarrow, qwidth, ranges, reduce,
+                  left, qnarrow, qwidth, ranges, reduce,
                   right, seqlevels, "seqlevels<-", seqnames,
                   values, "values<-")
 
