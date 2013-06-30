@@ -1,5 +1,11 @@
-CHANGES IN VERSION 1.17
+CHANGES IN VERSION 1.19
 -----------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o qa(..., type="fastq") uses a sample of n=1000000 reads by
+      default, rather than then entire file; use sample=FALSE to
+      revert to previous behavior.
 
 NEW FEATURES
 

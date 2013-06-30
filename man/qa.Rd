@@ -42,6 +42,13 @@ qa(dirPath, ...)
 
     \describe{
 
+      \item{\code{sample=TRUE}:}{Logical(1) indicating whether QA should
+        be performed on a sample (default size 1000000) drawn from each
+        FASTQ file, or from the entire file.}
+
+      \item{\code{n}:}{The number of reads to sample when processing
+        FASTQ files.}
+
       \item{\code{fapply}, \code{reduce}:}{Influence how evaluation
         occurs when this function is run with the \pkg{Rmpi} or
         \pkg{parallel} packages; see \code{\link{srapply}}.}
@@ -58,6 +65,12 @@ qa(dirPath, ...)
 }
 
 \details{
+
+  The most common use of this function provides a directory path and
+  pattern identifying FASTQ files for quality assessment. The default is
+  then to create a quality assessment report based on a random sample of
+  n=1000000 reads from each file.
+
   The following methods are defined, in addition to those on S4 formal
   classes documented elsewhere:
 

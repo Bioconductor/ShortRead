@@ -71,13 +71,22 @@
 setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
 
 .qa_fastq_lane <-
-    function(dirPath, pattern, ..., type="fastq", 
+    function(dirPath, pattern, ..., sample=TRUE, type="fastq", 
         verbose=FALSE)
 {
     if (verbose)
         message("qa 'fastq' pattern:", pattern)
-    fq <-readFastq(dirPath, pattern, ...)
-    qa(fq, pattern, ..., verbose=verbose)
+    if (sample) {
+        samp <- FastqSampler(file.path(dirPath, pattern), ...)
+        qa <- qa(yield(samp), pattern, ..., verbose=verbose)
+        close(samp)
+        elts <- .srlist(qa)
+        elts$readCounts$read <- samp$status()[["total"]]
+        initialize(qa, .srlist=elts)
+    } else {
+        fq <-readFastq(dirPath, pattern, ...)
+        qa(fq, pattern, ..., verbose=verbose)
+    }
 }
 
 .qa_fastq <-
