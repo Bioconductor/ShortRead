@@ -255,7 +255,7 @@ aln[occurrenceFilter(withSread=FALSE, duplicates="none")(aln)]
 
 # custom filter: minimum calibrated base call quality >20
 goodq <- srFilter(function(x) {
-    apply(as(quality(x), "matrix"), 1, min) > 20
+    apply(as(quality(x), "matrix"), 1, min, na.rm=TRUE) > 20
 }, name="GoodQualityBases")
 goodq
 aln[goodq(aln)]
