@@ -14,9 +14,6 @@
 \alias{qseq,GappedReads-method}
 \alias{qwidth,GappedReads-method}
 
-% Subsetting:
-\alias{[,GappedReads,ANY,ANY-method}
-
 % Combining:
 \alias{c,GappedReads-method}
 

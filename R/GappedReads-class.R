@@ -88,35 +88,13 @@ readGappedReads <- function(file, format="BAM", use.names=FALSE, ...)
 ###
 
 ### Supported 'i' types: numeric vector, logical vector, NULL and missing.
-setMethod("[", "GappedReads",
-    function(x, i, j, ... , drop=TRUE)
+setMethod(IRanges:::extractROWS, "GappedReads",
+    function(x, i)
     {
-        if (!missing(j) || length(list(...)) > 0L)
-            stop("invalid subsetting")
-        if (missing(i))
-            return(x)
-        if (is(i, "Rle"))
-            i <- as.vector(i)
-        if (!is.atomic(i))
-            stop("invalid subscript type")
-        lx <- length(x)
-        if (length(i) == 0L) {
-            i <- integer(0)
-        } else if (is.numeric(i)) {
-            if (min(i) < 0L)
-                i <- seq_len(lx)[i]
-            else if (!is.integer(i))
-                i <- as.integer(i)
-        } else if (is.logical(i)) {
-            if (length(i) > lx)
-                stop("subscript out of bounds")
-            i <- seq_len(lx)[i]
-        } else {
-            stop("invalid subscript type")
-        }
-        x <- callNextMethod()
-        x@qseq <- x@qseq[i]
-        x
+        if (missing(i) || !is(i, "Ranges"))
+            i <- IRanges:::normalizeSingleBracketSubscript(i, x)
+        x@qseq <- IRanges:::extractROWS(x@qseq, i)
+        callNextMethod()
     }
 )
 
