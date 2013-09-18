@@ -22,6 +22,8 @@ BUG FIXES
 
     o writeFastq successfully writes zero-length fastq files.
 
+    o FastqStreamer / FastqSampler warn on incomplete (corrupt) files
+
 CHANGES IN VERSION 1.17
 -----------------------
 

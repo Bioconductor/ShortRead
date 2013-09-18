@@ -20,19 +20,23 @@ struct records {
     struct record *records;
 };
 
-SEXP _records_status(struct records *records)
+SEXP _records_status(struct records *records, struct bufnode *bufnode)
 {
-    SEXP result = PROTECT(NEW_INTEGER(4));
+    int len;
+
+    SEXP result = PROTECT(NEW_INTEGER(5));
     INTEGER(result)[0] = records->n;
     INTEGER(result)[1] = records->n_curr;
     INTEGER(result)[2] = records->n_added;
     INTEGER(result)[3] = records->n_tot;
+    INTEGER(result)[4] = (NULL != bufnode) ? bufnode->len : 0;
 
-    SEXP nms = PROTECT(NEW_CHARACTER(4));
+    SEXP nms = PROTECT(NEW_CHARACTER(5));
     SET_STRING_ELT(nms, 0, mkChar("n"));
     SET_STRING_ELT(nms, 1, mkChar("current"));
     SET_STRING_ELT(nms, 2, mkChar("added"));
     SET_STRING_ELT(nms, 3, mkChar("total"));
+    SET_STRING_ELT(nms, 4, mkChar("buffer"));
     SET_NAMES(result, nms);
 
     UNPROTECT(2);
@@ -382,6 +386,7 @@ SEXP sampler_add(SEXP s, SEXP bin)
         scratch->bytes = tail;
         scratch->len = len;
     } else {
+        scratch->len = 0;
         Free(scratch->bytes);
     }
 
@@ -391,7 +396,7 @@ SEXP sampler_add(SEXP s, SEXP bin)
 SEXP sampler_status(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
-    return _records_status(sampler->sample);
+    return _records_status(sampler->sample, sampler->bufnode);
 }
 
 SEXP sampler_as_XStringSet(SEXP s, SEXP ordered)
@@ -548,7 +553,7 @@ SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd)
 SEXP streamer_status(SEXP s)
 {
     struct streamer *streamer = STREAMER(s);
-    return _records_status(streamer->stream);
+    return _records_status(streamer->stream, streamer->bufnode);
 }
 
 SEXP streamer_as_XStringSet(SEXP s)

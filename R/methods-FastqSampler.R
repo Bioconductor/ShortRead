@@ -31,7 +31,9 @@
             }
             .Call(.sampler_add, sampler, bin)
         }
-        status(update=TRUE)
+        if (status(update=TRUE)["buffer"])
+            warning("FastqSampler yield() incomplete final record:\n  ",
+                    summary(con)$description, call.=FALSE)
         if (verbose)
             msg("FastqSampler$yield() XStringSet")
         elts <- .Call(.sampler_as_XStringSet, sampler, ordered)
@@ -50,8 +52,11 @@ FastqSampler <-
 {
     if (length(n) != 1 || !is.finite(n) || n < 0)
         stop("'n' must be length 1, finite and >= 0")
-    if (is.character(con))
+    if (is.character(con)) {
         con <- file(con)
+        open(con, "rb")
+    } else if (is(con, "connection") && summary(con)$opened != "opened")
+        open(con, "rb")
     sampler <- .Call(.sampler_new, as.integer(n))
     .ShortReadFile(.FastqSampler_g, con, reader=.binReader,
                    readerBlockSize=as.integer(readerBlockSize),

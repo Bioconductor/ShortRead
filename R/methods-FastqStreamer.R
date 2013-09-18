@@ -36,8 +36,14 @@
             if (verbose)
                 msg("FastqStreamer$yield() reader")
             bin <- reader(con, readerBlockSize)
-            if (!length(bin))
+            if (!length(bin)) {
+                status(update=TRUE)
+                if ((status()["current"] != status()["n"]) &&
+                    (0L != status()["buffer"]))
+                    warning("FastqStreamer yield() incomplete final record:\n  ",
+                            summary(con)$description, call.=FALSE)
                 break
+            }
 
             currTot <- status()["total"]
             skips[ith] <<- max(0L, skips[ith] - (currTot - prevTot))
@@ -67,9 +73,11 @@ setMethod(FastqStreamer, c("ANY", "numeric"),
     n <- as.integer(n)
     if (length(n) != 1L || !is.finite(n) || n < 0L)
         stop("'n' must be length 1, finite and >= 0")
-    if (is.character(con))
+    if (is.character(con)) {
         con <- file(con)
-    open(con, "rb")
+        open(con, "rb")
+    } else if (is(con, "connection") && summary(con)$opened != "opened")
+        open(con, "rb")
     streamer <- .Call(.sampler_new, n)
     .ShortReadFile(.FastqStreamer_g, con, reader=.binReader,
         readerBlockSize=as.integer(readerBlockSize),
