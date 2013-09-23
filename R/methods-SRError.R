@@ -13,6 +13,7 @@
 
 .SRWarn_types <- c("UnspecifiedWarning",
                    "RemoteWarning",
+                   "IncompleteFinalRecord",
                    .SRErrorWarning_types)
 
 ## Error

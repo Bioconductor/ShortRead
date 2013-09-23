@@ -32,8 +32,9 @@
             .Call(.sampler_add, sampler, bin)
         }
         if (status(update=TRUE)["buffer"])
-            warning("FastqSampler yield() incomplete final record:\n  ",
-                    summary(con)$description, call.=FALSE)
+            .throw(SRWarn("IncompleteFinalRecord",
+                "FastqSampler yield() incomplete final record:\n  %s",
+                summary(con)$description))
         if (verbose)
             msg("FastqSampler$yield() XStringSet")
         elts <- .Call(.sampler_as_XStringSet, sampler, ordered)

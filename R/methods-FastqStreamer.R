@@ -40,8 +40,9 @@
                 status(update=TRUE)
                 if ((status()["current"] != status()["n"]) &&
                     (0L != status()["buffer"]))
-                    warning("FastqStreamer yield() incomplete final record:\n  ",
-                            summary(con)$description, call.=FALSE)
+                    .throw(SRWarn("IncompleteFinalRecord",
+                        "FastqStreamer yield() incomplete final record:\n  %s",
+                        summary(con)$description))
                 break
             }
 
@@ -78,7 +79,7 @@ setMethod(FastqStreamer, c("ANY", "numeric"),
         open(con, "rb")
     } else if (is(con, "connection") && summary(con)$opened != "opened")
         open(con, "rb")
-    streamer <- .Call(.sampler_new, n)
+    streamer <- .Call(.streamer_new, n)
     .ShortReadFile(.FastqStreamer_g, con, reader=.binReader,
         readerBlockSize=as.integer(readerBlockSize),
         skips = 0L, adds = n, ith = 0L, recycle=TRUE,
@@ -105,7 +106,7 @@ setMethod(FastqStreamer, c("ANY", "IRanges"),
         .throw(SRError("UserArgumentMismatch", msg))
     }
 
-    streamer <- .Call(.sampler_new, max(adds))
+    streamer <- .Call(.streamer_new, max(adds))
     .ShortReadFile(.FastqStreamer_g, con, reader=.binReader,
         readerBlockSize=as.integer(readerBlockSize),
         skips = skips, adds = adds, ith = 0L, recycle = FALSE, 
