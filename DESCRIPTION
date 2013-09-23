@@ -8,12 +8,10 @@ Description: Base classes, functions, and methods for representation of
              high-throughput, short-read sequencing data.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: methods, BiocGenerics (>= 0.1.0),
-         IRanges (>= 1.19.34), XVector (>= 0.1.3),
+Depends: methods, BiocGenerics (>= 0.1.0), IRanges (>= 1.19.34),
          GenomicRanges (>= 1.13.43), Biostrings (>= 2.29.18),
-         lattice, Rsamtools (>= 1.13.1), latticeExtra
-Imports: BiocGenerics, IRanges, GenomicRanges, XVector, Biostrings, Biobase,
-         hwriter, Rsamtools, zlibbioc, lattice
+         lattice, Rsamtools (>= 1.13.1)
+Imports: Biobase, hwriter, zlibbioc, latticeExtra
 Enhances: Rmpi, parallel
 Suggests: biomaRt, RUnit, GenomicFeatures, yeastNagalakshmi
 LinkingTo: IRanges, XVector, Biostrings

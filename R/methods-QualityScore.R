@@ -54,6 +54,59 @@ IntegerQuality <- function(quality=integer(0)) {
 }
 
 ## Import integer qualities from 454 .qual files
+.readFASTA <-
+    ## from Biostrings; legacy code but handles numeric values
+    function(file, checkComments=TRUE, strip.descs=TRUE)
+{
+    if (missing(strip.descs))
+        warning("use 'strip.descs=FALSE' for compatibility with old version\n",
+                "  of readFASTA(), or 'strip.descs=TRUE' to remove the \">\"\n",
+                "  at the beginning of the description lines and to get\n",
+                "  rid of this warning (see '?readFASTA' for more details)")
+    if (is.character(file)) {
+        file <- file(file, "r")
+        on.exit(close(file))
+    } else {
+        if (!inherits(file, "connection"))
+            stop("'file' must be a character string or connection")
+        if (!isOpen(file)) {
+            open(file, "r")
+            on.exit(close(file))
+        }
+    }
+
+    s1 <- scan(file=file, what="", sep="\n",
+               quote="", allowEscapes=FALSE, quiet=TRUE)
+    if (checkComments) {
+        ##comments are supposedly lines beginning with semi-colons
+        comments <- grep("^;", s1)
+        if (length(comments) > 0)
+            s1 <- s1[-comments]
+    }
+    descriptions <- which(substr(s1, 1L, 1L) == ">")
+    numF <- length(descriptions)
+    if (numF == 0)
+        stop("no FASTA sequences found")
+    dp <- descriptions + 1L
+    dm <- descriptions - 1L
+    end <- c(dm[-1], length(s1))
+    lapply(seq_len(numF),
+           function(i)
+           {
+               desc <- s1[descriptions[i]]
+               if (strip.descs)
+                   desc <- substr(desc, 2L, nchar(desc))
+               if (end[i] >= dp[i]) {
+                   seq <- paste(s1[dp[i]:end[i]], collapse="")
+               } else {
+                   warning("record \"", desc, "\" contains no sequence")
+                   seq <- ""
+               }
+               list(desc=desc, seq=seq)
+           }
+    )
+}
+
 .readQual <- function(file, reads = NULL) {
   if (!is.null(reads)) { ## a lot faster if the reads are known
     nums <- scan(file, integer(0), n = sum(width(reads)),
@@ -61,7 +114,7 @@ IntegerQuality <- function(quality=integer(0)) {
     inds <- seq_len(length(reads))
     scores <- split(nums, factor(rep(inds, width(reads)), inds))
   } else {
-      qual <- readFASTA(file, strip.descs=TRUE)
+      qual <- .readFASTA(file, strip.descs=TRUE)
       scores <- lapply(strsplit(subListExtract(qual, "seq", TRUE), " +"),
                        as.integer)
       names(scores) <- subListExtract(qual, "desc", TRUE)

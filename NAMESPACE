@@ -86,6 +86,8 @@ importFrom(lattice, dotplot, histogram, levelplot, llines, lsegments,
            panel.histogram, panel.levelplot, panel.xyplot,
            strip.custom, xyplot)
 
+importFrom(latticeExtra, xyplot.list)
+
 importFrom(Rsamtools, BamFileList, bamFlagTest, bamReverseComplement,
            "bamReverseComplement<-", bamSimpleCigar,
            "bamSimpleCigar<-", bamWhat, "bamWhat<-")
