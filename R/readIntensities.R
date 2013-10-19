@@ -7,7 +7,8 @@
     } else if (!is.character(type) || length(type) != 1) {
         .arg_mismatch_type_err("type", "character(1)")
     } else {
-        vals <- eval(formals(ShortRead:::.readIntensities_character)$type)
+        vals <- eval(formals(.readIntensities_character)$type,
+                     getNamespace("ShortRead"))
         if (!type %in% vals)
             .arg_mismatch_value_err("type", type, vals)
     }
