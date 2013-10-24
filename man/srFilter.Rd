@@ -35,12 +35,8 @@ compose(filt, ..., .name)
 
 idFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
          .name="idFilter")
-chromosomeFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
-                 .name="ChromosomeFilter")
-positionFilter(min=-Inf, max=Inf, .name="PositionFilter")
-strandFilter(strandLevels=character(0), .name="StrandFilter")
 occurrenceFilter(min=1L, max=1L,
-                 withSread=c(TRUE, FALSE, NA),
+                 withSread=c(NA, TRUE, FALSE),
                  duplicates=c("head", "tail", "sample", "none"),
                  .name=.occurrenceName(min, max, withSread,
                                        duplicates))
@@ -50,6 +46,15 @@ polynFilter(threshold=0L, nuc=c("A", "C", "T", "G", "other"),
 dustyFilter(threshold=Inf, batchSize=NA, .name="DustyFilter")
 srdistanceFilter(subject=character(0), threshold=0L,
                  .name="SRDistanceFilter")
+
+##
+## legacy filters for ungapped alignments
+##
+
+chromosomeFilter(regex=character(0), fixed=FALSE, exclude=FALSE,
+                 .name="ChromosomeFilter")
+positionFilter(min=-Inf, max=Inf, .name="PositionFilter")
+strandFilter(strandLevels=character(0), .name="StrandFilter")
 alignQualityFilter(threshold=0L, .name="AlignQualityFilter")
 alignDataFilter(expr=expression(), .name="AlignDataFilter")
 }
@@ -174,7 +179,7 @@ alignDataFilter(expr=expression(), .name="AlignDataFilter")
   treated: \code{TRUE} to include the sread, chromosome, strand, and
   position when determining occurrence, \code{FALSE} to include
   chromosome, strand, and position, and \code{NA} to include only
-  sread. The default is \code{withSread=TRUE}. \code{duplicates}
+  sread. The default is \code{withSread=NA}. \code{duplicates}
   determines how reads with more than \code{max} reads are
   treated. \code{head} selects the first \code{max} reads of each set of
   duplicates, \code{tail} the last \code{max} reads, and \code{sample} a

@@ -7,7 +7,7 @@
 \alias{show,ExperimentPath-method}
 \alias{detail,ExperimentPath-method}
 
-\title{"ExperimentPath" class representing a file hierarchy of data
+\title{(Legacy) "ExperimentPath" class representing a file hierarchy of data
   files}
 
 \description{

@@ -1,19 +1,24 @@
 Package: ShortRead
 Type: Package
-Title: Classes and methods for high-throughput short-read sequencing data.
-Version: 1.21.1
+Title: FASTQ input and manipulation
+Version: 1.21.2
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
-Description: Base classes, functions, and methods for representation of
-             high-throughput, short-read sequencing data.
+Description: This package implements sampling, iteration, and input of
+    FASTQ files. The package includes functions for filtering and
+    trimming reads, and for generating a quality assessment
+    report. Data are represented as DNAStringSet-derived objects, and
+    easily manipulated for a diversity of purposes.  The package also
+    contains legacy support for early single-end, ungapped alignment
+    formats.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: methods, BiocGenerics (>= 0.1.0), IRanges (>= 1.19.34),
-         GenomicRanges (>= 1.13.43), Biostrings (>= 2.29.18),
-         lattice, Rsamtools (>= 1.13.1)
-Imports: Biobase, hwriter, zlibbioc, latticeExtra
+Depends: BiocGenerics (>= 0.1.0), IRanges (>= 1.19.34),
+    GenomicRanges (>= 1.13.43), Biostrings (>= 2.29.18),
+    Rsamtools (>= 1.13.1)
+Imports: Biobase, hwriter, methods, zlibbioc, lattice, latticeExtra
 Enhances: Rmpi, parallel
-Suggests: biomaRt, RUnit, GenomicFeatures, yeastNagalakshmi
+Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi
 LinkingTo: IRanges, XVector, Biostrings
 biocViews: DataImport, Sequencing, HighThroughputSequencing, 
            QualityControl

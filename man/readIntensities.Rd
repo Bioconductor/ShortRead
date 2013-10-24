@@ -3,7 +3,7 @@
 \alias{readIntensities}
 \alias{readIntensities,character-method}
 
-\title{Read Illumina image intensity files}
+\title{(Legacy) Read Illumina image intensity files}
 
 \description{
 

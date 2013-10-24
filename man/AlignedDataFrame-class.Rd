@@ -4,7 +4,7 @@
 \alias{append,AlignedDataFrame,AlignedDataFrame-method}
 
 \title{
-  "AlignedDataFrame" representing alignment annotations as a data frame
+  (Legacy) "AlignedDataFrame" representing alignment annotations as a data frame
 }
 \description{
 

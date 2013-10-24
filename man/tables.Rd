@@ -63,7 +63,7 @@ showMethods("tables")
 sp <- SolexaPath(system.file("extdata", package="ShortRead"))
 aln <- readAligned(sp)
 tables(sread(aln), n=6)
-xyplot(log10(nReads)~log10(nOccurrences),
+lattice::xyplot(log10(nReads)~log10(nOccurrences),
        tables(sread(aln))$distribution)
 }
 \keyword{manip}

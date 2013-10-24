@@ -24,7 +24,7 @@
 \alias{laneDescription}
 \alias{laneNames}
 
-\title{Accessors for ShortRead classes}
+\title{(Legacy) Accessors for ShortRead classes}
 
 \description{
 

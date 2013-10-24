@@ -2,7 +2,8 @@
 \alias{SolexaIntensity}
 \alias{SolexaIntensityInfo}
 
-\title{Construct objects of class "SolexaIntensity" and "SolexaIntensityInfo"}
+\title{(Legacy) Construct objects of class "SolexaIntensity" and
+"SolexaIntensityInfo"}
 
 \description{
 

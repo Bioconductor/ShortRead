@@ -10,7 +10,8 @@
 \alias{show,SRSet-method}
 \alias{detail,SRSet-method}
 
-\title{A base class for Roche experiment-wide data}
+\title{(Legacy) A base class for Roche experiment-wide data}
+
 \description{
   This class coordinates phenotype (sample) and sequence data, primarily
   as used on the Roche platform.

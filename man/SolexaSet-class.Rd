@@ -12,7 +12,7 @@
 % transforming methods
 \alias{readAligned,SolexaSet-method}
 
-\title{"SolexaSet" coordinating Solexa output locations with sample annotations}
+\title{(Legacy) "SolexaSet" coordinating Solexa output locations with sample annotations}
 \description{
 
   This class coordinates the file hierarchy produced by the Solexa

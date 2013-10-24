@@ -3,7 +3,7 @@
 \alias{readBaseQuality}
 \alias{readBaseQuality,character-method}
 
-\title{Read short reads and their quality scores into R representations}
+\title{(Legacy) Read short reads and their quality scores into R representations}
 
 \description{
 

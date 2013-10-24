@@ -72,16 +72,16 @@ x = numeric(1000)
 x[sample(1000, 100)] <- abs(rnorm(100))
 df <- data.frame(x = c(x, -x), pos = seq(1, 1e5, length.out=1000),
                  group = rep(c("positive", "negative"), each=1000))
-cv <- xyplot(x ~ pos, df, group=group, type="s",
-             col=col, main="yeast chrI:1 - 2e5",
-             ylab="Coverage", xlab="Coordinate",
-             scales=list(y=list(tck=c(1,0)),
-                         x=list(rot=45, tck=c(1,0), tick.number=20)),
-             panel=function(...) {
-                     panel.xyplot(...)
-                     panel.grid(h=-1, v=20)
-                     panel.abline(a=0, b=0, col="grey")
-             })
+cv <- lattice::xyplot(x ~ pos, df, group=group, type="s",
+    col=col, main="yeast chrI:1 - 2e5",
+    ylab="Coverage", xlab="Coordinate",
+    scales=list(y=list(tck=c(1,0)),
+                x=list(rot=45, tck=c(1,0), tick.number=20)),
+    panel=function(...) {
+            lattice::panel.xyplot(...)
+            lattice::panel.grid(h=-1, v=20)
+            lattice::panel.abline(a=0, b=0, col="grey")
+    })
 s <- SpTrellis(cv)
 s
 zi(s)

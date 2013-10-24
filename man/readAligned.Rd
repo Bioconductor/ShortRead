@@ -3,7 +3,7 @@
 \alias{readAligned}
 \alias{readAligned,character-method}
 
-\title{Read aligned reads and their quality scores into R representations}
+\title{(Legacy) Read aligned reads and their quality scores into R representations}
 
 \description{
 

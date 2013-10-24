@@ -5,7 +5,7 @@
 \alias{report,MAQMapQA-method}
 \alias{report_html,MAQMapQA-method}
 
-\title{Quality assessment summaries from MAQ map files}
+\title{(Legacy) Quality assessment summaries from MAQ map files}
 
 \description{
 

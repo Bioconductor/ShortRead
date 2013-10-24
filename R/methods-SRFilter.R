@@ -108,7 +108,7 @@ uniqueFilter <-
 }
 
 occurrenceFilter <-
-    function(min=1L, max=1L, withSread=c(TRUE, FALSE, NA),
+    function(min=1L, max=1L, withSread=c(NA, TRUE, FALSE),
              duplicates=c("head", "tail", "sample", "none"),
              .name=.occurrenceName(min, max, withSread,
                  duplicates))

@@ -2,7 +2,7 @@
 \docType{class}
 \alias{RtaIntensity-class}
 
-\title{Class "RtaIntensity"}
+\title{(Legacy) Class "RtaIntensity"}
 \description{
 
   Subclass of \code{\linkS4class{Intensity}} for representing image

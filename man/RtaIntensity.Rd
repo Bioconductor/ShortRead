@@ -1,7 +1,7 @@
 \name{RtaIntensity}
 \alias{RtaIntensity}
 
-\title{Construct objects of class "RtaIntensity"}
+\title{(Legacy) Construct objects of class "RtaIntensity"}
 
 \description{
 

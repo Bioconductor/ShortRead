@@ -18,7 +18,7 @@
 \alias{readBaseQuality,SolexaPath-method}
 \alias{readAligned,SolexaPath-method}
 
-\title{"SolexaPath" class representing a standard output file hierarchy}
+\title{(Legacy) "SolexaPath" class representing a standard output file hierarchy}
 \description{
 
   Solexa produces a hierarchy of output files. The content of the

@@ -21,7 +21,7 @@
 \alias{show,Intensity-method}
 \alias{show,IntensityMeasure-method}
 
-\title{"Intensity", "IntensityInfo", and "IntensityMeasure" base
+\title{(Legacy) "Intensity", "IntensityInfo", and "IntensityMeasure" base
   classes for short read image intensities}
 
 \description{

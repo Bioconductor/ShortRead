@@ -23,7 +23,7 @@
 %
 \alias{RochePath}
 
-\title{"RochePath" class representing a Roche (454) experiment location}
+\title{(Legacy) "RochePath" class representing a Roche (454) experiment location}
 
 \description{
 

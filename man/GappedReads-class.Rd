@@ -2,7 +2,6 @@
 \docType{class}
 
 % Class:
-\alias{class:GappedReads}
 \alias{GappedReads-class}
 \alias{GappedReads}
 
@@ -22,7 +21,7 @@
 \alias{narrow,GappedReads-method}
 
 
-\title{GappedReads objects}
+\title{(Legacy) GappedReads objects}
 
 \description{
   The GappedReads class extends the \link[GenomicRanges]{GAlignments}

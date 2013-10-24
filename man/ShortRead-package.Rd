@@ -8,13 +8,17 @@
 \docType{package}
 \title{
 
-  Base classes and methods for high-throughput short-read sequencing data.
+  FASTQ input and manipulation.
 
 }
 \description{
 
-  Base classes, functions, and methods for representation of
-  high-throughput, short-read sequencing data.
+  This package implements sampling, iteration, and input of FASTQ
+  files. The package includes functions for filtering and trimming
+  reads, and for generating a quality assessment report. Data are
+  represented as DNAStringSet-derived objects, and easily manipulated
+  for a diversity of purposes.  The package also contains legacy support
+  for early single-end, ungapped alignment formats.
 
 }
 \details{

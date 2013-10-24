@@ -1,7 +1,7 @@
 \name{AlignedRead}
 \alias{AlignedRead}
 
-\title{Construct objects of class "AlignedRead"}
+\title{(Legacy) Construct objects of class "AlignedRead"}
 \description{
 
   This function constructs objects of

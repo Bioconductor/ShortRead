@@ -3,7 +3,7 @@
 \alias{readQseq}
 \alias{readQseq,character-method}
 
-\title{Read Solexa qseq files as fastq-style quality scores}
+\title{(Legacy) Read Solexa qseq files as fastq-style quality scores}
 
 \description{
 

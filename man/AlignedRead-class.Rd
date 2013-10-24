@@ -27,7 +27,7 @@
 \alias{detail,AlignedRead-method}
 \alias{show,AlignedRead-method}
 
-\title{"AlignedRead" class for aligned short reads}
+\title{(Legacy) "AlignedRead" class for aligned short reads}
 
 \description{
 

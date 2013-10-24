@@ -3,7 +3,7 @@
 \alias{readPrb}
 \alias{readPrb,character-method}
 
-\title{Read Solexa prb files as fastq-style quality scores}
+\title{(Legacy) Read Solexa prb files as fastq-style quality scores}
 
 \description{
 

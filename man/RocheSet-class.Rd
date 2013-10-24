@@ -3,7 +3,7 @@
 \alias{RocheSet-class}
 \alias{RocheSet}
 
-\title{Roche (454) experiment-wide data container}
+\title{(Legacy) Roche (454) experiment-wide data container}
 \description{
 
   This class is meant to coordinate all data in a Roche (454)

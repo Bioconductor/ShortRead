@@ -1,7 +1,7 @@
 \name{AlignedDataFrame}
 \alias{AlignedDataFrame}
 
-\title{AlignedDataFrame constructor}
+\title{(Legacy) AlignedDataFrame constructor}
 \description{
 
   Construct an \code{AlignedDataFrame} from a data frame and its

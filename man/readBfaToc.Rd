@@ -1,7 +1,7 @@
 \name{readBfaToc}
 \alias{readBfaToc}
 
-\title{Get a list of the sequences in a Maq .bfa file}
+\title{(Legacy) Get a list of the sequences in a Maq .bfa file}
 
 \description{
 As \code{\link{coverage}} needs to know the lengths of the reference sequences,

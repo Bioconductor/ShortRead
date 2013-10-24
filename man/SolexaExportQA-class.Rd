@@ -8,7 +8,8 @@
 \alias{report_html,SolexaRealignQA-method}
 \alias{show,SolexaExportQA-method}
 
-\title{Quality assessment summaries from Solexa export and realign files}
+\title{(Legacy) Quality assessment summaries from Solexa export and
+  realign files}
 
 \description{
 

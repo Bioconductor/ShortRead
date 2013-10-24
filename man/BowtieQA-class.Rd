@@ -4,7 +4,7 @@
 \alias{report,BowtieQA-method}
 \alias{report_html,BowtieQA-method}
 
-\title{Quality assessment summaries from Bowtie files}
+\title{(Legacy) Quality assessment summaries from Bowtie files}
 
 \description{
 
