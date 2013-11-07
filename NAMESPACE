@@ -60,8 +60,9 @@ importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
                   start, sub, t, table, tapply, toupper, unique, unlist,
                   update, Views, which, width, with)
 
-importMethodsFrom(Rsamtools, isOpen, path, readGAlignmentsFromBam,
-                  readGappedReadsFromBam, scanBam, ScanBamParam)
+importMethodsFrom(Rsamtools, isOpen, path, scanBam, ScanBamParam)
+
+importMethodsFrom(GenomicAlignments, readGAlignmentsFromBam)
 
 importFrom(Biobase, copySubstitute, mkScalar, selectSome,
            subListExtract)
