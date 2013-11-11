@@ -67,7 +67,7 @@
     } else if (!is.character(as) || length(as) != 1) {
         .arg_mismatch_type_err("as", "character(1)")
     } else {
-        vals <- eval(formals(ShortRead:::.readQseq_character)$as)
+        vals <- eval(formals(.readQseq_character)$as)
         if (!as %in% vals)
             .arg_mismatch_value_err("as", as, vals)
     }

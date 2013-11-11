@@ -16,8 +16,8 @@
     function(dirPath, pattern, qclass, ..., asSolexa, verbose)
 {
     fls <- .file_names(dirPath, pattern)
-    qclass(unlist(srapply(fls, .readPrb, ...,
-                          asSolexa=asSolexa, verbose=verbose)))
+    qclass(unlist(bplapply(fls, .readPrb, ..., asSolexa=asSolexa,
+                           verbose=verbose)))
 }
 
 .readPrb_IntegerEncoding <-
@@ -71,7 +71,7 @@
     } else if (!is.character(as) || length(as) != 1) {
         .arg_mismatch_type_err("as", "character(1)")
     } else {
-        vals <- eval(formals(ShortRead:::.readPrb_character)$as)
+        vals <- eval(formals(.readPrb_character)$as)
         if (!as %in% vals)
             .arg_mismatch_value_err("as", as, vals)
     }
