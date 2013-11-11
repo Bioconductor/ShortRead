@@ -26,7 +26,7 @@ setMethod(dustyScore, "DNAStringSet",
     i <- seq_len(length(x))
     i <- split(i, cut(i, n, labels=FALSE))
 
-    unlist(unname(srapply(i, function(idx, tripletPDict, x, ...) {
+    unlist(unname(bplapply(i, function(idx, tripletPDict, x, ...) {
         doDusty(tripletPDict, x[idx])
     }, tripletPDict, x)))
 })
@@ -98,7 +98,7 @@ setMethod(writeFasta, "DNAStringSet",
 .srdistance_DNAStringSet_character <- function(pattern, subject, ...)
 {
     strings <- lapply(subject, DNAString)
-    res <- srapply(strings, .srdistance, pattern=pattern,
+    res <- bplapply(strings, .srdistance, pattern=pattern,
                    distanceFunc=.srdistanceDNA, ...)
     if (length(res) == length(subject))
         names(res) <- subject

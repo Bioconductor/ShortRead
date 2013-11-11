@@ -32,8 +32,8 @@
              nClean=sum(alphabetFrequency(dna, baseOnly=TRUE)[,"other"]==0))
     }
     if (length(pattern)==0) pattern=".*_seq.txt$"
-    lst <- srapply(list.files(dirPath, pattern, full.names=TRUE),
-                   .qa_Solexa_tileStats_tile, dirPath=dirPath, ...)
+    lst <- bplapply(list.files(dirPath, pattern, full.names=TRUE),
+                    .qa_Solexa_tileStats_tile, dirPath=dirPath, ...)
     .qa_lst_as_data_frame(lst)
 }
 
@@ -169,10 +169,8 @@
              verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_SolexaExport_lane,
-                   dirPath=dirPath, type=type, ...,
-                   reduce=.reduce(1), verbose=verbose, 
-                   USE.NAMES=TRUE)
+    lst <- bplapply(basename(fls), .qa_SolexaExport_lane,
+                   dirPath=dirPath, type=type, ..., verbose=verbose)
 
     ## collapse into data frames
     lst <-

@@ -69,8 +69,6 @@ Functionality is summarized in Table~\ref{tab:fastq}.
     & \Rfunction{tables} & Summarize read occurrence \\
     & \Rfunction{srduplicated}, etc. & Identify duplicate reads \\
     & \Rfunction{filterFastq} & Filter reads from one file to another\\
-    \multicolumn{3}{l}{Parallel evaluation} \\
-    & \Rfunction{srapply} & \Rfunction{lapply}-like parallel evaluation \\
     \hline
   \end{tabular}
   \caption{Key functions for working with FASTQ files}
@@ -155,8 +153,7 @@ qaSummary <- qa(fls, type="fastq")
 browseURL(report(qaSummary))
 @ 
 \noindent By default, the report is based on a sample of 1M
-reads. Parallel processing (across files) can be enabled by specifying
-\Rcode{options(srapply\_fapply)}, as described in \Rcode{?srapply}.
+reads.
 
 These QA facilities are easily augmented by writing custom functions
 for reads sampled from files, or by explorting the elements of the
@@ -236,11 +233,7 @@ myFilterAndTrim <-
 @ 
 \noindent This is memory efficient and flexible. Care must be taken to
 coordinate pairs of FASTQ files representing paired-end reads, to
-preserve order. Processing several files in parallel might use
-<<filter-several, eval=FALSE>>=
-fls <- dir("/path/to", "fastq$", full=TRUE)
-srapply(fls, myFilterAndTrim)
-@ 
+preserve order.
 
 \section{Using \Rpackage{ShortRead} for data exploration}
 

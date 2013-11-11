@@ -1,7 +1,9 @@
 \name{srapply}
 \alias{srapply}
-\title{Apply-like function for distribution across MPI-based clusters.}
+\title{DEPRECATED Apply-like function for distribution across MPI-based clusters.}
 \description{
+
+  DEPRECATED; use the BiocParallel package instead.
 
   This \code{lapply} like function evaluates locally or, if \pkg{Rmpi}
   or \pkg{parallel} is loaded (and \pkg{Rmpi} workers spawned) and
@@ -86,7 +88,8 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(),
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
 \examples{
-## ... or 'verbose' required in argument, 
+\dontrun{
+## DEPRECATED; use BiocParallel::bplapply instead
 srapply(1:10, function(i, ...) i)
 ## collapse result to vector
 srapply(1:10, function(i, ...) i, reduce=unlist)
@@ -94,6 +97,6 @@ x <- srapply(1:10, function(i, ...) {
     if (runif(1)<.2) stop("oops") else i
 })
 length(x) ## trimmed to exclude errors
-
+}
 }
 \keyword{manip}

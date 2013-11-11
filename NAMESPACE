@@ -67,6 +67,8 @@ importMethodsFrom(GenomicAlignments, readGAlignmentsFromBam)
 importFrom(Biobase, copySubstitute, mkScalar, selectSome,
            subListExtract)
 
+importFrom(BiocParallel, bplapply)
+
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            get_seqtype_conversion_lookup, mkAllStrings,
            QualityScaledDNAStringSet, readDNAStringSet,

@@ -25,7 +25,7 @@
                reverseComplement=TRUE, what=.readAligned_bamWhat(FALSE)))
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(fls, .qa_BAM_lane, ..., param=param, reduce=.reduce(1))
+    lst <- bplapply(fls, .qa_BAM_lane, ..., param=param)
     lst <-
         list(readCounts=.bind(lst, "readCounts"),
              baseCalls=.bind(lst, "baseCalls"),

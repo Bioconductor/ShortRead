@@ -27,7 +27,7 @@ srdistance(pattern, subject, ...)
   \item{subject}{A short \code{character} vector, \code{DNAString} or
     (small) \code{DNAStringSet} to serve as reference.}
 
-  \item{\dots}{additional arguments, forward to \code{srapply}.}
+  \item{\dots}{additional arguments, unused.}
 }
 
 \details{

@@ -430,7 +430,7 @@ setMethod(qa2, "QACollate",
 {
     if (verbose) message("qa2,QACollate-method")
 
-    qas <- srapply(seq_along(object@src@con), function(i, object, ...) {
+    qas <- bplapply(seq_along(object@src@con), function(i, object, ...) {
         object@src@con <- object@src@con[i]
         .qa2_do_collate1(object, ...)
     }, object, ..., verbose=verbose)

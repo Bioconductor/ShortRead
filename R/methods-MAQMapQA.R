@@ -75,11 +75,9 @@
     function(dirPath, pattern, type, ..., verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_MAQMap_lane,
-                   dirPath=dirPath, type=type, ...,
-                   reduce=.reduce(1), verbose=verbose, USE.NAMES=TRUE)
-    
-	lst <-
+    lst <- bplapply(basename(fls), .qa_MAQMap_lane, dirPath=dirPath,
+                    type=type, ..., verbose=verbose)
+    lst <-
         list(readCounts=.bind(lst, "readCounts"),
              baseCalls=.bind(lst, "baseCalls"),
              readQualityScore=.bind(lst, "readQualityScore"),

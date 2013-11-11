@@ -16,8 +16,8 @@
 \usage{
 qa(dirPath, ...)
 \S4method{qa}{character}(dirPath, pattern=character(0), 
-    type=c("SolexaExport", "SolexaRealign", "Bowtie", "MAQMap", 
-           "MAQMapShort", "fastq", "BAM"),
+    type=c("fastq", "BAM", "SolexaExport", "SolexaRealign", "Bowtie",
+           "MAQMap", "MAQMapShort"),
     ...)
 \S4method{qa}{list}(dirPath, ...)
 }
@@ -49,16 +49,16 @@ qa(dirPath, ...)
       \item{\code{n}:}{The number of reads to sample when processing
         FASTQ files.}
 
-      \item{\code{fapply}, \code{reduce}:}{Influence how evaluation
-        occurs when this function is run with the \pkg{Rmpi} or
-        \pkg{parallel} packages; see \code{\link{srapply}}.}
-
       \item{\code{Lpattern}, \code{Rpattern}:}{A character vector or
         XString object to be matched to the left end of a sequence. If
         either \code{Lpattern} or \code{Rpattern} are provided,
         \code{trimLRPatterns} is invoked to produce a measure of adapter
         contamination.  Mismatch rates are 0.1 on the left and 0.2 on
         the right, with a minimum overlap of 10 nt.}
+
+      \item{\code{BPPARAM}:}{How parallel evalutation will be
+        performed. see \code{\link{BiocParallelParam}}; the default is
+        \code{BiocParallel::registered()[1]}.}
 
     }
   }
@@ -123,18 +123,11 @@ qa(dirPath, ...)
 }
 
 \examples{
-
-sp <- SolexaPath(system.file("extdata", package = "ShortRead"))
-qa1 <- qa(sp)
-fq <- file.path(analysisPath(sp), pattern="s_1_sequence.txt")
-qa2 <- qa(readFastq(fq), basename(fq))  # name fastq files
-
-## create report from a random sample of each file
-qas0 <- Map(function(fl, nm) {
-  fq <- FastqSampler(fl)
-  qa(yield(fq), nm)
-}, fq,  sub(".txt", "", basename(fq)))
-qa3 <- do.call(rbind, qas0)
+dirPath <- system.file(package="ShortRead", "extdata", "E-MTAB-1147")
+## sample 1M reads / file
+qa <- qa(dirPath, "fastq.gz", BPPARAM=SerialParam())
+if (interactive())
+    browseURL(report(qa))
 
 showMethods("qa", where=getNamespace("ShortRead"))
 }

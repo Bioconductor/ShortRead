@@ -1,7 +1,7 @@
 .qa_character <-
     function(dirPath, pattern=character(0),
-             type=c("SolexaExport", "SolexaRealign", "Bowtie",
-               "MAQMap", "MAQMapShort", "fastq", "BAM"),
+             type=c("fastq", "BAM", "SolexaExport", "SolexaRealign",
+               "Bowtie", "MAQMap", "MAQMapShort"),
              ...)
 {
     tryCatch(type <- match.arg(type),

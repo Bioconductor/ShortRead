@@ -170,6 +170,7 @@ fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
 
 f <- FastqFile(fl)
 rfq <- readFastq(f)
+close(f)
 
 f <- FastqSampler(fl, 50)
 yield(f)    # sample of size n=50

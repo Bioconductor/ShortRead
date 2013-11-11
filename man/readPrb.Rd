@@ -25,8 +25,7 @@ readPrb(dirPath, pattern = character(0), ...)
   \item{pattern}{Regular expression matching names of \code{_prb} files
     to be summarized.}
 
-  \item{\dots}{Additional arguments, e.g., to \code{\link{srapply}},
-    used during evaluation.}
+  \item{\dots}{Additional arguments, unused.}
 
 }
 

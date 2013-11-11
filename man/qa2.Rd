@@ -263,27 +263,19 @@ flag(object, ..., verbose=FALSE)
 \seealso{\code{\linkS4class{QA}}.}
 
 \examples{
-sp <- SolexaPath(system.file('extdata', package='ShortRead'))
-fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
-fls <- c(fl, fl)
+dirPath <- system.file(package="ShortRead", "extdata", "E-MTAB-1147")
+fls <- dir(dirPath, "fastq.gz", full=TRUE)
 
 coll <- QACollate(QAFastqSource(fls), QAReadQuality(),
     QAAdapterContamination(), QANucleotideUse(),
     QAQualityUse(), QASequenceUse(),
     QAFrequentSequence(n=10), QANucleotideByCycle(),
     QAQualityByCycle())
-x <- qa2(coll, verbose=TRUE)
+x <- qa2(coll, BPPARAM=SerialParam(), verbose=TRUE)
+
 res <- report(x)
-if (interactive()) 
+if (interactive())
     browseURL(res)
-
-\dontrun{## parallel evaluation
-options(srapply_fapply="parallel")
-coll <- QACollate(QAFastqSource(fls), qaFastqTemplate)
-x2 <- qa2(coll, verbose=TRUE)
-browseURL(res2 <- report(x2))
-}
-
 }
 
 \keyword{manip}

@@ -96,10 +96,8 @@
 			 verbose=FALSE)
 {
     fls <- .file_names(dirPath, pattern)
-    lst <- srapply(basename(fls), .qa_SolexaRealign_lane,
-                   dirPath=dirPath, type=type, ...,
-				   reduce=.reduce(1), verbose=verbose, 
-				   USE.NAMES=TRUE)
+    lst <- bplapply(basename(fls), .qa_SolexaRealign_lane,
+                    dirPath=dirPath, type=type, ..., verbose=verbose)
 
     lst <-
         list(readCounts=.bind(lst, "readCounts"),

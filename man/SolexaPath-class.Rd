@@ -211,8 +211,6 @@ report(qa(sp))
 }
 \dontrun{
 nfiles <- length(list.files(analysisPath(sp), "s_[1-8]_export.txt"))
-library(parallel)
-options(srapply_fapply="parallel")
 report(qa(sp))
 }
 }

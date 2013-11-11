@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.21
+-----------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Use BiocParallel rather than srapply, mark srapply as 'Deprecated'
+
+    o qa,character-method defaults to type="fastq"
+
+    o Input of 'legacy' formats marked as such
+
 CHANGES IN VERSION 1.19
 -----------------------
 
