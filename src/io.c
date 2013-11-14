@@ -27,19 +27,19 @@ void _write_err(FILE * file, int i)
     Rf_error("failed to write record %d", i + 1);
 }
 
-char *_cache_to_char(cachedXStringSet * cache, const int i,
+char *_holder_to_char(XStringSet_holder * holder, const int i,
                      char *buf, const int width, DECODE_FUNC decode)
 {
-    cachedCharSeq roSeq = get_cachedXStringSet_elt(cache, i);
-    if (roSeq.length > width)
+    Chars_holder chars_holder = get_elt_from_XStringSet_holder(holder, i);
+    if (chars_holder.length > width)
         return NULL;
     if (decode != NULL) {
         int j;
-        for (j = 0; j < roSeq.length; ++j)
-            buf[j] = decode(roSeq.seq[j]);
+        for (j = 0; j < chars_holder.length; ++j)
+            buf[j] = decode(chars_holder.seq[j]);
     } else
-        strncpy(buf, roSeq.seq, roSeq.length);
-    buf[roSeq.length] = '\0';
+        strncpy(buf, chars_holder.seq, chars_holder.length);
+    buf[chars_holder.length] = '\0';
     return buf;
 }
 
@@ -71,8 +71,8 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
     const int width = INTEGER(max_width)[0];
 
     DECODE_FUNC dnaDecoder = decoder(get_XStringSet_xsbaseclassname(sread));
-    cachedXStringSet xid = cache_XStringSet(id),
-        xsread = cache_XStringSet(sread), xquality = cache_XStringSet(quality);
+    XStringSet_holder xid = hold_XStringSet(id),
+        xsread = hold_XStringSet(sread), xquality = hold_XStringSet(quality);
 
     FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)),
                        CHAR(STRING_ELT(fmode, 0)));
@@ -84,13 +84,13 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
     int i;
     idbuf1 = TRUE == LOGICAL(full)[0] ? idbuf0 : "";
     for (i = 0; i < len; ++i) {
-        idbuf0 = _cache_to_char(&xid, i, idbuf0, width, NULL);
+        idbuf0 = _holder_to_char(&xid, i, idbuf0, width, NULL);
         if (idbuf0 == NULL)
             _write_err(fout, i);
-        readbuf = _cache_to_char(&xsread, i, readbuf, width, dnaDecoder);
+        readbuf = _holder_to_char(&xsread, i, readbuf, width, dnaDecoder);
         if (readbuf == NULL)
             _write_err(fout, i);
-        qualbuf = _cache_to_char(&xquality, i, qualbuf, width, NULL);
+        qualbuf = _holder_to_char(&xquality, i, qualbuf, width, NULL);
         if (qualbuf == NULL)
             _write_err(fout, i);
         fprintf(fout, "@%s\n%s\n+%s\n%s\n", idbuf0, readbuf, idbuf1, qualbuf);

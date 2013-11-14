@@ -50,10 +50,10 @@ SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
      * matrix.
      *
      */
-    cachedXStringSet cache = cache_XStringSet(stringSet);
+    XStringSet_holder holder = hold_XStringSet(stringSet);
     const int len = get_XStringSet_length(stringSet);
     for (i = 0; i < len; ++i) {
-        cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+        Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
         for (j = 0; j < seq.length; ++j) {
             int idx = map[decode(seq.seq[j])];
             if (idx >= 0)
@@ -123,12 +123,12 @@ SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
      * matrix.
      *
      */
-    cachedXStringSet cache1 = cache_XStringSet(stringSet1);
-    cachedXStringSet cache2 = cache_XStringSet(stringSet2);
+    XStringSet_holder holder1 = hold_XStringSet(stringSet1);
+    XStringSet_holder holder2 = hold_XStringSet(stringSet2);
     const int len = get_XStringSet_length(stringSet1);
     for (i = 0; i < len; ++i) {
-        cachedCharSeq seq1 = get_cachedXStringSet_elt(&cache1, i);
-        cachedCharSeq seq2 = get_cachedXStringSet_elt(&cache2, i);
+        Chars_holder seq1 = get_elt_from_XStringSet_holder(&holder1, i);
+        Chars_holder seq2 = get_elt_from_XStringSet_holder(&holder2, i);
         for (j = 0; j < seq1.length; ++j) {
             int idx1 = map1[decode1(seq1.seq[j])];
             int idx2 = map2[decode2(seq2.seq[j])];
@@ -159,9 +159,9 @@ SEXP alphabet_score(SEXP stringSet, SEXP score)
     PROTECT(ans = NEW_NUMERIC(len));
     double *dans = REAL(ans);
 
-    cachedXStringSet cache = cache_XStringSet(stringSet);
+    XStringSet_holder holder = hold_XStringSet(stringSet);
     for (i = 0; i < len; ++i) {
-        cachedCharSeq seq = get_cachedXStringSet_elt(&cache, i);
+        Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
         dans[i] = 0;
         for (j = 0; j < seq.length; ++j)
             dans[i] += dscore[decode(seq.seq[j])];
@@ -184,15 +184,15 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score)
     if (len == 0)
 	return allocMatrix(INTSXP, 0, 0);
 
-    cachedXStringSet cache = cache_XStringSet(stringSet);
+    XStringSet_holder holder = hold_XStringSet(stringSet);
     int i;
 
-    cachedCharSeq seq = get_cachedXStringSet_elt(&cache, 0);
+    Chars_holder seq = get_elt_from_XStringSet_holder(&holder, 0);
     int width = seq.length;
     int *ians = NULL;
     SEXP ans;
     for (i = 1; i < len && width > 0; ++i) {
-        seq = get_cachedXStringSet_elt(&cache, i);
+        seq = get_elt_from_XStringSet_holder(&holder, i);
         if (seq.length > width)
             width = seq.length;
     }
@@ -204,7 +204,7 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score)
     const int *iscore = INTEGER(score);
     int j;
     for (i = 0; i < len; ++i) {
-        seq = get_cachedXStringSet_elt(&cache, i);
+        seq = get_elt_from_XStringSet_holder(&holder, i);
 	for (j = 0; j < seq.length; ++j)
 	    ians[len * j + i] = iscore[decode(seq.seq[j])];
     }
@@ -217,18 +217,18 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score)
 
 typedef struct {
     int offset;
-    cachedCharSeq ref;
+    Chars_holder ref;
 } XSort;
 
 typedef int XSEQ_SORT_FUN(const void *, const void *);
 
-XSEQ_SORT_FUN compare_cachedCharSeq;
-XSEQ_SORT_FUN stable_compare_cachedCharSeq;
+XSEQ_SORT_FUN compare_Chars_holder;
+XSEQ_SORT_FUN stable_compare_Chars_holder;
 
-int compare_cachedCharSeq(const void *a, const void *b)
+int compare_Chars_holder(const void *a, const void *b)
 {
-    const cachedCharSeq ra = ((const XSort *) a)->ref;
-    const cachedCharSeq rb = ((const XSort *) b)->ref;
+    const Chars_holder ra = ((const XSort *) a)->ref;
+    const Chars_holder rb = ((const XSort *) b)->ref;
 
     const int diff = ra.length - rb.length;
     size_t len = diff < 0 ? ra.length : rb.length;
@@ -236,10 +236,10 @@ int compare_cachedCharSeq(const void *a, const void *b)
     return res == 0 ? diff : res;
 }
 
-int stable_compare_cachedCharSeq(const void *a, const void *b)
+int stable_compare_Chars_holder(const void *a, const void *b)
 {
-    const cachedCharSeq ra = ((const XSort *) a)->ref;
-    const cachedCharSeq rb = ((const XSort *) b)->ref;
+    const Chars_holder ra = ((const XSort *) a)->ref;
+    const Chars_holder rb = ((const XSort *) b)->ref;
 
     const int diff = ra.length - rb.length;
     size_t len = diff < 0 ? ra.length : rb.length;
@@ -249,15 +249,15 @@ int stable_compare_cachedCharSeq(const void *a, const void *b)
     return res == 0 ? diff : res;
 }
 
-void _alphabet_order(cachedXStringSet cache, XSort * xptr, const int len)
+void _alphabet_order(XStringSet_holder holder, XSort * xptr, const int len)
 {
     int i;
 
     for (i = 0; i < len; ++i) {
         xptr[i].offset = i;
-        xptr[i].ref = get_cachedXStringSet_elt(&cache, i);
+        xptr[i].ref = get_elt_from_XStringSet_holder(&holder, i);
     }
-    qsort(xptr, len, sizeof(XSort), stable_compare_cachedCharSeq);
+    qsort(xptr, len, sizeof(XSort), stable_compare_Chars_holder);
 }
 
 SEXP alphabet_order(SEXP stringSet)
@@ -266,9 +266,9 @@ SEXP alphabet_order(SEXP stringSet)
     const int len = get_XStringSet_length(stringSet);
     if (len == 0)
         return NEW_INTEGER(0);
-    cachedXStringSet cache = cache_XStringSet(stringSet);
+    XStringSet_holder holder = hold_XStringSet(stringSet);
     XSort *xptr = (XSort *) R_alloc(len, sizeof(XSort));
-    _alphabet_order(cache, xptr, len);
+    _alphabet_order(holder, xptr, len);
 
     SEXP ans;
     PROTECT(ans = NEW_INTEGER(len));
@@ -286,9 +286,9 @@ SEXP alphabet_duplicated(SEXP stringSet)
     const int len = get_XStringSet_length(stringSet);
     if (len == 0)
         return NEW_LOGICAL(0);
-    cachedXStringSet cache = cache_XStringSet(stringSet);
+    XStringSet_holder holder = hold_XStringSet(stringSet);
     XSort *xptr = (XSort *) R_alloc(len, sizeof(XSort));
-    _alphabet_order(cache, xptr, len);
+    _alphabet_order(holder, xptr, len);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(len));
@@ -297,7 +297,7 @@ SEXP alphabet_duplicated(SEXP stringSet)
     int i;
     for (i = 1; i < len; ++i)
         ians[xptr[i].offset] =
-            compare_cachedCharSeq(xptr + i - 1, xptr + i) == 0;
+            compare_Chars_holder(xptr + i - 1, xptr + i) == 0;
 
     UNPROTECT(1);
     return ans;
@@ -309,15 +309,15 @@ SEXP alphabet_rank(SEXP stringSet)
     const int len = get_XStringSet_length(stringSet);
     if (len == 0)
         return NEW_INTEGER(0);
-    cachedXStringSet cache = cache_XStringSet(stringSet);
+    XStringSet_holder holder = hold_XStringSet(stringSet);
     XSort *xptr = (XSort *) R_alloc(len, sizeof(XSort));
-    _alphabet_order(cache, xptr, len);
+    _alphabet_order(holder, xptr, len);
 
     SEXP rank = PROTECT(NEW_INTEGER(len));
     int *irank = INTEGER(rank), i;
     irank[xptr[0].offset] = 1;
     for (i = 1; i < len; ++i) {
-        if (compare_cachedCharSeq(&xptr[i - 1], &xptr[i]) == 0) {
+        if (compare_Chars_holder(&xptr[i - 1], &xptr[i]) == 0) {
             irank[xptr[i].offset] = irank[xptr[i - 1].offset];
         } else {
             irank[xptr[i].offset] = i + 1;
@@ -345,17 +345,17 @@ SEXP aligned_read_rank(SEXP alignedRead, SEXP order, SEXP withSread, SEXP rho)
     if (LOGICAL(withSread)[0]) {
         SEXP sread;
         PROTECT(sread = _get_SEXP(alignedRead, rho, "sread"));
-        cachedXStringSet cache = cache_XStringSet(sread);
+        XStringSet_holder holder = hold_XStringSet(sread);
         XSort *xptr = (XSort *) R_alloc(2, sizeof(XSort));
-        xptr[0].ref = get_cachedXStringSet_elt(&cache, 0);
+        xptr[0].ref = get_elt_from_XStringSet_holder(&holder, 0);
 
         r[o[0] - 1] = 1;
         for (i = 1; i < len; ++i) {
             const int this = o[i] - 1, prev = o[i - 1] - 1;
-            xptr[i % 2].ref = get_cachedXStringSet_elt(&cache, this);
+            xptr[i % 2].ref = get_elt_from_XStringSet_holder(&holder, this);
             if (c[this] != c[prev] || s[this] != s[prev] ||
                 p[this] != p[prev] ||
-                compare_cachedCharSeq(xptr, xptr + 1) != 0)
+                compare_Chars_holder(xptr, xptr + 1) != 0)
                 r[this] = i + 1;
             else
                 r[this] = r[prev];

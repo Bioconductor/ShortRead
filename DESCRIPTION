@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: FASTQ input and manipulation
-Version: 1.21.4
+Version: 1.21.5
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 Description: This package implements sampling, iteration, and input of
@@ -14,7 +14,7 @@ Description: This package implements sampling, iteration, and input of
 License: Artistic-2.0
 LazyLoad: yes
 Depends: BiocGenerics (>= 0.1.0), BiocParallel, Biostrings (>=
-    2.29.18), Rsamtools (>= 1.13.1), GenomicAlignments
+    2.31.3), Rsamtools (>= 1.13.1), GenomicAlignments
 Imports: Biobase, GenomicRanges, IRanges, hwriter, methods, zlibbioc,
     lattice, latticeExtra,
 Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi

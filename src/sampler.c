@@ -115,16 +115,16 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
     SET_VECTOR_ELT(ans, 2, alloc_XRawList("BStringSet", "BString",
                                           VECTOR_ELT(widths, 1)));
 
-    cachedXVectorList
-        sread = cache_XVectorList(VECTOR_ELT(ans, 0)),
-        qual = cache_XVectorList(VECTOR_ELT(ans, 1)),
-        id = cache_XVectorList(VECTOR_ELT(ans, 2));
+    XVectorList_holder
+        sread = hold_XVectorList(VECTOR_ELT(ans, 0)),
+        qual = hold_XVectorList(VECTOR_ELT(ans, 1)),
+        id = hold_XVectorList(VECTOR_ELT(ans, 2));
 
 #ifdef SUPPORT_OPENMP
 #pragma omp parallel for
 #endif
     for (int i = 0; i < fastq->n_curr; ++i) {
-        cachedCharSeq x;
+        Chars_holder x;
 
         const Rbyte *buf = fastq->records[i].record,
             *bufend = buf + fastq->records[i].length,
@@ -135,13 +135,13 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         start = ++buf;          /* skip '@' */
         while (!((*buf == '\n') || (*buf == '\r')))
             ++buf;
-        x = get_cachedXRawList_elt(&id, i);
+        x = get_elt_from_XRawList_holder(&id, i);
         memcpy((char *) x.seq, start, (buf - start) * sizeof(Rbyte));
 
         /* read */
         while ((*buf == '\n') || (*buf == '\r'))
             ++buf;
-        curr = (char *) get_cachedXRawList_elt(&sread, i).seq;
+        curr = (char *) get_elt_from_XRawList_holder(&sread, i).seq;
         while (*buf != '+') {
             while (!((*buf == '\n') || (*buf == '\r'))) /* strip '\n' */
                 *curr++ = DNAencode(*buf++);
@@ -156,7 +156,7 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         while ((*buf == '\n') || (*buf == '\r'))
             ++buf;              /* leading '\n' */
         start = buf;
-        x = get_cachedXRawList_elt(&qual, i);
+        x = get_elt_from_XRawList_holder(&qual, i);
         curr = (char *) x.seq;
         while (buf != bufend && curr - x.seq != x.length) {
             if ((*buf != '\n') && (*buf != '\r'))
