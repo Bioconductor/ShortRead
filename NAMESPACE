@@ -48,7 +48,7 @@ importMethodsFrom(Biostrings, alphabet, alphabetFrequency, detail,
                   substr, summary, tail, trimLRPatterns, unaligned,
                   union, vcountPDict)
 
-importMethodsFrom(GenomicRanges, as.data.frame, cigar, countOverlaps,
+importMethodsFrom(GenomicRanges, as.data.frame, countOverlaps,
                   ranges, reduce, seqlevels, "seqlevels<-", seqnames,
                   values, "values<-")
 
@@ -64,7 +64,7 @@ importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
 importMethodsFrom(Rsamtools, isOpen, path, scanBam, ScanBamParam)
 
 importMethodsFrom(GenomicAlignments, readGAlignmentsFromBam,
-                  left, qnarrow, qwidth, right)
+                  cigar, left, qnarrow, qwidth, right)
 
 importFrom(Biobase, copySubstitute, mkScalar, selectSome,
            subListExtract)
@@ -76,7 +76,7 @@ importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            QualityScaledDNAStringSet, readDNAStringSet,
            writeXStringSet)
 
-importFrom(GenomicRanges, cigarToQWidth, GRanges)
+importFrom(GenomicRanges, GRanges)
 
 importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
@@ -104,7 +104,7 @@ importFrom(utils, capture.output, packageDescription, read.csv,
 
 importFrom(Biostrings, DNA_ALPHABET)
 
-importFrom(GenomicAlignments, GAlignments)
+importFrom(GenomicAlignments, GAlignments, cigarToQWidth)
 
 exportClassPattern("^.*$")
 
