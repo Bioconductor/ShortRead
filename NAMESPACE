@@ -15,13 +15,15 @@ importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
                   QualityScaledDNAStringSet, SolexaQuality,
                   XStringQuality, XStringSet)
 
-importClassesFrom(GenomicRanges, GAlignments, GRanges, Seqinfo)
+importClassesFrom(GenomicRanges, GRanges, Seqinfo)
 
 importClassesFrom(IRanges, characterORNULL, DataFrame, DataTableORNULL,
                   FilterRules, IRanges, RangedData, RangesList, Rle,
                   SimpleList)
 
 importClassesFrom(Rsamtools, BamFileList, RsamtoolsFileList)
+
+importClassesFrom(GenomicAlignments, GAlignments)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
@@ -47,8 +49,7 @@ importMethodsFrom(Biostrings, alphabet, alphabetFrequency, detail,
                   union, vcountPDict)
 
 importMethodsFrom(GenomicRanges, as.data.frame, cigar, countOverlaps,
-                  left, qnarrow, qwidth, ranges, reduce,
-                  right, seqlevels, "seqlevels<-", seqnames,
+                  ranges, reduce, seqlevels, "seqlevels<-", seqnames,
                   values, "values<-")
 
 importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
@@ -62,7 +63,8 @@ importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
 
 importMethodsFrom(Rsamtools, isOpen, path, scanBam, ScanBamParam)
 
-importMethodsFrom(GenomicAlignments, readGAlignmentsFromBam)
+importMethodsFrom(GenomicAlignments, readGAlignmentsFromBam,
+                  left, qnarrow, qwidth, right)
 
 importFrom(Biobase, copySubstitute, mkScalar, selectSome,
            subListExtract)
@@ -74,7 +76,7 @@ importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            QualityScaledDNAStringSet, readDNAStringSet,
            writeXStringSet)
 
-importFrom(GenomicRanges, cigarToQWidth, GAlignments, GRanges)
+importFrom(GenomicRanges, cigarToQWidth, GRanges)
 
 importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
@@ -101,6 +103,8 @@ importFrom(utils, capture.output, packageDescription, read.csv,
            read.table, Sweave)
 
 importFrom(Biostrings, DNA_ALPHABET)
+
+importFrom(GenomicAlignments, GAlignments)
 
 exportClassPattern("^.*$")
 
