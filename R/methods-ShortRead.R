@@ -16,19 +16,19 @@ setMethod(id, "ShortRead",
           function(object, ...) slot(object, "id"))
 
 setMethod(ShortRead, c("DNAStringSet", "BStringSet"),
-          function(sread, id, ...)
+          function(sread, id)
 {
-    new("ShortRead", sread=sread, id=id, ...)
+    new("ShortRead", sread=sread, id=id)
 })
 
 setMethod(ShortRead, c("DNAStringSet", "missing"),
-          function(sread, id, ...)
+          function(sread, id)
 {
-    new("ShortRead", sread=sread, id=BStringSet(rep("", length(sread))), ...)
+    new("ShortRead", sread=sread, id=BStringSet(rep("", length(sread))))
 })
 
 setMethod(ShortRead, c("missing", "missing"),
-          function(sread, id, ...)
+          function(sread, id)
 {
     new("ShortRead")
 })

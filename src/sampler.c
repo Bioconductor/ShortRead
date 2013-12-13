@@ -22,8 +22,6 @@ struct records {
 
 SEXP _records_status(struct records *records, struct bufnode *bufnode)
 {
-    int len;
-
     SEXP result = PROTECT(NEW_INTEGER(5));
     INTEGER(result)[0] = records->n;
     INTEGER(result)[1] = records->n_curr;

@@ -14,7 +14,7 @@
         elts[[1]] <- elts[[1]][filt]
         elts[[2]] <- elts[[2]][filt]
     }
-    new("ShortReadQ", ..., sread=elts[[1]], 
+    ShortReadQ(sread=elts[[1]], 
         quality=SFastqQuality(elts[[2]]),
         id=BStringSet(rep("", length(elts[[1]]))))
 }

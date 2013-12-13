@@ -83,7 +83,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       class \code{BStringSet}, the type of encoded quality score is
       inferred from the letters used in the scores. }
 
-    \item{ShortReadQ}{\code{signature(sread = "missing", quality = "missing", id = "missing", ...)}:
+    \item{ShortReadQ}{\code{signature(sread = "missing", quality = "missing", id = "missing")}:
       Create an empty \code{ShortReadQ} object.}
 
   }

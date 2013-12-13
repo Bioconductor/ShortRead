@@ -17,16 +17,16 @@ setMethod(.srValidity, "ShortReadQ", function(object) {
 })
 
 setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "BStringSet"),
-          function(sread, quality, id, ...)
+          function(sread, quality, id)
 {
-    new("ShortReadQ", sread=sread, quality=quality, id=id, ...)
+    new("ShortReadQ", sread=sread, quality=quality, id=id)
 })
 
 setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "missing"),
-          function(sread, quality, id, ...)
+          function(sread, quality, id)
 {
     new("ShortReadQ", sread=sread, quality=quality,
-        id=BStringSet(character(length(sread))), ...)
+        id=BStringSet(character(length(sread))))
 })
 
 setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "BStringSet"),
@@ -73,9 +73,9 @@ setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "missing"),
 })
 
 setMethod(ShortReadQ, c("missing", "missing", "missing"),
-          function(sread, quality, id, ...)
+          function(sread, quality, id)
 {
-    ShortReadQ(DNAStringSet(), FastqQuality(), BStringSet(), ...)
+    ShortReadQ(DNAStringSet(), FastqQuality(), BStringSet())
 })
 
 setAs("ShortReadQ", "QualityScaledDNAStringSet", function(from) 

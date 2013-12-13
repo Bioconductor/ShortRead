@@ -53,7 +53,9 @@ FastqSampler <-
 {
     if (length(n) != 1 || !is.finite(n) || n < 0)
         stop("'n' must be length 1, finite and >= 0")
-    if (is.character(con)) {
+    if (is(con, "FastqFile")) 
+        con <- path(con)
+     if (is.character(con)) {
         con <- file(con)
         open(con, "rb")
     } else if (is(con, "connection") && summary(con)$opened != "opened")

@@ -3,11 +3,11 @@
              ...)
 {
     prbs <- readPrb(dirPath, pattern=prbPattern, ...)
-    new("ShortReadQ",
-        quality=prbs,
+    ShortReadQ(
         sread = readXStringColumns(
           dirPath, pattern=seqPattern,
           colClasses=c(rep(list(NULL), 4), list("DNAString")))[[1]],
+        quality=prbs,
         id=BStringSet(as.character(seq_len(length(prbs)))))
 }
 

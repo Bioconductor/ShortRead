@@ -71,7 +71,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
     \item{ShortRead}{\code{signature(sread = "DNAStringSet", id = "missing")}:
       Create a \code{ShortRead} object from reads, creating empty identifiers.}
 
-    \item{ShortRead}{\code{signature(sread = "missing", id = "missing", ...)}:
+    \item{ShortRead}{\code{signature(sread = "missing", id = "missing")}:
       Create an empty \code{ShortRead} object.}
 
   }
