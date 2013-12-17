@@ -3,11 +3,11 @@
 \alias{alphabetByCycle}
 \alias{alphabetByCycle,BStringSet-method}
 
-\title{Summarize short read nucleotide or quality scores by cycle}
+\title{Summarize nucleotide, amino acid, or quality scores by cycle}
 
 \description{
 
-  \code{alphabetByCycle} summarizes short read nucleotides or qualities
+  \code{alphabetByCycle} summarizes nucleotides, amino acid, or qualities
   by cycle, e.g., returning the number of occurrences of each nucleotide
   \code{A, T, G, C} across all reads from 36 cycles of a Solexa lane.
 
@@ -20,8 +20,8 @@ alphabetByCycle(stringSet, alphabet, ...)
 
 \arguments{
 
-  \item{stringSet}{A R object representing the collection of reads or
-    quality scores to be summarized.}
+  \item{stringSet}{A R object representing the collection of reads,
+    amino acid sequences, or quality scores, to be summarized.}
 
   \item{alphabet}{The alphabet (character vector of length 1 strings)
     from which the sequences in \code{stringSet} are composed. Methods

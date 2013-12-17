@@ -42,6 +42,8 @@ DECODE_FUNC decoder(const char *base)
         decode = _rnaDecode;
     } else if (strcmp(base, "BString") == 0) {
         decode = _bDecode;
+    } else if (strcmp(base, "AAString") == 0) {
+        decode = _bDecode;
     } else {
         Rf_error("unknown class '%s'", base);
     }
@@ -56,6 +58,8 @@ ENCODE_FUNC encoder(const char *base)
     } else if (strcmp(base, "RNAString") == 0) {
         encode = _rnaEncode;
     } else if (strcmp(base, "BString") == 0) {
+        encode = _bEncode;
+    } else if (strcmp(base, "AAString") == 0) {
         encode = _bEncode;
     } else {
         Rf_error("unknown class '%s'", base);

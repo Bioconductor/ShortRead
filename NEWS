@@ -9,6 +9,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Input of 'legacy' formats marked as such
 
+    o alphabetByCycle supports amino acid string sets
+
 CHANGES IN VERSION 1.19
 -----------------------
 
