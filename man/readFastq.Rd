@@ -24,7 +24,7 @@
 readFastq(dirPath, pattern=character(0), ...)
 \S4method{readFastq}{character}(dirPath, pattern=character(0), ..., withIds=TRUE)
 
-writeFastq(object, file, mode="w", full=FALSE, ...)
+writeFastq(object, file, mode="w", full=FALSE, compress=TRUE, ...)
 }
 
 \arguments{
@@ -50,6 +50,9 @@ writeFastq(object, file, mode="w", full=FALSE, ...)
   \item{full}{A logical(1) indicating whether the identifier line should
     be repeated \code{full=TRUE} or omitted \code{full=FALSE} on the
     third line of the fastq record.}
+
+  \item{compress}{A logical(1) indicating whether the file should be
+    gz-compressed. The default is \code{TRUE}.}
 
   \item{...}{Additional arguments. In particular, \code{qualityType} and
     \code{filter}:

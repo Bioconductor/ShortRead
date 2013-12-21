@@ -10,7 +10,7 @@
 }
 
 .filter1 <-
-    function(filter, file, destination, ..., yieldSize)
+    function(filter, file, destination, ..., compress=TRUE, yieldSize)
 {
     strm <- FastqStreamer(file, yieldSize)
     on.exit(close(strm))
@@ -23,7 +23,7 @@
         } else filter(fq, ...)
         tot1 <- tot1 + length(fq)
         nNuc1 <- nNuc1 + sum(width(fq))
-        writeFastq(fq, destination, "a")
+        writeFastq(fq, destination, "a", compress=compress)
     }
     attr(destination, "filter") <-
         data.frame(Reads=tot, KeptReads=tot1, Nucl=nNuc, KeptNucl=nNuc1)
@@ -32,14 +32,15 @@
 
 filterFastq <-
     function(files, destinations, ..., filter=FilterRules(),
-             yieldSize=1000000L)
+             compress=TRUE, yieldSize=1000000L)
 {
     if (missing(filter))
         warning("'filterFastq' invoked with missing 'filter'")
     .filterFastq_check_fnames(files, destinations)
     ## FIXME parallel over files, esp. random numbers
     x <- Map(.filter1, files, destinations,
-             MoreArgs=list(filter=filter, ..., yieldSize=yieldSize))
+             MoreArgs=list(filter=filter, ..., compress=compress,
+               yieldSize=yieldSize))
 
     stats <- do.call(rbind, lapply(x, attr, "filter"))
     rownames(stats) <- make.unique(basename(files))

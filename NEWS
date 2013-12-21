@@ -1,6 +1,10 @@
 CHANGES IN VERSION 1.21
 -----------------------
 
+NEW FEATURES
+
+    o writeFastq can write (and does so by default) gz-compressed files
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Use BiocParallel rather than srapply, mark srapply as 'Deprecated'

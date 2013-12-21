@@ -53,7 +53,8 @@ extern "C" {
 /* io.c */
 
     SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
-                     SEXP fname, SEXP fmode, SEXP full, SEXP max_width);
+                     SEXP fname, SEXP fmode, SEXP full, SEXP compress,
+                     SEXP max_width);
     SEXP read_prb_as_character(SEXP file, SEXP asSolexa);
     SEXP read_solexa_fastq(SEXP files, SEXP withIds);
     SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,

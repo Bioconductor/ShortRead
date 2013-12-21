@@ -110,7 +110,7 @@ setMethod(readFastq, "character",
 })
 
 setMethod(writeFastq, c("ShortReadQ", "character"),
-    function(object, file, mode="w", full=FALSE, ...)
+    function(object, file, mode="w", full=FALSE, compress=TRUE, ...)
 {
     if (length(file) != 1)
         .throw(SRError("UserArgumentMismatch", "'%s' must be '%s'",
@@ -128,7 +128,7 @@ setMethod(writeFastq, c("ShortReadQ", "character"),
         .throw(SRError("UserArgumentMismatch", "'is(<%s>, \"%s\")' failed",
                        "quality", "XStringSet"))
     .Call(.write_fastq, id(object), sread(object),
-          quality(quality(object)), file, mode, full, max_width)
+          quality(quality(object)), file, mode, full, compress, max_width)
     invisible(length(object))
 })
 

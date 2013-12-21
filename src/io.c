@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>             /* atoi */
+#include <zlib.h>
 #include "ShortRead.h"
 #include "call.h"
 
@@ -21,9 +22,8 @@ static const int LINES_PER_FASTA_REC = 2;
  * inst/extdata/s_1_sequences.txt contains 256 records
  */
 
-void _write_err(FILE * file, int i)
+void _write_err(int i)
 {
-    fclose(file);
     Rf_error("failed to write record %d", i + 1);
 }
 
@@ -44,7 +44,8 @@ char *_holder_to_char(XStringSet_holder * holder, const int i,
 }
 
 SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
-                 SEXP fname, SEXP fmode, SEXP full, SEXP max_width)
+                 SEXP fname, SEXP fmode, SEXP full, SEXP compress,
+                 SEXP max_width)
 {
     if (!(IS_S4_OBJECT(id) && strcmp(get_classname(id), "BStringSet") == 0))
         Rf_error("'%s' must be '%s'", "id", "BStringSet");
@@ -65,6 +66,10 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
         Rf_error("'%s' must be '%s'", "mode", "character(1)");
     if (!(IS_LOGICAL(full) && LENGTH(full) == 1))
         Rf_error("'%s' must be '%s'", "full", "logical(1)");
+    if (!(IS_LOGICAL(compress) && LENGTH(compress) == 1 &&
+          LOGICAL(compress)[0] != NA_LOGICAL))
+        Rf_error("'%s' must be '%s'", "compress", "logical(1) (TRUE or FALSE)");
+    const int compress1 = LOGICAL(compress)[0];
     if (!(IS_INTEGER(max_width) && LENGTH(max_width) == 1 &&
           INTEGER(max_width)[0] >= 0))
         Rf_error("'%s' must be %s", "max_width", "'integer(1)', >=0");
@@ -74,28 +79,56 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
     XStringSet_holder xid = hold_XStringSet(id),
         xsread = hold_XStringSet(sread), xquality = hold_XStringSet(quality);
 
-    FILE *fout = fopen(CHAR(STRING_ELT(fname, 0)),
-                       CHAR(STRING_ELT(fmode, 0)));
-    if (fout == NULL)
-        Rf_error("failed to open file '%s'", CHAR(STRING_ELT(fname, 0)));
     char *idbuf0 = (char *) R_alloc(sizeof(char), width + 1), *idbuf1,
         *readbuf = (char *) R_alloc(sizeof(char), width + 1),
-        *qualbuf = (char *) R_alloc(sizeof(char), width + 1);
-    int i;
+        *qualbuf = (char *) R_alloc(sizeof(char), width + 1),
+        *gzbuf = NULL;
+    int i, gzbuf_n;
     idbuf1 = TRUE == LOGICAL(full)[0] ? idbuf0 : "";
+
+    FILE *fout = NULL;
+    gzFile gzout = NULL;
+
+    if (compress1 == FALSE)
+        fout = fopen(CHAR(STRING_ELT(fname, 0)), CHAR(STRING_ELT(fmode, 0)));
+    else {
+        gzout = gzopen(CHAR(STRING_ELT(fname, 0)), CHAR(STRING_ELT(fmode, 0)));
+        gzbuf_n = 4 * width + 8; /* liberal */
+        gzbuf = (char *) R_alloc(sizeof(char), gzbuf_n);
+    }
+    if ((gzout == NULL) && (fout == NULL))
+        Rf_error("failed to open file '%s'", CHAR(STRING_ELT(fname, 0)));
+    const char *fmt = "@%s\n%s\n+%s\n%s\n";
+    int err = 0;
     for (i = 0; i < len; ++i) {
         idbuf0 = _holder_to_char(&xid, i, idbuf0, width, NULL);
-        if (idbuf0 == NULL)
-            _write_err(fout, i);
+        if (idbuf0 == NULL) { err = 1; break; }
         readbuf = _holder_to_char(&xsread, i, readbuf, width, dnaDecoder);
-        if (readbuf == NULL)
-            _write_err(fout, i);
+        if (readbuf == NULL) { err = 1; break; }
         qualbuf = _holder_to_char(&xquality, i, qualbuf, width, NULL);
-        if (qualbuf == NULL)
-            _write_err(fout, i);
-        fprintf(fout, "@%s\n%s\n+%s\n%s\n", idbuf0, readbuf, idbuf1, qualbuf);
+        if (qualbuf == NULL) { err = 1; break; }
+        if (compress1) {
+            int n_out =
+                snprintf(gzbuf, gzbuf_n, fmt, idbuf0, readbuf, idbuf1, qualbuf);
+            if (n_out > gzbuf_n) {
+                /* happens rarely, e.g., identifiers longer than sequence */
+                gzbuf_n = n_out + 1;
+                gzbuf = (char *) R_alloc(sizeof(char), gzbuf_n);
+                snprintf(gzbuf, gzbuf_n, fmt, idbuf0, readbuf, idbuf1, qualbuf);
+            }
+            if (gzputs(gzout, gzbuf) == -1) { err = 1; break; }
+        } else
+            if (fprintf(fout, fmt, idbuf0, readbuf, idbuf1, qualbuf) < 0) {
+                err = 1; break;
+            };
     }
-    fclose(fout);
+    if (compress1)
+        gzclose(gzout);
+    else
+        fclose(fout);
+    if (err != 0)
+        _write_err(i);
+
     return R_NilValue;
 }
 

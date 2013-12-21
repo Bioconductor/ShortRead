@@ -15,7 +15,7 @@
 
 \usage{
 filterFastq(files, destinations, ..., filter = FilterRules(),
-    yieldSize = 1000000L)
+    compress=TRUE, yieldSize = 1000000L)
 }
 
 \arguments{
@@ -33,6 +33,9 @@ filterFastq(files, destinations, ..., filter = FilterRules(),
     \code{ShortReadQ} instance (e.g., with records or nucleotides
     removed), or a \code{FilterRules} instance specifying which records
     are to be removed.}
+
+  \item{compress}{A logical(1) indicating whether the file should be
+    gz-compressed. The default is \code{TRUE}.}
 
   \item{yieldSize}{Number of fastq records processed in each call to
     \code{filter}; increase this for (marginally) more efficient I/O at
