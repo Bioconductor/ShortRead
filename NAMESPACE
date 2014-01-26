@@ -72,7 +72,7 @@ importFrom(Biobase, copySubstitute, mkScalar, selectSome,
 importFrom(BiocParallel, bplapply)
 
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
-           get_seqtype_conversion_lookup, mkAllStrings,
+           encoding, get_seqtype_conversion_lookup, mkAllStrings,
            QualityScaledDNAStringSet, readDNAStringSet,
            writeXStringSet)
 
@@ -82,7 +82,7 @@ importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 
 importFrom(hwriter, hwrite, hwriteImage)
 
-importFrom(IRanges, DataFrame, encoding, FilterRules, IntegerList,
+importFrom(IRanges, DataFrame, FilterRules, IntegerList,
            IRanges, isSingleString, isTRUEorFALSE, RleList,
            SimpleList, solveUserSEW)
 
