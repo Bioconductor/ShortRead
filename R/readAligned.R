@@ -353,7 +353,7 @@
     strand <- local({
         X <- ulist(result, "strand", recursive=FALSE)
         values <- do.call(c, lapply(X, as.character))
-        strand(values)
+        factor(values, levels=levels(strand()))
     })
     id <- local({
         X <- ulist(result, "qname")
