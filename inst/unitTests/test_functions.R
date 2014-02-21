@@ -48,7 +48,7 @@ test_alphabetByCycle <- function() {
 
     obj <- alphabetByCycle(sq)
     validObject(obj)
-    checkEquals(c(17, 94, 36), dim(obj))
+    checkEquals(c(18, 94, 36), dim(obj))
 
     checkEqualsNumeric(alphabetByCycle(sread(sq)),
                        apply(obj, c(1, 3), sum))
@@ -71,7 +71,7 @@ test_alphabetByCycle <- function() {
                           dimnames=list(alphabet=alf,
                             cycle=character(0))),
                    alphabetByCycle(sread(srq)))
-    checkIdentical(array(0L, dim=c(17, 94, 0),
+    checkIdentical(array(0L, dim=c(18, 94, 0),
                          dimnames=list(base=alf, quality=qalf,
                            cycle=character(0))),
                    alphabetByCycle(srq))

@@ -88,7 +88,7 @@ SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
     PROTECT(nms = NEW_STRING(3));
     SET_STRING_ELT(nms, 0, mkChar("base"));
     SET_STRING_ELT(nms, 1, mkChar("quality"));
-    SET_STRING_ELT(nms, 3, mkChar("cycle"));
+    SET_STRING_ELT(nms, 2, mkChar("cycle"));
     SET_NAMES(dimnms, nms);
     SET_DIMNAMES(ans, dimnms);
     UNPROTECT(2);
