@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: FASTQ input and manipulation
-Version: 1.21.15
+Version: 1.21.16
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Bioconductor Package Maintainer
         <maintainer@bioconductor.org>
@@ -20,4 +20,4 @@ Imports: Biobase, GenomicRanges (>= 1.15.26), IRanges (>= 1.21.22),
         hwriter, methods, zlibbioc, lattice, latticeExtra,
 Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi
 LinkingTo: IRanges, XVector, Biostrings
-biocViews: DataImport, Sequencing, Sequencing, QualityControl
+biocViews: DataImport, Sequencing, QualityControl
