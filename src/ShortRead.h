@@ -85,11 +85,6 @@ extern "C" {
 
     SEXP read_maq_map(SEXP filename, SEXP maxreads, SEXP maq_longread);
 
-/* pileup.c */
-
-    SEXP pileup(SEXP start, SEXP fraglength, SEXP chrlength, SEXP dir,
-                SEXP readlength, SEXP offset);
-
 /* readBfaToc.c */
 
     SEXP readBfaToc(SEXP bfa_filename);

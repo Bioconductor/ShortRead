@@ -45,8 +45,6 @@ static const R_CallMethodDef callMethods[] = {
     {".alphabet_rank", (DL_FUNC) & alphabet_rank, 1},
     {".aligned_read_rank", (DL_FUNC) & aligned_read_rank, 4},
     {".read_maq_map", (DL_FUNC) & read_maq_map, 3},
-    /* pileup */
-    {".pileup", (DL_FUNC) & pileup, 6},
     /* readBfaToc */
     {".readBfaToc", (DL_FUNC) & readBfaToc, 1},
     /* sampler */
