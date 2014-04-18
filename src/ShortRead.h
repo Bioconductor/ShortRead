@@ -7,6 +7,7 @@ extern "C" {
 
 #include <zlib.h>
 #include <Rdefines.h>
+#include "S4Vectors_interface.h"
 #include "IRanges_interface.h"
 #include "XVector_interface.h"
 #include "Biostrings_interface.h"

@@ -4,11 +4,17 @@ import(zlibbioc)
 
 import(methods)
 
+import(S4Vectors)
+
+importClassesFrom(BiocGenerics, connection)
+
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData,
                   ScalarCharacter, ScalarInteger, ScalarLogical,
                   ScalarNumeric, Versioned, Versions)
 
-importClassesFrom(BiocGenerics, connection)
+importClassesFrom(IRanges, DataFrame, DataTableORNULL,
+                  FilterRules, IRanges, RangedData, RangesList, Rle,
+                  SimpleList)
 
 importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
                   PairwiseAlignments, PhredQuality,
@@ -17,13 +23,9 @@ importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
 
 importClassesFrom(GenomicRanges, GRanges, Seqinfo)
 
-importClassesFrom(IRanges, characterORNULL, DataFrame, DataTableORNULL,
-                  FilterRules, IRanges, RangedData, RangesList, Rle,
-                  SimpleList)
-
 importClassesFrom(Rsamtools, BamFileList, RsamtoolsFileList)
 
-importClassesFrom(GenomicAlignments, GAlignments)
+importClassesFrom(GenomicAlignments, GAlignments, GappedReads)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
@@ -74,8 +76,7 @@ importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 importFrom(hwriter, hwrite, hwriteImage)
 
 importFrom(IRanges, DataFrame, FilterRules, IntegerList,
-           IRanges, isSingleString, isTRUEorFALSE, RleList,
-           SimpleList, solveUserSEW, subsetByFilter)
+           IRanges, RleList, SimpleList, solveUserSEW, subsetByFilter)
 
 importFrom(lattice, dotplot, histogram, levelplot, llines, lsegments,
            ltext, panel.abline, panel.dotplot, panel.grid,
@@ -95,7 +96,7 @@ importFrom(utils, capture.output, packageDescription, read.csv,
 
 importFrom(Biostrings, DNA_ALPHABET)
 
-importFrom(GenomicAlignments, GAlignments, cigarToQWidth)
+importFrom(GenomicAlignments, GAlignments, GappedReads)
 
 exportClassPattern("^.*$")
 

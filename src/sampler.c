@@ -2,7 +2,6 @@
 #include <Rmath.h>
 #include <R_ext/Random.h>
 #include "ShortRead.h"
-#include "IRanges_interface.h"
 
 struct bufnode {
     int len;
