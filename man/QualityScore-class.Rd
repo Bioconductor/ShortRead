@@ -50,6 +50,10 @@
 \alias{coerce,SFastqQuality,matrix-method}
 \alias{coerce,SFastqQuality,SolexaQuality-method}
 
+%% Biostrings::PhredQuality
+\alias{alphabetScore,PhredQuality-method}
+
+
 \title{Quality scores for short reads and their alignments}
 \description{
 
@@ -194,7 +198,8 @@
       matrix as described in \code{\link{alphabetByCycle}}.}
 
     \item{alphabetScore}{\code{signature(object = "FastqQuality")}:}
-    \item{alphabetScore}{\code{signature(object = "SFastqQuality")}:
+    \item{alphabetScore}{\code{signature(object = "SFastqQuality")}:}
+    \item{alphabetScore}{\code{signature(object = "PhredQuality")}:
 
       Apply \code{\link{alphabetScore}} (i.e., summed base quality, per
       read) to \code{object}.}

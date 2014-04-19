@@ -4,9 +4,9 @@
 \title{Efficiently calculate the sum of quality scores across bases}
 \description{
 
-  This generic takes a \code{\linkS4class{QualityScore}} object and
-  calculates, for each read, the sum of the encoded nucleotide
-  probabilities.
+  This generic takes a \code{\linkS4class{QualityScore}} or
+  \code{PhredQuality} object and calculates, for each read, the sum of
+  the encoded nucleotide probabilities.
 
 }
 \usage{

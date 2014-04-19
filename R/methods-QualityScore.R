@@ -308,6 +308,10 @@ setMethod(alphabetScore, "SFastqQuality", .SFastqQuality_ascore)
 
 setMethod(alphabetScore, "FastqQuality", .FastqQuality_ascore)
 
+setMethod(alphabetScore, "PhredQuality", function(object, ...) {
+    .Call(.alphabet_score, object, as.numeric(0:255 - 33L))
+})
+
 setMethod(trimTailw, "FastqQuality",
     function(object, k, a, halfwidth, ..., ranges=FALSE)
 {
