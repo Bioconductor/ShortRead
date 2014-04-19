@@ -96,7 +96,7 @@ importFrom(utils, capture.output, packageDescription, read.csv,
 
 importFrom(Biostrings, DNA_ALPHABET)
 
-importFrom(GenomicAlignments, GAlignments)
+importFrom(GenomicAlignments, GAlignments, GappedReads)
 
 exportClassPattern("^.*$")
 
