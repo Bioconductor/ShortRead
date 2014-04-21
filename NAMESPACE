@@ -32,7 +32,7 @@ importMethodsFrom(IRanges, Ops, coerce)
 importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
                   coerce, colnames, "colnames<-", coverage, diff,
                   endoapply, eval, gsub, head, ifelse, "%in%", levels,
-                  median, metadata, "metadata<-", narrow, ncol, nrow,
+                  median, narrow, ncol, nrow,
                   order, paste, pmin, quantile, Reduce, rev, Rle, rownames,
                   "rownames<-", runLength, runValue, score, sort, split,
                   start, sub, t, table, tapply, toupper, unique, unlist,
