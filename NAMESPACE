@@ -29,7 +29,7 @@ importClassesFrom(GenomicAlignments, GAlignments, GappedReads)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
-importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, by,
+importMethodsFrom(IRanges, append, as.factor, as.list, as.vector,
                   coerce, colnames, "colnames<-", coverage, diff,
                   endoapply, eval, gsub, head, ifelse, "%in%", levels,
                   median, narrow, ncol, nrow,
