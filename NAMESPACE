@@ -12,7 +12,7 @@ importClassesFrom(Biobase, AnnotatedDataFrame, AssayData,
                   ScalarCharacter, ScalarInteger, ScalarLogical,
                   ScalarNumeric, Versioned, Versions)
 
-importClassesFrom(IRanges, DataFrame, DataTableORNULL,
+importClassesFrom(IRanges, DataFrame,
                   FilterRules, IRanges, RangedData, RangesList, Rle,
                   SimpleList)
 
