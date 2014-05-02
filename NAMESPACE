@@ -21,7 +21,9 @@ importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
                   QualityScaledDNAStringSet, SolexaQuality,
                   XStringQuality, XStringSet)
 
-importClassesFrom(GenomicRanges, GRanges, Seqinfo)
+importClassesFrom(GenomeInfoDb, Seqinfo)
+
+importClassesFrom(GenomicRanges, GRanges)
 
 importClassesFrom(Rsamtools, BamFileList, RsamtoolsFileList)
 
@@ -50,9 +52,7 @@ importMethodsFrom(Biostrings, alphabet, alphabetFrequency, detail,
                   substr, summary, tail, trimLRPatterns, unaligned,
                   union, vcountPDict)
 
-importMethodsFrom(GenomicRanges, as.data.frame, countOverlaps,
-                  ranges, reduce, seqlevels, "seqlevels<-", seqnames,
-                  values, "values<-")
+importMethodsFrom(GenomicRanges, countOverlaps, ranges, reduce)
 
 importMethodsFrom(Rsamtools, isOpen, path, scanBam, ScanBamParam)
 
@@ -68,6 +68,8 @@ importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            encoding, get_seqtype_conversion_lookup, mkAllStrings,
            QualityScaledDNAStringSet, readDNAStringSet,
            writeXStringSet)
+
+importFrom(GenomeInfoDb, seqlevels, "seqlevels<-", seqnames)
 
 importFrom(GenomicRanges, GRanges)
 
