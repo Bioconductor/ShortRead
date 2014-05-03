@@ -136,7 +136,7 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
  * solexa/IPAR .*_int.txt.p.gz file
  */
 
-void _count_ipar_int_recs(gzFile * file, int *n_recs, int *n_cycles)
+void _count_ipar_int_recs(gzFile file, int *n_recs, int *n_cycles)
 {
     const char CYCLE_END = '#';
     const int LINEBUF_SIZE = 200001;
@@ -176,7 +176,7 @@ SEXP count_ipar_int_recs(SEXP fnames)
 {
     int i, nfile;
     const char *filepath;
-    gzFile *file;
+    gzFile file;
     SEXP ans = R_NilValue, nms = R_NilValue;
 
     if (!IS_CHARACTER(fnames))
@@ -220,7 +220,7 @@ SEXP read_prb_as_character(SEXP fname, SEXP asSolexa)
     const int qbase = LOGICAL(asSolexa)[0] ? SOLEXA_QBASE : PHRED_QBASE;
     SEXP ans = PROTECT(NEW_CHARACTER(n_reads));
 
-    gzFile *file = _fopen(translateChar(STRING_ELT(fname, 0)), "rb");
+    gzFile file = _fopen(translateChar(STRING_ELT(fname, 0)), "rb");
     char buf[LINEBUF_SIZE + 1];
     int read = 0;
     if (gzgets(file, buf, LINEBUF_SIZE) == Z_NULL) {
@@ -274,7 +274,7 @@ SEXP read_prb_as_character(SEXP fname, SEXP asSolexa)
  */
 static void _read_solexa_fastq_file(const char *fname, SEXP ans)
 {
-    gzFile *file;
+    gzFile file;
     char linebuf[LINEBUF_SIZE];
     int lineno, reclineno, nchar_in_buf;
     _XSnap seq = VECTOR_ELT(ans, 0),
@@ -369,7 +369,7 @@ int _io_XStringSet_columns(const char *fname, int header,
                            int nrow, int skip, const char *commentChar,
                            SEXP sets, const int *toIUPAC)
 {
-    gzFile *file;
+    gzFile file;
     char *linebuf;
     int lineno = 0, recno = 0;
 
@@ -580,7 +580,7 @@ int _read_solexa_export_file(const char *fname, const char *commentChar,
                                                         SLX_PAIRID),
         withId = R_NilValue != VECTOR_ELT(result, SLX_MACHINE);
 
-    gzFile *file;
+    gzFile file;
     char linebuf[LINEBUF_SIZE],
 	**elt = (char **) R_alloc(N_FIELDS, sizeof(char*));
     int lineno = 0, irec = offset;

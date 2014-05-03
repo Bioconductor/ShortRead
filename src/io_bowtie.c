@@ -18,7 +18,7 @@ int _read_bowtie(const char *fname, const char *commentChar, SEXP ref,
                  int offset)
 {
     const int N_FIELDS = 8;
-    gzFile *file;
+    gzFile file;
     char linebuf[LINEBUF_SIZE],
 	**elt = (char **) R_alloc(N_FIELDS, sizeof(char*));
     int lineno = 0, irec = offset;

@@ -224,9 +224,9 @@ const int LINEBUF_SIZE = 200001;
 /*
  * open and check file; signal error
  */
-gzFile *_fopen(const char *fname, const char *mode)
+gzFile _fopen(const char *fname, const char *mode)
 {
-    gzFile *file = gzopen(fname, mode);
+    gzFile file = gzopen(fname, mode);
     if (file == NULL)
         error("cannot open file %s", fname);
     return file;
@@ -235,7 +235,7 @@ gzFile *_fopen(const char *fname, const char *mode)
 /*
  * trim & check linebuf, return 0 if processing should continue
  */
-int _linebuf_skip_p(char *linebuf, gzFile * file, const char *fname, int lineno,
+int _linebuf_skip_p(char *linebuf, gzFile file, const char *fname, int lineno,
                     const char *commentChar)
 {
     int nchar_in_buf;
@@ -339,7 +339,7 @@ void _as_factor(SEXP vec, const char **levels, const int n_lvls)
  * file: an open file stream at position 0
  *
  */
-static int _count_lines(gzFile * file)
+static int _count_lines(gzFile file)
 {
     const int LINEBUF_SIZE = 20001;
     size_t bytes_read;
@@ -369,7 +369,7 @@ SEXP count_lines(SEXP files)
 {
     int i, nfile;
     const char *filepath;
-    gzFile *file;
+    gzFile file;
     SEXP ans = R_NilValue;
 
     if (!IS_CHARACTER(files))

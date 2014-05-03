@@ -18,7 +18,7 @@ int _read_soap(const char *fname, const char *csep, const char *commentChar,
                MARK_FIELD_FUNC * mark_func, SEXP ref, int offset)
 {
     const int N_FIELDS = N_ELTS;
-    gzFile *file;
+    gzFile file;
     char linebuf[LINEBUF_SIZE],
 	**elt = (char **) R_alloc(N_FIELDS, sizeof(char*));
     int lineno = 0;

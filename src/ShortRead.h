@@ -32,8 +32,8 @@ extern "C" {
     int _mark_field_0(char *, char **, const int);
 
     extern const int LINEBUF_SIZE;
-    gzFile *_fopen(const char *, const char *);
-    int _linebuf_skip_p(char *, gzFile *, const char *, int, const char *);
+    gzFile _fopen(const char *, const char *);
+    int _linebuf_skip_p(char *, gzFile, const char *, int, const char *);
 
     int _rtrim(char *linebuf);
     void _solexa_to_IUPAC(char *linebuf);
