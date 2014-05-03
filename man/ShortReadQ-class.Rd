@@ -22,6 +22,8 @@
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
 \alias{append,ShortReadQ,ShortReadQ-method}
+\alias{reverse,ShortReadQ-method}
+\alias{reverseComplement,ShortReadQ-method}
 \alias{narrow,ShortReadQ-method}
 \alias{trimTailw,ShortReadQ-method}
 \alias{trimTails,ShortReadQ-method}
@@ -124,6 +126,10 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       append the \code{sread}, \code{quality} and \code{id} slots of
       \code{values} after the corresponding fields of \code{x}.}
 
+    \item{reverse, reverseComplement}{\code{signature(x = "ShortReadQ", ...}:
+      reverse or reverse complement the DNA sequence, and reverse the
+      quality sequence.}
+
     \item{narrow}{\code{signature(x = "ShortReadQ", start = NA, end =
       NA, width = NA, use.names = TRUE)}: narrow \code{sread} and
       \code{quality} so that sequences are between \code{start} and
@@ -186,6 +192,8 @@ showMethods(class="ShortRead", where=getNamespace("ShortRead"),
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
 quality(rfq)
+sread(reverseComplement(rfq))
+quality(reverseComplement(rfq))
 quality(trimTails(rfq, 2, "H", successive=TRUE))
 }
 \keyword{classes}

@@ -5,6 +5,8 @@ NEW FEATURES
 
     o alphabetScore,PhredQuality-method implemented
 
+    o reverse, reverseComplement methods for ShortReadQ objects
+
 CHANGES IN VERSION 1.21
 -----------------------
 

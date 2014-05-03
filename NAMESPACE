@@ -103,8 +103,8 @@ importFrom(GenomicAlignments, GAlignments, GappedReads)
 exportClassPattern("^.*$")
 
 exportMethods(show, coerce, dim, length, "[", "[[", alphabetFrequency,
-              alphabet, coverage, encoding, narrow, strand,
-              trimLRPatterns, width, append, rbind, "%in%", c, lapply,
+              alphabet, coverage, encoding, narrow, reverse, reverseComplement,
+              strand, trimLRPatterns, width, append, rbind, "%in%", c, lapply,
               sapply)
 
 export(pData, phenoData, varLabels, varMetadata)

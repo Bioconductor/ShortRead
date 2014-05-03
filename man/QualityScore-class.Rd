@@ -37,6 +37,7 @@
 \alias{coerce,FastqQuality,numeric-method}
 \alias{coerce,FastqQuality,matrix-method}
 \alias{coerce,FastqQuality,PhredQuality-method}
+\alias{reverse,FastqQuality-method}
 \alias{narrow,FastqQuality-method}
 \alias{trimTailw,FastqQuality-method}
 \alias{trimTails,FastqQuality-method}
@@ -219,6 +220,9 @@
       with \code{j > width(from)[i]} have value \code{NA_integer_}. The
       result always represents the integer encoding of the corresponding
       quality string.}
+
+    \item{reverse}{\code{signature(x = "FastqQuality", ...}: reverse the
+      quality sequence.}
 
     \item{narrow}{\code{signature(x = "FastqQuality", start = NA, end = NA, width = NA, use.names = TRUE)}:
       \sQuote{narrow} \code{quality} so that scores are between

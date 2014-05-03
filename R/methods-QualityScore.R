@@ -240,6 +240,10 @@ setAs("SFastqQuality", "SolexaQuality", function(from)
 setMethod(width, "FastqQuality",
     function(x) width(quality(x)))
 
+setMethod(reverse, "FastqQuality", function(x, ...) {
+    do.call(class(x), list(reverse(quality(x))))
+})
+
 setMethod(narrow, "FastqQuality",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
 {

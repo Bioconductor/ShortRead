@@ -170,6 +170,14 @@ setMethod(append, c("ShortReadQ", "ShortReadQ"),
                quality=append(quality(x), quality(values)))
 })
 
+setMethod(reverse, "ShortReadQ", function(x, ...) {
+    ShortReadQ(reverse(sread(x)), reverse(quality(x)), id(x))
+})
+
+setMethod(reverseComplement, "ShortReadQ", function(x, ...) {
+    ShortReadQ(reverseComplement(sread(x)), reverse(quality(x)), id(x))
+})
+
 setMethod(narrow, "ShortReadQ",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
 {
