@@ -60,10 +60,11 @@ writeFastq(object, file, mode="w", full=FALSE, compress=TRUE, ...)
     \describe{
 
       \item{qualityType:}{Representation to be used for quality scores,
-	must be one of \code{Auto} (choose Phred-like if any character
-	is ASCII-encoded as less than 59) \code{FastqQuality}
-	(Phred-like encoding), \code{SFastqQuality} (Illumina
-	encoding).}
+	must be one of \code{Auto} (choose Illumina base 64 encoding
+	\code{SFastqQuality} if all characters are ASCII-encoded as
+	greater than 58 \code{:} and some characters are greater than 74
+	\code{J}), \code{FastqQuality} (Phred-like base 33 encoding),
+	\code{SFastqQuality} (Illumina base 64 encoding).}
 
       \item{filter:}{An object of class \code{\link{srFilter}}, used to
 	filter objects of class \code{\linkS4class{ShortReadQ}} at
