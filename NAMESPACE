@@ -13,7 +13,7 @@ importClassesFrom(Biobase, AnnotatedDataFrame, AssayData,
                   ScalarNumeric, Versioned, Versions)
 
 importClassesFrom(IRanges, DataFrame,
-                  FilterRules, IRanges, RangedData, RangesList, Rle,
+                  FilterRules, IRanges, RangedData, RangesList,
                   SimpleList)
 
 importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
@@ -31,12 +31,12 @@ importClassesFrom(GenomicAlignments, GAlignments, GappedReads)
 
 importMethodsFrom(IRanges, Ops, coerce)
 
-importMethodsFrom(IRanges, append, as.factor, as.list, as.vector,
+importMethodsFrom(IRanges, append, as.list, as.vector,
                   coerce, colnames, "colnames<-", coverage, diff,
-                  endoapply, eval, gsub, head, ifelse, "%in%", levels,
+                  endoapply, eval, gsub, head,
                   median, narrow, ncol, nrow,
-                  order, paste, pmin, quantile, Reduce, rev, Rle, rownames,
-                  "rownames<-", runLength, runValue, score, sort, split,
+                  order, pmin, quantile, Reduce, rev, rownames,
+                  "rownames<-", score, sort, split,
                   start, sub, t, table, tapply, toupper, unique, unlist,
                   update, Views, which, width, with)
 
