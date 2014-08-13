@@ -7,6 +7,8 @@ NEW FEATURES
 
     o reverse, reverseComplement methods for ShortReadQ objects
 
+    o srlist, to access SRList data as a base R list.
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o readFastq qualityType="Auto" chooses base-64 encoding when no

@@ -8,6 +8,8 @@ SRList <- function(...) {
 
 .make_getter(".srlist")
 
+srlist <- .srlist                       # export
+
 setMethod(names, "SRList", function(x) names(.srlist(x)))
 
 setReplaceMethod("names", c("SRList", "character"), function(x, value) {

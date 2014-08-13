@@ -19,6 +19,7 @@
 \alias{lapply,SRList-method}
 \alias{lapply,SRList,ANY-method}
 \alias{sapply,SRList-method}
+\alias{srlist}
 \alias{[,SRList,ANY,missing-method}
 \alias{[,SRList,ANY,missing,ANY-method}
 \alias{[[,SRList,ANY,missing-method}
@@ -53,7 +54,8 @@
     \pkg{ShortRead} package code
 
     \item \code{SRList-class} representing a list (heterogeneous
-    collection) of objects.
+    collection) of objects. The S4Vectors::SimpleList class is a
+    better choice for a list-like container.
 
     \item \code{SRVector-class} representing a vector (homogeneous
     collection, i.e., all elements of the same class) of objects.
@@ -176,6 +178,9 @@
       all elements of \code{X}, simplifying the result if
       possible. Additional arguments interpreted as with
       \code{\link{sapply}}.}
+
+    \item{srlist}{\code{signature(object="SRList")}: coerce the SRList
+      object to a list.}
 
     \item{show}{\code{signature(object = "SRList")}: display an
       informative summary of the object content, including the length of
