@@ -13,8 +13,7 @@ importClassesFrom(Biobase, AnnotatedDataFrame, AssayData,
                   ScalarNumeric, Versioned, Versions)
 
 importClassesFrom(IRanges, DataFrame,
-                  FilterRules, IRanges, RangedData, RangesList,
-                  SimpleList)
+                  FilterRules, IRanges, RangedData, RangesList)
 
 importClassesFrom(Biostrings, BStringSet, DNAString, DNAStringSet,
                   PairwiseAlignments, PhredQuality,
@@ -78,7 +77,7 @@ importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 importFrom(hwriter, hwrite, hwriteImage)
 
 importFrom(IRanges, DataFrame, FilterRules, IntegerList,
-           IRanges, RleList, SimpleList, solveUserSEW, subsetByFilter)
+           IRanges, RleList, solveUserSEW, subsetByFilter)
 
 importFrom(lattice, dotplot, histogram, levelplot, llines, lsegments,
            ltext, panel.abline, panel.dotplot, panel.grid,
