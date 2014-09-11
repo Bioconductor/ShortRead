@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: FASTQ input and manipulation
-Version: 1.23.15
+Version: 1.23.16
 Author: Martin Morgan, Michael Lawrence, Simon Anders
 Maintainer: Bioconductor Package Maintainer
         <maintainer@bioconductor.org>

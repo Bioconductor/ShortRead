@@ -15,6 +15,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
       characters are encoded at less than 59, and some are encoded at
       greater than 74.
 
+BUG FIXES
+
+    o report() prints adapter contaminants correctly when user has
+      stringsAsFactors=FALSE
+
 CHANGES IN VERSION 1.21
 -----------------------
 

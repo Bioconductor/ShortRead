@@ -158,7 +158,7 @@
              max.Lmismatch=.1, max.Rmismatch=.2, min.trim=9L)
 {
     if (missing(Lpattern) && missing(Rpattern)) {
-        df <- data.frame(contamination="Not run", row.names=lane)
+        df <- data.frame(contamination=NA_real_, row.names=lane)
         return(df)
     }
     trim <- trimLRPatterns(Lpattern, Rpattern, subject=sread(aln),
@@ -188,11 +188,17 @@
 
 .df2a <- function(df, fmt="%.3g")
 {
+    FUN <- function(elt, fmt)
+        if (is.character(elt) || is.factor(elt))
+            as.character(elt)
+        else
+            sprintf(fmt, elt)
+
     a <-
         if (nrow(df) == 1)
-            as.data.frame(lapply(df, sprintf, fmt=fmt))
+            as.data.frame(lapply(df, FUN, fmt=fmt))
         else
-            sapply(df, sprintf, fmt=fmt)
+            sapply(df, FUN, fmt=fmt)
     row.names(a) <- rownames(df)
     a
 }
