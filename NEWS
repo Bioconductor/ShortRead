@@ -20,6 +20,9 @@ BUG FIXES
     o report() prints adapter contaminants correctly when user has
       stringsAsFactors=FALSE
 
+    o qa(..., sample=FALSE) no longer tries to re-match 'pattern'
+      argument
+
 CHANGES IN VERSION 1.21
 -----------------------
 

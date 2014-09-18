@@ -74,8 +74,9 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
     function(dirPath, ..., sample=TRUE, type="fastq", 
         verbose=FALSE)
 {
+    fl <- basename(dirPath)
     if (verbose)
-        message("qa 'fastq' pattern:", pattern)
+        message("qa 'fastq' basename: ", sQuote(fl))
     if (sample) {
         samp <- FastqSampler(dirPath, ...)
         qa <- qa(yield(samp), basename(dirPath), ..., verbose=verbose)
@@ -84,8 +85,8 @@ setMethod(qa, "ShortReadQ", .qa_ShortReadQ)
         elts$readCounts$read <- samp$status()[["total"]]
         initialize(qa, .srlist=elts)
     } else {
-        fq <-readFastq(dirPath, pattern, ...)
-        qa(fq, pattern, ..., verbose=verbose)
+        fq <-readFastq(dirPath, ...)
+        qa(fq, fl, ..., verbose=verbose)
     }
 }
 
