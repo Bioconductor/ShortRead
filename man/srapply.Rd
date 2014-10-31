@@ -3,7 +3,7 @@
 \title{DEPRECATED Apply-like function for distribution across MPI-based clusters.}
 \description{
 
-  DEPRECATED; use the BiocParallel package instead.
+  DEFUNCT; use the BiocParallel package instead.
 
   This \code{lapply} like function evaluates locally or, if \pkg{Rmpi}
   or \pkg{parallel} is loaded (and \pkg{Rmpi} workers spawned) and
@@ -89,7 +89,7 @@ srapply(X, FUN, ..., fapply = .fapply(), reduce = .reduce(),
 
 \examples{
 \dontrun{
-## DEPRECATED; use BiocParallel::bplapply instead
+## DEFUNCT; use BiocParallel::bplapply instead
 srapply(1:10, function(i, ...) i)
 ## collapse result to vector
 srapply(1:10, function(i, ...) i, reduce=unlist)

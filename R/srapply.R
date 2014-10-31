@@ -92,7 +92,7 @@
 srapply <- function(X, FUN, ..., fapply=.fapply(), reduce=.reduce(),
                     USE.NAMES=FALSE, verbose=FALSE)
 {
-    .Deprecated("bplapply")
+    .Defunct("bplapply")
     result <- fapply(X, FUN, ..., verbose=verbose)
     if (USE.NAMES && is.character(X) && is.null(names(result)))
         names(result) <- X
