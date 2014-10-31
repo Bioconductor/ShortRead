@@ -12,7 +12,6 @@ static const char *ELT_NMS[] = {
 };
 
 static const int N_ELTS = sizeof(ELT_NMS) / sizeof(const char *);
-static const int N_FIELDS = 8;
 
 int _read_bowtie(const char *fname, const char *commentChar, SEXP ref,
                  int offset)

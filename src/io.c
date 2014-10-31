@@ -8,7 +8,6 @@ static const int SOLEXA_QBASE = 64;
 static const int PHRED_QBASE = 33;
 
 static const int LINES_PER_FASTQ_REC = 4;
-static const int LINES_PER_FASTA_REC = 2;
 
 /*
  * Solexa 'fastq' files consist of records, each 4 lines long. Here is
@@ -83,7 +82,7 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
         *readbuf = (char *) R_alloc(sizeof(char), width + 1),
         *qualbuf = (char *) R_alloc(sizeof(char), width + 1),
         *gzbuf = NULL;
-    int i, gzbuf_n;
+    int i, gzbuf_n = 0;
     idbuf1 = TRUE == LOGICAL(full)[0] ? idbuf0 : "";
 
     FILE *fout = NULL;

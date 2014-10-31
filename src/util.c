@@ -161,7 +161,7 @@ char *_mark_field_1(char *curr, const char *delim)
 
 char *_mark_field_n(char *curr, const char *delim)
 {
-    const char *d = '\0';
+    const char *d = NULL;
     while (*curr != '\0' && *curr != '\n') {
         d = delim;
         while (*d != '\0' && *d != *curr)
@@ -173,9 +173,9 @@ char *_mark_field_n(char *curr, const char *delim)
     }
     if (*curr == '\n') {
         *curr = '\0';
-        return '\0';
+        return NULL;
     }
-    return *d == '\0' ? '\0' : curr + 1;
+    return ((d == NULL) || (*d == '\0')) ? NULL : curr + 1;
 }
 
 SEXP _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
