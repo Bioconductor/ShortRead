@@ -16,6 +16,11 @@ test_FastqFileList <- function()
     checkTrue(validObject(fql0))
     checkIdentical(2L, length(fql0))
     fql1 <- FastqFileList(FastqFile(fl), FastqFile(fl))
-    checkEquals(fql0, fql1)             # not identical: externalptr
-    close(fql0); close(fql1)
+    checkIdentical(sapply(fql0, path), sapply(fql1, path))
+    checkIdentical(sapply(fql0, isOpen), sapply(fql1, isOpen))
+    open(fql0)
+    checkTrue(all(sapply(fql0, isOpen)))
+    close(fql0)
+    checkTrue(all(!sapply(fql0, isOpen)))
+    checkTrue(all(!sapply(fql1, isOpen)))
 }
