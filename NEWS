@@ -5,6 +5,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o srapply is defunct
 
+BUG FIXES
+
+    o close opened files when parsing old bowtie, soap, and solexa
+      export file formats.
+
 CHANGES IN VERSION 1.23
 -----------------------
 

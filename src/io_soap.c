@@ -70,6 +70,7 @@ int _read_soap(const char *fname, const char *csep, const char *commentChar,
         lineno++;
         offset++;
     }
+    gzclose(file);
     return offset;
 }
 

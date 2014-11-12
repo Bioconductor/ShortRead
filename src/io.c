@@ -678,6 +678,7 @@ int _read_solexa_export_file(const char *fname, const char *commentChar,
         lineno++;
         irec++;
     }
+    gzclose(file);
 
     return irec - offset;
 }

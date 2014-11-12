@@ -60,6 +60,8 @@ int _read_bowtie(const char *fname, const char *commentChar, SEXP ref,
         SET_STRING_ELT(mismatch, irec, mkChar(elt[7]));
         irec++;
     }
+
+    gzclose(file);
     return irec - offset;
 }
 

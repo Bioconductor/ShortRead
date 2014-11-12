@@ -213,6 +213,7 @@ SEXP _mark_field_test(SEXP filename, SEXP delimiters, SEXP dim)
             curr = next;
         }
     }
+    fclose(file);
 #undef LINEBUF_SIZE
 
     UNPROTECT(1);
