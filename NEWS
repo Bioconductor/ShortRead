@@ -10,6 +10,9 @@ BUG FIXES
     o close opened files when parsing old bowtie, soap, and solexa
       export file formats.
 
+    o Don't allow R memory to be released prematurely when processing
+      old bowtie file formats.
+
 CHANGES IN VERSION 1.23
 -----------------------
 

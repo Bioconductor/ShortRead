@@ -70,10 +70,10 @@ ENCODE_FUNC encoder(const char *base)
 SEXP _get_namespace(const char *pkg)
 {
     SEXP fun = PROTECT(findFun(install("getNamespace"), R_GlobalEnv));
-    SEXP nmspc = PROTECT(NEW_CHARACTER(1));
-    SET_STRING_ELT(nmspc, 0, mkChar(pkg));
-    nmspc = eval(lang2(fun, nmspc), R_GlobalEnv);
-    UNPROTECT(2);
+    SEXP nmspc = PROTECT(mkString(pkg));
+    SEXP lng2 = PROTECT(lang2(fun, nmspc));
+    nmspc = eval(lng2, R_GlobalEnv);
+    UNPROTECT(3);
     return nmspc;
 }
 
@@ -114,8 +114,9 @@ int _char_as_strand_int(const char c, const char *fname, const int lineno)
 SEXP _get_SEXP(SEXP from, SEXP rho, const char *with)
 {
     SEXP fun = PROTECT(findFun(install(with), rho));
-    SEXP res = eval(lang2(fun, from), rho);
-    UNPROTECT(1);
+    SEXP lng2 = PROTECT(lang2(fun, from));
+    SEXP res = eval(lng2, rho);
+    UNPROTECT(2);
     return res;
 }
 

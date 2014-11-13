@@ -208,9 +208,10 @@ const char *_get_lookup(const char *baseclass)
 {
     ENCODE_FUNC encode = encoder(baseclass);
     SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
-    SEXP cls = PROTECT(eval(lang1(install(baseclass)), nmspc));
-    SEXP l = PROTECT(lang2(install("alphabet"), cls));
-    SEXP alf = PROTECT(eval(l, nmspc));
+    SEXP lng1 = PROTECT(lang1(install(baseclass)));
+    SEXP cls = PROTECT(eval(lng1, nmspc));
+    SEXP lng2 = PROTECT(lang2(install("alphabet"), cls));
+    SEXP alf = PROTECT(eval(lng2, nmspc));
 
     char *lkup = (char *) R_alloc(256, sizeof(char));
     int i;
@@ -224,15 +225,15 @@ const char *_get_lookup(const char *baseclass)
             char c = CHAR(STRING_ELT(alf, i))[0];
             lkup[(int) c] = encode(c);
         }
-        l = PROTECT(lang2(install("tolower"), alf));
-        alf = PROTECT(eval(l, nmspc));
+        lng2 = PROTECT(lang2(install("tolower"), alf));
+        alf = PROTECT(eval(lng2, nmspc));
         for (i = 0; i < LENGTH(alf); ++i) {
             char c = CHAR(STRING_ELT(alf, i))[0];
             lkup[(int) c] = encode(c);
         }
         UNPROTECT(2);
     }
-    UNPROTECT(4);
+    UNPROTECT(5);
     return lkup;
 }
 
@@ -240,11 +241,11 @@ SEXP _get_appender(const char *baseclass)
 {
     char *class = (char *) R_alloc(strlen(baseclass) + 4, sizeof(char));
     sprintf(class, "%sSet", baseclass);
-    SEXP l = PROTECT(lang3(install("selectMethod"), install("c"),
-                           mkString(class)));
+    SEXP cls = PROTECT(mkString(class));
+    SEXP lng3 = PROTECT(lang3(install("selectMethod"), install("c"), cls));
     SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
-    SEXP appender = eval(l, nmspc);
-    UNPROTECT(2);
+    SEXP appender = eval(lng3, nmspc);
+    UNPROTECT(3);
     return appender;
 }
 
@@ -263,10 +264,11 @@ SEXP _XSnap_to_XStringSet(_XSnap snap)
         int i;
         for (i = 0; i < n; i += 2) {
             if (i != n - 1) {
-                SEXP l = lang3(appender, VECTOR_ELT(xstringset, i),
-                               VECTOR_ELT(xstringset, i + 1));
-                res = eval(l, nmspc);
+                SEXP lng3 = PROTECT(lang3(appender, VECTOR_ELT(xstringset, i),
+                                          VECTOR_ELT(xstringset, i + 1)));
+                res = eval(lng3, nmspc);
                 SET_VECTOR_ELT(xstringset, i + 1, R_NilValue);
+                UNPROTECT(1);
             } else {
                 res = VECTOR_ELT(xstringset, i);
             }
