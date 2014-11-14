@@ -179,10 +179,10 @@ void _xsnap_finalizer(SEXP xsnap)
 _XSnap _NEW_XSNAP(int n_elt, const char *baseclass)
 {
     struct _Buffer *buffer = _Buffer_new(n_elt, baseclass);
-    SEXP xsnap = PROTECT(R_MakeExternalPtr(buffer, mkString("XSnap"),
+    SEXP xsnap = PROTECT(R_MakeExternalPtr(buffer, PROTECT(mkString("XSnap")),
                                            R_NilValue));
     R_RegisterCFinalizerEx(xsnap, _xsnap_finalizer, TRUE);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return xsnap;
 }
 

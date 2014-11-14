@@ -11,7 +11,7 @@ BUG FIXES
       export file formats.
 
     o Don't allow R memory to be released prematurely when processing
-      old bowtie file formats.
+      old bowtie file formats / creating external pointers.
 
 CHANGES IN VERSION 1.23
 -----------------------

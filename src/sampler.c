@@ -330,10 +330,10 @@ void _sampler_finalize(SEXP s)
 SEXP sampler_new(SEXP n)
 {
     struct sampler *sampler = _sampler_new(INTEGER(n)[0]);
-    SEXP s = PROTECT(R_MakeExternalPtr(sampler, mkString("sampler"),
+    SEXP s = PROTECT(R_MakeExternalPtr(sampler, PROTECT(mkString("sampler")),
                                        R_NilValue));
     R_RegisterCFinalizerEx(s, _sampler_finalize, TRUE);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return s;
 }
 
@@ -476,10 +476,10 @@ void _streamer_finalize(SEXP s)
 SEXP streamer_new(SEXP n)
 {
     struct streamer *streamer = _streamer_new(INTEGER(n)[0]);
-    SEXP s = PROTECT(R_MakeExternalPtr(streamer, mkString("streamer"),
+    SEXP s = PROTECT(R_MakeExternalPtr(streamer, PROTECT(mkString("streamer")),
                                        R_NilValue));
     R_RegisterCFinalizerEx(s, _streamer_finalize, TRUE);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return s;
 }
 
