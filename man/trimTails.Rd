@@ -140,6 +140,21 @@ trimEnds(object, a, left=TRUE, right=TRUE, relation=c("<=", "=="),
 
 \author{Martin Morgan <mtmorgan@fhcrc.org>}
 
+\note{
+
+  The \code{trim*} functions use OpenMP threads (when available) during
+  creation of the return value. This may sometimes create problems when
+  a process is already running on multiple threads, e.g., with an error
+  message like \preformatted{
+    libgomp: Thread creation failed: Resource temporarily unavailable
+  } A solution is to precede problematic code
+  with the following code snippet, to disable threading \preformatted{
+    nthreads <- .Call(ShortRead:::.set_omp_threads, 1L)
+    on.exit(.Call(ShortRead:::.set_omp_threads, nthreads))
+  }
+
+}
+
 \examples{
 showMethods(trimTails)
 
