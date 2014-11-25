@@ -35,9 +35,9 @@ char *_holder_to_char(XStringSet_holder * holder, const int i,
     if (decode != NULL) {
         int j;
         for (j = 0; j < chars_holder.length; ++j)
-            buf[j] = decode(chars_holder.seq[j]);
+            buf[j] = decode(chars_holder.ptr[j]);
     } else
-        strncpy(buf, chars_holder.seq, chars_holder.length);
+        strncpy(buf, chars_holder.ptr, chars_holder.length);
     buf[chars_holder.length] = '\0';
     return buf;
 }

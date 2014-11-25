@@ -133,12 +133,12 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         while (!((*buf == '\n') || (*buf == '\r')))
             ++buf;
         x = get_elt_from_XRawList_holder(&id, i);
-        memcpy((char *) x.seq, start, (buf - start) * sizeof(Rbyte));
+        memcpy((char *) x.ptr, start, (buf - start) * sizeof(Rbyte));
 
         /* read */
         while ((*buf == '\n') || (*buf == '\r'))
             ++buf;
-        curr = (char *) get_elt_from_XRawList_holder(&sread, i).seq;
+        curr = (char *) get_elt_from_XRawList_holder(&sread, i).ptr;
         while (*buf != '+') {
             while (!((*buf == '\n') || (*buf == '\r'))) /* strip '\n' */
                 *curr++ = DNAencode(*buf++);
@@ -154,8 +154,8 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
             ++buf;              /* leading '\n' */
         start = buf;
         x = get_elt_from_XRawList_holder(&qual, i);
-        curr = (char *) x.seq;
-        while (buf != bufend && curr - x.seq != x.length) {
+        curr = (char *) x.ptr;
+        while (buf != bufend && curr - x.ptr != x.length) {
             if ((*buf != '\n') && (*buf != '\r'))
                 *curr++ = *buf++;
             else

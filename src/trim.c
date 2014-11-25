@@ -29,14 +29,14 @@ SEXP trim_tailw(SEXP quality, SEXP k, SEXP a_map, SEXP width)
             endp[i] = 0;
             continue;
         }
-        int n = (wd + 1) * map[(int) seq.seq[0]];
+        int n = (wd + 1) * map[(int) seq.ptr[0]];
         for (j = 1; j <= wd; ++j)
-            n += map[(int) seq.seq[MIN(seq.length - 1, j)]];
+            n += map[(int) seq.ptr[MIN(seq.length - 1, j)]];
 
         for (j = 0; j < seq.length; ++j) {
             const int wstart = MAX(0, j - wd);
             const int wend = MIN(seq.length - 1, j + wd);
-            n += map[(int) seq.seq[wend]] - map[(int) seq.seq[wstart]];
+            n += map[(int) seq.ptr[wend]] - map[(int) seq.ptr[wstart]];
             if (kmax <= n)
                 break;
         }
@@ -72,7 +72,7 @@ SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
             const Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
             int n = 0;
             for (j = 0; j < seq.length; ++j) {
-                n += map[(int) seq.seq[j]];
+                n += map[(int) seq.ptr[j]];
                 if (kmax <= n)
                     break;
             }
@@ -88,7 +88,7 @@ SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
                 kbuf[ibuf] = 0;
             int m;
             for (j = 0; j < seq.length; ++j) {
-                m = map[(int) seq.seq[j]];
+                m = map[(int) seq.ptr[j]];
                 n += m - kbuf[j % nbuf];
                 if (kmax <= n)
                     break;
@@ -131,7 +131,7 @@ SEXP trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
         for (i = 0; i < len; ++i) {
             const Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
             for (j = 0; j < seq.length; ++j) {
-                if (0 == map[(int) seq.seq[j]])
+                if (0 == map[(int) seq.ptr[j]])
                     break;
             }
             startp[i] = j + 1L;
@@ -148,7 +148,7 @@ SEXP trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
         for (i = 0; i < len; ++i) {
             const Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
             for (j = seq.length - 1; j >= 0; --j) {
-                if (0 == map[(int) seq.seq[j]])
+                if (0 == map[(int) seq.ptr[j]])
                     break;
             }
             endp[i] = j + 1L;

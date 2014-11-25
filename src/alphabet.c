@@ -55,7 +55,7 @@ SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     for (i = 0; i < len; ++i) {
         Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
         for (j = 0; j < seq.length; ++j) {
-            int idx = map[decode(seq.seq[j])];
+            int idx = map[decode(seq.ptr[j])];
             if (idx >= 0)
                 ansp[j * nrow + idx] += 1;
         }
@@ -130,8 +130,8 @@ SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
         Chars_holder seq1 = get_elt_from_XStringSet_holder(&holder1, i);
         Chars_holder seq2 = get_elt_from_XStringSet_holder(&holder2, i);
         for (j = 0; j < seq1.length; ++j) {
-            int idx1 = map1[decode1(seq1.seq[j])];
-            int idx2 = map2[decode2(seq2.seq[j])];
+            int idx1 = map1[decode1(seq1.ptr[j])];
+            int idx2 = map2[decode2(seq2.ptr[j])];
             if (idx1 >= 0 && idx2 >= 0)
                 ansp[j * dim1xdim2 + idx2 * dim1 + idx1] += 1;
         }
@@ -164,7 +164,7 @@ SEXP alphabet_score(SEXP stringSet, SEXP score)
         Chars_holder seq = get_elt_from_XStringSet_holder(&holder, i);
         dans[i] = 0;
         for (j = 0; j < seq.length; ++j)
-            dans[i] += dscore[decode(seq.seq[j])];
+            dans[i] += dscore[decode(seq.ptr[j])];
     }
 
     UNPROTECT(1);
@@ -206,7 +206,7 @@ SEXP alphabet_as_int(SEXP stringSet, SEXP score)
     for (i = 0; i < len; ++i) {
         seq = get_elt_from_XStringSet_holder(&holder, i);
 	for (j = 0; j < seq.length; ++j)
-	    ians[len * j + i] = iscore[decode(seq.seq[j])];
+	    ians[len * j + i] = iscore[decode(seq.ptr[j])];
     }
 
     UNPROTECT(1);
@@ -232,7 +232,7 @@ int compare_Chars_holder(const void *a, const void *b)
 
     const int diff = ra.length - rb.length;
     size_t len = diff < 0 ? ra.length : rb.length;
-    int res = memcmp(ra.seq, rb.seq, len);
+    int res = memcmp(ra.ptr, rb.ptr, len);
     return res == 0 ? diff : res;
 }
 
@@ -243,7 +243,7 @@ int stable_compare_Chars_holder(const void *a, const void *b)
 
     const int diff = ra.length - rb.length;
     size_t len = diff < 0 ? ra.length : rb.length;
-    int res = memcmp(ra.seq, rb.seq, len);
+    int res = memcmp(ra.ptr, rb.ptr, len);
     if ((0 == res) && (0 == diff))
         res = ((const XSort *) a)->offset - ((const XSort *) b)->offset;
     return res == 0 ? diff : res;
