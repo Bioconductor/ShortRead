@@ -17,10 +17,8 @@ setMethod(readFastq, "FastqFile",
 setMethod(writeFastq, c("ShortReadQ", "FastqFile"),
     function(object, file, mode="w", full=FALSE, compress=TRUE, ...)
 {
-    if (missing(mode))
-        tryCatch(mode <- summary(file$con)$mode,
-                 error=function(...) NULL)
-    callGeneric(object, path(file), mode=mode, full=full, ...)
+    callGeneric(object, path(file), mode=mode, full=full,
+                compress=compress, ...)
 })
 
 setMethod(FastqFileList, "ANY",

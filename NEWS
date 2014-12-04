@@ -13,6 +13,9 @@ BUG FIXES
     o Don't allow R memory to be released prematurely when processing
       old bowtie file formats / creating external pointers.
 
+    o writeFastq,FastqFile obeys 'compress' argument; mode must be
+      specified by the caller (typically mode="a")
+
 CHANGES IN VERSION 1.23
 -----------------------
 
