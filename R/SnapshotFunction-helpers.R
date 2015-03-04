@@ -12,7 +12,7 @@
                               use.names=FALSE))
     }
     lst <- lapply(as.list(files(x)), function(fl, param) {
-        aln <- readGAlignmentsFromBam(fl, param=param)
+        aln <- readGAlignments(fl, param=param)
         seqlevels(aln) <- seqlevels(rng)
         list(`+`=cvg(aln[strand(aln)=="+"]),
              `-`=cvg(aln[strand(aln)=="-"]))
