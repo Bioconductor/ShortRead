@@ -73,6 +73,7 @@ const Rbyte *_fastq_record_end(const Rbyte * buf, const Rbyte * bufend)
 
 SEXP _fastq_as_XStringSet(struct records *fastq)
 {
+    static int init = 0;
     SEXP widths = PROTECT(NEW_LIST(2));
     SET_VECTOR_ELT(widths, 0, NEW_INTEGER(fastq->n_curr));
     SET_VECTOR_ELT(widths, 1, NEW_INTEGER(fastq->n_curr));
@@ -116,6 +117,13 @@ SEXP _fastq_as_XStringSet(struct records *fastq)
         sread = hold_XVectorList(VECTOR_ELT(ans, 0)),
         qual = hold_XVectorList(VECTOR_ELT(ans, 1)),
         id = hold_XVectorList(VECTOR_ELT(ans, 2));
+
+    if ((!init) && fastq->n_curr) {
+        /* hack -- install symbols to avoid stack imbalance */
+        (void) get_elt_from_XRawList_holder(&id, 0);
+        (void) DNAencode('A');
+        init = 1;
+    }
 
 #ifdef SUPPORT_OPENMP
 #pragma omp parallel for

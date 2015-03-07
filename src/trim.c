@@ -49,6 +49,7 @@ SEXP trim_tailw(SEXP quality, SEXP k, SEXP a_map, SEXP width)
 
 SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
 {
+    static int init = 0;
     SEXP end;
     int map[256];
 
@@ -63,8 +64,15 @@ SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
         map[(int) c] = INTEGER(a_map)[j];
     }
 
+    if ((!init) && len) {
+        /* hack -- install symbols to avoid stack imbalance */
+        (void) get_elt_from_XStringSet_holder(&holder, 0);
+        init = 1;
+    }
+
     const int kmax = INTEGER(k)[0];
     if (!LOGICAL(successive)[0]) {
+        
 #ifdef SUPPORT_OPENMP
 #pragma omp parallel for private(j)
 #endif
@@ -104,7 +112,7 @@ SEXP trim_tails(SEXP quality, SEXP k, SEXP a_map, SEXP successive)
 
 SEXP trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
 {
-
+    static int init = 0;
     SEXP bounds;
     const int *const map = LOGICAL(a_map);
 
@@ -123,6 +131,12 @@ SEXP trim_ends(SEXP quality, SEXP a_map, SEXP left, SEXP right)
 
     startp = INTEGER(VECTOR_ELT(bounds, 0));
     endp = INTEGER(VECTOR_ELT(bounds, 1));
+
+    if ((!init) && len) {
+        /* hack -- install symbols to avoid stack imbalance */
+        (void) get_elt_from_XStringSet_holder(&holder, 0);
+        init = 1;
+    }
 
     if (LOGICAL(left)[0]) {
 #ifdef SUPPORT_OPENMP
