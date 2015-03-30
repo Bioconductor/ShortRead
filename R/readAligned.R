@@ -300,6 +300,9 @@
              param=ScanBamParam(simpleCigar=TRUE,
                reverseComplement=TRUE, what=.readAligned_bamWhat()))
 {
+    .Deprecated("readGAlignments", "GenomicAlignments",
+                msg="use GenomicAlignments::readGAlignments to read BAM files",
+                old=readAligned)
     files <-
         if (!all(grepl("^(ftp|http)://", dirPath)))
             .file_names(dirPath, pattern)

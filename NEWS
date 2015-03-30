@@ -5,6 +5,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o srapply is defunct
 
+    o readAligned() for BAM files is deprecated; use
+      GenomicAlignments::readGAligned instead.
+
 BUG FIXES
 
     o close opened files when parsing old bowtie, soap, and solexa
