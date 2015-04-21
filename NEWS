@@ -1,3 +1,17 @@
+CHANGES IN VERSION 1.27
+-----------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o fastqFilter allows several input 'files' to be written to a
+      single 'destinations'.
+
+    o readAligned() for BAM files is defunct. QA and associated
+      methods removed.
+
+    o srapply removed
+    
+
 CHANGES IN VERSION 1.25
 -----------------------
 
