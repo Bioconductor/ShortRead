@@ -22,8 +22,9 @@ filterFastq(files, destinations, ..., filter = FilterRules(),
 
   \item{files}{a character vector of valid file paths.}
 
-  \item{destinations}{a character vector of destinations of the same
-    length as \code{files}. \code{destinations} must not already exist.}
+  \item{destinations}{a character vector of destinations, recycled to be
+    the same length as \code{files}. \code{destinations} must not
+    already exist.}
 
   \item{...}{Additional arguments, perhaps used by a \code{filter}
     function.}
@@ -61,5 +62,3 @@ filterFastq(fl, tempfile(), filter=fun)
 trimEnds(fl, "V", destinations=tempfile())
 
 }
-
-  

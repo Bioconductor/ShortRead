@@ -2,8 +2,9 @@
 {
     if (missing('destinations'))
         stop("'destinations' missing")
-    if (length(files) != length(destinations))
-        stop("'files' and 'destinations' must have same length")
+    tryCatch({
+        S4Vectors:::V_recycle(destinations, files, "destinations", "files")
+    }, warning=function(x) stop(conditionMessage(x), call.=FALSE))
     if (any(exists <- file.exists(destinations)))
         stop("'destinations' exist:\n  ",
              paste(destinations[exists], collapse="\n  "))
