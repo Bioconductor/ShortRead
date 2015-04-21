@@ -19,7 +19,6 @@ Depends: BiocGenerics (>= 0.11.3), BiocParallel, Biostrings (>=
 Imports: Biobase, S4Vectors (>= 0.5.11), IRanges (>= 1.99.27),
         GenomeInfoDb (>= 1.1.19), GenomicRanges (>= 1.17.39),
         hwriter, methods, zlibbioc, lattice, latticeExtra,
-Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, GenomicFiles,
-        yeastNagalakshmi
+Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi
 LinkingTo: S4Vectors, IRanges, XVector, Biostrings
 biocViews: DataImport, Sequencing, QualityControl
