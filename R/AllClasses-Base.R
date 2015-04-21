@@ -290,8 +290,6 @@ setClass("MAQMapQA", contains=".QA")
 
 setClass("BowtieQA", contains=".QA")
 
-setClass("BAMQA", contains=".QA")
-
 ## Snapshot
 
 setClass("SnapshotFunction",

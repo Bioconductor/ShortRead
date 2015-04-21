@@ -45,9 +45,6 @@ setClass("QAFastqSource",
                         con="character", n="ScalarInteger",
                         readerBlockSize="ScalarInteger"))
 
-## setclass("QABamSource",
-##          representation("QASource", "QASummary", src="BamFile"))
-
 ## summaries
 
 setClass("QAFlagged", representation("QASummary"))

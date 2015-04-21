@@ -289,91 +289,13 @@
     .Call(.read_soap, files, qualityType, sep, commentChar)
 }
 
-.readAligned_bamWhat <- function(withQname=TRUE)
-{
-    c(if (withQname) "qname" else NULL,
-      "flag", "rname", "strand", "pos", "mapq", "seq", "qual")
-}
-
 .readAligned_bam <-
     function(dirPath, pattern=character(0), ...,
              param=ScanBamParam(simpleCigar=TRUE,
                reverseComplement=TRUE, what=.readAligned_bamWhat()))
 {
-    .Deprecated("readGAlignments", "GenomicAlignments",
-                msg="use GenomicAlignments::readGAlignments to read BAM files",
-                old=readAligned)
-    files <-
-        if (!all(grepl("^(ftp|http)://", dirPath)))
-            .file_names(dirPath, pattern)
-        else {
-            if (length(dirPath) != 1 || length(pattern) != 0) {
-                msg <- paste("ftp:// and http:// support requires",
-                             "'dirPath' as character(1),",
-                             "'pattern' as character(0)", collapse="")
-                .throw(SRError("UserArgumentMismatch", msg))
-            }
-            dirPath
-        }
-
-    if (!is(param, "ScanBamParam")) {
-        msg <-  "'param' must be a ScanBamParam object."
-        .throw(SRError("UserArgumentMismatch",msg))
-    }
-    ## FIXME: currently we only deal with cigars without indels
-    if (bamSimpleCigar(param) != TRUE) {
-        msg <- paste("using 'TRUE' for 'bamSimpleCigar(param)'",
-                     "(skipping reads with I, D, H, S, or P in 'cigar')")
-        .throw(SRWarn("UserArgumentMismatch", msg))
-        bamSimpleCigar(param) <- TRUE
-    }
-    if (bamReverseComplement(param) != TRUE) {
-        msg <- "using 'TRUE' for 'bamReverseComplement(param)'"
-        .throw(SRWarn("UserArgumentMismatch", msg))
-        bamReverseComplement(param) <- TRUE
-    }
-    what <- .readAligned_bamWhat("qname" %in% bamWhat(param))
-    if (!(length(bamWhat(param)) && all(what %in% bamWhat(param)))) {
-        msg <- sprintf("using at least '%s' for 'bamWhat(param)'",
-                       paste(what, collapse="' '"))
-        .throw(SRWarn("UserArgumentMismatch", msg))
-        bamWhat(param) <- union(bamWhat(param), what)
-    }
-
-    ## handle multiple files and params
-    result <- mapply(scanBam, files, MoreArgs=list(param=param),
-                     ..., SIMPLIFY=FALSE, USE.NAMES=FALSE)
-    ulist <- function(X, ..., recursive=TRUE)
-        unlist(lapply(X, lapply, "[[", ...),
-               recursive=recursive, use.names=FALSE)
-    cxslist <- function(X, ...)
-        do.call(c, ulist(X, ...))
-    chromosome <- local({
-        X <- ulist(result, "rname", recursive=FALSE)
-        values <- do.call(c, lapply(X, as.character))
-        factor(values, levels=unique(unlist(lapply(X, levels))))
-    })
-    strand <- local({
-        X <- ulist(result, "strand", recursive=FALSE)
-        values <- do.call(c, lapply(X, as.character))
-        factor(values, levels=levels(strand()))
-    })
-    id <- local({
-        X <- ulist(result, "qname")
-        if (is.null(X)) BStringSet(character(length(strand)))
-        else BStringSet(X)
-    })
-
-    AlignedRead(sread=cxslist(result, "seq"), id=id,
-                quality=FastqQuality(as(cxslist(result, "qual"),
-                  "BStringSet")),
-                chromosome=chromosome, strand=strand,
-                position=ulist(result, "pos"),
-                alignQuality=NumericQuality(ulist(result, "mapq")),
-                alignData=AlignedDataFrame(
-                  data=data.frame(flag=ulist(result, "flag")),
-                  metadata=data.frame(
-                    labelDescription=c("Type of read; see ?scanBam"))))
+    .Defunct("readGAlignments", "GenomicAlignments",
+                msg="use GenomicAlignments::readGAlignments to read BAM files")
 }
 
 .readAligned_character <-
@@ -383,7 +305,7 @@
                "SolexaPrealign", "SolexaRealign",
                "SolexaResult",
                "MAQMap", "MAQMapShort", "MAQMapview",
-               "Bowtie", "SOAP", "BAM"),
+               "Bowtie", "SOAP"),
              ..., filter=srFilter())
 {
     if (missing(type))
@@ -412,8 +334,7 @@
                    MAQMapview=.readAligned_MaqMapview(
                      dirPath, pattern=pattern, ...),
                    Bowtie=.readAligned_Bowtie(dirPath, pattern, ...),
-                   SOAP=.readAligned_SOAP(dirPath, pattern, ...),
-                   BAM=.readAligned_bam(dirPath, pattern, ...))
+                   SOAP=.readAligned_SOAP(dirPath, pattern, ...))
         }, error=function(err) {
             if (is(err, "SRError")) stop(err)
             else {

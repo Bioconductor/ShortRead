@@ -326,12 +326,6 @@ readAligned(dirPath, pattern=character(0), ...)
 
     }
 
-    \item{\code{type="BAM"}}{
-
-      Use \code{readGAligned} in the \code{GenomicAlignments} package
-      instead.
-
-    }
   }
 }
 
@@ -359,9 +353,6 @@ readAligned(dirPath, pattern=character(0), ...)
 
   The SOAP reference manual, \url{http://soap.genomics.org.cn/soap1},
   16 December, 2008.
-
-  The BAM file format specification,
-  \url{http://samtools.sourceforge.net}.
 
 }
 

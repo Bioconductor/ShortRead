@@ -51,10 +51,6 @@ report_html(x, dest, type, ...)
   The following methods are defined:
   \describe{
 
-    \item{\code{x="BAMQA", ..., dest=tempfile(), type="html"}}{
-    Produce an HTML-based report from an object of class
-          \code{\linkS4class{BAMQA}}.}
-
     \item{\code{x="BowtieQA", ..., dest=tempfile(), type="html"}}{
     Produce an HTML-based report from an object of class
           \code{\linkS4class{BowtieQA}}.}

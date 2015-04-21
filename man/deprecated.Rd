@@ -3,6 +3,8 @@
 \alias{deprecated}
 \alias{defunct}
 \alias{basePath}
+\alias{srapply}
+\alias{readAligned,BamFile-method}
 
 \title{Deprecated and defunct functions}
 
@@ -11,16 +13,20 @@
   These functions were introduced but are now deprecated or defunct.
 
 }
-\usage{
-basePath(object, ...)
-}
 
-\arguments{
+\details{
 
-  \item{object}{For \code{basePath}, and object of class
-	\code{ExperimentPath}.}
+  Defunct functions: \itemize{
 
-  \item{...}{Additional arguments.}
+    \item{\code{srapply}}{. Use the BiocParallel package instead.}
+
+    \item{\code{readAligned,BamFile-method}}{. Use the GenomicAlignments
+      package instead.}
+
+    \item{\code{basePath()}}{}
+
+  }
+
 }
 
 \keyword{manip}

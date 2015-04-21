@@ -1,6 +1,6 @@
 .qa_character <-
     function(dirPath, pattern=character(0),
-             type=c("fastq", "BAM", "SolexaExport", "SolexaRealign",
+             type=c("fastq", "SolexaExport", "SolexaRealign",
                "Bowtie", "MAQMap", "MAQMapShort"),
              ...)
 {
@@ -17,8 +17,7 @@
            Bowtie=.qa_Bowtie(dirPath, pattern, type=type, ...),
            MAQMap=.qa_MAQMap(dirPath, pattern, type=type, ...),
            MAQMapShort=.qa_MAQMap(dirPath, pattern, type=type, ...),
-           fastq=.qa_fastq(dirPath, pattern, type=type, ...),
-           BAM=.qa_BAM(dirPath, pattern, type=type, ...))
+           fastq=.qa_fastq(dirPath, pattern, type=type, ...))
 }
 
 setMethod(qa, "character", .qa_character)

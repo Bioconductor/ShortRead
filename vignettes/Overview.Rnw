@@ -26,7 +26,7 @@ The \Rpackage{ShortRead} package provides functionality for working
 with FASTQ files from high throughput sequence analysis. The package
 also contains functions for legacy (single-end, ungapped) aligned
 reads; for working with BAM files, please see the \Biocpkg{Rsamtools},
-\Biocpkg{GenomicRanges}, and related packages.
+\Biocpkg{GenomicRanges}, \Biocpkg{GenomicAlignments} and related packages.
 
 \section{Sample data}
 

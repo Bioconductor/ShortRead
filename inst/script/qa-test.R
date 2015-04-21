@@ -9,10 +9,3 @@ nms <- sprintf("file_%d.fastq", seq_len(nLanes))
 qas <- lapply(nms, qa, dirPath=rfq)
 qa <- do.call(rbind, qas)
 res <- browseURL(report(qa))
-
-
-## BAM
-
-fl <- system.file("extdata", "ex1.bam", package="Rsamtools")
-qa <- qa(dirname(fl), "bam$", type="BAM")
-res <- browseURL(report(qa))
