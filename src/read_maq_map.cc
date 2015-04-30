@@ -27,7 +27,7 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
     SEXP seqnames, seq, start, dir, aq, mm, mm24, errsum, nhits0, 
         nhits1, eltnm, df, klass;
     char readseqbuf[ max_readlen ], fastqbuf[ max_readlen ];
-    CharAEAE readid, readseq, fastq;
+    CharAEAE *readid, *readseq, *fastq;
     int i, actnreads, j;
     maqmap1_T<max_readlen> read;
 
@@ -132,9 +132,9 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
         INTEGER(errsum)[i] = read.info2;
         INTEGER(nhits0)[i] = read.c[0];
         INTEGER(nhits1)[i] = read.c[1];
-        append_string_to_CharAEAE( &readid,  read.name );
-        append_string_to_CharAEAE( &readseq, readseqbuf );
-        append_string_to_CharAEAE( &fastq,   fastqbuf );
+        append_string_to_CharAEAE( readid,  read.name );
+        append_string_to_CharAEAE( readseq, readseqbuf );
+        append_string_to_CharAEAE( fastq,   fastqbuf );
     }
    
     /* Build the data frame */
@@ -149,11 +149,11 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
     SET_VECTOR_ELT( df, 7, nhits0 );
     SET_VECTOR_ELT( df, 8, nhits1 );
     SET_VECTOR_ELT( df, 9, new_XRawList_from_CharAEAE( "BStringSet",
-					"BString", &readid, R_NilValue ) );
+					"BString", readid, R_NilValue ) );
     SET_VECTOR_ELT( df, 10, new_XRawList_from_CharAEAE( "DNAStringSet",
-					"DNAString", &readseq, R_NilValue ) );
+					"DNAString", readseq, R_NilValue ) );
     SET_VECTOR_ELT( df, 11, new_XRawList_from_CharAEAE( "BStringSet",
-					"BString", &fastq, R_NilValue ) );
+					"BString", fastq, R_NilValue ) );
 
     setAttrib( seq, install( "levels" ), seqnames );
     PROTECT( klass = allocVector( STRSXP, 1 ) );
