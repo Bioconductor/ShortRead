@@ -34,7 +34,7 @@ setMethod(dustyScore, "DNAStringSet",
 setMethod(alphabetByCycle, "BStringSet", .abc_BStringSet)
 
 setMethod(srorder, "XStringSet", function(x, ...) {
-    if (length(list(...))!=0)
+    if (!missing(...))
         .throw(SRError("UserArgumentMismatch",
                        "argument '%s' not supported",
                        names(list(...))))
@@ -42,7 +42,7 @@ setMethod(srorder, "XStringSet", function(x, ...) {
 })
 
 setMethod(srrank, "XStringSet", function(x, ...) {
-    if (length(list(...))!=0)
+    if (!missing(...))
         .throw(SRError("UserArgumentMismatch",
                        "argument '%s' not supported",
                        names(list(...))))
@@ -52,7 +52,7 @@ setMethod(srrank, "XStringSet", function(x, ...) {
 setMethod(srsort, "XStringSet", function(x, ...) x[srorder(x, ...)])
 
 setMethod(srduplicated, "XStringSet", function(x, ...) {
-    if (length(list(...))!=0)
+    if (!missing(...))
         .throw(SRError("UserArgumentMismatch",
                        "argument '%s' not supported",
                        names(list(...))))

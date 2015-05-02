@@ -79,7 +79,7 @@ setMethod("[", c("ShortRead", "ANY", "ANY"),
           function(x, i, j, ..., drop=NA) .subset_err())
 
 .ShortRead_subset <- function(x, i, j, ..., drop=TRUE) {
-    if (0L != length(list(...))) .subset_err()
+    if (!missing(...)) .subset_err()
     initialize(x, sread=sread(x)[i], id=id(x)[i])
 }
 
