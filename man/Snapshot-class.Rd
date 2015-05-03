@@ -244,8 +244,7 @@ getAnnGR <- function(txdb, which) {
 
 txdbFile <- system.file("extdata", "sacCer2_sgdGene.sqlite",
                     package="yeastNagalakshmi")
-# txdb <- makeTranscriptDbFromUCSC(genome="sacCer2",
-#                                  tablename="sgdGene")
+# txdb <- makeTxDbFromUCSC(genome="sacCer2", tablename="sgdGene")
 txdb <- loadDb(txdbFile)
 which <-  GRanges("chrI", IRanges(1, 2e5))
 gr <- getAnnGR(txdb, which)
