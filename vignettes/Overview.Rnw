@@ -224,7 +224,7 @@ myFilterAndTrim <-
         ## than "4" (phred score 20)
         fq <- trimTailw(fq, 2, "4", 2)
         ## drop reads that are less than 36nt
-        fq <- fq[width(fq) < 36]
+        fq <- fq[width(fq) >= 36]
         
         ## append to destination
         writeFastq(fq, destination, "a")
