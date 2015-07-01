@@ -235,6 +235,15 @@ test_ShortReadQ_subset <- function() {
     checkIdentical(2L, length(obj[1:2,,drop=TRUE]))
 }
 
+
+test_ShortReadQ_subset_gets <- function() {
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    sr <- obj <- readFastq(sp)
+    i <- sample(length(obj))
+    sr[i] <- obj
+    .equals(sr[i], obj)
+}
+
 test_ShortReadQ_narrow <- function() {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     sr <- readFastq(sp)

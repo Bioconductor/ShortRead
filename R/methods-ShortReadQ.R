@@ -163,6 +163,16 @@ setMethod("[", c("ShortReadQ", "ANY", "ANY"),
 
 setMethod("[", c("ShortReadQ", "ANY", "missing"), .ShortReadQ_subset)
 
+setReplaceMethod("[", c("ShortReadQ", "ANY", "missing", "ShortReadQ"),
+    function(x, i, j, ..., value)
+{
+    sread <- sread(x); sread[i] <- sread(value)
+    quality <- quality(quality(x)); quality[i] <- quality(quality(value))
+    id <- id(x); id[i] <- id(value)
+    initialize(x, sread=sread, id=id,
+               quality=initialize(quality(x), quality=quality))
+})
+
 setMethod(append, c("ShortReadQ", "ShortReadQ"),
     function(x, values, after=length(x))
 {

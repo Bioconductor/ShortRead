@@ -21,6 +21,7 @@
 \alias{[,ShortReadQ,missing,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,ANY,ANY-method}
 \alias{[,ShortReadQ,ANY,missing,ANY-method}
+\alias{[<-,ShortReadQ,ANY,missing,ShortReadQ-method}
 \alias{append,ShortReadQ,ShortReadQ-method}
 \alias{reverse,ShortReadQ-method}
 \alias{reverseComplement,ShortReadQ-method}
@@ -121,6 +122,11 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortRead", distance 2.
       those reads indexed by \code{i}. Additional methods on
       \sQuote{[,ShortRead} do not provide additional functionality, but
       are present to limit inappropriate use.}
+
+    \item{[<-}{\code{signature(x = "ShortReadQ", i = "ANY", j =
+      "missing", ..., y="ShortReadQ")}: 
+      This method updates \code{x} so that records indexed by \code{i}
+      are replaced by corresponding records in \code{value}.}
 
     \item{append}{\code{signature(x = "ShortReadQ", values = "ShortRead")}:
       append the \code{sread}, \code{quality} and \code{id} slots of
