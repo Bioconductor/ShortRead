@@ -7,7 +7,7 @@
         }, error=function(err) {
             read.csv(gzfile(fl), ...)
         })
-    }, ..., colClasses=colClasses, stringsAsFactors=FALSE)
+    }, ..., colClasses=unname(colClasses), stringsAsFactors=FALSE)
     cclasses <- colClasses[!sapply(colClasses, is.null)]
     lst <- lapply(seq_along(names(cclasses)),
                   function(idx) unlist(lapply(lsts, "[[", idx)))
