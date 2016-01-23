@@ -30,7 +30,7 @@
 \alias{ignore.strand}
 \alias{ignore.strand,Snapshot-method}
 
-% methods: 
+% methods:
 \alias{pan}
 \alias{pan,Snapshot-method}
 \alias{togglefun}
@@ -46,7 +46,7 @@
 
 \description{
 
-  A \code{\linkS4class{Snapshot}}-class to visualize genomic data from 
+  A \code{\linkS4class{Snapshot}}-class to visualize genomic data from
   BAM files with zoom and pan functionality.
 
 }
@@ -58,7 +58,7 @@ Snapshot(files, range, ...)
 \arguments{
 
   \item{files}{A character() or \code{BamFileList} specifying the file(s)
-    to be visualized.} 
+    to be visualized.}
 
   \item{range}{A \code{\link{GRanges}} object specifying the range to be
     visualized.}
@@ -69,14 +69,14 @@ Snapshot(files, range, ...)
      \describe{
 
        \item{functions:}{A \code{\link{SnapshotFunctionList}} of
-	 functions, in addition to built-in \sQuote{fine_coverage},
-	 \sQuote{coarse_coverage}, \sQuote{multifine_coverage}, to be
-	 used for visualization.}
+         functions, in addition to built-in \sQuote{fine_coverage},
+         \sQuote{coarse_coverage}, \sQuote{multifine_coverage}, to be
+         used for visualization.}
 
        \item{currentFunction:}{character(1) naming the function, from
-	 \code{functions} to be used for data input and
-	 visualization. The default chooses a function based on the
-	 scale at which the data is being visualized.}
+         \code{functions} to be used for data input and
+         visualization. The default chooses a function based on the
+         scale at which the data is being visualized.}
 
        \item{annTrack:}{Annotation track. If built-in visualization
          functions are to be used, \code{annTrack} should be a
@@ -87,13 +87,13 @@ Snapshot(files, range, ...)
           grouping the sample files. The factor should be included in
           the elementMetadata of \code{files}, otherwise ignored. Used
           only to visualize multiple files.
-	}
-	
+        }
+
        \item{.auto_display:}{logical(1) indicating whether the
-	 visualization is to be updated when \code{show} is invoked.}
+         visualization is to be updated when \code{show} is invoked.}
 
        \item{.debug}{logical(1) indicating whether debug messages are to
-	 be printed.}
+         be printed.}
    }}
 }
 
@@ -104,10 +104,10 @@ Snapshot(files, range, ...)
   \describe{
     \item{zoom}{\code{signature(x = "Snapshot")}: Zoom (in or out) the
       current plot. }
-    
+
     \item{pan}{\code{signature(x = "Snapshot")}: Pan (right or left)
       the current plot. }
-    
+
     \item{togglefun}{\code{signature(x = "Snapshot")}: Toggle the current
        functions which imported records are to be immediately
        evaluated. Note that the active range will be changed to the
@@ -115,9 +115,9 @@ Snapshot(files, range, ...)
 
     \item{togglep}{\code{signature(x = "Snapshot")}: Toggle the panning
       effects.}
-    
-    \item{togglez}{\code{signature(x = "Snapshot")}: Toggle the zooming 
-       effects.} 
+
+    \item{togglez}{\code{signature(x = "Snapshot")}: Toggle the zooming
+       effects.}
   }
 }
 
@@ -161,7 +161,7 @@ Snapshot(files, range, ...)
       coverage a position is represented for each strand and BAM file.}
     \item{\code{.data_dirty}:}{Object of class \code{logical}
       indicating whether to re-evaluate the imported records. }
-    \item{\code{.initial_functions}:}{Object of class 
+    \item{\code{.initial_functions}:}{Object of class
        \code{SnapshotFunctionList} available by the \code{Snapshot} object. }
     \item{\code{.current_function}:}{Object of class \code{character}
       of the function the imported recorded are currently evaluated and
@@ -169,7 +169,7 @@ Snapshot(files, range, ...)
     \item{\code{annTrack}:}{Default to \code{NULL} if not intended to
        visualize the annotation track. If default visualization
        function(s) is intended to be used to plot the annotation,
-       \code{annTrack} has to be a \code{GRanges} instance.}   
+       \code{annTrack} has to be a \code{GRanges} instance.}
     \item{\code{functions}:}{Object of class
       \code{SnapshotFunctionList} of customized functions to evaluate
        and visualize the imported records. }
@@ -238,7 +238,7 @@ getAnnGR <- function(txdb, which) {
     seqlevels(ex, force=TRUE) <- seqlevels(which)
     r <- range(ex)
     gr <- unlist(r)
-    values(gr)[["gene_id"]] <- rep.int(names(r), times=elementLengths(r))
+    values(gr)[["gene_id"]] <- rep.int(names(r), times=lengths(r))
     gr
 }
 
@@ -271,19 +271,19 @@ pan(s)
 file <- system.file("extdata", "SRR002051.chrI-V.bam",
                     package="yeastNagalakshmi")
 which <-  GRanges("chrI", IRanges(1, 2e5))
-s <- Snapshot(c(file, file), range=which, 
+s <- Snapshot(c(file, file), range=which,
               currentFunction="multicoarse_coverage")
 
 ## grouping files and view by 'multicoarse_coverage'
 bfiles <- BamFileList(c(a=file, b=file))
 values(bfiles) <- DataFrame(sampleGroup=factor(c("normal", "tumor")))
 values(bfiles)
-s <- Snapshot(bfiles, range=which, 
+s <- Snapshot(bfiles, range=which,
               currentFunction="multicoarse_coverage", fac="sampleGroup")
 
 ## grouping files and view by 'multifine_coverage'
 which <- GRanges("chrI", IRanges(7e4, 7e4+8000))
-s <- Snapshot(bfiles, range=which, 
+s <- Snapshot(bfiles, range=which,
               currentFunction="multifine_coverage", fac="sampleGroup")
 
 }
