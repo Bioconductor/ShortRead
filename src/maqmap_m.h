@@ -66,7 +66,7 @@ maqmap_read1(gzFile fp, maqmap1_T < max_readlen > *m1)
 template < int max_readlen > maqmap_T < max_readlen > *maq_new_maqmap()
 {
     maqmap_T < max_readlen > *mm =
-        (maqmap_T < max_readlen > *)calloc(1, sizeof(maqmap_T < max_readlen >));
+        (maqmap_T < max_readlen > *)std::calloc(1, sizeof(maqmap_T < max_readlen >));
     mm->format = MAQMAP_FORMAT_NEW;
     return mm;
 }
@@ -78,10 +78,10 @@ template < int max_readlen > void maq_delete_maqmap(maqmap_T < max_readlen >
     if (mm == 0)
         return;
     for (i = 0; i < mm->n_ref; ++i)
-        free(mm->ref_name[i]);
-    free(mm->ref_name);
-    free(mm->mapped_reads);
-    free(mm);
+        std::free(mm->ref_name[i]);
+    std::free(mm->ref_name);
+    std::free(mm->mapped_reads);
+    std::free(mm);
 }
 
 template < int max_readlen > maqmap_T < max_readlen >
@@ -103,10 +103,10 @@ template < int max_readlen > maqmap_T < max_readlen >
         }
     }
     gzread(fp, &mm->n_ref, sizeof(int));
-    mm->ref_name = (char **) calloc(mm->n_ref, sizeof(char *));
+    mm->ref_name = (char **) std::calloc(mm->n_ref, sizeof(char *));
     for (k = 0; k != mm->n_ref; ++k) {
         gzread(fp, &len, sizeof(int));
-        mm->ref_name[k] = (char *) malloc(len * sizeof(char));
+        mm->ref_name[k] = (char *) std::malloc(len * sizeof(char));
         gzread(fp, mm->ref_name[k], len);
     }
     /* read number of mapped reads */
