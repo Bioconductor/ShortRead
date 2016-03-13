@@ -210,8 +210,8 @@ setMethod(get("["), c("SolexaIntensity", "ANY", "ANY", "ANY"),
     if (.hasMeasurementError(x))
         initialize(x, intensity=intensity(x)[i,j,k],
                    measurementError=measurementError(x)[i,j,k],
-                   readInfo=readInfo(x)[i,])
+                   readInfo=readIntensityInfo(x)[i,])
     else
         initialize(x, intensity=intensity(x)[i,j,k],
-                   readInfo=readInfo(x)[i,])
+                   readInfo=readIntensityInfo(x)[i,])
 })

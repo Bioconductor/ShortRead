@@ -27,11 +27,11 @@ test_SolexaIntensity_io <- function()
     int <- readIntensities(sp)
     checkIdentical(c(256L, 4L, 36L), dim(intensity(int)))
     checkIdentical(c(256L, 4L, 36L), dim(measurementError(int)))
-    checkIdentical(256L, nrow(pData(readInfo(int))))
+    checkIdentical(256L, nrow(pData(readIntensityInfo(int))))
 
     int <- readIntensities(sp, withVariability=FALSE)
     checkIdentical(c(256L, 4L, 36L), dim(intensity(int)))
-    checkIdentical(256L, nrow(pData(readInfo(int))))
+    checkIdentical(256L, nrow(pData(readIntensityInfo(int))))
     checkException(measurementError(int), silent=TRUE)
 }
 
@@ -69,5 +69,5 @@ test_IparIntensity_io <- function()
                                     144.35, 1497.99 )),
                              .Names = c("lane", "tile", "x", "y"),
                              row.names = c(NA, -5L), class = "data.frame"),
-                   pData(readInfo(int)))
+                   pData(readIntensityInfo(int)))
 }

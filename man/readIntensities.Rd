@@ -153,7 +153,7 @@ int
 intensity(int)[1,,] 		# one read
 intensity(int)[[1:2,,]]         # two reads, as 'array'
 head(rowMeans(intensity(int)))	# treated as 'array'
-head(pData(readInfo(int)))
+head(pData(readIntensityInfo(int)))
 
 \dontrun{## RTA Lane 2, cycles 1:80, cycle iteration 1, tile 3
 int <- readIntensities("Data/Intensities", type="RtaIntensity",

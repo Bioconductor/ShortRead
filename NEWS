@@ -10,6 +10,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
       methods removed.
 
     o srapply removed
+
+    o 'legacy' function readInfo() renamed readIntensityInfo()
     
 
 CHANGES IN VERSION 1.25

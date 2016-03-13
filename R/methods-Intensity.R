@@ -35,7 +35,7 @@ setMethod(.srValidity, "Intensity", function(object)
         msg <- c(msg,
                  "'intensity' and 'measurementError' dimensions differ")
     }
-    if (nrow(readInfo(object)) != nrow(intensity(object))) {
+    if (nrow(readIntensityInfo(object)) != nrow(intensity(object))) {
         msg <- c(msg,
                  "'intensity' and 'readInfo' read numbers differ")
     }
@@ -53,8 +53,14 @@ measurementError <- function(object, ...)
 
 local({
     slts <- slotNames("Intensity")
-    .make_getter(slts[slts!="measurementError"], verbose=TRUE)
+    .make_getter(slts[!slts %in% c("readInfo", "measurementError")],
+                 verbose=TRUE)
 })
+
+readIntensityInfo <- function(object, ...)
+{
+    slot(object, "readInfo")
+}
 
 setMethod(dim, "Intensity", function(x) 
 {
@@ -65,7 +71,7 @@ setMethod(show, "Intensity", function(object)
 {
     callNextMethod()
     cat("dim:", dim(object), "\n")
-    cat("readInfo:", class(readInfo(object)), "\n")
+    cat("readInfo:", class(readIntensityInfo(object)), "\n")
     cat("intensity:", class(intensity(object)), "\n")
     if (.hasMeasurementError(object)) {
         cat("measurementError:", class(measurementError(object)), "\n")

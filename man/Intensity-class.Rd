@@ -6,7 +6,7 @@
 \alias{ArrayIntensity-class}
 \alias{ArrayIntensity}
 % accessors
-\alias{readInfo}
+\alias{readIntensityInfo}
 \alias{intensity}
 \alias{measurementError}
 % subset
@@ -87,8 +87,8 @@ These classes extend \code{"\linkS4class{.ShortReadBase}"}, directly.
 
   \describe{
 
-    \item{readInfo}{\code{signature(object = "Intensity")}: access the
-      \code{readInfo} slot of \code{object}.}
+    \item{readIntensityInfo}{\code{signature(object = "Intensity")}:
+      access the \code{readInfo} slot of \code{object}.}
 
     \item{intensity}{\code{signature(object = "Intensity")}: access the
       \code{intensity} slot of \code{object}.}

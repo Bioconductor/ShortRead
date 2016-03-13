@@ -21,7 +21,7 @@ test_Intensity_subset <- function()
     {
         checkTrue(all(m==intensity(obj)))
         checkTrue(all(m==measurementError(obj)))
-        checkIdentical(adf, readInfo(obj))
+        checkIdentical(adf, readIntensityInfo(obj))
     }
 
     m <- array(1:1000, c(10, 10, 10))

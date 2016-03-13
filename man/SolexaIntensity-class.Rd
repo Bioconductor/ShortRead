@@ -111,7 +111,7 @@ showClass("SolexaIntensity")
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 int <- readIntensities(sp)
 int 				# SolexaIntensity
-readInfo(int)			# SolexaIntensityInfo
+readIntentsityInfo(int)		# SolexaIntensityInfo
 int[1:5,,]			# read 1:5
 }
 \keyword{classes}
