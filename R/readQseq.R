@@ -11,6 +11,7 @@
         filt <- sapply(.file_names(dirPath, pattern), function(fl, ...) {
             scan(fl, ...)[[11]] == 1
         }, what=what, quiet=!verbose)
+        filt <- as.vector(filt)
         elts[[1]] <- elts[[1]][filt]
         elts[[2]] <- elts[[2]][filt]
     }
