@@ -255,6 +255,10 @@ setGeneric("zi", function(x, ...) standardGeneric("zi"))
 
 setGeneric("zo", function(x, ...) standardGeneric("zo"))
 
+setGeneric("left", function(x, ...) standardGeneric("left"))
+
+setGeneric("right", function(x, ...) standardGeneric("right"))
+
 setGeneric("restore", function(x, ...) standardGeneric("restore"))
 
 ## ShortReadFile
