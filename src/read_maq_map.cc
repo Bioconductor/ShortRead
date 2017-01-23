@@ -132,9 +132,9 @@ template< int max_readlen > SEXP read_maq_map_B( SEXP filename, SEXP maxreads )
         INTEGER(errsum)[i] = read.info2;
         INTEGER(nhits0)[i] = read.c[0];
         INTEGER(nhits1)[i] = read.c[1];
-        append_string_to_CharAEAE( readid,  read.name );
-        append_string_to_CharAEAE( readseq, readseqbuf );
-        append_string_to_CharAEAE( fastq,   fastqbuf );
+        CharAEAE_append_string( readid,  read.name );
+        CharAEAE_append_string( readseq, readseqbuf );
+        CharAEAE_append_string( fastq,   fastqbuf );
     }
    
     /* Build the data frame */
