@@ -28,7 +28,7 @@ spViewPerFeature <- function(GRL,
         stop(sprintf("element named '%s' does not exist", name))
     
     gr <- GRL[[name]]
-    seqlevels(gr, force=TRUE) <- levels(seqnames(gr))
+    seqlevels(gr, pruning.mode="coarse") <- levels(seqnames(gr))
     which <- reduce(range(gr))
     annTrack <- gr
     

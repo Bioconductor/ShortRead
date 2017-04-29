@@ -183,7 +183,7 @@
     ignore.strand <- ignore.strand(x)
     if (any(seqnames(anntrack)@values %in% seqlevels(rng))) {
         gr <- anntrack
-        seqlevels(gr, force=TRUE) <- seqlevels(vrange(x))
+        seqlevels(gr, pruning.mode="coarse") <- seqlevels(vrange(x))
     } else  {
         message(paste(strwrap("SnapshotFunction-helper: seqname of
            'annTrack' does not match the imported range. Annotation
