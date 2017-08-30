@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.35
+-----------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Reads up to 2M bases can be parsed
+
 CHANGES IN VERSION 1.27
 -----------------------
 
