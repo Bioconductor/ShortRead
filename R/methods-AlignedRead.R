@@ -74,7 +74,7 @@ setAs("PairwiseAlignments", "AlignedRead",
         alignQuality = IntegerQuality(score(from)))
 })
 
-setAs("AlignedRead", "RangesList", function(from)
+setAs("AlignedRead", "IntegerRangesList", function(from)
 {
     chr <- chromosome(from)
     pos <- position(from)
@@ -165,11 +165,11 @@ setMethod(append, c("AlignedRead", "AlignedRead"),
 
 ## match, %in%
 
-setMethod("%in%", c("AlignedRead", "RangesList"),
+setMethod("%in%", c("AlignedRead", "IntegerRangesList"),
     function(x, table)
 {
-    ## could use as(x, "RangesList"), but the assumptions here (about
-    ## the definition of notNA, and about split() preserving order)
+    ## could use as(x, "IntegerRangesList"), but the assumptions here
+    ## (about the definition of notNA, and about split() preserving order)
     ## make this fragile enough as it is
     ##
     ## consider only sensible alignemnts

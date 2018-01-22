@@ -11,7 +11,7 @@
 \alias{[,AlignedRead,ANY,missing,ANY-method}
 \alias{append,AlignedRead,AlignedRead-method}
 \alias{coerce,PairwiseAlignments,AlignedRead-method}
-\alias{coerce,AlignedRead,RangesList-method}
+\alias{coerce,AlignedRead,IntegerRangesList-method}
 \alias{coerce,AlignedRead,RangedData-method}
 \alias{coerce,AlignedRead,GRanges-method}
 \alias{coerce,AlignedRead,GAlignments-method}
@@ -23,7 +23,7 @@
 \alias{srrank,AlignedRead-method}
 \alias{srorder,AlignedRead-method}
 \alias{srduplicated,AlignedRead-method}
-\alias{\%in\%,AlignedRead,RangesList-method}
+\alias{\%in\%,AlignedRead,IntegerRangesList-method}
 \alias{detail,AlignedRead-method}
 \alias{show,AlignedRead-method}
 
@@ -106,7 +106,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
     \item{coerce}{
 	  \code{signature(from = "PairwiseAlignments", to = "AlignedRead")}:
 
-	  \code{signature(from = "AlignedRead", to = "RangesList")}:
+	  \code{signature(from = "AlignedRead", to = "IntegerRangesList")}:
           \code{signature(from = "AlignedRead", to = "RangedData")}:
           \code{signature(from = "AlignedRead", to = "GRanges")}:
           \code{signature(from = "AlignedRead", to = "GAlignments")}:
@@ -116,12 +116,12 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       to coerce objects of class \code{from} to class
       \code{"AlignedRead"}.
 	  
-      Coercion from AlignedRead to \link[IRanges]{RangesList},
+      Coercion from AlignedRead to \link[IRanges]{IntegerRangesList},
           \link[IRanges]{RangedData} or
 	  \link[GenomicRanges]{GRanges} assumes that
 	  \code{position(from)} uses a \sQuote{leftmost} (see
 	  \code{coverage} on this page) coordinate
-	  system. Since \link[IRanges]{Ranges} objects cannot
+	  system. Since \link[IRanges]{IntegerRanges} objects cannot
 	  store \code{NA} values, reads with \code{NA} in the
 	  \code{position}, \code{width}, \code{chromosome} or (in the
 	  case of GRanges) \code{strand} vectors are dropped.
@@ -175,7 +175,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
     }
     
 	\item{\%in\%}{
-	  \code{signature(x = "AlignedRead", table = "RangesList")}:
+	  \code{signature(x = "AlignedRead", table = "IntegerRangesList")}:
 
 	  Return a length(x) logical vector indicating whether the
 	  chromosome, position, and width of \code{x} overlap (see IRanges
