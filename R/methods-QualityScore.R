@@ -252,14 +252,14 @@ setMethod(narrow, "FastqQuality",
 })
 
 setMethod(alphabet, "FastqQuality",
-          function(x, ...) rawToChar(as.raw(32:125), TRUE))
+          function(x, ...) rawToChar(as.raw(32:126), TRUE))
 
 setMethod(encoding, "FastqQuality",
     function(x)
 {
     alf <- alphabet(x)
     x <- setNames(seq(-1, length.out=length(alf)), alf)
-    x[x >= 0 & x <= 41]
+    x[x >= 0]
 })
 
 setMethod(encoding, "SFastqQuality",
@@ -281,10 +281,10 @@ setMethod(show, "FastqQuality", function(object) {
 {
     res <- callGeneric(quality(x), as.prob=as.prob, ...)
     if (is(res, "matrix")) {
-        res <- res[,1+32:125, drop=FALSE]
+        res <- res[,1+32:126, drop=FALSE]
         colnames(res) <- alphabet(x)
     } else {
-        res <- res[1+32:125]
+        res <- res[1+32:126]
         names(res) <- alphabet(x)
     }
     res
