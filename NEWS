@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.37
+-----------------------
+
+BUG FIXES
+
+    o (v. 1.37.2) FastqQuality() includes the last printable ASCII
+      character '~'
+
+    o (v. 1.37.3) countLines() returns numeric values, to allow for
+      files with more than 2^31-1 lines
+
 CHANGES IN VERSION 1.35
 -----------------------
 
