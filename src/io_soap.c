@@ -130,7 +130,7 @@ SEXP read_soap(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
         Rf_error("'%s' must be '%s'", "qualityType",
                  "SFastqQuality' or 'FastqQuality");
 
-    int nrec = _count_lines_sum(files);
+    int nrec = (int) _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
     SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec, "BString"));
     SET_VECTOR_ELT(ref, 1, _NEW_XSNAP(nrec, "DNAString"));

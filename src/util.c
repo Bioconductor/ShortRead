@@ -341,12 +341,12 @@ void _as_factor(SEXP vec, const char **levels, const int n_lvls)
  * file: an open file stream at position 0
  *
  */
-static int _count_lines(gzFile file)
+static double _count_lines(gzFile file)
 {
     const int LINEBUF_SIZE = 20001;
     size_t bytes_read;
     char *buf = (char *) R_alloc(LINEBUF_SIZE + 1, sizeof(char));
-    int lines = 0;
+    double lines = 0;
 
     while ((bytes_read = gzread(file, buf, LINEBUF_SIZE)) > 0) {
         char *p = buf;
@@ -358,12 +358,15 @@ static int _count_lines(gzFile file)
     return lines;
 }
 
-int _count_lines_sum(SEXP files)
+double _count_lines_sum(SEXP files)
 {
-    SEXP nlines = count_lines(files);
-    int i, nrec = 0;
+    SEXP nlines = PROTECT(count_lines(files));
+    int i;
+    double nrec = 0;
     for (i = 0; i < LENGTH(files); ++i)
-        nrec += INTEGER(nlines)[i];
+        nrec += REAL(nlines)[i];
+
+    UNPROTECT(1);
     return nrec;
 }
 
@@ -378,12 +381,12 @@ SEXP count_lines(SEXP files)
         error("'files' must be character()");
 
     nfile = LENGTH(files);
-    PROTECT(ans = NEW_INTEGER(nfile));
+    PROTECT(ans = NEW_NUMERIC(nfile));
     for (i = 0; i < nfile; ++i) {
         R_CheckUserInterrupt();
         filepath = translateChar(STRING_ELT(files, i));
         file = _fopen(filepath, "rb");
-        INTEGER(ans)[i] = _count_lines(file);
+        REAL(ans)[i] = _count_lines(file);
         gzclose(file);
     }
 

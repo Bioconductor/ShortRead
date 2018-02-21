@@ -215,7 +215,7 @@ SEXP read_prb_as_character(SEXP fname, SEXP asSolexa)
         error("'fname' must be 'character(1)'");
     if (!IS_LOGICAL(asSolexa) || LENGTH(asSolexa) != 1)
         error("'asSolexa' must be 'logical(1)'");
-    const int n_reads = INTEGER(count_lines(fname))[0];
+    const int n_reads = (int) REAL(count_lines(fname))[0];
     const int qbase = LOGICAL(asSolexa)[0] ? SOLEXA_QBASE : PHRED_QBASE;
     SEXP ans = PROTECT(NEW_CHARACTER(n_reads));
 
@@ -332,7 +332,7 @@ SEXP read_solexa_fastq(SEXP files, SEXP withId)
         Rf_error("'%s' must be '%s'", "withId", "logical(1)");
 
     nfiles = LENGTH(files);
-    nrec = _count_lines_sum(files) / LINES_PER_FASTQ_REC;
+    nrec = (int) _count_lines_sum(files) / LINES_PER_FASTQ_REC;
     PROTECT(ans = NEW_LIST(3));
     SET_VECTOR_ELT(ans, 0, _NEW_XSNAP(nrec, "DNAString"));	/* sread */
     if (LOGICAL(withId)[0] == TRUE)	/* id */
@@ -443,7 +443,9 @@ SEXP read_XStringSet_columns(SEXP files, SEXP header, SEXP sep,
 
     int nrow = INTEGER(nrows)[0];
     if (nrow < 0) {
-        nrow = _count_lines_sum(files);
+        nrow = (int) _count_lines_sum(files);
+        if (nrow < 0)           /* integer overflow */
+            Rf_error("'readXStringSet()' cannot read > 2^31 - 1 records");
         nrow -= nfiles * (LOGICAL(header)[0] + INTEGER(skip)[0]);
     }
 
@@ -749,7 +751,7 @@ SEXP read_solexa_export(SEXP files, SEXP sep, SEXP commentChar, SEXP withFlags)
         withMultiplexIndex = LOGICAL(withFlags)[1],
         withPairedReadNumber = LOGICAL(withFlags)[2];
 
-    int nrec = _count_lines_sum(files);
+    int nrec = (int) _count_lines_sum(files);
 
     SEXP result = PROTECT(NEW_LIST(N_ELTS));;
     if (withId)

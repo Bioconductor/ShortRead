@@ -118,7 +118,7 @@ SEXP read_bowtie(SEXP files, SEXP qualityType, SEXP sep, SEXP commentChar)
         Rf_error("'%s' must be '%s'", "qualityType",
                  "SFastqQuality' or 'FastqQuality");
 
-    int nrec = _count_lines_sum(files);
+    int nrec = (int) _count_lines_sum(files);
     SEXP ref = PROTECT(NEW_LIST(N_ELTS));
     SET_VECTOR_ELT(ref, 0, _NEW_XSNAP(nrec, "BString"));	/* id */
     SET_VECTOR_ELT(ref, 1, NEW_INTEGER(nrec));	/* strand */
