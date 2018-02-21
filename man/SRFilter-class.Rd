@@ -78,7 +78,7 @@ Class \code{"\linkS4class{PossibleMethod}"}, by class "function", distance 2.
     }
 
     \item{c}{\code{signature(x = "SRFilter", ...)}: Combine filters into a
-      single \code{\link[IRanges]{FilterRules}} object.
+      single \code{FilterRules} object.
     }
   }
 }
