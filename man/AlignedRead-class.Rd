@@ -121,7 +121,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \link[GenomicRanges]{GRanges} assumes that
 	  \code{position(from)} uses a \sQuote{leftmost} (see
 	  \code{coverage} on this page) coordinate
-	  system. Since \link[IRanges]{IntegerRanges} objects cannot
+	  system. Since \link[IRanges]{IntegerRangesList} objects cannot
 	  store \code{NA} values, reads with \code{NA} in the
 	  \code{position}, \code{width}, \code{chromosome} or (in the
 	  case of GRanges) \code{strand} vectors are dropped.
@@ -178,8 +178,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \code{signature(x = "AlignedRead", table = "IntegerRangesList")}:
 
 	  Return a length(x) logical vector indicating whether the
-	  chromosome, position, and width of \code{x} overlap (see IRanges
-	  \code{\link[IRanges:IntervalTree-class]{overlap}}) with ranges in
+	  chromosome, position, and width of \code{x} overlap with ranges in
 	  \code{table}. Reads for which \code{chromosome()},
 	  \code{position()}, or \code{width()} return \code{NA} \emph{never}
 	  overlap with \code{table}. This function assumes that positions	

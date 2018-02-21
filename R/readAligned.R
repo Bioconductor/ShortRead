@@ -289,15 +289,6 @@
     .Call(.read_soap, files, qualityType, sep, commentChar)
 }
 
-.readAligned_bam <-
-    function(dirPath, pattern=character(0), ...,
-             param=ScanBamParam(simpleCigar=TRUE,
-               reverseComplement=TRUE, what=.readAligned_bamWhat()))
-{
-    .Defunct("readGAlignments", "GenomicAlignments",
-                msg="use GenomicAlignments::readGAlignments to read BAM files")
-}
-
 .readAligned_character <-
     function(dirPath, pattern=character(0),
              type=c(

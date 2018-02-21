@@ -73,7 +73,8 @@ Class \code{"\linkS4class{PossibleMethod}"}, by class "function", distance 2.
 
     \item{coerce}{\code{signature(from = "SRFilter", to =
         "FilterRules")}: Coerce a filter to a
-      \code{\link[IRanges]{FilterRules}} object of length one.
+        \code{\link[S4Vectors:FilterRules-class]{FilterRules}} object of
+        length one.
     }
 
     \item{c}{\code{signature(x = "SRFilter", ...)}: Combine filters into a

@@ -12,7 +12,9 @@
 \alias{zi,SpTrellis-method}
 \alias{zo}
 \alias{zo,SpTrellis-method}
+\alias{right}
 \alias{right,SpTrellis-method}
+\alias{left}
 \alias{left,SpTrellis-method}
 \alias{restore}
 \alias{restore,SpTrellis-method}
