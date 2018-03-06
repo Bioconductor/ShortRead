@@ -25,6 +25,9 @@
 \alias{append,ShortRead,ShortRead-method}
 \alias{narrow,ShortRead-method}
 \alias{detail,ShortRead-method}
+\alias{sread}
+\alias{sread,ShortRead-method}
+\alias{id}
 \alias{id,ShortRead-method}
 \alias{width,ShortRead-method}
 \alias{length,ShortRead-method}

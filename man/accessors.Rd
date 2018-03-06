@@ -3,10 +3,6 @@
 \alias{accessors}
 % SRVector
 \alias{vclass}
-% ShortRead / ShortReadQ
-\alias{sread}
-\alias{sread,ShortRead-method}
-\alias{id}
 % AlignedRead
 \alias{chromosome}
 \alias{position}
@@ -37,9 +33,6 @@
 
 ## SRVector
 vclass(object, ...)
-## ShortRead / ShortReadQ
-sread(object, ...)
-id(object, ...)
 ## AlignedRead
 chromosome(object, ...)
 position(object, ...)
