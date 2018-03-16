@@ -32,7 +32,7 @@ SEXP alphabet_by_cycle(SEXP stringSet, SEXP width, SEXP alphabet)
     memset(ansp, 0, LENGTH(ans) * sizeof(int));	/* initialize to 0 */
 
     /* set up a decoder for the string */
-    const char *base = get_XStringSet_xsbaseclassname(stringSet);
+    const char *base = get_List_elementType(stringSet);
     DECODE_FUNC decode = decoder(base);
 
     /* map between decoded character and offset into 'ans' */
@@ -97,8 +97,8 @@ SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
     memset(ansp, 0, LENGTH(ans) * sizeof(int));	/* initialize to 0 */
 
     /* set up a decoder for string1 and string2 */
-    const char *base1 = get_XStringSet_xsbaseclassname(stringSet1);
-    const char *base2 = get_XStringSet_xsbaseclassname(stringSet2);
+    const char *base1 = get_List_elementType(stringSet1);
+    const char *base2 = get_List_elementType(stringSet2);
     DECODE_FUNC decode1 = decoder(base1);
     DECODE_FUNC decode2 = decoder(base2);
 
@@ -144,7 +144,7 @@ SEXP alphabet_pair_by_cycle(SEXP stringSet1, SEXP stringSet2, SEXP width,
 SEXP alphabet_score(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStringSet */
-    const char *base = get_XStringSet_xsbaseclassname(stringSet);
+    const char *base = get_List_elementType(stringSet);
     if (strcmp(base, "BString") != 0)
         Rf_error("'stringSet' must contain BString elements");
     if (!IS_NUMERIC(score) || LENGTH(score) != 256)
@@ -174,7 +174,7 @@ SEXP alphabet_score(SEXP stringSet, SEXP score)
 SEXP alphabet_as_int(SEXP stringSet, SEXP score)
 {
     /* FIXME: stringSet is XStrinSet(1) or longer? */
-    const char *base = get_XStringSet_xsbaseclassname(stringSet);
+    const char *base = get_List_elementType(stringSet);
     if (strcmp(base, "BString") != 0)
         Rf_error("'stringSet' must contain BString elements");
     if (!IS_INTEGER(score) || LENGTH(score) != 256)

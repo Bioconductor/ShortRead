@@ -74,7 +74,7 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
         Rf_error("'%s' must be %s", "max_width", "'integer(1)', >=0");
     const int width = INTEGER(max_width)[0];
 
-    DECODE_FUNC dnaDecoder = decoder(get_XStringSet_xsbaseclassname(sread));
+    DECODE_FUNC dnaDecoder = decoder(get_List_elementType(sread));
     XStringSet_holder xid = hold_XStringSet(id),
         xsread = hold_XStringSet(sread), xquality = hold_XStringSet(quality);
 
