@@ -27,7 +27,7 @@ test_readQseq_DataFrame <- function()
 {
     res <- readQseq(sp)
     xdf <- readQseq(sp, as="DataFrame")
-    checkEquals("DataFrame", as.vector(class(xdf)))
+    checkTrue(is(xdf, "DataFrame"))
     checkEquals(c(256L, 11L), dim(xdf))
     checkBstring(sread(res), xdf[[9]])
     checkBstring(quality(quality(res)), xdf[[10]])
