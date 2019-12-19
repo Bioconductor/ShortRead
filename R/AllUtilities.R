@@ -59,7 +59,7 @@ polyn <- function(nucleotides, n)
     name <- deparse(substitute(x))
     if (!is(x, type))
         .arg_mismatch_type_err2(name, type, class(x))
-    if (!is.na(len) && sum(length(x) == len)==0) {
+    if (!anyNA(len) && sum(length(x) == len)==0) {
         typelen <- paste(type, paste("(", len, ")", sep=""),
                          sep="", collapse="' '")
         was <- sprintf("%s(%d)", class(x), length(x))
