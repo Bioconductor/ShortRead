@@ -47,7 +47,7 @@ setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "BStringSet"),
                 alf <- alphabetFrequency(head(quality, 10000),
                                          collapse=TRUE)
                 wch <- which(alf != 0)
-                if (any(alf) && (min(wch) >= 58) && (max(wch) > 74)) {
+                if (any(alf) && (min(wch) > 59) && (max(wch) > 75)) {
                     SFastqQuality
                 } else FastqQuality
             }, SFastqQuality=SFastqQuality, FastqQuality=FastqQuality)
