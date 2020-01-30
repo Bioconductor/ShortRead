@@ -21,6 +21,16 @@ checkShortReadQ <- function(obj, len, wd) {
     checkIdentical(as.character(id(x)), as.character(id(y)))
 }
 
+test_qualityTypeAuto <- function() {
+    ## SFastqQuality if all > ':'; some > 'J'
+    quality <- BStringSet(":J")
+    quality <- BStringSet(";J")
+    checkIdentical(.qualityTypeAuto(quality), FastqQuality)
+    checkIdentical(.qualityTypeAuto(quality), FastqQuality)
+    quality <- BStringSet(";K")
+    checkIdentical(.qualityTypeAuto(quality), SFastqQuality)
+}
+
 test_ShortReadQ_constructors <- function() {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     sr <- obj <- readFastq(sp)

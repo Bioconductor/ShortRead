@@ -29,6 +29,18 @@ setMethod(ShortReadQ, c("DNAStringSet", "QualityScore", "missing"),
         id=BStringSet(character(length(sread))))
 })
 
+.qualityTypeAuto <-
+    function(quality)
+{
+    ## all > ':'; some > 'J'
+    breaks <- which(alphabetFrequency(BStringSet(":J"), collapse = TRUE) > 0)
+    alf <- alphabetFrequency(head(quality, 10000), collapse=TRUE)
+    wch <- which(alf != 0)
+    if (any(alf) && (min(wch) > breaks[[1]]) && (max(wch) > breaks[[2]])) {
+        SFastqQuality
+    } else FastqQuality
+}
+
 setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "BStringSet"),
     function(sread, quality, id, ...,
              qualityType=c("Auto", "FastqQuality", "SFastqQuality"),
@@ -42,15 +54,10 @@ setMethod(ShortReadQ, c("DNAStringSet", "BStringSet", "BStringSet"),
         .throw(SRError("UserArgumentMismatch", conditionMessage(err)))
     })
     tryCatch({
-        qualityFunc <-
-            switch(qualityType, Auto={
-                alf <- alphabetFrequency(head(quality, 10000),
-                                         collapse=TRUE)
-                wch <- which(alf != 0)
-                if (any(alf) && (min(wch) >= 58) && (max(wch) > 74)) {
-                    SFastqQuality
-                } else FastqQuality
-            }, SFastqQuality=SFastqQuality, FastqQuality=FastqQuality)
+        qualityFunc <- switch(qualityType,
+                              Auto = .qualityTypeAuto(quality),
+                              SFastqQuality = SFastqQuality,
+                              FastqQuality = FastqQuality)
         quality <- qualityFunc(quality)
         srq <- 
             if (withIds)
