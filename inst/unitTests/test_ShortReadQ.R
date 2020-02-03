@@ -22,6 +22,7 @@ checkShortReadQ <- function(obj, len, wd) {
 }
 
 test_qualityTypeAuto <- function() {
+    .qualityTypeAuto <- ShortRead:::.qualityTypeAuto
     ## SFastqQuality if all > ':'; some > 'J'
     quality <- BStringSet(":J")
     quality <- BStringSet(";J")
