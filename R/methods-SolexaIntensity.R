@@ -187,7 +187,7 @@ SolexaIntensity <-
                                     verbose=verbose)
 
     ## lane, tile, x, y
-    lanes <- sub("s_([0-9]+)_.*", "\\1", basename(posFiles))
+    lanes <- factor(sub("s_([0-9]+)_.*", "\\1", basename(posFiles)))
     tiles <- as.integer(sub("s_[0-9]+_([0-9]+)_.*", "\\1", basename(posFiles)))
     pos <- do.call(rbind, mapply(function(fl, lane, tile) {
         cbind(lane=lane, tile=tile, read.table(fl))

@@ -240,8 +240,8 @@ test_AlignedRead_readAligned_SolexaResult <- function()
     checkIdentical(tbl[[6]], ad[[4]])
 
     checkIdentical(tbl[[10]], ad[[5]])
-    checkIdentical(tbl[[11]], ad[[6]])
-    checkIdentical(tbl[[12]], ad[[7]])
+    checkIdentical(as.character(tbl[[11]]), ad[[6]])
+    checkIdentical(as.character(tbl[[12]]), ad[[7]])
 }
 
 test_AlignedRead_constructor <- function()
