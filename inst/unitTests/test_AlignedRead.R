@@ -223,7 +223,8 @@ test_AlignedRead_readAligned_SolexaResult <- function()
     fl <- "s_1_results_head.txt"
     src <- system.file("unitTests", "cases", package="ShortRead")
     tbl <- read.table(file.path(src, fl), fill=TRUE,
-                      col.names=paste("V", 1:12, sep=""))
+                      col.names=paste("V", 1:12, sep=""),
+                      stringsAsFactors = TRUE)
     aln <- readAligned(src, fl, "SolexaResult")
     
     checkIdentical(as.character(tbl[[2]]), as.character(sread(aln)))
