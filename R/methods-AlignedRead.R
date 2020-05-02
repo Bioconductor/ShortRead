@@ -83,18 +83,6 @@ setAs("AlignedRead", "IntegerRangesList", function(from)
     split(IRanges(start=pos[notNA], width=wd[notNA]), chr[notNA])
 })
 
-setAs("AlignedRead", "RangedData", function(from)
-{
-  chr <- chromosome(from)
-  pos <- position(from)
-  wd <- width(from)
-  std <- strand(from)
-  notNA <- !(is.na(chr) | is.na(pos) | is.na(wd) | is.na(std))
-  GRanges(IRanges(pos[notNA], width=wd[notNA]), space = chr[notNA],
-          id = id(from)[notNA], strand = std[notNA],
-          pData(alignData(from))[notNA,,drop=FALSE])
-})
-
 setAs("AlignedRead", "GRanges", function(from)
 {
     chr <- chromosome(from)
