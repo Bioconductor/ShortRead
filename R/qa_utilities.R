@@ -16,7 +16,7 @@
     mode(alf) <- "numeric"
     alf <- rowSums(alf)
     if (baseOnly && is(object, "DNAStringSet")) {
-        bases <- names(Biostrings:::xscodes(object, baseOnly=baseOnly))
+        bases <- names(xscodes(object, baseOnly=baseOnly))
         idx <- names(alf) %in% bases
         alf <- c(alf[idx], other=sum(alf[!idx]))
     }

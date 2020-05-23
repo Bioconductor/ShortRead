@@ -12,7 +12,6 @@
 \alias{append,AlignedRead,AlignedRead-method}
 \alias{coerce,PairwiseAlignments,AlignedRead-method}
 \alias{coerce,AlignedRead,IntegerRangesList-method}
-\alias{coerce,AlignedRead,RangedData-method}
 \alias{coerce,AlignedRead,GRanges-method}
 \alias{coerce,AlignedRead,GAlignments-method}
 \alias{coerce,AlignedRead,GappedReads-method}
@@ -107,7 +106,6 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
 	  \code{signature(from = "PairwiseAlignments", to = "AlignedRead")}:
 
 	  \code{signature(from = "AlignedRead", to = "IntegerRangesList")}:
-          \code{signature(from = "AlignedRead", to = "RangedData")}:
           \code{signature(from = "AlignedRead", to = "GRanges")}:
           \code{signature(from = "AlignedRead", to = "GAlignments")}:
           \code{signature(from = "AlignedRead", to = "GappedReads")}:
@@ -116,8 +114,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
       to coerce objects of class \code{from} to class
       \code{"AlignedRead"}.
 	  
-      Coercion from AlignedRead to \link[IRanges]{IntegerRangesList},
-          \link[IRanges]{RangedData} or
+      Coercion from AlignedRead to \link[IRanges]{IntegerRangesList} or
 	  \link[GenomicRanges]{GRanges} assumes that
 	  \code{position(from)} uses a \sQuote{leftmost} (see
 	  \code{coverage} on this page) coordinate
