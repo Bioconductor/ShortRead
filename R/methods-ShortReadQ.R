@@ -140,6 +140,28 @@ setMethod(writeFastq, c("ShortReadQ", "character"),
     invisible(length(object))
 })
 
+setMethod(
+    countFastq, "character",
+    function(dirPath, pattern = character(0), ...)
+{
+    src <- .file_names(dirPath, pattern)
+    names(src) <- basename(src)
+    tryCatch({
+        result <- vapply(src, function(fl) {
+            .Call(.count_records, fl)
+        }, numeric(3))
+    }, error=function(err) {
+        .throw(SRError(
+            "Input/Output",
+            "file(s):\n    %s\n  message: %s",
+            paste(src, collapse="\n    "),
+            conditionMessage(err)
+        ))
+    })
+    rownames(result) <- c("records", "nucleotides", "scores")
+    as.data.frame(t(result))
+})
+
 ## coerce
 
 setMethod(pairwiseAlignment, "ShortReadQ",

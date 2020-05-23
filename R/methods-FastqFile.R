@@ -21,6 +21,16 @@ setMethod(writeFastq, c("ShortReadQ", "FastqFile"),
                 compress=compress, ...)
 })
 
+setMethod(countFastq, "FastqFile",
+    function(dirPath, pattern=character(), ...)
+{
+    if (length(pattern) != 0)
+        .throw(SRWarn("UserArgumentMismatch",
+                      "'pattern' ignored for '%s'",
+                      "readFastq,FastqFile-method"))
+    countFastq(path(dirPath), ...)
+})
+
 setMethod(FastqFileList, "ANY",
     function(..., class="FastqFile")
 {

@@ -16,6 +16,7 @@
 \alias{open.ShortReadFile}
 \alias{close.ShortReadFile}
 \alias{readFastq,FastqFile-method}
+\alias{countFastq,FastqFile-method}
 
 % FastqFileList
 \alias{FastqFileList,ANY-method}
@@ -68,6 +69,7 @@ FastqFileList(..., class="FastqFile")
 \S3method{open}{ShortReadFile}(con, ...)
 \S3method{close}{ShortReadFile}(con, ...)
 \S4method{readFastq}{FastqFile}(dirPath, pattern=character(), ...)
+\S4method{countFastq}{FastqFile}(dirPath, pattern=character(), ...)
 
 ## FastqSampler and FastqStreamer
 FastqSampler(con, n=1e6, readerBlockSize=1e8, verbose=FALSE,
@@ -149,6 +151,9 @@ yield(x, ...)
       \code{?\link{writeFastq}}, 
       \code{?"writeFastq,ShortReadQ,FastqFile-method"}.}
 
+    \item{\code{countFastq,FastqFile-method}:}{see also
+      \code{?\link{countFastq}}.}
+
     \item{\code{yield}:}{Draw a single sample from the
       instance. Operationally this requires that the underlying data
       (e.g., file) represented by the \code{Sampler} instance be
@@ -175,7 +180,8 @@ yield(x, ...)
 
 \seealso{
 
-  \code{\link{readFastq}}, \code{\link{writeFastq}}, \code{\link{yield}}.
+  \code{\link{readFastq}}, \code{\link{writeFastq}},
+  \code{\link{countFastq}}, \code{\link{yield}}.
 
 }
 

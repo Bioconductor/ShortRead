@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.48
+-----------------------
+
+NEW FEATURES
+
+    o (v 1.47.1) `countFastq()` counts the number of records,
+      nucleotides, and quality scores in one or several fastq files.
+
 CHANGES IN VERSION 1.44
 -----------------------
 

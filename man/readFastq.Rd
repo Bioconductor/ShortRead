@@ -2,9 +2,11 @@
 
 \alias{readFastq}
 \alias{writeFastq}
+\alias{countFastq}
 \alias{readFastq,character-method}
+\alias{countFastq,character-method}
 
-\title{Read and write FASTQ-formatted files}
+\title{Read, write, and count records in FASTQ-formatted files}
 
 \description{
 
@@ -19,12 +21,18 @@
   append to an existing file. Attempting to write to an existing file
   with \code{mode="w"} results in an error.
 
+  \code{countFastq} counts the nubmer of records, nucleotides, and
+  base-level quality scores in one or several fastq files.
+
 }
 \usage{
 readFastq(dirPath, pattern=character(0), ...)
 \S4method{readFastq}{character}(dirPath, pattern=character(0), ..., withIds=TRUE)
 
 writeFastq(object, file, mode="w", full=FALSE, compress=TRUE, ...)
+
+countFastq(dirPath, pattern=character(0), ...)
+\S4method{countFastq}{character}(dirPath, pattern=character(0), ...)
 }
 
 \arguments{
@@ -129,6 +137,12 @@ writeFastq(object, file, mode="w", full=FALSE, compress=TRUE, ...)
   or appending to file \code{file}. The function returns, invisibly, the
   length of \code{object}, and hence the number of records written.
 
+  \code{countFastq} returns a data.frame with row names equal to the
+  base (file) name of the fastq file, and columns \code{records},
+  \code{nucleotides}, and \code{scores}, corresponding to tally of each
+  entity in each file. Parsing mistakes from poorly formmated files
+  result in an error.
+
 }
 
 \seealso{
@@ -146,8 +160,9 @@ writeFastq(object, file, mode="w", full=FALSE, compress=TRUE, ...)
 \author{Martin Morgan}
 
 \examples{
-showMethods(readFastq)
-showMethods(writeFastq)
+methods(readFastq)
+methods(writeFastq)
+methods(countFastq)
 
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 rfq <- readFastq(analysisPath(sp), pattern="s_1_sequence.txt")
@@ -162,5 +177,7 @@ rfq1
 file <- tempfile()
 writeFastq(rfq, file)
 readLines(file, 8)
+countFastq(file)
+
 }
 \keyword{manip}

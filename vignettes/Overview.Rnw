@@ -54,6 +54,7 @@ Functionality is summarized in Table~\ref{tab:fastq}.
     & \Rfunction{FastqSampler} & Draw random samples from FASTQ files \\
     & \Rfunction{readFastq} & Read an entire FASTQ file into memory \\
     & \Rfunction{writeFastq} & Write FASTQ objects to a connection (file) \\
+    & \Rfunction{countFastq} & Quickly count FASTQ records in files \\
     \multicolumn{3}{l}{Sequence and quality summary} \\
     & \Rfunction{alphabetFrequency} & Nucleotide or quality score use per read\\
     & \Rfunction{alphabetByCycle} & Nucleotide or quality score use by cycle\\
@@ -92,12 +93,18 @@ sampler <- FastqSampler("a.fastq.gz")
 fq <- yield(sampler)
 @ 
 \noindent The default size for both streams and samples is 1M records;
-this volume of data fits easily into memory. Small FASTQ files can be
+this volume of data fits easily into memory. Use
+\Rfunction{countFastq} to get a quick and memory-efficient count of
+the number of records and nucleotides in a file
+<<countFastq>>=
+fl <- system.file(package="ShortRead", "extdata", "E-MTAB-1147", 
+                  "ERR127302_1_subset.fastq.gz")
+countFastq(fl)
+@ 
+\noindent Small FASTQ files can be
 read in to memory in their entirety using \Rfunction{readFastq}; we do
 this for our sample data
 <<readFastq>>=
-fl <- system.file(package="ShortRead", "extdata", "E-MTAB-1147", 
-                  "ERR127302_1_subset.fastq.gz")
 fq <- readFastq(fl)
 @ 
 

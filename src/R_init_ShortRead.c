@@ -20,7 +20,9 @@ SEXP set_omp_threads(SEXP nthreads)
 static const R_CallMethodDef callMethods[] = {
     /* util.c */
     {".set_omp_threads", (DL_FUNC) & set_omp_threads, 1},
+    /* count.c */
     {".count_lines", (DL_FUNC) & count_lines, 1},
+    {".count_records", (DL_FUNC) & count_records, 1},
     /* trim.c */
     {".trimTails", (DL_FUNC) & trim_tails, 4},
     {".trimTailw", (DL_FUNC) & trim_tailw, 4},

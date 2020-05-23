@@ -87,6 +87,10 @@ setGeneric("writeFastq",
            function(object, file, mode="w", full=FALSE, compress=TRUE, ...)
            standardGeneric("writeFastq"), signature=c("object", "file"))
 
+setGeneric("countFastq",
+           function(dirPath, pattern = character(0), ...)
+           standardGeneric("countFastq"), signature = "dirPath")
+
 setGeneric("readFasta",
            function(dirPath, pattern=character(0), ...,
                     nrec=-1L, skip=0L)
