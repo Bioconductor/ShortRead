@@ -64,6 +64,7 @@ SEXP count_lines(SEXP files)
  * validity checking implemented in `kseq_read()`
  */
 
+#include <stdint.h>
 #include "htslib/kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
