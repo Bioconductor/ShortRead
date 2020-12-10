@@ -194,29 +194,49 @@ test_FastqStreamer_IRanges <- function()
     checkException(FastqStreamer(fl, rng), silent=TRUE)
 }
 
+test_ShortReadQ_coerce_DNAStringSet <- function()
+{
+    checkIdentical(
+        as(ShortReadQ(), "DNAStringSet"),
+        DNAStringSet(setNames(nm = character()))
+    )
+
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    obj <- readFastq(sp, qualityType="SFastqQuality")
+    checkIdentical(sread(obj), unname(as(obj, "DNAStringSet")))
+    checkIdentical(as.character(id(obj)), names(as(obj, "DNAStringSet")))
+}
+
 test_ShortReadQ_coerce_QualityScaledDNAStringSet <- function()
 {
     sp <- SolexaPath(system.file('extdata', package='ShortRead'))
     obj <- readFastq(sp, qualityType="SFastqQuality")
 
     res <- as(obj, "QualityScaledDNAStringSet")
-    checkIdentical(as.character(sread(obj)),
-                   as.character(as(res, "DNAStringSet")))
+    checkIdentical(sread(obj), unname(as(res, "DNAStringSet")))
     checkIdentical(as.character(quality(quality(obj))),
                    as.character(quality(res)))
+    checkIdentical(as.character(id(obj)), names(res))
     checkTrue(is(quality(res), "SolexaQuality"))
 
     obj <- initialize(obj, quality=FastqQuality(quality(quality(obj))))
     res <- as(obj, "QualityScaledDNAStringSet")
-    checkIdentical(as.character(sread(obj)),
-                   as.character(as(res, "DNAStringSet")))
+    checkIdentical(sread(obj), unname(as(res, "DNAStringSet")))
     checkIdentical(as.character(quality(quality(obj))),
                    as.character(quality(res)))
+    checkIdentical(as.character(id(obj)), names(res))
     checkTrue(is(quality(res), "PhredQuality"))
 
     q <- MatrixQuality(as(quality(obj), "matrix"))
     obj <- initialize(obj, quality=q)
     checkException(as(obj, "QualityScaledDNAStringSet"), silent=TRUE)
+
+    obj <- ShortReadQ()
+    res <- as(obj, "QualityScaledDNAStringSet")
+    checkIdentical(sread(obj), unname(as(res, "DNAStringSet")))
+    checkIdentical(as.character(quality(quality(obj))),
+                   as.character(quality(res)))
+    checkIdentical(as.character(id(obj)), names(res))
 }
 
 test_ShortReadQ_coerce_matrix <- function() 

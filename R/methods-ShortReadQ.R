@@ -93,7 +93,7 @@ setAs("ShortReadQ", "QualityScaledDNAStringSet", function(from)
         if (is(q, "SFastqQuality")) as(q, "SolexaQuality")
         else if (is(q, "FastqQuality")) as(q, "PhredQuality")
         else as(q, "XStringQuality")
-    QualityScaledDNAStringSet(sread(from), q)
+    QualityScaledDNAStringSet(as(from, "DNAStringSet"), q)
 })
 
 setMethod(readFastq, "character",
