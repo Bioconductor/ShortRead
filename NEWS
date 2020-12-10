@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.50
+-----------------------
+
+NEW FEATURES
+
+    o (v 1.49.1) `as(., "QualityScaledDNAStringSet")` propagates
+      names. See https://github.com/Bioconductor/ShortRead/issues/3.
+
+    o (v 1.49.1) implement`as(., "DNAStringSet")`. See
+      https://github.com/Bioconductor/ShortRead/issues/3.
+
 CHANGES IN VERSION 1.48
 -----------------------
 
