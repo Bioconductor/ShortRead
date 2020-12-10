@@ -27,6 +27,7 @@
 \alias{detail,ShortRead-method}
 \alias{sread}
 \alias{sread,ShortRead-method}
+\alias{coerce,ShortRead,DNAStringSet-method}
 \alias{id}
 \alias{id,ShortRead-method}
 \alias{width,ShortRead-method}
@@ -84,7 +85,9 @@ Class \code{"\linkS4class{.ShortReadBase}"}, directly.
   \describe{
 
     \item{sread}{\code{signature(object = "AlignedRead")}: access the
-      sread slot of \code{object}.}
+      sread slot of \code{object}. \code{as(object, "DNAStringSet")} is
+      similar, but adds \code{id(object)} as the \code{names()} of the
+      DNAStringSet.}
 
     \item{id}{\code{signature(object = "AlignedRead")}: access the
       id slot of \code{object}.}

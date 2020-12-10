@@ -24,6 +24,19 @@ test_ShortRead_construction <- function() {
     .equals(sr, obj)
 }
 
+test_ShortRead_coerce_DNAStringSet <- function()
+{
+    ## propagate id() as names()
+    checkIdentical(
+        as(ShortRead(), "DNAStringSet"),
+        DNAStringSet(setNames(nm = character()))
+    )
+
+    sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+    obj <- as(readFastq(sp, qualityType="SFastqQuality"), "ShortRead")
+    checkIdentical(as(obj, "DNAStringSet"), setNames(sread(obj), id(obj)))
+}
+
 test_ShortRead_narrow <- function() {
     obj <- narrow(sr, start=1, end=10)
     checkTrue(class(obj) == "ShortRead")

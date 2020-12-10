@@ -12,6 +12,11 @@ setMethod(.srValidity, "ShortRead", .ShortRead_validity)
 setMethod(sread, "ShortRead",
           function(object, ...) slot(object, "sread"))
 
+setAs("ShortRead", "DNAStringSet", function(from)
+{
+    setNames(sread(from), id(from))
+})
+
 setMethod(id, "ShortRead",
           function(object, ...) slot(object, "id"))
 
