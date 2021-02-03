@@ -274,7 +274,6 @@ setGeneric("FastqFileList",
            function(..., class="FastqFile")
            standardGeneric("FastqFileList"),
            signature="...")
-BiocGenerics:::apply_hotfix73465(getGeneric("FastqFileList"))
 
 setGeneric("FastqStreamer",
            function(con, n, readerBlockSize=1e8, verbose=FALSE)
@@ -285,13 +284,11 @@ setGeneric("FastqStreamerList",
            function(..., n, readerBlockSize=1e8, verbose=FALSE)
            standardGeneric("FastqStreamerList"),
            signature="...")
-BiocGenerics:::apply_hotfix73465(getGeneric("FastqStreamerList"))
 
 setGeneric("FastqSamplerList",
            function(..., n=1e6, readerBlockSize=1e8, verbose=FALSE,
                     ordered = FALSE)
            standardGeneric("FastqSamplerList"),
            signature="...")
-BiocGenerics:::apply_hotfix73465(getGeneric("FastqSamplerList"))
 
 setGeneric("yield", function(x, ...) standardGeneric("yield"))
