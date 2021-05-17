@@ -9,6 +9,12 @@ NEW FEATURES
     o (v 1.49.1) implement`as(., "DNAStringSet")`. See
       https://github.com/Bioconductor/ShortRead/issues/3.
 
+BUG FIXES
+
+    o (v 1.49.3) report invalid FastqStreamer / FastqSampler on
+    re-serialized objects. Fixes
+    https://github.com/Bioconductor/ShortRead/issues/5.
+
 CHANGES IN VERSION 1.48
 -----------------------
 

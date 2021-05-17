@@ -349,6 +349,8 @@ SEXP sampler_add(SEXP s, SEXP bin)
 {
     /* create a buffer with both scratch and new data */
     struct sampler *sampler = SAMPLER(s);
+    if (!sampler)
+        Rf_error("invalid FastqSampler");
     struct bufnode *scratch = sampler->bufnode;
 
     if (scratch->bytes) {
@@ -401,12 +403,16 @@ SEXP sampler_add(SEXP s, SEXP bin)
 SEXP sampler_status(SEXP s)
 {
     struct sampler *sampler = SAMPLER(s);
+    if (!sampler)
+        Rf_error("invalid FastqSampler");
     return _records_status(sampler->sample, sampler->bufnode);
 }
 
 SEXP sampler_as_XStringSet(SEXP s, SEXP ordered)
 {
     struct sampler *sampler = SAMPLER(s);
+    if (!sampler)
+        Rf_error("invalid FastqSampler");
     if (TRUE == LOGICAL(ordered)[0])
         _sampler_order(sampler->sample);
     SEXP result = _fastq_as_XStringSet(sampler->sample);
@@ -494,6 +500,8 @@ SEXP streamer_new(SEXP n)
 SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd)
 {
     struct streamer *streamer = STREAMER(s);
+    if (!streamer)
+        Rf_error("invalid FastqStreamer");
     int len = Rf_length(bin);
     int skip = INTEGER(skipadd)[0], add = INTEGER(skipadd)[1];
 
@@ -558,12 +566,16 @@ SEXP streamer_add(SEXP s, SEXP bin, SEXP skipadd)
 SEXP streamer_status(SEXP s)
 {
     struct streamer *streamer = STREAMER(s);
+    if (!streamer)
+        Rf_error("invalid FastqStreamer");
     return _records_status(streamer->stream, streamer->bufnode);
 }
 
 SEXP streamer_as_XStringSet(SEXP s)
 {
     struct streamer *streamer = STREAMER(s);
+    if (!streamer)
+        Rf_error("invalid FastqStreamer");
     struct records *stream = streamer->stream;
     SEXP result = _fastq_as_XStringSet(stream);
     _streamer_reset(streamer);

@@ -8,7 +8,7 @@
         status(update=TRUE)
     },
     status = function(update=FALSE) {
-        "report status of FastqSampler"
+        "report status of FastqStreamer"
         if (update || !length(.status))
             .status <<- .Call(.streamer_status, sampler)
         .status
