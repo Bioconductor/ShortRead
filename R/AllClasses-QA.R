@@ -17,7 +17,7 @@ setClass("QASummary",
          representation("VIRTUAL", ".QA2",
                         addFilter="ScalarLogical",
                         useFilter="ScalarLogical",
-                        values="DataFrame",
+                        values="DFrame",
                         flag="integer",
                         html="ScalarCharacter"),
          prototype=prototype(
@@ -28,7 +28,7 @@ setClass("QASummary",
 
 setClass("QASource",
          representation("VIRTUAL", "QASummary",
-                        metadata="DataFrame", data="QAData",
+                        metadata="DFrame", data="QAData",
                         flagNSequencesRange="integer"),
          prototype=prototype(
            flagNSequencesRange=NA_integer_),
