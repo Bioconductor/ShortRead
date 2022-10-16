@@ -1,10 +1,14 @@
 Package: ShortRead
 Type: Package
 Title: FASTQ input and manipulation
-Version: 1.55.0
-Author: Martin Morgan, Michael Lawrence, Simon Anders
-Maintainer: Bioconductor Package Maintainer
-        <maintainer@bioconductor.org>
+Version: 1.55.1
+Authors@R: c(
+        person("Bioconductor Package", "Maintainer",  role="cre",
+            email="maintainer@bioconductor.org"),
+        person("Martin", "Morgan", role = "aut"),
+        person("Michael", "Lawrence", role = "ctb"),
+        person("Simon", "Anders", role = "ctb")
+    )
 Description: This package implements sampling, iteration, and input of
         FASTQ files. The package includes functions for filtering and
         trimming reads, and for generating a quality assessment report.
@@ -22,3 +26,7 @@ Imports: Biobase, S4Vectors (>= 0.17.25), IRanges (>= 2.13.12),
 Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi
 LinkingTo: S4Vectors, IRanges, XVector, Biostrings, Rhtslib, zlibbioc
 biocViews: DataImport, Sequencing, QualityControl
+URL: https://bioconductor.org/packages/ShortRead,
+    https://github.com/Bioconductor/ShortRead,
+    https://support.bioconductor.org/tag/ShortRead
+BugReports: https://github.com/Bioconductor/ShortRead/issues
