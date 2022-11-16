@@ -68,11 +68,12 @@ SEXP count_lines(SEXP files)
 #include "htslib/kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
-void _count_records(const char *fname, int *result)
+void _count_records(const char *fname, double *result)
 {
     gzFile fp;
     kseq_t *seq;
-    int r, n = 0, slen = 0, qlen = 0;
+    int r, n = 0;
+    double slen = 0, qlen = 0;
     fp = gzopen(fname, "r");
     seq = kseq_init(fp);
     while ((r = kseq_read(seq)) >= 0)
@@ -88,9 +89,9 @@ void _count_records(const char *fname, int *result)
 
 SEXP count_records(SEXP filename)
 {
-    SEXP result = PROTECT(Rf_allocVector(INTSXP, 3));
+    SEXP result = PROTECT(Rf_allocVector(REALSXP, 3));
 
-    _count_records(Rf_translateChar(Rf_asChar(filename)), INTEGER(result));
+    _count_records(Rf_translateChar(Rf_asChar(filename)), REAL(result));
 
     UNPROTECT(1);
     return result;
