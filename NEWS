@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.56
+-----------------------
+
+BUG FIXES
+
+    o (v 1.56.1) avoid integer overflow in countFastq()
+    https://github.com/Bioconductor/ShortRead/issues/10
+
 CHANGES IN VERSION 1.50
 -----------------------
 
