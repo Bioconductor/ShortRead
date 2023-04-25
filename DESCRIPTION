@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: FASTQ input and manipulation
-Version: 1.57.1
+Version: 1.58.0
 Authors@R: c(
         person("Bioconductor Package", "Maintainer",  role="cre",
             email="maintainer@bioconductor.org"),
