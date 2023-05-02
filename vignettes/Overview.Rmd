@@ -1,0 +1,398 @@
+---
+title: "An Introduction to *ShortRead*"
+author:
+- name: Martin Morgan
+- name: Rohit Satyam
+  affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
+
+clean: false
+date: "`r Sys.Date()`"
+package: ShortRead
+
+vignette: >
+ %VignetteIndexEntry{An introduction to ShortRead}
+ %VignetteEngine{knitr::rmarkdown}
+ %VignetteEncoding{UTF-8}  
+ %VignetteDepends{BiocStyle}
+ %VignetteKeywords{Short read, I/0, quality assessment}
+ %VignettePackage{ShortRead}
+ %VignetteAuthor{Martin Morgan}
+
+output: 
+    BiocStyle::html_document:
+      toc_float: true
+    BiocStyle::pdf_document: default
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,eval = T)
+```
+
+```{r preliminaries, message=FALSE, warning=FALSE}
+library("ShortRead")
+```
+The `r Biocpkg("ShortRead")` package provides functionality for working
+with FASTQ files from high throughput sequence analysis. The package
+also contains functions for legacy (single-end, ungapped) aligned
+reads; for working with BAM files, please see the `r Biocpkg("Rsamtools")`,
+`r Biocpkg("GenomicRanges")`, `r Biocpkg("GenomicAlignments")` and related packages.
+
+# Sample data
+
+Sample FASTQ data are derived from ArrayExpress record
+[E-MTAB-1147](http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-1147/).
+Paired-end FASTQ files were retrieved and then sampled to 20,000
+records with
+```{r sample, eval=FALSE}
+sampler <- FastqSampler('E-MTAB-1147/fastq/ERR127302_1.fastq.gz', 20000)
+set.seed(123); ERR127302_1 <- yield(sampler)
+sampler <- FastqSampler('E-MTAB-1147/fastq/ERR127302_2.fastq.gz', 20000)
+set.seed(123); ERR127302_2 <- yield(sampler)
+```
+
+# Functionality
+
+Functionality is summarized in Table 1.
+
+|                              |                    |                                            |
+| ---------------------------- | ------------------ | ------------------------------------------ |
+| **Input**                        |                    |                                            |
+|                              | `FastqStreamer`      | Iterate through FASTQ files in chunks      |
+|                              | `FastqSampler`       | Draw random samples from FASTQ files       |
+|                              | `readFastq`          | Read an entire FASTQ file into memory      |
+|                              | `writeFastq`         | Write FASTQ objects to a connection (file) |
+|                              | `countFastq`         | Quickly count FASTQ records in files       |
+| **Sequence and quality summary** |                    |                                            |
+|                              | `alphabetFrequency`  | Nucleotide or quality score use per read   |
+|                              | `alphabetByCycle`    | Nucleotide or quality score use by cycle   |
+|                              | `alphabetScore`      | Whole-read quality summary                 |
+|                              | `encoding`           | Character / ‘phred’ score mapping          |
+| **Quality assessment**           |                    |                                            |
+|                              | `qa`                 | Visit FASTQ files to collect QA statistics |
+|                              | `report`             | Generate a quality assessment report       |
+| **Filtering and trimming**       |                    |                                            |
+|                              | `srFilter`           | Pre-defined and bespoke filters            |
+|                              | `trimTails`, etc.    | Trim low-quality nucleotides               |
+|                              | `narrow`             | Remove leading / trailing nucleotides      |
+|                              | `tables`             | Summarize read occurrence                  |
+|                              | `srduplicated`, etc. | Identify duplicate reads                   |
+|                              | `filterFastq`        | Filter reads from one file to another      |
+
+**Table 1:** Key functions for working with FASTQ files
+
+**Input** FASTQ files are large so processing involves
+iteration in 'chunks' using `FastqStreamer`
+```{r stream, eval=FALSE}
+strm <- FastqStreamer("a.fastq.gz")
+repeat {
+    fq <- yield(strm)
+    if (length(fq) == 0)
+        break
+    ## process chunk
+}
+```
+or drawing a random sample from the file
+```{r sampler, eval=FALSE}
+sampler <- FastqSampler("a.fastq.gz")
+fq <- yield(sampler)
+```
+The default size for both streams and samples is 1M records;
+this volume of data fits easily into memory. Use
+`countFastq` to get a quick and memory-efficient count of
+the number of records and nucleotides in a file
+```{r countFastq}
+fl <- system.file(package="ShortRead", "extdata", "E-MTAB-1147", 
+                  "ERR127302_1_subset.fastq.gz")
+countFastq(fl)
+```
+Small FASTQ files can be
+read in to memory in their entirety using `readFastq`; we do
+this for our sample data
+```{r readFastq}
+fq <- readFastq(fl)
+```
+The result of data input is an instance of class `ShortReadQ`
+
+|                    |                                                   |
+| ------------------ | ------------------------------------------------- |
+| DNAStringSet       | (`r Biocpkg("Biostrings")`) Short read sequences |
+| FastqQuality, etc. | Quality encodings                                 |
+| ShortReadQ         | Reads, quality scores, and ids                    |
+
+**Table 2:** Primary data types in the `r Biocpkg("ShortRead")` package.
+
+This class contains reads, their quality scores, and optionally the id
+of the read.
+```{r ShortReadQ}
+fq
+fq[1:5]
+head(sread(fq), 3)
+head(quality(fq), 3)
+```
+The reads are represented as _DNAStringSet_
+instances, and can be manipulated with the rich tools defined in the
+`r Biocpkg("Biostrings")` package. The quality scores are represented by a
+class that represents the quality encoding inferred from the file; the
+encoding in use can be discovered with
+```{r encoding}
+encoding(quality(fq))
+```
+The primary source of documentation for these classes is
+`?ShortReadQ` and `?QualityScore`.
+
+# Common work flows
+
+
+## Quality assessment
+
+FASTQ files are often used for basic quality assessment, often to
+augment the purely technical QA that might be provided by the
+sequencing center with QA relevant to overall experimental design. A QA report is generated by creating a vector of paths to FASTQ files
+```{r qa-files1, eval=FALSE}
+fls <- dir("/path/to", "*fastq$", full=TRUE)
+```
+collecting statistics over the files
+```{r qa-qa, eval=FALSE}
+qaSummary <- qa(fls, type="fastq")
+```
+and creating and viewing a report
+```{r qa-view, eval=FALSE}
+browseURL(report(qaSummary))
+```
+By default, the report is based on a sample of 1M
+reads.
+These QA facilities are easily augmented by writing custom functions
+for reads sampled from files, or by exploiting the elements of the
+object returned from `qa()`, e.g., for an analysis of
+ArrayExpress experiment E-MTAB-1147:
+```{r qa-files2, echo=FALSE}
+load("qa_E-MTAB-1147.Rda")
+```
+
+```{r qa-elements}
+qaSummary
+```
+For instance, the count of reads in each lane is summarized in the
+`readCounts` element, and can be displayed as
+```{r qa-readCounts}
+head(qaSummary[["readCounts"]])
+head(qaSummary[["baseCalls"]])
+```
+The `readCounts` element contains a data frame with 1 row and
+3 columns (these dimensions are indicated in the parenthetical
+annotation of `readCounts` in the output of
+`qaSummary`). The rows represent different lanes. The columns
+indicated the number of reads, the number of reads surviving the
+Solexa filtering criteria, and the number of reads aligned to the
+reference genome for the lane. The `baseCalls` element
+summarizes base calls in the unfiltered reads.
+The functions that produce the report tables and graphics are 
+internal to the package. They can be accessed through calling 
+_ShortRead:::functionName_ where functionName is one of the functions
+listed below, organized by report section.
+
+- Run Summary : .ppnCount, .df2a, .laneLbl, .plotReadQuality
+- Read Distribution : .plotReadOccurrences, .freqSequences
+- Cycle Specific : .plotCycleBaseCall, .plotCycleQuality
+- Tile Performance : .atQuantile, .colorkeyNames, .plotTileLocalCoords, .tileGeometry,
+.plotTileCounts, .plotTileQualityScore
+- Alignment : .plotAlignQuality
+- Multiple Alignment : .plotMultipleAlignmentCount
+- Depth of Coverage : .plotDepthOfCoverage
+- Adapter Contamination : .ppnCount
+
+## Filtering and trimming
+
+It is straight-forward to create filters to eliminate reads or to trim
+reads based on diverse characteristics. The basic structure is to open
+a FASTQ file, iterate through chunks of the file performing filtering
+or trimming steps, and appending the filtered data to a new file.
+```{r filter-scheme}
+myFilterAndTrim <- 
+    function(fl, destination=sprintf("%s_subset", fl))
+{
+    ## open input stream
+    stream <- open(FastqStreamer(fl))
+    on.exit(close(stream))
+    repeat {
+        ## input chunk
+        fq <- yield(stream)
+        if (length(fq) == 0)
+            break
+        ## trim and filter, e.g., reads cannot contain 'N'...
+        fq <- fq[nFilter()(fq)]  # see ?srFilter for pre-defined filters
+        ## trim as soon as 2 of 5 nucleotides has quality encoding less 
+        ## than "4" (phred score 20)
+        fq <- trimTailw(fq, 2, "4", 2)
+        ## drop reads that are less than 36nt
+        fq <- fq[width(fq) >= 36]
+        ## append to destination
+        writeFastq(fq, destination, "a")
+    }
+}
+```
+ This is memory efficient and flexible. Care must be taken to
+coordinate pairs of FASTQ files representing paired-end reads, to
+preserve order.
+
+# Using _ShortRead_ for data exploration
+
+
+## Data I/O
+
+`r Biocpkg("ShortRead")` provides a variety of methods to read data into **R**, in
+addition to `readAligned`. 
+
+### `readXStringColumns`
+
+`readXStringColumns` reads a column of DNA or other
+sequence-like data. For instance, the Solexa files
+`s_N_export.txt` contain lines with the following
+information:
+```{r export}
+## location of file
+exptPath <- system.file("extdata", package="ShortRead")
+sp <- SolexaPath(exptPath)
+pattern <- "s_2_export.txt"
+fl <- file.path(analysisPath(sp), pattern)
+strsplit(readLines(fl, n=1), "\t")
+length(readLines(fl))
+```
+Column 9 is the read, and column 10 the ASCII-encoded Solexa Fastq
+quality score; there are 1000 lines (i.e., 1000 reads) in this sample
+file. 
+Suppose the task is to read column 9 as a _DNAStringSet_ and
+column 10 as a _BStringSet_. _DNAStringSet_ is a class
+that contains IUPAC-encoded DNA strings (IUPAC code allows for
+nucleotide ambiguity); _BStringSet_ is a class that contains
+any character with ASCII code 0 through 255. Both of these classes are
+defined in the `r Biocpkg("Biostrings")`
+package. `readXStringColumns` allows us to read in columns
+of text as these classes.
+Important arguments for `readXStringColumns` are the
+`dirPath` in which to look for files, the `pattern` of
+files to parse, and the `colClasses` of the columns to be
+parsed. The `dirPath` and `pattern` arguments are like
+`list.files`. `colClasses` is like the corresponding
+argument to `read.table`: it is a `list` specifying
+the class of each column to be read, or `NULL` if the column
+is to be ignored. In our case there are 21 columns, and we would like
+to read in columns 9 and 10. Hence
+```{r colClasses}
+colClasses <- rep(list(NULL), 21)
+colClasses[9:10] <- c("DNAString", "BString")
+names(colClasses)[9:10] <- c("read", "quality")
+```
+We use the class of the type of sequence (e.g., _DNAString_ or
+_BString_), rather than the class of the set that we will
+create ( e.g., _DNAStringSet_ or _BStringSet_).
+Applying names to `colClasses` is not required, but makes
+subsequent manipulation easier. We are now ready to read our file
+```{r readXStringColumns}
+cols <- readXStringColumns(analysisPath(sp), pattern, colClasses)
+cols
+```
+The file has been parsed, and appropriate data objects were created.
+A feature of `readXStringColumns` and other input functions
+in the `ShortRead` package is that all files matching
+`pattern` in the specified `dirPath` will be read into
+a single object. This provides a convenient way to, for instance,
+parse all tiles in a Solexa lane into a single _DNAStringSet_
+object.
+There are several advantages to reading columns as _XStringSet_
+objects. These are more compact than the corresponding character
+representation:
+```{r size}
+object.size(cols$read)
+object.size(as.character(cols$read))
+```
+They are also created much more quickly. And the _DNAStringSet_ and
+related classes are used extensively in _ShortRead_,
+_Biostrings_, _BSgenome_ and other packages relevant
+to short read technology.
+
+## Sorting
+
+Short reads can be sorted using `srsort`, 
+or the permutation required to bring the short read into 
+lexicographic order can be determined using
+`srorder`. These functions are different from
+`sort` and `order` because the result is
+independent of the locale, and they operate quickly on
+_DNAStringSet_ and _BStringSet_ objects.
+
+The function `srduplicated` identifies duplicate reads. This
+function returns a logical vector, similar to `duplicated`.
+The negation of the result from `srduplicated` is useful to
+create a collection of unique reads. An experimental scenario where
+this might be useful is when the sample preparation involved PCR. In this
+case, replicate reads may be due to artifacts of sample preparation,
+rather than differential representation of sequence in the sample
+prior to PCR.
+
+## Summarizing read occurrence
+
+The `tables` function summarizes read occurrences, for instance,
+```{r tables}
+tbls <- tables(fq)
+names(tbls)
+tbls$top[1:5]
+head(tbls$distribution)
+```
+The `top` component returned by `tables` is a list
+tallying the most commonly occurring sequences in the short
+reads. Knowledgeable readers will recognize the top-occurring read as a
+close match to one of the manufacturer adapters.
+The `distribution` component returned by `tables` is a
+data frame that summarizes how many reads (e.g.,
+`r tbls[["distribution"]][1,"nReads"]`) are represented exactly
+`r tbls[["distribution"]][1,"nOccurrences"]` times.
+
+## Finding near matches to short sequences
+
+Facilities exist for finding reads that are near matches to specific
+sequences, e.g., manufacturer adapter or primer
+sequences. `srdistance` reports the edit distance between
+each read and a reference sequence. `srdistance` is
+implemented to work efficiently for reference sequences whose length
+is of the same order as the reads themselves (10's to 100's of bases).
+To find reads close to the most common read in the example above, one
+might say
+```{r srdistance}
+dist <- srdistance(sread(fq), names(tbls$top)[1])[[1]]
+table(dist)[1:10]
+```
+'Near' matches can be filtered, e.g.,
+```{r aln-not-near}
+fqSubset <- fq[dist>4]
+```
+A different strategy can be used to tally or eliminate reads that consist
+predominantly of a single nucleotide. `alphabetFrequency`
+calculates the frequency of each nucleotide (in DNA strings) or letter
+(for other string sets) in each read. Thus one could identify and
+eliminate reads with more than 30 adenine nucleotides with
+```{r polya}
+countA <- alphabetFrequency(sread(fq))[,"A"] 
+fqNoPolyA <- fq[countA < 30]
+```
+`alphabetFrequency`, which simply counts nucleotides, is
+much faster than `srdistance`, which performs full pairwise
+alignment of each read to the subject.
+Users wanting to use **R** for whole-genome alignments or more flexible
+pairwise alignment are encouraged to investigate the
+`r Biocpkg("Biostrings")` package, especially the _PDict_ class and
+`matchPDict` and `pairwiseAlignment` functions.
+
+# Legacy support for early file formats
+
+The `r Biocpkg("ShortRead")` package contains functions and classes to
+support early file formats and ungapped alignments. Help pages are
+flagged as 'legacy'; versions of `r Biocpkg("ShortRead")` prior to 1.21
+(_Bioconductor_ version 2.13) contain a vignette illustrating common
+work flows with these file formats.
+
+# Session Info{-}
+
+```{r sessionInfo}
+sessionInfo()
+```
