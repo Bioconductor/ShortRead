@@ -10,18 +10,17 @@ date: "`r Sys.Date()`"
 package: ShortRead
 
 vignette: >
- %VignetteIndexEntry{An introduction to ShortRead}
- %VignetteEngine{knitr::rmarkdown}
- %VignetteEncoding{UTF-8}  
- %VignetteDepends{BiocStyle}
- %VignetteKeywords{Short read, I/0, quality assessment}
- %VignettePackage{ShortRead}
- %VignetteAuthor{Martin Morgan}
+ %\VignetteIndexEntry{An introduction to ShortRead}
+ %\VignetteEngine{knitr::rmarkdown}
+ %\VignetteEncoding{UTF-8}  
+ %\VignetteDepends{BiocStyle}
+ %\VignetteKeywords{Short read, I/0, quality assessment}
+ %\VignettePackage{ShortRead}
+ %\VignetteAuthor{Martin Morgan}
 
 output: 
     BiocStyle::html_document:
       toc_float: true
-    BiocStyle::pdf_document: default
 ---
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
