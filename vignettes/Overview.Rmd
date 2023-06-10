@@ -6,7 +6,7 @@ author:
   affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
 
 clean: false
-date: "`r format(Sys.Date(), "%B %d, %Y")`"
+date: "`r format(Sys.Date(), '%d %B, %Y')`"
 package: ShortRead
 
 vignette: >
