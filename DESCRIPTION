@@ -4,9 +4,9 @@ Title: FASTQ input and manipulation
 Version: 1.59.0
 Authors@R: c(
         person("Rohit", "Satyam", role = "ctb",
-        comment = "Converted Overview.Rnw vignette from Sweave to RMarkdown / HTML."),
+                comment = "Converted Overview.Rnw vignette from Sweave to RMarkdown / HTML."),
         person("Bioconductor Package Maintainer",
-        email = "maintainer@bioconductor.org", role = "cre"),
+                email = "maintainer@bioconductor.org", role = "cre"),
         person("Martin", "Morgan", role = "aut"),
         person("Michael", "Lawrence", role = "ctb"),
         person("Simon", "Anders", role = "ctb")
