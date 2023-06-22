@@ -114,7 +114,7 @@ countFastq(fl)
 ```
 
 Small FASTQ files can be
-read in to memory in their entirety using `readFastq`; we do
+read into memory in their entirety using `readFastq`; we do
 this for our sample data
 
 ```{r readFastq}
@@ -122,6 +122,8 @@ fq <- readFastq(fl)
 ```
 
 The result of data input is an instance of class `ShortReadQ`
+(Table \@ref(tab:table2)).This class contains reads, their quality scores, and optionally the id
+of the read.
 
 |                    |                                                   |
 | ------------------ | ------------------------------------------------- |
@@ -129,10 +131,7 @@ The result of data input is an instance of class `ShortReadQ`
 | FastqQuality, etc. | Quality encodings                                 |
 | ShortReadQ         | Reads, quality scores, and ids                    |
 
-**Table 2:** Primary data types in the `r Biocpkg("ShortRead")` package.
-
-This class contains reads, their quality scores, and optionally the id
-of the read.
+: (\#tab:table2) Primary data types in the `r Biocpkg("ShortRead")` package.
 
 ```{r ShortReadQ}
 fq
@@ -154,7 +153,7 @@ encoding(quality(fq))
 The primary source of documentation for these classes is
 `?ShortReadQ` and `?QualityScore`.
 
-# Common work flows
+# Common workflows
 
 
 ## Quality assessment
@@ -211,28 +210,28 @@ annotation of `readCounts` in the output of
 indicated the number of reads, the number of reads surviving the
 Solexa filtering criteria, and the number of reads aligned to the
 reference genome for the lane. The `baseCalls` element
-summarizes base calls in the unfiltered reads.
+summarizes the base calls in the unfiltered reads.
 
 The functions that produce the report tables and graphics are 
-internal to the package. They can be accessed through calling 
+internal to the package. They can be accessed by calling 
 _ShortRead:::functionName_ where functionName is one of the functions
 listed below, organized by report section.
 
-- Run Summary : .ppnCount, .df2a, .laneLbl, .plotReadQuality
-- Read Distribution : .plotReadOccurrences, .freqSequences
-- Cycle Specific : .plotCycleBaseCall, .plotCycleQuality
-- Tile Performance : .atQuantile, .colorkeyNames, .plotTileLocalCoords, .tileGeometry,
+- Run Summary: .ppnCount, .df2a, .laneLbl, .plotReadQuality
+- Read Distribution: .plotReadOccurrences, .freqSequences
+- Cycle Specific: .plotCycleBaseCall, .plotCycleQuality
+- Tile Performance: .atQuantile, .colorkeyNames, .plotTileLocalCoords, .tileGeometry,
 .plotTileCounts, .plotTileQualityScore
-- Alignment : .plotAlignQuality
-- Multiple Alignment : .plotMultipleAlignmentCount
-- Depth of Coverage : .plotDepthOfCoverage
-- Adapter Contamination : .ppnCount
+- Alignment: .plotAlignQuality
+- Multiple Alignment: .plotMultipleAlignmentCount
+- Depth of Coverage: .plotDepthOfCoverage
+- Adapter Contamination: .ppnCount
 
 ## Filtering and trimming
 
-It is straight-forward to create filters to eliminate reads or to trim
+It is straightforward to create filters to eliminate reads or to trim
 reads based on diverse characteristics. The basic structure is to open
-a FASTQ file, iterate through chunks of the file performing filtering
+a FASTQ file, iterate through chunks of the file, performing filtering
 or trimming steps, and appending the filtered data to a new file.
 
 ```{r filter-scheme}
@@ -309,7 +308,7 @@ parsed. The `dirPath` and `pattern` arguments are like
 `list.files`. `colClasses` is like the corresponding
 argument to `read.table`: it is a `list` specifying
 the class of each column to be read, or `NULL` if the column
-is to be ignored. In our case there are 21 columns, and we would like
+is to be ignored. In our case, there are 21 columns, and we would like
 to read in columns 9 and 10. Hence
 
 ```{r colClasses}
@@ -349,7 +348,7 @@ object.size(as.character(cols$read))
 They are also created much more quickly. And the _DNAStringSet_ and
 related classes are used extensively in `r Biocpkg("ShortRead")`,
 `r Biocpkg("Biostrings")`, `r Biocpkg("BSgenome")` and other packages relevant
-to short read technology.
+to short-read technology.
 
 ## Sorting
 
@@ -438,8 +437,8 @@ pairwise alignment are encouraged to investigate the
 The `r Biocpkg("ShortRead")` package contains functions and classes to
 support early file formats and ungapped alignments. Help pages are
 flagged as 'legacy'; versions of `r Biocpkg("ShortRead")` prior to 1.21
-(_Bioconductor_ version 2.13) contain a vignette illustrating common
-work flows with these file formats.
+(_Bioconductor_ version 2.13) contains a vignette illustrating common
+workflows with these file formats.
 
 # Session Info{-}
 
