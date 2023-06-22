@@ -127,9 +127,9 @@ of the read.
 
 |                    |                                                   |
 | ------------------ | ------------------------------------------------- |
-| DNAStringSet       | (`r Biocpkg("Biostrings")`) Short read sequences |
-| FastqQuality, etc. | Quality encodings                                 |
-| ShortReadQ         | Reads, quality scores, and ids                    |
+| _DNAStringSet_       | (`r Biocpkg("Biostrings")`) Short read sequences |
+| _FastqQuality_, etc. | Quality encodings                                 |
+| _ShortReadQ_         | Reads, quality scores, and ids                    |
 
 : (\#tab:table2) Primary data types in the `r Biocpkg("ShortRead")` package.
 
