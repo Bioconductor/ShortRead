@@ -122,7 +122,7 @@ fq <- readFastq(fl)
 ```
 
 The result of data input is an instance of class `ShortReadQ`
-(Table \@ref(tab:table2)).This class contains reads, their quality scores, and optionally the id
+(Table \@ref(tab:table2)). This class contains reads, their quality scores, and optionally the id
 of the read.
 
 |                    |                                                   |
