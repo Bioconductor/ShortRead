@@ -27,7 +27,7 @@ extern "C" SEXP readBfaToc( SEXP bfa_filename )
       char buf[300];
       snprintf( buf, 300, "Failed to open file '%s': %s (errno=%d)",
          CHAR(STRING_ELT(bfa_filename,0)), strerror(errno), errno );
-      error( buf );
+      error( "%s", buf );
    }
    while( fread( &name_len, sizeof(int), 1, fp) ) {
       if( name_len > 200 )
