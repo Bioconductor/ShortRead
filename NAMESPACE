@@ -1,7 +1,7 @@
 useDynLib(ShortRead, .registration=TRUE)
 
 import(methods, BiocGenerics, S4Vectors, IRanges,
-    GenomeInfoDb, GenomicRanges, GenomicAlignments,
+    Seqinfo, GenomicRanges, GenomicAlignments,
     Rsamtools, Biobase)
 
 importFrom(BiocParallel, bplapply)
