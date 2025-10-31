@@ -9,10 +9,10 @@ importFrom(BiocParallel, bplapply)
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            DNA_ALPHABET, PDict, QualityScaledDNAStringSet, alphabet,
            alphabetFrequency, detail, get_seqtype_conversion_lookup,
-           mkAllStrings, pattern, quality, readDNAStringSet, reverseComplement,
+           mkAllStrings, quality, readDNAStringSet, reverseComplement,
            trimLRPatterns, vcountPDict, writeXStringSet, xscodes)
 
-importFrom(pwalign, pairwiseAlignment, unaligned)
+importFrom(pwalign, pairwiseAlignment, unaligned, pattern)
 
 importFrom(grDevices, colorRampPalette, dev.off, jpeg, pdf, png)
 

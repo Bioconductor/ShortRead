@@ -1,5 +1,5 @@
-\name{ShortReadBase-package}
-\alias{ShortReadBase-package}
+\name{ShortRead-package}
+\alias{ShortRead-package}
 \alias{.ShortReadBase-class}
 \alias{show,.ShortReadBase-method}
 \alias{append,.ShortReadBase,.ShortReadBase-method}
