@@ -46,9 +46,9 @@ SEXP write_fastq(SEXP id, SEXP sread, SEXP quality,
                  SEXP fname, SEXP fmode, SEXP full, SEXP compress,
                  SEXP max_width)
 {
-    if (!(IS_S4_OBJECT(id) && strcmp(get_classname(id), "BStringSet") == 0))
+    if (!(Rf_isS4(id) && strcmp(get_classname(id), "BStringSet") == 0))
         Rf_error("'%s' must be '%s'", "id", "BStringSet");
-    if (!(IS_S4_OBJECT(sread) &&
+    if (!(Rf_isS4(sread) &&
           strcmp(get_classname(sread), "DNAStringSet") == 0))
         Rf_error("'%s' must be '%s'", "sread", "DNAStringSet");
     /* check in R -- C-level R_check_super... is not adequate */
@@ -693,14 +693,14 @@ int _solexa_export_make_id(SEXP result)
         *x = INTEGER(VECTOR_ELT(result, SLX_X)),
         *y = INTEGER(VECTOR_ELT(result, SLX_Y)), *pairedReadNumber = NULL;
     const SEXP
-        * run = STRING_PTR(VECTOR_ELT(result, SLX_RUN)),
+        * run = STRING_PTR_RO(VECTOR_ELT(result, SLX_RUN)),
         *multiplexIndex = NULL,
-        *machine = STRING_PTR(VECTOR_ELT(result, SLX_MACHINE));
+        *machine = STRING_PTR_RO(VECTOR_ELT(result, SLX_MACHINE));
     const Rboolean
         withMultiplexIndex = R_NilValue != VECTOR_ELT(result, SLX_MULTIPLEX),
         withPairedReadNumber = R_NilValue != VECTOR_ELT(result, SLX_PAIRID);
     if (withMultiplexIndex)
-        multiplexIndex = STRING_PTR(VECTOR_ELT(result, SLX_MULTIPLEX));
+        multiplexIndex = STRING_PTR_RO(VECTOR_ELT(result, SLX_MULTIPLEX));
     if (withPairedReadNumber)
         pairedReadNumber = INTEGER(VECTOR_ELT(result, SLX_PAIRID));
 

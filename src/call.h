@@ -6,8 +6,7 @@ extern "C" {
 #endif
 
 #define NEW_CALL(S, T, NAME, ENV, N)				\
-    PROTECT((S) = (T) = allocList((N)));			\
-    SET_TYPEOF((T), LANGSXP);                                   \
+    PROTECT((S) = (T) = LCONS(R_NilValue, allocList((N)-1)));	\
     SETCAR((T), findFun(install((NAME)), (ENV)));               \
     (T) = CDR((T))
 #define CSET_CDR(T, NAME, VALUE)				\
