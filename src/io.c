@@ -224,7 +224,7 @@ SEXP read_prb_as_character(SEXP fname, SEXP asSolexa)
     int read = 0;
     if (gzgets(file, buf, LINEBUF_SIZE) == Z_NULL) {
         gzclose(file);
-        error("could not read file '%f'", translateChar(STRING_ELT(fname, 0)));
+        error("could not read file '%s'", translateChar(STRING_ELT(fname, 0)));
     }
     int n_cycles = 0;
     char *quad = strtok(buf, "\t");
@@ -656,7 +656,7 @@ int _read_solexa_export_file(const char *fname, const char *commentChar,
             default:
                 gzclose(file);
                 error("invalid 'strand' field '%s', %s:%d",
-                      *elt[13], fname, lineno);
+                      elt[13], fname, lineno);
                 break;
             }
         }
@@ -674,7 +674,7 @@ int _read_solexa_export_file(const char *fname, const char *commentChar,
         default:
             gzclose(file);
             error("invalid 'filtering' field '%s', %s:%d",
-                  *elt[21], fname, lineno);
+                  elt[21], fname, lineno);
             break;
         }
         lineno++;
