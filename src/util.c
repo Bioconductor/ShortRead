@@ -6,6 +6,14 @@ unsigned char _bDecode(char);
 unsigned char _dnaDecode(char);
 unsigned char _rnaDecode(char);
 
+
+#include <Rversion.h>
+
+#if R_VERSION < R_Version(4, 6, 0)
+# define R_getVar(x,y,z) findVar(x,y)
+#endif
+
+
 /*
  * Encode / decode XString wrappers
  */
@@ -80,7 +88,7 @@ SEXP _get_namespace(const char *pkg)
 SEXP _get_strand_levels()
 {
     SEXP nmspc = PROTECT(_get_namespace("ShortRead"));
-    SEXP ans = eval(findVar(install(".STRAND_LEVELS"), nmspc), nmspc);
+    SEXP ans = eval(R_getVar(install(".STRAND_LEVELS"), nmspc, TRUE), nmspc);
     UNPROTECT(1);
     return ans;
 }
