@@ -29,7 +29,7 @@ extern "C" SEXP readBfaToc( SEXP bfa_filename )
          CHAR(STRING_ELT(bfa_filename,0)), strerror(errno), errno );
       Rf_error( "%s", buf );
    }
-   while( fread( &name_len, sizeof(int), 1, fp) ) {
+/*   while( fread( &name_len, sizeof(int), 1, fp) ) {
       if( name_len > 200 )
          Rf_error( "sequence name >200 characters; invalid BFA file?" );
       (void) fread( seq_name, sizeof(char), name_len, fp );
@@ -40,6 +40,21 @@ extern "C" SEXP readBfaToc( SEXP bfa_filename )
            "valid BFA file." );
       fseek( fp, 2 * sizeof(bit64_t) * seq_len, SEEK_CUR);
       seqs.push_back( seq_meta_info( seq_ori_len, seq_name ) );
+   } */
+    while (fread(&name_len, sizeof(int), 1, fp)) {
+     if (name_len > 200)
+        Rf_error("sequence name >200 characters; invalid BFA file?");
+     if (fread(seq_name, sizeof(char), name_len, fp) != (size_t) name_len)
+        Rf_error("truncated BFA file while reading sequence name");
+     if (fread(&seq_ori_len, sizeof(int), 1, fp) != 1)
+        Rf_error("truncated BFA file while reading seq_ori_len");
+     if (fread(&seq_len, sizeof(int), 1, fp) != 1)
+        Rf_error("truncated BFA file while reading seq_len");
+     if ((seq_ori_len >> 5 != seq_len) && (seq_ori_len >> 5 != seq_len - 1))
+        Rf_error("Fields bfa.len and bfa_ori_len do not agree. "
+                 "This is not a valid BFA file.");
+    fseek(fp, 2 * sizeof(bit64_t) * seq_len, SEEK_CUR);
+    seqs.push_back(seq_meta_info(seq_ori_len, seq_name));
    }
    fclose( fp );
    
