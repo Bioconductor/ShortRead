@@ -31,10 +31,10 @@ setMethod(append, c("QualityScore", "QualityScore"),
     initialize(x, quality=append(quality(x), quality(values)))
 })
 
-setMethod(detail, "QualityScore", function(x) {
+setMethod(detail, "QualityScore", function(object) {
     callNextMethod()
     cat("quality:\n")
-    print(quality(x))
+    print(quality(object))
 })
 
 ## NumericQuality

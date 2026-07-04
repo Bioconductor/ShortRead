@@ -89,7 +89,7 @@ setMethod(show, "RochePath", function(object) {
     .show_additionalPathSlots(object)
 })
 
-setMethod(detail, "RochePath", function(x, ...) {
+setMethod(detail, "RochePath", function(object) {
     callNextMethod()
-    .detail_additionalPathSlots(x)
+    .detail_additionalPathSlots(object)
 })

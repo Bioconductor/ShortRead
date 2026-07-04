@@ -44,7 +44,7 @@ setMethod(lapply, "SRList", function(X, FUN, ...) {
 
 setMethod(show, "SRList", .SRList_show_class)
 
-setMethod(detail, "SRList", function(x,...) {
-    .SRList_show_class(x)
-    .srlist(x)
+setMethod(detail, "SRList", function(object) {
+    .SRList_show_class(object)
+    .srlist(object)
 })

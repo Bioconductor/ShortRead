@@ -64,7 +64,7 @@ setMethod(show, "ExperimentPath", function(object) {
     for (slt in slts[slts!="basePath"]) catPath(slt)
 }
 
-setMethod(detail, "ExperimentPath", function(x, ...) {
+setMethod(detail, "ExperimentPath", function(object) {
     callNextMethod()
-    cat("experimentPath:\n  ", experimentPath(x), "\n", sep="")
+    cat("experimentPath:\n  ", experimentPath(object), "\n", sep="")
 })

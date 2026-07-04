@@ -321,15 +321,15 @@ setMethod(show, "AlignedRead", function(object) {
         selectSome(varLabels(alignData(object))), "\n")
 })
 
-setMethod(detail, "AlignedRead", function(x, ...) {
+setMethod(detail, "AlignedRead", function(object) {
     callNextMethod()
-    cat("\nchromosome:", selectSome(chromosome(x)), "\n")
-    cat("position:", selectSome(position(x)), "\n")
-    cat("strand:", selectSome(strand(x)), "\n")
+    cat("\nchromosome:", selectSome(chromosome(object)), "\n")
+    cat("position:", selectSome(position(object)), "\n")
+    cat("strand:", selectSome(strand(object)), "\n")
     cat("alignQuality:\n")
-    detail(alignQuality(x))
+    detail(alignQuality(object))
     cat("\nalignData:\n")
-    show(alignData(x))
+    show(alignData(object))
 })
 
 ## summary

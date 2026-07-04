@@ -1,7 +1,7 @@
 Package: ShortRead
 Type: Package
 Title: FASTQ input and manipulation
-Version: 1.71.0
+Version: 1.71.1
 Authors@R: c(
         person("Bioconductor Package Maintainer",
                 email = "maintainer@bioconductor.org", role = "cre"),
@@ -21,7 +21,7 @@ Description: This package implements sampling, iteration, and input of
         alignment formats.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: BiocGenerics (>= 0.23.3), BiocParallel, Biostrings (>=
+Depends: BiocGenerics (>= 0.59.9), BiocParallel, Biostrings (>=
         2.47.6), Rsamtools (>= 1.31.2), GenomicAlignments (>= 1.15.6)
 Imports: Biobase, S4Vectors (>= 0.17.25), IRanges (>= 2.13.12),
         Seqinfo, GenomicRanges (>= 1.31.8), pwalign,

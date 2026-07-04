@@ -8,7 +8,7 @@ importFrom(BiocParallel, bplapply)
 
 importFrom(Biostrings, BString, BStringSet, DNAString, DNAStringSet,
            DNA_ALPHABET, PDict, QualityScaledDNAStringSet, alphabet,
-           alphabetFrequency, detail, get_seqtype_conversion_lookup,
+           alphabetFrequency, get_seqtype_conversion_lookup,
            mkAllStrings, quality, readDNAStringSet, reverseComplement,
            trimLRPatterns, vcountPDict, writeXStringSet, xscodes)
 

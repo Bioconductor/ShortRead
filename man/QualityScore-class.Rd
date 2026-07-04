@@ -168,7 +168,7 @@
 
     }
 
-    \item{detail}{\code{signature(x = "QualityScore")}:
+    \item{detail}{\code{signature(object = "QualityScore")}:
 
       provide a more detailed view of object content.
 

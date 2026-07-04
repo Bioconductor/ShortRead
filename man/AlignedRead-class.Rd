@@ -200,7 +200,7 @@ Class \code{"\linkS4class{.ShortReadBase}"}, by class "ShortReadQ", distance 3.
     \item{show}{\code{signature(object = "AlignedRead")}: provide a
       compact display of the \code{AlignedRead}  content.}
 
-    \item{detail}{\code{signature(x = "AlignedRead")}: display
+    \item{detail}{\code{signature(object = "AlignedRead")}: display
       \code{alignData} in more detail.}
   }
 }

@@ -290,9 +290,9 @@ setMethod(trimEnds, "ShortReadQ",
 
 ## show
 
-setMethod(detail, "ShortReadQ", function(x, ...) {
+setMethod(detail, "ShortReadQ", function(object) {
     callNextMethod()
-    detail(quality(x))
+    detail(quality(object))
 })
 
 ## summary
