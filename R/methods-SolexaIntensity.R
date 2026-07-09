@@ -201,7 +201,7 @@ SolexaIntensity <-
 
 }
 
-setMethod(get("["), c("SolexaIntensity", "ANY", "ANY", "ANY"),
+setMethod("[", c("SolexaIntensity", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=TRUE)
 {
     if (missing(i)) i <- TRUE
